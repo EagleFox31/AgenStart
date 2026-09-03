@@ -3,6 +3,7 @@
     "owner": "EagleFox31",
     "title": "AgenStart Product Development"
   },
+  "metadataCommentKey": "agenstart-project",
   "fields": {
     "status": "Status",
     "priority": "Priority",
