@@ -94,65 +94,59 @@ function issueMetadata(issue) {
   );
 }
 
+function projectFieldsSelection() {
+  return `
+    fields(first: 100) {
+      nodes {
+        __typename
+        ... on ProjectV2Field {
+          id
+          name
+        }
+        ... on ProjectV2SingleSelectField {
+          id
+          name
+          options {
+            id
+            name
+          }
+        }
+        ... on ProjectV2IterationField {
+          id
+          name
+        }
+      }
+    }
+  `;
+}
+
 async function findProject() {
+  // repositoryOwner resolves a login once and then branches by its actual type.
+  // This avoids querying both user(login:) and organization(login:) with the same
+  // value, which causes GitHub GraphQL to return an error for the wrong type.
+  const fieldsSelection = projectFieldsSelection();
   const query = `
     query ProjectByOwner($login: String!) {
-      user(login: $login) {
-        projectsV2(first: 100) {
-          nodes {
-            id
-            number
-            title
-            fields(first: 100) {
-              nodes {
-                __typename
-                ... on ProjectV2Field {
-                  id
-                  name
-                }
-                ... on ProjectV2SingleSelectField {
-                  id
-                  name
-                  options {
-                    id
-                    name
-                  }
-                }
-                ... on ProjectV2IterationField {
-                  id
-                  name
-                }
-              }
+      repositoryOwner(login: $login) {
+        __typename
+        login
+        ... on User {
+          projectsV2(first: 100) {
+            nodes {
+              id
+              number
+              title
+              ${fieldsSelection}
             }
           }
         }
-      }
-      organization(login: $login) {
-        projectsV2(first: 100) {
-          nodes {
-            id
-            number
-            title
-            fields(first: 100) {
-              nodes {
-                __typename
-                ... on ProjectV2Field {
-                  id
-                  name
-                }
-                ... on ProjectV2SingleSelectField {
-                  id
-                  name
-                  options {
-                    id
-                    name
-                  }
-                }
-                ... on ProjectV2IterationField {
-                  id
-                  name
-                }
-              }
+        ... on Organization {
+          projectsV2(first: 100) {
+            nodes {
+              id
+              number
+              title
+              ${fieldsSelection}
             }
           }
         }
@@ -161,21 +155,24 @@ async function findProject() {
   `;
 
   const data = await graphql(query, { login: config.project.owner });
-  const projects = [
-    ...(data.user?.projectsV2?.nodes ?? []),
-    ...(data.organization?.projectsV2?.nodes ?? [])
-  ];
+  const owner = data.repositoryOwner;
 
+  if (!owner) {
+    throw new Error(`GitHub owner "${config.project.owner}" could not be resolved.`);
+  }
+
+  const projects = owner.projectsV2?.nodes ?? [];
   const project = projects.find((candidate) => candidate.title === config.project.title);
 
   if (!project) {
     const visible = projects.map((candidate) => candidate.title).join(', ') || '(none visible)';
     throw new Error(
-      `Project "${config.project.title}" was not found for ${config.project.owner}. Visible projects: ${visible}`
+      `Project "${config.project.title}" was not found for ${config.project.owner} ` +
+      `(${owner.__typename}). Visible projects: ${visible}`
     );
   }
 
-  console.log(`Resolved Project #${project.number}: ${project.title}`);
+  console.log(`Resolved ${owner.__typename} Project #${project.number}: ${project.title}`);
   return project;
 }
 
