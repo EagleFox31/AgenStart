@@ -9,6 +9,5 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AgenStart.PackageManagement\AgenStart.PackageManagement.csproj" />
-    <ProjectReference Include="..\AgenStart.SoftwareInventory\AgenStart.SoftwareInventory.csproj" />
   </ItemGroup>
 </Project>
