@@ -44,6 +44,22 @@ public sealed record InstalledSoftwareRecord(
     string? PackageId = null,
     string? PackageSource = null);
 
+public sealed record InstalledSoftwareCollectionResult(
+    IReadOnlyList<InstalledSoftwareRecord> Records,
+    IReadOnlyList<InventorySourceStatus> Sources);
+
+public interface IInstalledSoftwareCollector
+{
+    Task<InstalledSoftwareCollectionResult> CollectAsync(
+        CancellationToken cancellationToken = default);
+}
+
+public interface IInstalledSoftwareInventoryProvider
+{
+    Task<InstalledSoftwareSnapshot> CaptureAsync(
+        CancellationToken cancellationToken = default);
+}
+
 public sealed record InstalledSoftwareSnapshot(
     IReadOnlyList<InstalledSoftwareRecord> Records,
     IReadOnlyList<InventorySourceStatus> Sources,
