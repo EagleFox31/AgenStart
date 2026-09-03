@@ -32,7 +32,7 @@ public sealed class WinGetInstalledSoftwareCollector : IInstalledSoftwareCollect
         var executable = _locator.Resolve();
         if (!executable.Found || string.IsNullOrWhiteSpace(executable.Path))
         {
-            var statuses = TrustedSources
+            var unavailableStatuses = TrustedSources
                 .Select(source => new InventorySourceStatus(
                     SoftwareInventorySourceIds.ForPackageProvider(PackageProviderIds.WinGet, source),
                     InventorySourceState.Unavailable,
@@ -40,7 +40,7 @@ public sealed class WinGetInstalledSoftwareCollector : IInstalledSoftwareCollect
                     executable.Message ?? "WinGet is unavailable for installed-software inventory."))
                 .ToArray();
 
-            return new InstalledSoftwareCollectionResult([], statuses);
+            return new InstalledSoftwareCollectionResult([], unavailableStatuses);
         }
 
         var records = new HashSet<InstalledSoftwareRecord>();
