@@ -395,13 +395,14 @@ Example:
 {
   "platform": "windows",
   "type": "command-version",
-  "value": "git --version"
+  "executable": "git",
+  "arguments": ["--version"]
 }
 ```
 
 Security rule: verification metadata is **not arbitrary shell execution**.
 
-The runtime implementation must translate supported verification rule types into constrained operations. Catalogue text is never passed directly to a shell without a typed allowlisted interpreter.
+The runtime implementation must translate supported verification rule types into constrained operations. The executable name and argument list are validated separately and the catalogue never supplies a raw command line to a shell.
 
 For V1, `provider-query` should be preferred where reliable, with secondary verification only when needed.
 
