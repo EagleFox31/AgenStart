@@ -21,7 +21,9 @@ public sealed class WinGetProviderTests
             "Microsoft.PowerToys",
             "winget");
 
-        var result = await provider.ResolveAsync(package);
+        var result = await provider.ResolveAsync(
+            package,
+            TestContext.Current.CancellationToken);
 
         Assert.Equal(PackageResolutionStatus.SourceUnavailable, result.Status);
         Assert.Single(runner.Calls);
@@ -42,7 +44,9 @@ public sealed class WinGetProviderTests
                 "Git.Git --override",
                 "winget"));
 
-        var result = await provider.InstallAsync(request);
+        var result = await provider.InstallAsync(
+            request,
+            TestContext.Current.CancellationToken);
 
         Assert.Equal(PackageOperationStatus.Failed, result.Status);
         Assert.Equal("winget.invalid-install-request", result.DiagnosticCode);
@@ -64,7 +68,9 @@ public sealed class WinGetProviderTests
             "git",
             new ProviderPackageReference(PackageProviderIds.WinGet, "Git.Git", "winget"));
 
-        var result = await provider.InstallAsync(request);
+        var result = await provider.InstallAsync(
+            request,
+            TestContext.Current.CancellationToken);
 
         Assert.Equal(PackageOperationStatus.IntegrityFailure, result.Status);
         Assert.DoesNotContain("SensitiveUser", result.Message ?? string.Empty, StringComparison.OrdinalIgnoreCase);
