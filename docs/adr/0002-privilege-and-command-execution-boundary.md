@@ -1,6 +1,6 @@
 # ADR-0002: Privilege and command-execution boundary
 
-- Status: Proposed
+- Status: Accepted
 - Date: 2026-09-03
 - Decision owners: AgenStudio / AgenStart
 - Related: #11, ADR-0001
