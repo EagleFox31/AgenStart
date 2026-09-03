@@ -1,7 +1,20 @@
 {
   "project": {
     "owner": "EagleFox31",
-    "title": "AgenStart Product Development"
+    "title": "AgenStart Product Development",
+    "bootstrap": true,
+    "template": "appfactory-product"
+  },
+  "bootstrap": {
+    "phases": [
+      "Foundation",
+      "Machine Intelligence",
+      "Recommendations",
+      "Installation",
+      "Desktop MVP",
+      "Reproducible Setup",
+      "Release"
+    ]
   },
   "metadataCommentKey": "agenstart-project",
   "fields": {
