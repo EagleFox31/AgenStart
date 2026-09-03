@@ -61,6 +61,7 @@ public sealed class GuidedSetupSessionTests
     {
         var provider = new TrackingProvider();
         var verifier = new StatefulVerifier();
+        provider.Verifier = verifier;
         var orchestrator = new InstallationOrchestrator([provider], verifier);
         var lowMemoryMachine = Machine(totalRamMiB: 128);
         using var session = new GuidedSetupSession(
@@ -123,13 +124,16 @@ public sealed class GuidedSetupSessionTests
         TrackingProvider provider,
         StatefulVerifier verifier,
         InstallationOrchestrator orchestrator,
-        SoftwarePresenceState state) =>
-        new(
+        SoftwarePresenceState state)
+    {
+        provider.Verifier = verifier;
+        return new GuidedSetupSession(
             Machine(),
             Software(state),
             [Candidate()],
             new RecommendationEngine(),
             orchestrator);
+    }
 
     private static GuidedApplicationCandidate Candidate() =>
         new(
@@ -207,6 +211,7 @@ public sealed class GuidedSetupSessionTests
             CancellationToken cancellationToken = default)
         {
             InstallCount++;
+            Verifier?.MarkInstalled();
             return Task.FromResult(new PackageOperationResult(
                 PackageOperationStatus.Succeeded,
                 request.ApplicationId,
