@@ -1,0 +1,48 @@
+name: Desktop MVP tests
+
+on:
+  push:
+    paths:
+      - "src/AgenStart.App/**"
+      - "src/AgenStart.Application/GuidedSetup/**"
+      - "tests/AgenStart.Application.Tests/GuidedSetupSessionTests.cs"
+      - "docs/product/guided-desktop-mvp.md"
+      - ".github/workflows/desktop-mvp-tests.yml"
+      - "global.json"
+  pull_request:
+    paths:
+      - "src/AgenStart.App/**"
+      - "src/AgenStart.Application/GuidedSetup/**"
+      - "tests/AgenStart.Application.Tests/GuidedSetupSessionTests.cs"
+      - "docs/product/guided-desktop-mvp.md"
+      - ".github/workflows/desktop-mvp-tests.yml"
+      - "global.json"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test-and-build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+
+      - name: Restore guided flow tests
+        run: dotnet restore tests/AgenStart.Application.Tests/AgenStart.Application.Tests.csproj
+
+      - name: Test guided flow
+        run: dotnet test tests/AgenStart.Application.Tests/AgenStart.Application.Tests.csproj --configuration Release --no-restore --verbosity normal
+
+      - name: Restore desktop app
+        run: dotnet restore src/AgenStart.App/AgenStart.App.csproj
+
+      - name: Build desktop app
+        run: dotnet build src/AgenStart.App/AgenStart.App.csproj --configuration Release --no-restore --verbosity normal
