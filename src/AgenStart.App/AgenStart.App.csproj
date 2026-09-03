@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia.Desktop" Version="12.1.1" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="12.1.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AgenStart.Application\AgenStart.Application.csproj" />
+    <ProjectReference Include="..\AgenStart.Core\AgenStart.Core.csproj" />
+    <ProjectReference Include="..\AgenStart.PackageManagement\AgenStart.PackageManagement.csproj" />
+    <ProjectReference Include="..\AgenStart.Recommendations\AgenStart.Recommendations.csproj" />
+    <ProjectReference Include="..\AgenStart.SoftwareInventory\AgenStart.SoftwareInventory.csproj" />
+  </ItemGroup>
+</Project>
