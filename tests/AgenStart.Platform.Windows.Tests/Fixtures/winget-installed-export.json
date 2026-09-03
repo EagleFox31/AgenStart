@@ -1,0 +1,45 @@
+{
+  "$schema": "https://aka.ms/winget-packages.schema.2.0.json",
+  "CreationDate": "2026-09-03T00:00:00.000-00:00",
+  "Sources": [
+    {
+      "Packages": [
+        {
+          "PackageIdentifier": "Git.Git",
+          "Version": "2.51.0"
+        },
+        {
+          "PackageIdentifier": "Microsoft.VisualStudioCode",
+          "Version": "1.103.2",
+          "Scope": "user"
+        },
+        {
+          "PackageIdentifier": "VideoLAN.VLC"
+        },
+        {
+          "PackageIdentifier": ""
+        },
+        {
+          "Unexpected": "ignored"
+        }
+      ],
+      "SourceDetails": {
+        "Argument": "https://cdn.winget.microsoft.com/cache",
+        "Identifier": "Microsoft.Winget.Source_8wekyb3d8bbwe",
+        "Name": "winget",
+        "Type": "Microsoft.PreIndexed.Package"
+      }
+    },
+    {
+      "Packages": [
+        {
+          "PackageIdentifier": "9NKSQGP7F2NH",
+          "Version": "125.0.0"
+        }
+      ],
+      "SourceDetails": {
+        "Name": "msstore"
+      }
+    }
+  ]
+}

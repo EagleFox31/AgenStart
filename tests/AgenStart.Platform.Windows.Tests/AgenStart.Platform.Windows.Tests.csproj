@@ -18,5 +18,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\AgenStart.Platform.Windows\AgenStart.Platform.Windows.csproj" />
+    <ProjectReference Include="..\..\src\AgenStart.SoftwareInventory\AgenStart.SoftwareInventory.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Fixtures\*.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>
