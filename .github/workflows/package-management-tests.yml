@@ -1,0 +1,33 @@
+name: Package management tests
+
+on:
+  pull_request:
+    paths:
+      - "src/AgenStart.PackageManagement/**"
+      - "src/AgenStart.Platform.Windows/**"
+      - "tests/AgenStart.Platform.Windows.Tests/**"
+      - "docs/architecture/package-provider.md"
+      - ".github/workflows/package-management-tests.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+
+      - name: Restore
+        run: dotnet restore tests/AgenStart.Platform.Windows.Tests/AgenStart.Platform.Windows.Tests.csproj
+
+      - name: Test
+        run: dotnet test tests/AgenStart.Platform.Windows.Tests/AgenStart.Platform.Windows.Tests.csproj --configuration Release --no-restore --verbosity normal
