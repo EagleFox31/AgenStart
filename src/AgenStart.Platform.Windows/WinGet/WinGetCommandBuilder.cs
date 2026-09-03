@@ -30,6 +30,28 @@ public static partial class WinGetCommandBuilder
         ]);
     }
 
+    public static WinGetCommand BuildExportInstalled(string source, string outputPath)
+    {
+        ValidateSource(source);
+        ArgumentException.ThrowIfNullOrWhiteSpace(outputPath);
+
+        if (!Path.IsPathFullyQualified(outputPath))
+        {
+            throw new ArgumentException(
+                "WinGet export output must be an AgenStart-owned absolute path.",
+                nameof(outputPath));
+        }
+
+        return new WinGetCommand(
+        [
+            "export",
+            "--output", outputPath,
+            "--source", source,
+            "--include-versions",
+            "--disable-interactivity"
+        ]);
+    }
+
     public static WinGetCommand BuildInstall(PackageInstallRequest request)
     {
         ArgumentNullException.ThrowIfNull(request);
@@ -101,11 +123,16 @@ public static partial class WinGetCommandBuilder
                 nameof(package));
         }
 
-        if (!AllowedSources.Contains(package.Source))
+        ValidateSource(package.Source);
+    }
+
+    private static void ValidateSource(string source)
+    {
+        if (string.IsNullOrWhiteSpace(source) || !AllowedSources.Contains(source))
         {
             throw new ArgumentException(
-                $"WinGet source '{package.Source}' is not trusted by the MVP provider policy.",
-                nameof(package));
+                $"WinGet source '{source}' is not trusted by the MVP provider policy.",
+                nameof(source));
         }
     }
 
