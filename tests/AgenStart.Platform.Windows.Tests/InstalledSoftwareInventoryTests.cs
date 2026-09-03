@@ -16,16 +16,16 @@ public sealed class InstalledSoftwareInventoryTests
 
         Assert.Equal(3, records.Count);
 
-        var git = Assert.Single(records.Where(record => record.PackageId == "Git.Git"));
+        var git = Assert.Single(records, record => record.PackageId == "Git.Git");
         Assert.Equal("2.51.0", git.Version);
         Assert.Equal(PackageProviderIds.WinGet, git.ProviderId);
         Assert.Equal("winget", git.PackageSource);
 
-        var vscode = Assert.Single(records.Where(record => record.PackageId == "Microsoft.VisualStudioCode"));
+        var vscode = Assert.Single(records, record => record.PackageId == "Microsoft.VisualStudioCode");
         Assert.Equal("1.103.2", vscode.Version);
         Assert.Equal(InstalledSoftwareScope.User, vscode.Scope);
 
-        var vlc = Assert.Single(records.Where(record => record.PackageId == "VideoLAN.VLC"));
+        var vlc = Assert.Single(records, record => record.PackageId == "VideoLAN.VLC");
         Assert.Null(vlc.Version);
     }
 
