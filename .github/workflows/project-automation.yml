@@ -32,39 +32,9 @@ jobs:
           ref: ${{ github.event.repository.default_branch }}
           persist-credentials: false
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "22"
-
       - name: Sync GitHub Project
-        shell: bash
-        env:
-          PROJECT_TOKEN: ${{ secrets.PROJECT_TOKEN }}
-          MANUAL_ISSUE_NUMBER: ${{ inputs.issue_number }}
-        run: |
-          set -euo pipefail
-
-          if [ -z "${PROJECT_TOKEN:-}" ]; then
-            echo "PROJECT_TOKEN repository secret is missing."
-            exit 1
-          fi
-
-          if [ "$GITHUB_EVENT_NAME" = "workflow_dispatch" ]; then
-            raw_issue_number="${MANUAL_ISSUE_NUMBER:-}"
-            issue_pattern='^[[:space:]]*(issue_number[[:space:]]*=[[:space:]]*)?#?([0-9]+)[[:space:]]*$'
-
-            if [[ "$raw_issue_number" =~ $issue_pattern ]]; then
-              export MANUAL_ISSUE_NUMBER="${BASH_REMATCH[2]}"
-              echo "Manual resync target: Issue #${MANUAL_ISSUE_NUMBER}"
-            else
-              echo "Invalid issue_number input. Enter a positive issue number such as 15 or #15."
-              exit 1
-            fi
-          fi
-
-          if [ "$GITHUB_EVENT_NAME" = "pull_request_target" ]; then
-            node .github/scripts/project-automation-pr.mjs
-          else
-            node .github/scripts/project-automation.mjs
-          fi
+        uses: EagleFox31/appfactory-project-automation@v1
+        with:
+          token: ${{ secrets.PROJECT_TOKEN }}
+          config-path: .github/project-config.json
+          issue-number: ${{ inputs.issue_number }}
