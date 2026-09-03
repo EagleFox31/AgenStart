@@ -1,3 +1,4 @@
+using System.Runtime.Versioning;
 using System.Security;
 using AgenStart.SoftwareInventory;
 using Microsoft.Win32;
@@ -22,6 +23,13 @@ public sealed class RegistryInstalledSoftwareCollector : IInstalledSoftwareColle
                     "Windows uninstall registry inventory is unavailable on this platform.")]));
         }
 
+        return CollectWindowsAsync(cancellationToken);
+    }
+
+    [SupportedOSPlatform("windows")]
+    private static Task<InstalledSoftwareCollectionResult> CollectWindowsAsync(
+        CancellationToken cancellationToken)
+    {
         var records = new HashSet<InstalledSoftwareRecord>();
         var hadErrors = false;
 
@@ -57,6 +65,7 @@ public sealed class RegistryInstalledSoftwareCollector : IInstalledSoftwareColle
             [status]));
     }
 
+    [SupportedOSPlatform("windows")]
     private static IEnumerable<RegistryProbe> RegistryProbes()
     {
         yield return new RegistryProbe(
@@ -80,6 +89,7 @@ public sealed class RegistryInstalledSoftwareCollector : IInstalledSoftwareColle
             InstalledSoftwareScope.User);
     }
 
+    [SupportedOSPlatform("windows")]
     private static void ReadProbe(
         RegistryProbe probe,
         ISet<InstalledSoftwareRecord> records,
@@ -137,6 +147,7 @@ public sealed class RegistryInstalledSoftwareCollector : IInstalledSoftwareColle
         }
     }
 
+    [SupportedOSPlatform("windows")]
     private static bool IsHiddenSystemComponent(RegistryKey key)
     {
         var value = key.GetValue("SystemComponent", null, RegistryValueOptions.DoNotExpandEnvironmentNames);
@@ -149,6 +160,7 @@ public sealed class RegistryInstalledSoftwareCollector : IInstalledSoftwareColle
         };
     }
 
+    [SupportedOSPlatform("windows")]
     private static string? ReadString(RegistryKey key, string valueName)
     {
         var value = key.GetValue(valueName, null, RegistryValueOptions.DoNotExpandEnvironmentNames);
