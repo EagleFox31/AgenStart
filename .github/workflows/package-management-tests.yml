@@ -4,9 +4,11 @@ on:
   pull_request:
     paths:
       - "src/AgenStart.PackageManagement/**"
+      - "src/AgenStart.SoftwareInventory/**"
       - "src/AgenStart.Platform.Windows/**"
       - "tests/AgenStart.Platform.Windows.Tests/**"
       - "docs/architecture/package-provider.md"
+      - "docs/architecture/installed-software-inventory.md"
       - ".github/workflows/package-management-tests.yml"
   workflow_dispatch:
 
