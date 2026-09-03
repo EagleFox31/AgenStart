@@ -1,8 +1,8 @@
+using AgenStart.Application.Installation;
 using AgenStart.Core.Catalogue;
 using AgenStart.Core.Machine;
 using AgenStart.PackageManagement;
 using AgenStart.Recommendations;
-using AgenStart.SoftwareInventory;
 
 namespace AgenStart.Application.GuidedSetup;
 
