@@ -55,6 +55,7 @@ public enum PackageResolutionStatus
     IntegrityFailure,
     Cancelled,
     TimedOut,
+    ProviderUnavailable,
     Failed
 }
 
