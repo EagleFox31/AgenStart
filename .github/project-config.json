@@ -1,0 +1,47 @@
+{
+  "project": {
+    "owner": "EagleFox31",
+    "title": "AgenStart Product Development"
+  },
+  "fields": {
+    "status": "Status",
+    "priority": "Priority",
+    "workType": "Work type",
+    "phase": "Phase",
+    "size": "Size"
+  },
+  "statusTransitions": {
+    "issueOpened": "Backlog",
+    "issueReopened": "Backlog",
+    "issueClosed": "Done",
+    "draftPullRequest": "In Progress",
+    "pullRequestReady": "Review",
+    "pullRequestMerged": "Done"
+  },
+  "workTypeByTitlePrefix": {
+    "[Foundation]": "Engineering",
+    "[Engineering]": "Engineering",
+    "[Feature]": "Feature",
+    "[UX]": "UX",
+    "[Security]": "Security",
+    "[Quality]": "Quality",
+    "[Documentation]": "Documentation",
+    "[Product]": "Product",
+    "[Bug]": "Bug"
+  },
+  "issueOverrides": {
+    "1": { "priority": "P0", "workType": "Engineering", "phase": "Foundation", "size": "M" },
+    "2": { "priority": "P1", "workType": "Engineering", "phase": "Foundation", "size": "M" },
+    "3": { "priority": "P1", "workType": "Engineering", "phase": "Foundation", "size": "M" },
+    "4": { "priority": "P1", "workType": "Engineering", "phase": "Installation", "size": "L" },
+    "5": { "priority": "P1", "workType": "Feature", "phase": "Machine Intelligence", "size": "L" },
+    "6": { "priority": "P1", "workType": "Feature", "phase": "Recommendations", "size": "L" },
+    "7": { "priority": "P0", "workType": "Feature", "phase": "Installation", "size": "XL" },
+    "8": { "priority": "P1", "workType": "UX", "phase": "Desktop MVP", "size": "XL" },
+    "9": { "priority": "P2", "workType": "Feature", "phase": "Reproducible Setup", "size": "M" },
+    "10": { "priority": "P1", "workType": "Engineering", "phase": "Release", "size": "M" },
+    "11": { "priority": "P0", "workType": "Security", "phase": "Foundation", "size": "L" },
+    "15": { "priority": "P2", "workType": "Product", "phase": "Foundation", "size": "L" },
+    "16": { "priority": "P1", "workType": "Engineering", "phase": "Foundation", "size": "M" }
+  }
+}
