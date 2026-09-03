@@ -1,0 +1,227 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="AgenStart.App.MainWindow"
+        Title="AgenStart"
+        Width="1180"
+        Height="780"
+        MinWidth="960"
+        MinHeight="680"
+        Background="#F7F5EF">
+  <Window.Styles>
+    <Style Selector="TextBlock.h1">
+      <Setter Property="FontSize" Value="34" />
+      <Setter Property="FontWeight" Value="SemiBold" />
+      <Setter Property="Foreground" Value="#10242B" />
+    </Style>
+    <Style Selector="TextBlock.h2">
+      <Setter Property="FontSize" Value="20" />
+      <Setter Property="FontWeight" Value="SemiBold" />
+      <Setter Property="Foreground" Value="#10242B" />
+    </Style>
+    <Style Selector="TextBlock.muted">
+      <Setter Property="Foreground" Value="#526266" />
+      <Setter Property="FontSize" Value="14" />
+    </Style>
+    <Style Selector="Button.primary">
+      <Setter Property="Background" Value="#176D64" />
+      <Setter Property="Foreground" Value="White" />
+      <Setter Property="Padding" Value="20,12" />
+      <Setter Property="FontWeight" Value="SemiBold" />
+      <Setter Property="CornerRadius" Value="10" />
+    </Style>
+    <Style Selector="Button.secondary">
+      <Setter Property="Background" Value="#E7EFEC" />
+      <Setter Property="Foreground" Value="#10242B" />
+      <Setter Property="Padding" Value="18,11" />
+      <Setter Property="CornerRadius" Value="10" />
+    </Style>
+    <Style Selector="Button.profile">
+      <Setter Property="MinWidth" Value="180" />
+      <Setter Property="MinHeight" Value="88" />
+      <Setter Property="HorizontalContentAlignment" Value="Left" />
+      <Setter Property="Padding" Value="18" />
+      <Setter Property="Background" Value="White" />
+      <Setter Property="Foreground" Value="#10242B" />
+      <Setter Property="CornerRadius" Value="12" />
+    </Style>
+    <Style Selector="Border.card">
+      <Setter Property="Background" Value="White" />
+      <Setter Property="BorderBrush" Value="#E1E4E3" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="CornerRadius" Value="14" />
+      <Setter Property="Padding" Value="18" />
+    </Style>
+  </Window.Styles>
+
+  <Grid ColumnDefinitions="238,*">
+    <Border Grid.Column="0" Background="#10242B" Padding="24">
+      <Grid RowDefinitions="Auto,*,Auto">
+        <StackPanel Spacing="4">
+          <TextBlock Text="AgenStart" FontSize="24" FontWeight="Bold" Foreground="White" />
+          <TextBlock Text="BY AGENSTUDIO" FontSize="10" Foreground="#9EDBD3" />
+        </StackPanel>
+
+        <StackPanel Grid.Row="1" Margin="0,46,0,0" Spacing="17">
+          <TextBlock Text="01  Bienvenue" Foreground="#D6E2E0" />
+          <TextBlock Text="02  Machine" Foreground="#D6E2E0" />
+          <TextBlock Text="03  Usage" Foreground="#D6E2E0" />
+          <TextBlock Text="04  Recommandations" Foreground="#D6E2E0" />
+          <TextBlock Text="05  Sélection" Foreground="#D6E2E0" />
+          <TextBlock Text="06  Confirmation" Foreground="#D6E2E0" />
+          <TextBlock Text="07  Installation" Foreground="#D6E2E0" />
+          <TextBlock Text="08  Rapport" Foreground="#D6E2E0" />
+        </StackPanel>
+
+        <StackPanel Grid.Row="2" Spacing="8">
+          <TextBlock Text="LOCAL-FIRST" Foreground="#45CFC1" FontSize="11" FontWeight="Bold" />
+          <TextBlock Text="Tes informations techniques restent locales dans ce prototype." Foreground="#B8C8C6" TextWrapping="Wrap" FontSize="12" />
+        </StackPanel>
+      </Grid>
+    </Border>
+
+    <Grid Grid.Column="1" RowDefinitions="Auto,*,Auto" Margin="44,30,44,30">
+      <Grid ColumnDefinitions="*,Auto">
+        <StackPanel>
+          <TextBlock Text="{Binding StepCounter}" Classes="muted" />
+          <TextBlock Text="{Binding StepTitle}" Classes="h1" Margin="0,7,0,0" TextWrapping="Wrap" />
+        </StackPanel>
+        <Border Grid.Column="1" Background="#E5F4F1" CornerRadius="20" Padding="14,8" VerticalAlignment="Top">
+          <TextBlock Text="{Binding ProfileLabel}" Foreground="#176D64" FontWeight="SemiBold" />
+        </Border>
+      </Grid>
+
+      <ScrollViewer Grid.Row="1" Margin="0,28,0,22" VerticalScrollBarVisibility="Auto">
+        <Grid>
+          <StackPanel IsVisible="{Binding IsWelcome}" Spacing="20" MaxWidth="760" HorizontalAlignment="Left">
+            <TextBlock Text="AgenStart regarde uniquement les capacités nécessaires pour préparer la machine : système, processeur, mémoire, GPU, stockage et logiciels déjà présents." FontSize="18" Foreground="#33474C" TextWrapping="Wrap" />
+            <Border Classes="card">
+              <StackPanel Spacing="10">
+                <TextBlock Text="Ce qu’AgenStart ne fait pas" Classes="h2" />
+                <TextBlock Text="• Aucun fichier personnel n’est parcouru.&#10;• Aucun numéro de série ou identifiant matériel n’est collecté.&#10;• Aucun logiciel n’est installé automatiquement.&#10;• Tu valides la sélection avant toute exécution." Foreground="#526266" TextWrapping="Wrap" />
+              </StackPanel>
+            </Border>
+            <Border Background="#E5F4F1" CornerRadius="12" Padding="18">
+              <TextBlock Text="Local d’abord. Rien n’est installé sans ta confirmation." Foreground="#176D64" FontWeight="SemiBold" />
+            </Border>
+          </StackPanel>
+
+          <StackPanel IsVisible="{Binding IsMachineSummary}" Spacing="12">
+            <Border Classes="card"><StackPanel><TextBlock Text="Système" Classes="muted" /><TextBlock Text="{Binding MachineOs}" Classes="h2" /></StackPanel></Border>
+            <Border Classes="card"><StackPanel><TextBlock Text="Processeur" Classes="muted" /><TextBlock Text="{Binding MachineCpu}" Classes="h2" /></StackPanel></Border>
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+              <Border Classes="card"><StackPanel><TextBlock Text="Mémoire" Classes="muted" /><TextBlock Text="{Binding MachineMemory}" Classes="h2" /></StackPanel></Border>
+              <Border Grid.Column="1" Classes="card"><StackPanel><TextBlock Text="Stockage" Classes="muted" /><TextBlock Text="{Binding MachineStorage}" Classes="h2" /></StackPanel></Border>
+            </Grid>
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+              <Border Classes="card"><StackPanel><TextBlock Text="Graphique" Classes="muted" /><TextBlock Text="{Binding MachineGpu}" Classes="h2" /></StackPanel></Border>
+              <Border Grid.Column="1" Classes="card"><StackPanel><TextBlock Text="Gestionnaire de paquets" Classes="muted" /><TextBlock Text="{Binding PackageManager}" Classes="h2" /></StackPanel></Border>
+            </Grid>
+          </StackPanel>
+
+          <StackPanel IsVisible="{Binding IsProfileSelection}" Spacing="18">
+            <TextBlock Text="Choisis le scénario principal. Tu pourras toujours modifier chaque recommandation ensuite." Classes="muted" />
+            <WrapPanel Orientation="Horizontal" ItemWidth="190" ItemHeight="96">
+              <Button Classes="profile" Command="{Binding SelectPersonalCommand}" Margin="0,0,12,12"><StackPanel><TextBlock Text="Personnel" FontWeight="SemiBold" FontSize="17" /><TextBlock Text="Web, média, utilitaires" Classes="muted" /></StackPanel></Button>
+              <Button Classes="profile" Command="{Binding SelectDevelopmentCommand}" Margin="0,0,12,12"><StackPanel><TextBlock Text="Développement" FontWeight="SemiBold" FontSize="17" /><TextBlock Text="Code, Git, outils dev" Classes="muted" /></StackPanel></Button>
+              <Button Classes="profile" Command="{Binding SelectBusinessCommand}" Margin="0,0,12,12"><StackPanel><TextBlock Text="Business" FontWeight="SemiBold" FontSize="17" /><TextBlock Text="Productivité, archives" Classes="muted" /></StackPanel></Button>
+              <Button Classes="profile" Command="{Binding SelectCreationCommand}" Margin="0,0,12,12"><StackPanel><TextBlock Text="Création" FontWeight="SemiBold" FontSize="17" /><TextBlock Text="Vidéo, capture, média" Classes="muted" /></StackPanel></Button>
+              <Button Classes="profile" Command="{Binding SelectTrainingCommand}" Margin="0,0,12,12"><StackPanel><TextBlock Text="Formation" FontWeight="SemiBold" FontSize="17" /><TextBlock Text="Cours, code, capture" Classes="muted" /></StackPanel></Button>
+            </WrapPanel>
+          </StackPanel>
+
+          <StackPanel IsVisible="{Binding IsRecommendations}" Spacing="12">
+            <TextBlock Text="Les états incompatibles et déjà installés restent visibles, mais ne peuvent pas être ajoutés par erreur." Classes="muted" />
+            <ItemsControl ItemsSource="{Binding Recommendations}">
+              <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                  <Border Classes="card" Margin="0,0,0,10">
+                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="16">
+                      <CheckBox IsChecked="{Binding IsSelected}" IsEnabled="{Binding CanSelect}" VerticalAlignment="Center" />
+                      <StackPanel Grid.Column="1" Spacing="5">
+                        <TextBlock Text="{Binding ApplicationName}" FontSize="17" FontWeight="SemiBold" Foreground="#10242B" />
+                        <TextBlock Text="{Binding Reason}" TextWrapping="Wrap" Foreground="#526266" />
+                      </StackPanel>
+                      <StackPanel Grid.Column="2" HorizontalAlignment="Right">
+                        <TextBlock Text="{Binding Level}" Foreground="#176D64" FontWeight="SemiBold" HorizontalAlignment="Right" />
+                        <TextBlock Text="{Binding Status}" Classes="muted" HorizontalAlignment="Right" />
+                      </StackPanel>
+                    </Grid>
+                  </Border>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+          </StackPanel>
+
+          <StackPanel IsVisible="{Binding IsReview}" Spacing="14">
+            <Border Background="#E5F4F1" CornerRadius="12" Padding="16"><TextBlock Text="{Binding SelectionSummary}" Foreground="#176D64" FontWeight="SemiBold" /></Border>
+            <ItemsControl ItemsSource="{Binding Recommendations}">
+              <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                  <Border Classes="card" Margin="0,0,0,9">
+                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="14">
+                      <CheckBox IsChecked="{Binding IsSelected}" IsEnabled="{Binding CanSelect}" />
+                      <TextBlock Grid.Column="1" Text="{Binding ApplicationName}" FontWeight="SemiBold" />
+                      <TextBlock Grid.Column="2" Text="{Binding Status}" Classes="muted" />
+                    </Grid>
+                  </Border>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+          </StackPanel>
+
+          <StackPanel IsVisible="{Binding IsConfirmation}" Spacing="18" MaxWidth="760" HorizontalAlignment="Left">
+            <Border Classes="card">
+              <StackPanel Spacing="12">
+                <TextBlock Text="Autorisation explicite requise" Classes="h2" />
+                <TextBlock Text="{Binding SelectionSummary}" Foreground="#526266" />
+                <TextBlock Text="AgenStart exécutera les éléments sélectionnés séquentiellement. Chaque installation sera vérifiée avant de passer à la suivante. Tu peux annuler pendant l’exécution." Foreground="#526266" TextWrapping="Wrap" />
+              </StackPanel>
+            </Border>
+            <Button Content="Confirmer et démarrer l’installation" Classes="primary" Command="{Binding InstallCommand}" HorizontalAlignment="Left" />
+          </StackPanel>
+
+          <StackPanel IsVisible="{Binding IsInstallation}" Spacing="18">
+            <Border Classes="card">
+              <StackPanel Spacing="12">
+                <TextBlock Text="File d’installation active" Classes="h2" />
+                <ProgressBar IsIndeterminate="True" Height="7" />
+                <TextBlock Text="{Binding StatusMessage}" Foreground="#526266" TextWrapping="Wrap" />
+              </StackPanel>
+            </Border>
+            <Button Content="Annuler la file" Classes="secondary" Command="{Binding CancelInstallationCommand}" HorizontalAlignment="Left" />
+          </StackPanel>
+
+          <StackPanel IsVisible="{Binding IsReport}" Spacing="14">
+            <Grid ColumnDefinitions="*,*,*,*" ColumnSpacing="10">
+              <Border Classes="card"><StackPanel><TextBlock Text="Réussies" Classes="muted" /><TextBlock Text="{Binding SucceededCount}" FontSize="28" FontWeight="Bold" Foreground="#176D64" /></StackPanel></Border>
+              <Border Grid.Column="1" Classes="card"><StackPanel><TextBlock Text="Échecs" Classes="muted" /><TextBlock Text="{Binding FailedCount}" FontSize="28" FontWeight="Bold" Foreground="#10242B" /></StackPanel></Border>
+              <Border Grid.Column="2" Classes="card"><StackPanel><TextBlock Text="Ignorées" Classes="muted" /><TextBlock Text="{Binding SkippedCount}" FontSize="28" FontWeight="Bold" Foreground="#10242B" /></StackPanel></Border>
+              <Border Grid.Column="3" Classes="card"><StackPanel><TextBlock Text="Annulées" Classes="muted" /><TextBlock Text="{Binding CancelledCount}" FontSize="28" FontWeight="Bold" Foreground="#10242B" /></StackPanel></Border>
+            </Grid>
+            <ItemsControl ItemsSource="{Binding ReportItems}">
+              <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                  <Border Classes="card" Margin="0,0,0,9">
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="18">
+                      <StackPanel>
+                        <TextBlock Text="{Binding ApplicationId}" FontWeight="SemiBold" FontSize="16" />
+                        <TextBlock Text="{Binding Status}" Foreground="#176D64" FontWeight="SemiBold" />
+                        <TextBlock Text="{Binding Message}" Classes="muted" TextWrapping="Wrap" />
+                      </StackPanel>
+                      <Button Grid.Column="1" Content="Réessayer" Classes="secondary" Command="{Binding RetryCommand}" IsVisible="{Binding CanRetry}" VerticalAlignment="Center" />
+                    </Grid>
+                  </Border>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+          </StackPanel>
+        </Grid>
+      </ScrollViewer>
+
+      <Grid Grid.Row="2" ColumnDefinitions="*,Auto" VerticalAlignment="Bottom">
+        <TextBlock Text="{Binding StatusMessage}" Foreground="#526266" VerticalAlignment="Center" TextWrapping="Wrap" Margin="0,0,20,0" />
+        <Button Grid.Column="1" Content="{Binding NextButtonText}" Classes="primary" Command="{Binding NextCommand}" IsVisible="{Binding ShowNextButton}" />
+      </Grid>
+    </Grid>
+  </Grid>
+</Window>
