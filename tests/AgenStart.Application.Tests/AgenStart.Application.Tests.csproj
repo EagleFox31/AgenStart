@@ -19,5 +19,6 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\AgenStart.Application\AgenStart.Application.csproj" />
     <ProjectReference Include="..\..\src\AgenStart.PackageManagement\AgenStart.PackageManagement.csproj" />
+    <ProjectReference Include="..\..\src\AgenStart.SoftwareInventory\AgenStart.SoftwareInventory.csproj" />
   </ItemGroup>
 </Project>
