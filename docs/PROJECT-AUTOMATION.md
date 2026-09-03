@@ -1,12 +1,33 @@
 # GitHub Project automation
 
-AgenStart automates repetitive GitHub Projects v2 metadata updates through GitHub Actions and the GraphQL API.
+AgenStart automates repetitive GitHub Projects v2 metadata updates through the reusable **AppFactory Project Automation** GitHub Action.
+
+The reusable engine lives in:
+
+```text
+EagleFox31/appfactory-project-automation
+```
+
+AgenStart keeps only its product-specific policy/configuration and the workflow triggers.
+
+## Local files
+
+```text
+.github/project-config.json
+.github/workflows/project-automation.yml
+```
+
+The workflow consumes:
+
+```yaml
+uses: EagleFox31/appfactory-project-automation@v1
+```
+
+The reusable action owns GraphQL Project discovery, item synchronization, field resolution, lifecycle transitions and manual Issue resync parsing.
 
 ## Purpose
 
-The automation reduces manual Project maintenance while keeping the workflow visible and version-controlled.
-
-It can:
+The automation can:
 
 - discover the Project by owner + title;
 - add Issues to the Project;
@@ -19,9 +40,7 @@ It can:
 - move linked Issues to `In Progress`, `Review` or `Done` based on Pull Request lifecycle;
 - manually resync one Issue with `workflow_dispatch`.
 
-No Project node ID, field ID or option ID is committed to the repository.
-
----
+No Project node ID, field ID or option ID is committed to AgenStart.
 
 ## Required repository secret
 
@@ -31,11 +50,7 @@ Repository secret:
 PROJECT_TOKEN
 ```
 
-The token is expected to be a Personal Access Token that can read/write the user-owned GitHub Project.
-
-The secret must never be committed to the repository, printed in logs or placed in issue metadata.
-
----
+The token must be able to read/write the user-owned GitHub Project. It must never be committed, printed in logs or placed in issue metadata.
 
 ## Project contract
 
@@ -61,15 +76,11 @@ Phase
 Size
 ```
 
-The automation resolves the actual GraphQL IDs at runtime from these human-readable names.
+The reusable action resolves actual GraphQL IDs at runtime from these human-readable names.
 
 If an optional field or option is absent, that field is skipped with a warning rather than guessed.
 
----
-
 ## Status transitions
-
-Current lifecycle mapping:
 
 ```text
 Issue opened/reopened     → Backlog
@@ -81,8 +92,6 @@ Issue closed              → Done
 ```
 
 Closing an unmerged Pull Request does not automatically move the Issue backwards because the correct state cannot be inferred safely.
-
----
 
 ## Linking a Pull Request to an Issue
 
@@ -100,9 +109,7 @@ or:
 Fixes #11
 ```
 
-The automation queries `closingIssuesReferences`; it does not scrape arbitrary `#123` text from descriptions.
-
----
+The action queries `closingIssuesReferences`; it does not scrape arbitrary `#123` text from descriptions.
 
 ## Issue metadata
 
@@ -138,36 +145,13 @@ Versioned issue override
 Embedded issue metadata
 ```
 
-`Status` is deliberately not accepted from issue metadata. It is owned by workflow state transitions.
-
----
-
-## Title-prefix inference
-
-Examples:
-
-```text
-[Engineering] → Engineering
-[Feature]     → Feature
-[UX]          → UX
-[Security]    → Security
-[Product]     → Product
-[Bug]         → Bug
-```
-
-`[Foundation]` currently maps to `Engineering` for the `Work type` field; `Foundation` itself is a Phase, not a work type.
-
----
+`Status` is deliberately not accepted from issue metadata. It is owned by lifecycle state.
 
 ## Existing backlog overrides
 
 The initial AgenStart issues predate embedded metadata, so `.github/project-config.json` contains explicit mappings for their Priority, Work type, Phase and Size.
 
-These mappings are migration/bootstrap data rather than a long-term requirement.
-
-New issues should prefer the embedded metadata block.
-
----
+These mappings are migration/bootstrap data rather than a long-term requirement. New issues should prefer the embedded metadata block.
 
 ## Manual resync
 
@@ -180,39 +164,34 @@ Actions
 → Issue number
 ```
 
-The manual sync:
+Accepted inputs include:
 
-- adds the Issue if missing;
-- reapplies Priority / Work type / Phase / Size;
-- preserves the current Status when the Issue is already in the Project;
-- assigns `Backlog` or `Done` only when the manual sync has to add a missing Issue.
+```text
+15
+#15
+issue_number = 15
+```
 
-This makes manual resync safe for Issues already in `In Progress` or `Review`.
-
----
+Manual resync is convergent: it adds the Issue if missing, reapplies configured metadata and aligns `Status` with the Issue state (`Backlog` when open, `Done` when closed).
 
 ## Security model
 
-Pull Request lifecycle events use `pull_request_target`, not `pull_request`.
-
-This is intentional because `PROJECT_TOKEN` is a privileged secret.
+Pull Request lifecycle events use `pull_request_target`, not `pull_request`, because `PROJECT_TOKEN` is privileged.
 
 The workflow:
 
-1. executes using the trusted workflow from the default branch;
+1. executes from the trusted workflow on the default branch;
 2. checks out the trusted default branch explicitly;
-3. never checks out PR head code;
-4. runs only the automation script from the trusted default branch;
+3. never checks out PR head code while `PROJECT_TOKEN` is available;
+4. calls the centrally maintained AppFactory Action;
 5. gives the built-in `GITHUB_TOKEN` read-only repository permissions;
-6. uses `PROJECT_TOKEN` only for the Projects GraphQL calls.
+6. passes `PROJECT_TOKEN` only to the Project synchronization Action.
 
-Do **not** change the PR job to checkout contributor code while `PROJECT_TOKEN` is available.
-
----
+Do **not** modify the PR job to execute contributor code while `PROJECT_TOKEN` is available.
 
 ## Failure philosophy
 
-The automation does not guess missing Project configuration.
+The automation fails closed rather than guessing Project configuration.
 
 Examples:
 
@@ -222,20 +201,8 @@ Examples:
 - PR has no closing Issue reference → no status mutation;
 - unmerged PR closes → no backwards status guess.
 
-The Project is workflow assistance, not the source of truth for application behavior.
+The GitHub Project is workflow assistance, not the source of truth for application behavior.
 
----
+## AppFactory reuse
 
-## Future AppFactory reuse
-
-The architecture intentionally separates:
-
-```text
-project-config.json
-        +
-project-automation.mjs
-        +
-project-automation.yml
-```
-
-so the same pattern can later be extracted into an AgenStudio AppFactory repository/action and reused by other products.
+AgenStart is the first consumer of the reusable AppFactory component. Other product repositories can use the same engine while maintaining their own `.github/project-config.json` and lightweight event workflow.
