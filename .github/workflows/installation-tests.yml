@@ -1,0 +1,44 @@
+name: Installation tests
+
+on:
+  push:
+    paths:
+      - "src/AgenStart.Application/**"
+      - "src/AgenStart.PackageManagement/**"
+      - "src/AgenStart.SoftwareInventory/**"
+      - "tests/AgenStart.Application.Tests/**"
+      - "docs/architecture/installation-orchestrator.md"
+      - ".github/workflows/installation-tests.yml"
+      - "global.json"
+  pull_request:
+    paths:
+      - "src/AgenStart.Application/**"
+      - "src/AgenStart.PackageManagement/**"
+      - "src/AgenStart.SoftwareInventory/**"
+      - "tests/AgenStart.Application.Tests/**"
+      - "docs/architecture/installation-orchestrator.md"
+      - ".github/workflows/installation-tests.yml"
+      - "global.json"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+
+      - name: Restore
+        run: dotnet restore tests/AgenStart.Application.Tests/AgenStart.Application.Tests.csproj
+
+      - name: Test
+        run: dotnet test tests/AgenStart.Application.Tests/AgenStart.Application.Tests.csproj --configuration Release --no-restore --verbosity normal
