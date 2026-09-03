@@ -1,0 +1,34 @@
+name: Recommendation tests
+
+on:
+  pull_request:
+    paths:
+      - "src/AgenStart.Core/**"
+      - "src/AgenStart.Recommendations/**"
+      - "src/AgenStart.SoftwareInventory/**"
+      - "tests/AgenStart.Recommendations.Tests/**"
+      - "docs/architecture/recommendation-engine.md"
+      - ".github/workflows/recommendation-tests.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+
+      - name: Restore
+        run: dotnet restore tests/AgenStart.Recommendations.Tests/AgenStart.Recommendations.Tests.csproj
+
+      - name: Test
+        run: dotnet test tests/AgenStart.Recommendations.Tests/AgenStart.Recommendations.Tests.csproj --configuration Release --no-restore --verbosity normal
