@@ -137,6 +137,37 @@ public sealed class InstallationSession : IDisposable
                 : "Installation session completed.");
     }
 
+    internal void PrepareRetry(string applicationId)
+    {
+        ThrowIfDisposed();
+
+        if (State != InstallationSessionState.Completed)
+        {
+            throw new InvalidOperationException("Retries are only allowed after the installation session has completed.");
+        }
+
+        var item = _items.SingleOrDefault(candidate =>
+            string.Equals(candidate.Selection.ApplicationId, applicationId, StringComparison.OrdinalIgnoreCase));
+
+        if (item is null)
+        {
+            throw new KeyNotFoundException($"Application {applicationId} does not exist in this installation session.");
+        }
+
+        if (item.State != InstallationQueueItemState.Failed || !item.CanRetry)
+        {
+            throw new InvalidOperationException($"Application {applicationId} is not eligible for retry.");
+        }
+
+        item.State = InstallationQueueItemState.Queued;
+        item.DiagnosticCode = null;
+        item.Message = null;
+        item.CanRetry = false;
+        item.RequiresReboot = false;
+        item.CompletedAtUtc = null;
+        Publish(item, "item.retry-queued", $"{applicationId} was queued for retry.");
+    }
+
     internal void MarkQueuedItemsCancelled(string code, string message)
     {
         foreach (var item in _items.Where(static item => item.State == InstallationQueueItemState.Queued))
