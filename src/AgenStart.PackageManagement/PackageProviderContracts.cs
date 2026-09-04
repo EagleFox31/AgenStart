@@ -26,6 +26,39 @@ public sealed record PackageInstallRequest(
     bool AcceptPackageAgreements = false,
     bool AcceptSourceAgreements = false);
 
+public enum PackagePreparationStatus
+{
+    Ready = 0,
+    Unsupported,
+    SourceUnavailable,
+    AgreementRequired,
+    BlockedByPolicy,
+    IntegrityFailure,
+    NetworkFailure,
+    Cancelled,
+    TimedOut,
+    ProviderUnavailable,
+    Failed
+}
+
+public sealed record PackagePreparationProgress(
+    long? BytesDownloaded = null,
+    long? BytesRequired = null,
+    double? Fraction = null,
+    string? Message = null);
+
+public sealed record PackagePreparationResult(
+    PackagePreparationStatus Status,
+    string ApplicationId,
+    ProviderPackageReference Package,
+    string? PreparationId = null,
+    long? BytesDownloaded = null,
+    string? DiagnosticCode = null,
+    string? Message = null)
+{
+    public bool IsReady => Status == PackagePreparationStatus.Ready && !string.IsNullOrWhiteSpace(PreparationId);
+}
+
 public enum PackageProviderAvailabilityStatus
 {
     Available = 0,
@@ -113,5 +146,24 @@ public interface IPackageProvider
 
     Task<PackageOperationResult> InstallAsync(
         PackageInstallRequest request,
+        CancellationToken cancellationToken = default);
+}
+
+public interface IPreparablePackageProvider : IPackageProvider
+{
+    bool CanPrepare(ProviderPackageReference package);
+
+    Task<PackagePreparationResult> PrepareAsync(
+        PackageInstallRequest request,
+        IProgress<PackagePreparationProgress>? progress = null,
+        CancellationToken cancellationToken = default);
+
+    Task<PackageOperationResult> InstallPreparedAsync(
+        PackageInstallRequest request,
+        PackagePreparationResult preparation,
+        CancellationToken cancellationToken = default);
+
+    Task ReleasePreparationAsync(
+        PackagePreparationResult preparation,
         CancellationToken cancellationToken = default);
 }
