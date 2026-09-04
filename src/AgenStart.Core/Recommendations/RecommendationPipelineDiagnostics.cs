@@ -4,8 +4,7 @@ public enum RecommendationPipelineStage
 {
     LoadingTrustedCatalogue,
     ReadingInstalledApplications,
-    ApplyingInstalledStateRules,
-    MatchingSelectedProfile,
+    EvaluatingRecommendationRules,
     FinalizingRecommendations
 }
 
@@ -47,7 +46,7 @@ public static class RecommendationPipelineDiagnostics
             }
             catch
             {
-                // UI diagnostics must never be able to break recommendation generation.
+                // Diagnostics must never be able to break recommendation generation.
             }
         }
     }
