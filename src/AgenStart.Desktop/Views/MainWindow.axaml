@@ -1,0 +1,157 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="using:AgenStart.Desktop.ViewModels"
+        x:Class="AgenStart.Desktop.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        mc:Ignorable="d"
+        Title="AgenStart"
+        Width="1600"
+        Height="1000"
+        MinWidth="1100"
+        MinHeight="720">
+  <Grid ColumnDefinitions="280,*">
+    <Border Grid.Column="0" Background="{StaticResource AgenNavBrush}">
+      <Grid RowDefinitions="Auto,*,Auto" Margin="0,30,0,24">
+        <StackPanel Margin="30,0,20,28">
+          <TextBlock Text="AgenStart" Foreground="White" FontSize="29" FontWeight="SemiBold" />
+          <TextBlock Text="BY AGENSTUDIO" Foreground="{StaticResource AgenAccentBrush}" FontSize="11" FontWeight="SemiBold" LetterSpacing="2.4" Margin="0,5,0,0" />
+        </StackPanel>
+
+        <StackPanel Grid.Row="1" Spacing="1">
+          <Grid>
+            <Border x:Name="OverviewStripe" Width="3" Height="42" Background="{StaticResource AgenAccentBrush}" HorizontalAlignment="Left" CornerRadius="0,3,3,0" />
+            <Button x:Name="OverviewButton" Classes="nav active" Click="OverviewButton_OnClick">
+              <StackPanel Orientation="Horizontal" Spacing="14">
+                <TextBlock Text="⌂" FontSize="22" Width="24" TextAlignment="Center" />
+                <TextBlock Text="Overview" VerticalAlignment="Center" />
+              </StackPanel>
+            </Button>
+          </Grid>
+          <Grid>
+            <Border x:Name="YourPcStripe" Width="3" Height="42" Background="{StaticResource AgenAccentBrush}" HorizontalAlignment="Left" CornerRadius="0,3,3,0" IsVisible="False" />
+            <Button x:Name="YourPcButton" Classes="nav" Click="YourPcButton_OnClick">
+              <StackPanel Orientation="Horizontal" Spacing="14">
+                <TextBlock Text="▣" FontSize="18" Width="24" TextAlignment="Center" />
+                <TextBlock Text="Your PC" VerticalAlignment="Center" />
+              </StackPanel>
+            </Button>
+          </Grid>
+          <Button Classes="nav" IsEnabled="False">
+            <StackPanel Orientation="Horizontal" Spacing="14"><TextBlock Text="○" FontSize="21" Width="24" TextAlignment="Center" /><TextBlock Text="Usage profile" VerticalAlignment="Center" /></StackPanel>
+          </Button>
+          <Button Classes="nav" IsEnabled="False">
+            <StackPanel Orientation="Horizontal" Spacing="14"><TextBlock Text="✦" FontSize="20" Width="24" TextAlignment="Center" /><TextBlock Text="Recommendations" VerticalAlignment="Center" /></StackPanel>
+          </Button>
+          <Button Classes="nav" IsEnabled="False">
+            <StackPanel Orientation="Horizontal" Spacing="14"><TextBlock Text="✓" FontSize="20" Width="24" TextAlignment="Center" /><TextBlock Text="Review" VerticalAlignment="Center" /></StackPanel>
+          </Button>
+          <Button Classes="nav" IsEnabled="False">
+            <StackPanel Orientation="Horizontal" Spacing="14"><TextBlock Text="↓" FontSize="21" Width="24" TextAlignment="Center" /><TextBlock Text="Installation" VerticalAlignment="Center" /></StackPanel>
+          </Button>
+          <Button Classes="nav" IsEnabled="False">
+            <StackPanel Orientation="Horizontal" Spacing="14"><TextBlock Text="▤" FontSize="18" Width="24" TextAlignment="Center" /><TextBlock Text="Report" VerticalAlignment="Center" /></StackPanel>
+          </Button>
+        </StackPanel>
+
+        <StackPanel Grid.Row="2" Spacing="1">
+          <Border Height="1" Background="#35505A" Margin="20,0,20,14" />
+          <Button Classes="nav" IsEnabled="False">
+            <StackPanel Orientation="Horizontal" Spacing="14"><TextBlock Text="↶" FontSize="22" Width="24" TextAlignment="Center" /><TextBlock Text="History" VerticalAlignment="Center" /></StackPanel>
+          </Button>
+          <Button Classes="nav" IsEnabled="False">
+            <StackPanel Orientation="Horizontal" Spacing="14"><TextBlock Text="⚙" FontSize="20" Width="24" TextAlignment="Center" /><TextBlock Text="Settings" VerticalAlignment="Center" /></StackPanel>
+          </Button>
+        </StackPanel>
+      </Grid>
+    </Border>
+
+    <Grid Grid.Column="1" Background="{StaticResource AgenSurfaceBrush}">
+      <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+        <Grid Margin="72,62,72,54">
+          <Grid x:Name="OverviewPanel">
+            <Grid ColumnDefinitions="1.05*,0.95*" ColumnSpacing="64" MaxWidth="1180" HorizontalAlignment="Left">
+              <StackPanel Grid.Column="0" VerticalAlignment="Center" Spacing="0">
+                <TextBlock Classes="eyebrow" Text="OVERVIEW" Margin="0,0,0,28" />
+                <TextBlock Classes="pageTitle" Text="Let's prepare this PC." />
+                <TextBlock Classes="subtitle" Text="AgenStart will inspect this machine locally before recommending anything." TextWrapping="Wrap" Margin="0,20,0,0" MaxWidth="570" HorizontalAlignment="Left" />
+                <Border Height="1" Background="{StaticResource AgenDividerBrush}" Margin="0,38,0,38" />
+
+                <TextBlock Text="Start with a local machine analysis" FontSize="20" FontWeight="SemiBold" />
+                <TextBlock Classes="subtitle" Text="We'll detect Windows, CPU, memory, graphics, storage and WinGet without reading your personal files." TextWrapping="Wrap" Margin="0,9,0,26" />
+
+                <StackPanel Orientation="Horizontal" Spacing="14">
+                  <Button x:Name="AnalyzeButton" Classes="primary" Click="AnalyzeButton_OnClick" Content="Analyse this PC" />
+                  <Button Classes="secondary" Content="Import a setup" IsEnabled="False" />
+                </StackPanel>
+
+                <ProgressBar IsIndeterminate="True" IsVisible="{Binding IsBusy}" Height="3" Margin="0,18,80,0" />
+                <StackPanel Orientation="Horizontal" Spacing="10" Margin="0,40,0,0">
+                  <TextBlock Text="▱" Foreground="{StaticResource AgenTealBrush}" FontSize="21" />
+                  <TextBlock Text="Machine analysis stays on this device." Foreground="{StaticResource AgenMutedBrush}" FontSize="14" VerticalAlignment="Center" />
+                </StackPanel>
+              </StackPanel>
+
+              <Grid Grid.Column="1" RowDefinitions="*,Auto,*" VerticalAlignment="Center" MinHeight="500">
+                <Border Grid.Row="0" />
+                <StackPanel Grid.Row="1" HorizontalAlignment="Center" Width="390" Spacing="12">
+                  <Border Width="74" Height="74" CornerRadius="37" BorderThickness="2" BorderBrush="{StaticResource AgenTealBrush}" HorizontalAlignment="Center">
+                    <TextBlock Text="✓" FontSize="35" Foreground="{StaticResource AgenTealBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                  </Border>
+                  <TextBlock Text="{Binding StatusTitle}" FontSize="26" FontWeight="SemiBold" TextAlignment="Center" Margin="0,9,0,0" />
+                  <TextBlock Text="{Binding StatusMessage}" Classes="subtitle" TextAlignment="Center" TextWrapping="Wrap" />
+                  <Border Height="1" Background="{StaticResource AgenDividerBrush}" Margin="0,16,0,12" />
+                  <TextBlock Text="You stay in control of what gets installed." Foreground="{StaticResource AgenMutedBrush}" FontSize="14" TextAlignment="Center" />
+                </StackPanel>
+                <Border Grid.Row="2" />
+              </Grid>
+            </Grid>
+          </Grid>
+
+          <Grid x:Name="YourPcPanel" IsVisible="False" MaxWidth="1120" HorizontalAlignment="Left">
+            <Grid RowDefinitions="Auto,Auto,*">
+              <StackPanel Grid.Row="0">
+                <TextBlock Classes="eyebrow" Text="YOUR PC" Margin="0,0,0,22" />
+                <TextBlock Classes="pageTitle" Text="Your PC" />
+                <TextBlock Classes="subtitle" Text="AgenStart detected the essentials locally." Margin="0,13,0,0" />
+                <Border Height="1" Background="{StaticResource AgenDividerBrush}" Margin="0,30,0,26" />
+              </StackPanel>
+
+              <Grid Grid.Row="1" ColumnDefinitions="1.35*,0.65*" ColumnSpacing="52">
+                <StackPanel Grid.Column="0">
+                  <Border Classes="dataRow"><Grid ColumnDefinitions="42,*,150"><TextBlock Text="▣" FontSize="20" /><TextBlock Grid.Column="1" Text="{Binding OperatingSystem}" FontSize="17" /><TextBlock Grid.Column="2" Text="Detected" Foreground="{StaticResource AgenMutedBrush}" /></Grid></Border>
+                  <Border Classes="dataRow"><Grid ColumnDefinitions="42,*,150"><TextBlock Text="◉" FontSize="20" /><TextBlock Grid.Column="1" Text="{Binding Cpu}" FontSize="17" /><TextBlock Grid.Column="2" Text="Detected" Foreground="{StaticResource AgenMutedBrush}" /></Grid></Border>
+                  <Border Classes="dataRow"><Grid ColumnDefinitions="42,*,150"><TextBlock Text="▥" FontSize="20" /><TextBlock Grid.Column="1" Text="{Binding Memory}" FontSize="17" /><TextBlock Grid.Column="2" Text="Available" Foreground="{StaticResource AgenMutedBrush}" /></Grid></Border>
+                  <Border Classes="dataRow"><Grid ColumnDefinitions="42,*,150"><TextBlock Text="◇" FontSize="20" /><TextBlock Grid.Column="1" Text="{Binding Gpu}" FontSize="17" /><TextBlock Grid.Column="2" Text="Detected" Foreground="{StaticResource AgenMutedBrush}" /></Grid></Border>
+                  <Border Classes="dataRow"><Grid ColumnDefinitions="42,*,150"><TextBlock Text="▰" FontSize="20" /><TextBlock Grid.Column="1" Text="{Binding SystemDrive}" FontSize="17" /><TextBlock Grid.Column="2" Text="Available" Foreground="{StaticResource AgenMutedBrush}" /></Grid></Border>
+                  <Border Classes="dataRow"><Grid ColumnDefinitions="42,*,150"><TextBlock Text="◌" FontSize="20" /><TextBlock Grid.Column="1" Text="{Binding FreeSpace}" FontSize="17" /><TextBlock Grid.Column="2" Text="Available" Foreground="{StaticResource AgenMutedBrush}" /></Grid></Border>
+                  <Border Classes="dataRow"><Grid ColumnDefinitions="42,*,150"><TextBlock Text="64" FontSize="13" FontWeight="Bold" /><TextBlock Grid.Column="1" Text="{Binding Architecture}" FontSize="17" /><TextBlock Grid.Column="2" Text="Supported" Foreground="{StaticResource AgenMutedBrush}" /></Grid></Border>
+                  <Border Classes="dataRow"><Grid ColumnDefinitions="42,*,150"><TextBlock Text="⬡" FontSize="20" /><TextBlock Grid.Column="1" Text="{Binding WinGet}" FontSize="17" /><TextBlock Grid.Column="2" Text="Available" Foreground="{StaticResource AgenMutedBrush}" /></Grid></Border>
+                  <Border Classes="dataRow"><Grid ColumnDefinitions="42,*,150"><TextBlock Text="i" FontSize="18" FontWeight="SemiBold" /><TextBlock Grid.Column="1" Text="{Binding WinGetVersion, StringFormat='WinGet version {0}'}" FontSize="17" /><TextBlock Grid.Column="2" Text="Detected" Foreground="{StaticResource AgenMutedBrush}" /></Grid></Border>
+
+                  <Button x:Name="RefreshButton" Classes="secondary" Content="Refresh analysis" HorizontalAlignment="Left" Margin="0,26,0,0" Click="RefreshButton_OnClick" />
+                </StackPanel>
+
+                <StackPanel Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="310" Spacing="12">
+                  <Border Width="74" Height="74" CornerRadius="37" BorderThickness="2" BorderBrush="{StaticResource AgenTealBrush}" HorizontalAlignment="Center">
+                    <TextBlock Text="✓" FontSize="35" Foreground="{StaticResource AgenTealBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                  </Border>
+                  <TextBlock Text="{Binding StatusTitle}" FontSize="25" FontWeight="SemiBold" TextAlignment="Center" Margin="0,8,0,0" />
+                  <TextBlock Text="{Binding StatusMessage}" Classes="subtitle" TextWrapping="Wrap" TextAlignment="Center" />
+                </StackPanel>
+              </Grid>
+
+              <Border Grid.Row="2" BorderBrush="{StaticResource AgenDividerBrush}" BorderThickness="0,1,0,0" Margin="0,30,0,0" Padding="0,24,0,0">
+                <StackPanel Orientation="Horizontal" Spacing="12">
+                  <TextBlock Text="▱" Foreground="{StaticResource AgenTealBrush}" FontSize="21" />
+                  <TextBlock Text="{Binding AnalysisDiagnostic}" Foreground="{StaticResource AgenMutedBrush}" FontSize="14" VerticalAlignment="Center" />
+                </StackPanel>
+              </Border>
+            </Grid>
+          </Grid>
+        </Grid>
+      </ScrollViewer>
+    </Grid>
+  </Grid>
+</Window>
