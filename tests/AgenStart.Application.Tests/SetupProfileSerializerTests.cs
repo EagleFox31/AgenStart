@@ -67,7 +67,7 @@ public sealed class SetupProfileSerializerTests
           "profileId": "development",
           "applications": [
             { "applicationId": "git" },
-            { "applicationId": "Git" }
+            { "applicationId": "git" }
           ]
         }
         """;
@@ -76,6 +76,27 @@ public sealed class SetupProfileSerializerTests
 
         Assert.False(result.IsValid);
         Assert.Contains(result.Errors, error => error.Code == "profile.application_id.duplicate");
+    }
+
+    [Fact]
+    public void Deserialize_RejectsNonCanonicalUppercaseApplicationId()
+    {
+        const string json = """
+        {
+          "kind": "agenstart.setup",
+          "schemaVersion": 1,
+          "createdAtUtc": "2026-09-04T12:00:00+00:00",
+          "profileId": "development",
+          "applications": [
+            { "applicationId": "Git" }
+          ]
+        }
+        """;
+
+        var result = _serializer.Deserialize(json);
+
+        Assert.False(result.IsValid);
+        Assert.Contains(result.Errors, error => error.Code == "profile.application_id.invalid");
     }
 
     [Fact]
