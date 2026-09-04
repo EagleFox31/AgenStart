@@ -8,6 +8,15 @@
     <Color x:Key="AgenTealColor">#176D64</Color>
     <Color x:Key="AgenAccentColor">#45CFC1</Color>
     <Color x:Key="AgenDividerColor">#D9DEDC</Color>
+    <Color x:Key="AgenSuccessColor">#2F7D5B</Color>
+    <Color x:Key="AgenWarningColor">#9A6700</Color>
+    <Color x:Key="AgenDangerColor">#A84E3E</Color>
+    <Color x:Key="AgenSoftTealColor">#E7F1EE</Color>
+    <Color x:Key="AgenSoftSuccessColor">#E7F3EC</Color>
+    <Color x:Key="AgenSoftWarningColor">#F7EEDB</Color>
+    <Color x:Key="AgenSoftDangerColor">#F8E8E4</Color>
+    <Color x:Key="AgenNavHoverColor">#12313C</Color>
+    <Color x:Key="AgenNavActiveColor">#17414A</Color>
 
     <SolidColorBrush x:Key="AgenNavBrush" Color="{StaticResource AgenNavColor}" />
     <SolidColorBrush x:Key="AgenSurfaceBrush" Color="{StaticResource AgenSurfaceColor}" />
@@ -16,6 +25,15 @@
     <SolidColorBrush x:Key="AgenTealBrush" Color="{StaticResource AgenTealColor}" />
     <SolidColorBrush x:Key="AgenAccentBrush" Color="{StaticResource AgenAccentColor}" />
     <SolidColorBrush x:Key="AgenDividerBrush" Color="{StaticResource AgenDividerColor}" />
+    <SolidColorBrush x:Key="AgenSuccessBrush" Color="{StaticResource AgenSuccessColor}" />
+    <SolidColorBrush x:Key="AgenWarningBrush" Color="{StaticResource AgenWarningColor}" />
+    <SolidColorBrush x:Key="AgenDangerBrush" Color="{StaticResource AgenDangerColor}" />
+    <SolidColorBrush x:Key="AgenSoftTealBrush" Color="{StaticResource AgenSoftTealColor}" />
+    <SolidColorBrush x:Key="AgenSoftSuccessBrush" Color="{StaticResource AgenSoftSuccessColor}" />
+    <SolidColorBrush x:Key="AgenSoftWarningBrush" Color="{StaticResource AgenSoftWarningColor}" />
+    <SolidColorBrush x:Key="AgenSoftDangerBrush" Color="{StaticResource AgenSoftDangerColor}" />
+    <SolidColorBrush x:Key="AgenNavHoverBrush" Color="{StaticResource AgenNavHoverColor}" />
+    <SolidColorBrush x:Key="AgenNavActiveBrush" Color="{StaticResource AgenNavActiveColor}" />
   </Styles.Resources>
 
   <Style Selector="Window">
@@ -36,16 +54,40 @@
     <Setter Property="FontSize" Value="16" />
   </Style>
 
+  <Style Selector="Button.nav:pointerover">
+    <Setter Property="Background" Value="{StaticResource AgenNavHoverBrush}" />
+    <Setter Property="Foreground" Value="#F6FBFC" />
+  </Style>
+
   <Style Selector="Button.nav:pointerover /template/ ContentPresenter">
-    <Setter Property="Background" Value="#15333E" />
+    <Setter Property="Background" Value="{StaticResource AgenNavHoverBrush}" />
+    <Setter Property="Foreground" Value="#F6FBFC" />
+  </Style>
+
+  <Style Selector="Button.nav.active">
+    <Setter Property="Background" Value="{StaticResource AgenNavActiveBrush}" />
+    <Setter Property="Foreground" Value="White" />
   </Style>
 
   <Style Selector="Button.nav.active /template/ ContentPresenter">
-    <Setter Property="Background" Value="#173B45" />
+    <Setter Property="Background" Value="{StaticResource AgenNavActiveBrush}" />
+    <Setter Property="Foreground" Value="White" />
   </Style>
 
   <Style Selector="Button.nav:disabled">
-    <Setter Property="Opacity" Value="0.38" />
+    <Setter Property="Opacity" Value="0.42" />
+    <Setter Property="Foreground" Value="#9AABB1" />
+    <Setter Property="Background" Value="Transparent" />
+  </Style>
+
+  <Style Selector="Button.nav:disabled:pointerover">
+    <Setter Property="Foreground" Value="#9AABB1" />
+    <Setter Property="Background" Value="Transparent" />
+  </Style>
+
+  <Style Selector="Button.nav:disabled:pointerover /template/ ContentPresenter">
+    <Setter Property="Foreground" Value="#9AABB1" />
+    <Setter Property="Background" Value="Transparent" />
   </Style>
 
   <Style Selector="Button.primary">
@@ -62,6 +104,7 @@
 
   <Style Selector="Button.primary:pointerover /template/ ContentPresenter">
     <Setter Property="Background" Value="#145E57" />
+    <Setter Property="Foreground" Value="White" />
   </Style>
 
   <Style Selector="Button.secondary">
@@ -74,6 +117,39 @@
     <Setter Property="BorderThickness" Value="1" />
     <Setter Property="CornerRadius" Value="8" />
     <Setter Property="FontSize" Value="16" />
+  </Style>
+
+  <Style Selector="Button.secondary:pointerover">
+    <Setter Property="Background" Value="#EEF2F0" />
+    <Setter Property="Foreground" Value="{StaticResource AgenTextBrush}" />
+  </Style>
+
+  <Style Selector="Button.secondary:pointerover /template/ ContentPresenter">
+    <Setter Property="Background" Value="#EEF2F0" />
+    <Setter Property="Foreground" Value="{StaticResource AgenTextBrush}" />
+  </Style>
+
+  <Style Selector="RadioButton.profileCard">
+    <Setter Property="Padding" Value="16,12" />
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="Foreground" Value="{StaticResource AgenTextBrush}" />
+    <Setter Property="BorderBrush" Value="{StaticResource AgenDividerBrush}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="8" />
+    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+  </Style>
+
+  <Style Selector="RadioButton.profileCard:pointerover">
+    <Setter Property="Background" Value="#EEF3F1" />
+    <Setter Property="Foreground" Value="{StaticResource AgenTextBrush}" />
+    <Setter Property="BorderBrush" Value="#9EBAB4" />
+  </Style>
+
+  <Style Selector="RadioButton.profileCard:checked">
+    <Setter Property="Background" Value="{StaticResource AgenSoftTealBrush}" />
+    <Setter Property="Foreground" Value="{StaticResource AgenTextBrush}" />
+    <Setter Property="BorderBrush" Value="{StaticResource AgenTealBrush}" />
+    <Setter Property="BorderThickness" Value="1.5" />
   </Style>
 
   <Style Selector="TextBlock.eyebrow">
@@ -99,5 +175,18 @@
     <Setter Property="BorderBrush" Value="{StaticResource AgenDividerBrush}" />
     <Setter Property="BorderThickness" Value="0,0,0,1" />
     <Setter Property="Padding" Value="8,13" />
+    <Setter Property="ClipToBounds" Value="True" />
+  </Style>
+
+  <Style Selector="Border.dataRow TextBlock">
+    <Setter Property="VerticalAlignment" Value="Center" />
+    <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+  </Style>
+
+  <Style Selector="Border.statusBadge">
+    <Setter Property="CornerRadius" Value="14" />
+    <Setter Property="Padding" Value="10,5" />
+    <Setter Property="HorizontalAlignment" Value="Left" />
+    <Setter Property="VerticalAlignment" Value="Center" />
   </Style>
 </Styles>
