@@ -50,6 +50,9 @@ public sealed class InstallationSession : IDisposable
                 selection.Approved
                     ? InstallationQueueItemState.Queued
                     : InstallationQueueItemState.Skipped,
+                selection.Approved
+                    ? InstallationItemActivity.Waiting
+                    : InstallationItemActivity.Skipped,
                 selection.Approved ? null : "selection.not-approved",
                 selection.Approved
                     ? null
@@ -160,6 +163,7 @@ public sealed class InstallationSession : IDisposable
         }
 
         item.State = InstallationQueueItemState.Queued;
+        item.Activity = InstallationItemActivity.Waiting;
         item.DiagnosticCode = null;
         item.Message = null;
         item.CanRetry = false;
@@ -173,6 +177,7 @@ public sealed class InstallationSession : IDisposable
         foreach (var item in _items.Where(static item => item.State == InstallationQueueItemState.Queued))
         {
             item.State = InstallationQueueItemState.Cancelled;
+            item.Activity = InstallationItemActivity.Cancelled;
             item.CanRetry = false;
             item.DiagnosticCode = code;
             item.Message = message;
@@ -181,16 +186,82 @@ public sealed class InstallationSession : IDisposable
         }
     }
 
-    internal void MarkRunning(InstallationQueueItem item)
+    internal void BeginAttempt(InstallationQueueItem item)
     {
-        item.State = InstallationQueueItemState.Running;
         item.AttemptCount++;
         item.StartedAtUtc = _timeProvider.GetUtcNow();
         item.CompletedAtUtc = null;
         item.DiagnosticCode = null;
         item.Message = null;
         item.CanRetry = false;
-        Publish(item, "item.running", $"Installing {item.Selection.ApplicationId}.");
+        item.RequiresReboot = false;
+    }
+
+    internal void MarkResolving(InstallationQueueItem item)
+    {
+        item.Activity = InstallationItemActivity.Resolving;
+        Publish(item, "item.resolving", $"Resolving trusted package for {item.Selection.ApplicationId}.");
+    }
+
+    internal void MarkDownloading(InstallationQueueItem item)
+    {
+        item.Activity = InstallationItemActivity.Downloading;
+        item.BytesDownloaded = 0;
+        item.BytesRequired = null;
+        Publish(item, "item.downloading", $"Downloading {item.Selection.ApplicationId} from its trusted provider.");
+    }
+
+    internal void UpdateDownloadProgress(
+        InstallationQueueItem item,
+        PackagePreparationProgress progress)
+    {
+        item.Activity = InstallationItemActivity.Downloading;
+        if (progress.BytesDownloaded is not null)
+        {
+            item.BytesDownloaded = Math.Max(0, progress.BytesDownloaded.Value);
+        }
+
+        if (progress.BytesRequired is not null)
+        {
+            item.BytesRequired = Math.Max(0, progress.BytesRequired.Value);
+        }
+
+        Publish(
+            item,
+            "item.download-progress",
+            progress.Message ?? $"Downloading {item.Selection.ApplicationId}.");
+    }
+
+    internal void MarkReady(
+        InstallationQueueItem item,
+        long? bytesDownloaded = null,
+        string? message = null)
+    {
+        item.Activity = InstallationItemActivity.Ready;
+        if (bytesDownloaded is not null)
+        {
+            item.BytesDownloaded = Math.Max(0, bytesDownloaded.Value);
+        }
+
+        Publish(
+            item,
+            "item.ready",
+            message ?? $"{item.Selection.ApplicationId} is ready to install.");
+    }
+
+    internal void MarkInstalling(InstallationQueueItem item)
+    {
+        item.State = InstallationQueueItemState.Running;
+        item.Activity = InstallationItemActivity.Installing;
+        Publish(item, "item.installing", $"Installing {item.Selection.ApplicationId}.");
+    }
+
+    internal void MarkRunning(InstallationQueueItem item) => MarkInstalling(item);
+
+    internal void MarkVerifying(InstallationQueueItem item)
+    {
+        item.Activity = InstallationItemActivity.Verifying;
+        Publish(item, "item.verifying", $"Verifying {item.Selection.ApplicationId} after installation.");
     }
 
     internal void MarkSucceeded(
@@ -201,6 +272,7 @@ public sealed class InstallationSession : IDisposable
         string? message = null)
     {
         item.State = InstallationQueueItemState.Succeeded;
+        item.Activity = InstallationItemActivity.Completed;
         item.LastOperationStatus = operationStatus;
         item.InstalledVersion = installedVersion;
         item.CanRetry = false;
@@ -221,6 +293,7 @@ public sealed class InstallationSession : IDisposable
         PackageOperationStatus? operationStatus = null)
     {
         item.State = InstallationQueueItemState.Failed;
+        item.Activity = InstallationItemActivity.Failed;
         item.LastOperationStatus = operationStatus;
         item.DiagnosticCode = code;
         item.Message = message;
@@ -236,6 +309,7 @@ public sealed class InstallationSession : IDisposable
         PackageOperationStatus? operationStatus = null)
     {
         item.State = InstallationQueueItemState.Cancelled;
+        item.Activity = InstallationItemActivity.Cancelled;
         item.LastOperationStatus = operationStatus;
         item.DiagnosticCode = code;
         item.Message = message;
@@ -278,12 +352,14 @@ public sealed class InstallationSession : IDisposable
         int sequence,
         InstallationSelection selection,
         InstallationQueueItemState state,
+        InstallationItemActivity activity,
         string? diagnosticCode,
         string? message)
     {
         public int Sequence { get; } = sequence;
         public InstallationSelection Selection { get; } = selection;
         public InstallationQueueItemState State { get; set; } = state;
+        public InstallationItemActivity Activity { get; set; } = activity;
         public int AttemptCount { get; set; }
         public PackageOperationStatus? LastOperationStatus { get; set; }
         public string? DiagnosticCode { get; set; } = diagnosticCode;
@@ -291,6 +367,8 @@ public sealed class InstallationSession : IDisposable
         public string? InstalledVersion { get; set; }
         public bool CanRetry { get; set; }
         public bool RequiresReboot { get; set; }
+        public long? BytesDownloaded { get; set; }
+        public long? BytesRequired { get; set; }
         public DateTimeOffset? StartedAtUtc { get; set; }
         public DateTimeOffset? CompletedAtUtc { get; set; }
 
@@ -300,6 +378,7 @@ public sealed class InstallationSession : IDisposable
                 Selection.ApplicationId,
                 Selection.Package,
                 State,
+                Activity,
                 AttemptCount,
                 LastOperationStatus,
                 DiagnosticCode,
@@ -307,6 +386,8 @@ public sealed class InstallationSession : IDisposable
                 InstalledVersion,
                 CanRetry,
                 RequiresReboot,
+                BytesDownloaded,
+                BytesRequired,
                 StartedAtUtc,
                 CompletedAtUtc);
     }
