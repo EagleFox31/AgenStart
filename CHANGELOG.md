@@ -1,5 +1,41 @@
 # Changelog
 
+## [0.2.0](https://github.com/EagleFox31/AgenStart/compare/v0.1.0...v0.2.0) (2026-09-04)
+
+
+### Features
+
+* activate AgenStart branding with UI polish ([d7e6e31](https://github.com/EagleFox31/AgenStart/commit/d7e6e31c2b3a94352c7f716057770e151a9cb54f))
+* add approved AgenStart branding assets ([6362bdf](https://github.com/EagleFox31/AgenStart/commit/6362bdf4305fbffc5825e05c50368d2e2dc21e50))
+* add parallel package preparation pipeline ([73021ff](https://github.com/EagleFox31/AgenStart/commit/73021ff3b6d140c0047c25e7fc0f5ba399899b56))
+* add semantic recommendation status presentation ([6e0dfe2](https://github.com/EagleFox31/AgenStart/commit/6e0dfe2a2d62e15a93f3830c10e61a7c5bc47a91))
+* add trusted package preparation contracts ([370db33](https://github.com/EagleFox31/AgenStart/commit/370db33a94fba78c8e2e91b97e39f25d1cb60e04))
+* apply approved AgenStart brand lockup in desktop shell ([e622c2c](https://github.com/EagleFox31/AgenStart/commit/e622c2ca63308cb685f2ab64a0c9ec5d89985db8))
+* bind recommendation loading UI to real pipeline milestones ([ef8a17b](https://github.com/EagleFox31/AgenStart/commit/ef8a17bf1f23e018816314b58fbdd578f0dd9a94))
+* build exact winget download commands ([35ef8f5](https://github.com/EagleFox31/AgenStart/commit/35ef8f5764cc794642cefda2efb2136dba64dcb9))
+* explain recommendation loading work ([4fa8afc](https://github.com/EagleFox31/AgenStart/commit/4fa8afc015d15f629960cfb6d1a358eddeb388ed))
+* expose package preparation activity ([2a462d0](https://github.com/EagleFox31/AgenStart/commit/2a462d04ec2e2ae4f1253f3e8e97b89c8947894a))
+* expose real recommendation pipeline milestones ([181b9e1](https://github.com/EagleFox31/AgenStart/commit/181b9e1ed34772bf7f1c5818a7176a98845f282d))
+* inspect hash-verified winget prepared installers ([a451c97](https://github.com/EagleFox31/AgenStart/commit/a451c9773c6f5eaad9db427a2438dfcfd9cad411))
+* integrate approved AgenStart branding and Windows app icon ([5bb3c13](https://github.com/EagleFox31/AgenStart/commit/5bb3c132abd40448fabfae43bceea37e1e654c7f))
+* pipeline bounded package preparation ahead of installs ([f01b910](https://github.com/EagleFox31/AgenStart/commit/f01b9109b4699a98c1ad83bcb3b1b15e3685fc5b))
+* polish profile, recommendation, and machine visuals ([8409365](https://github.com/EagleFox31/AgenStart/commit/84093657fa39942716ddd6bc9c5f7c68a63376ec))
+* polish the first-run desktop UX after Windows smoke test ([4a8523e](https://github.com/EagleFox31/AgenStart/commit/4a8523e7da8a372879b59cd229f21c3c6ab1e232))
+* prepare trusted winget packages ahead of sequential installs ([553b9ac](https://github.com/EagleFox31/AgenStart/commit/553b9acc13a029c09acef720dce72483be17b175))
+* render real recommendation progress stages ([3415568](https://github.com/EagleFox31/AgenStart/commit/34155682f1e14dddea772fa12c47875e9b2f2cce))
+* report installed-software recommendation milestones ([42e5538](https://github.com/EagleFox31/AgenStart/commit/42e553817bb885a14b510c70a312d3326e0cc40d))
+* show real recommendation pipeline progress ([9b14a34](https://github.com/EagleFox31/AgenStart/commit/9b14a34ddac0631542cb38808e9d39fd13b2db36))
+* surface package preparation states in installation rows ([664789e](https://github.com/EagleFox31/AgenStart/commit/664789e8992523e424618e7bfbad0cb5408ca7ef))
+* track resolving downloading ready and installing states ([e992a50](https://github.com/EagleFox31/AgenStart/commit/e992a501a4d308cdd92328de353ff6ae6a9f25b7))
+* wire AgenStart Windows application icon ([21d794c](https://github.com/EagleFox31/AgenStart/commit/21d794ccdca2b54fe18ff59352a140dd073e25d7))
+
+
+### Bug Fixes
+
+* import Avalonia visual tree attachment args ([0c3ae2c](https://github.com/EagleFox31/AgenStart/commit/0c3ae2c2902a684f46dd2c98107c9500bab284b0))
+* polish navigation and shared desktop states ([e542abc](https://github.com/EagleFox31/AgenStart/commit/e542abc917729b936a24ca0158c47c495075e57b))
+* subscribe to view model recommendation collection ([05b1ef7](https://github.com/EagleFox31/AgenStart/commit/05b1ef74b91eb797e13b84de43466140ad3044a5))
+
 ## [0.1.0](https://github.com/EagleFox31/AgenStart/compare/v0.1.0...v0.1.0) (2026-09-04)
 
 
