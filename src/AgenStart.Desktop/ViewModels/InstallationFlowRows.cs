@@ -36,11 +36,14 @@ public sealed class ReviewRowViewModel
 public sealed class InstallationRowViewModel : INotifyPropertyChanged
 {
     private InstallationQueueItemState _state;
+    private InstallationItemActivity _activity;
     private string _status = "Waiting";
     private string? _message;
     private bool _canRetry;
     private string? _installedVersion;
     private bool _requiresReboot;
+    private long? _bytesDownloaded;
+    private long? _bytesRequired;
 
     public InstallationRowViewModel(string applicationId, string name, string initials)
     {
@@ -59,6 +62,12 @@ public sealed class InstallationRowViewModel : INotifyPropertyChanged
     {
         get => _state;
         private set => SetField(ref _state, value);
+    }
+
+    public InstallationItemActivity Activity
+    {
+        get => _activity;
+        private set => SetField(ref _activity, value);
     }
 
     public string Status
@@ -91,29 +100,119 @@ public sealed class InstallationRowViewModel : INotifyPropertyChanged
         private set => SetField(ref _requiresReboot, value);
     }
 
+    public long? BytesDownloaded
+    {
+        get => _bytesDownloaded;
+        private set => SetField(ref _bytesDownloaded, value);
+    }
+
+    public long? BytesRequired
+    {
+        get => _bytesRequired;
+        private set => SetField(ref _bytesRequired, value);
+    }
+
     public bool IsRunning => State == InstallationQueueItemState.Running;
+    public bool IsDownloading => Activity == InstallationItemActivity.Downloading;
+    public bool IsReady => Activity == InstallationItemActivity.Ready;
+    public bool IsInstalling => Activity == InstallationItemActivity.Installing;
     public bool HasFailure => State == InstallationQueueItemState.Failed;
+
+    public string DownloadDetail => Activity == InstallationItemActivity.Downloading
+        ? FormatDownloadDetail(BytesDownloaded, BytesRequired)
+        : string.Empty;
 
     public void Apply(InstallationItemSnapshot snapshot)
     {
         State = snapshot.State;
-        Status = snapshot.State switch
-        {
-            InstallationQueueItemState.Queued => "Waiting",
-            InstallationQueueItemState.Running => "Installing",
-            InstallationQueueItemState.Succeeded when snapshot.LastOperationStatus == PackageOperationStatus.AlreadyInstalled => "Already installed",
-            InstallationQueueItemState.Succeeded => snapshot.RequiresReboot ? "Installed · restart required" : "Installed",
-            InstallationQueueItemState.Failed => "Failed",
-            InstallationQueueItemState.Skipped => "Skipped",
-            InstallationQueueItemState.Cancelled => "Cancelled",
-            _ => snapshot.State.ToString()
-        };
+        Activity = snapshot.Activity;
+        BytesDownloaded = snapshot.BytesDownloaded;
+        BytesRequired = snapshot.BytesRequired;
+        Status = ResolveStatus(snapshot);
         Message = snapshot.Message;
         CanRetry = snapshot.CanRetry;
         InstalledVersion = snapshot.InstalledVersion;
         RequiresReboot = snapshot.RequiresReboot;
         OnPropertyChanged(nameof(IsRunning));
+        OnPropertyChanged(nameof(IsDownloading));
+        OnPropertyChanged(nameof(IsReady));
+        OnPropertyChanged(nameof(IsInstalling));
         OnPropertyChanged(nameof(HasFailure));
+        OnPropertyChanged(nameof(DownloadDetail));
+    }
+
+    private static string ResolveStatus(InstallationItemSnapshot snapshot)
+    {
+        if (snapshot.State == InstallationQueueItemState.Succeeded &&
+            snapshot.LastOperationStatus == PackageOperationStatus.AlreadyInstalled)
+        {
+            return "Already installed";
+        }
+
+        if (snapshot.State == InstallationQueueItemState.Succeeded)
+        {
+            return snapshot.RequiresReboot ? "Verified · restart required" : "Verified";
+        }
+
+        if (snapshot.State == InstallationQueueItemState.Failed)
+        {
+            return "Failed";
+        }
+
+        if (snapshot.State == InstallationQueueItemState.Skipped)
+        {
+            return "Skipped";
+        }
+
+        if (snapshot.State == InstallationQueueItemState.Cancelled)
+        {
+            return "Cancelled";
+        }
+
+        return snapshot.Activity switch
+        {
+            InstallationItemActivity.Resolving => "Resolving",
+            InstallationItemActivity.Downloading => "Downloading",
+            InstallationItemActivity.Ready => "Ready",
+            InstallationItemActivity.Installing => "Installing",
+            InstallationItemActivity.Verifying => "Verifying",
+            _ => "Waiting"
+        };
+    }
+
+    private static string FormatDownloadDetail(long? downloaded, long? required)
+    {
+        if (downloaded is null)
+        {
+            return "Downloading through trusted provider";
+        }
+
+        if (required is > 0)
+        {
+            return $"{FormatBytes(downloaded.Value)} / {FormatBytes(required.Value)}";
+        }
+
+        return $"{FormatBytes(downloaded.Value)} downloaded";
+    }
+
+    private static string FormatBytes(long bytes)
+    {
+        if (bytes >= 1024L * 1024 * 1024)
+        {
+            return $"{bytes / (1024d * 1024 * 1024):0.0} GB";
+        }
+
+        if (bytes >= 1024L * 1024)
+        {
+            return $"{bytes / (1024d * 1024):0.0} MB";
+        }
+
+        if (bytes >= 1024)
+        {
+            return $"{bytes / 1024d:0.0} KB";
+        }
+
+        return $"{bytes} B";
     }
 
     private bool SetField<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)
