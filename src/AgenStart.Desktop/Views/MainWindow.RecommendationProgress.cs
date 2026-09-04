@@ -32,7 +32,7 @@ public sealed partial class MainWindow
             Dispatcher.UIThread.Post(() => OnRecommendationPipelineStageChanged(stage)));
 
         _viewModel.PropertyChanged += RecommendationProgressViewModel_OnPropertyChanged;
-        Recommendations.CollectionChanged += (_, args) =>
+        _viewModel.Recommendations.CollectionChanged += (_, args) =>
         {
             if (_viewModel.IsBusy && UsageProfilePanel.IsVisible && args.NewItems is { Count: > 0 })
             {
