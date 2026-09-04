@@ -30,7 +30,7 @@ public sealed class WindowsInstalledSoftwareInventoryProvider : IInstalledSoftwa
     {
         RecommendationPipelineDiagnostics.Report(RecommendationPipelineStage.ReadingInstalledApplications);
         var snapshot = await _inner.CaptureAsync(cancellationToken).ConfigureAwait(false);
-        RecommendationPipelineDiagnostics.Report(RecommendationPipelineStage.ApplyingInstalledStateRules);
+        RecommendationPipelineDiagnostics.Report(RecommendationPipelineStage.EvaluatingRecommendationRules);
         return snapshot;
     }
 }
