@@ -1,10 +1,10 @@
-# Installation queue and execution orchestrator
+# Installation queue, package preparation and execution orchestrator
 
 ## Purpose
 
-Issue #7 introduces the application-layer execution boundary that turns a user-approved software selection into a controlled installation session.
+The application-layer installation boundary turns a user-approved software selection into a controlled installation session.
 
-The orchestrator does not execute shell commands and does not know WinGet arguments. It consumes only the typed `IPackageProvider` contract introduced by #4 and the normalized installed-software state introduced by #5.
+The orchestrator does not construct shell commands and does not know WinGet command-line arguments. It consumes typed package-provider contracts and normalized installed-software state.
 
 ```text
 User-approved selection
@@ -14,22 +14,22 @@ InstallationOrchestrator
         |
         +--> IInstallationVerifier --> normalized software inventory
         |
-        `--> IPackageProvider -------> WinGetProvider (Windows V1)
+        `--> IPackageProvider
+                |
+                +--> Resolve exact trusted package
+                +--> optional bounded preparation
+                `--> sequential installer execution
 ```
-
-The UI remains outside this boundary. It observes session state and progress events and may request cancellation or an explicit retry.
 
 ## Approval boundary
 
-Only selections with `Approved = true` enter the executable queue.
+Only selections with `Approved = true` enter the executable queue. Non-approved selections remain in the final report as `Skipped`.
 
-Non-approved selections are retained in the session report as `Skipped` with diagnostic code `selection.not-approved`. This makes the final report complete while preserving the security/product rule that AgenStart never installs a recommendation merely because it was suggested.
+AgenStart never installs a recommendation merely because it was suggested.
 
-## Queue model
+## Two-layer state model
 
-V1 executes sequentially.
-
-Item states:
+Terminal queue state remains intentionally small:
 
 ```text
 Queued
@@ -40,44 +40,108 @@ Skipped
 Cancelled
 ```
 
-Session states:
+A separate activity state explains what an item is doing while it is still in the queue:
 
 ```text
+Waiting
+Resolving
+Downloading
 Ready
-Running
-Cancelling
+Installing
+Verifying
 Completed
+Failed
+Skipped
 Cancelled
 ```
 
-The session object is the in-memory source of truth for the active run. It preserves sequence, attempt count, provider result, verification result, retry eligibility, reboot requirement and timestamps.
+This separation lets the UI expose `Downloading`, `Ready` and `Installing` without weakening the deterministic queue/report model.
 
-Durable recovery across application restarts is deferred. "Persisted for the active session" in V1 means state is retained consistently in the active `InstallationSession`, not written to a long-lived machine database.
+## Bounded preparation pipeline
+
+AgenStart v0.2 can prepare trusted packages ahead of installation when a provider implements `IPreparablePackageProvider`.
+
+The default preparation concurrency is **3** and is constrained to **1–3**. Installer execution concurrency remains **exactly 1**.
+
+```text
+approved items
+     |
+     v
+pre-verification
+     |
+     v
+exact resolve
+     |
+     +---- preparation worker 1 ---- Downloading -> Ready
+     +---- preparation worker 2 ---- Downloading -> Ready
+     `---- preparation worker 3 ---- Downloading -> Ready
+                                      |
+                                      v
+                           deterministic sequence
+                                      |
+                                      v
+                             Installing (one only)
+                                      |
+                                      v
+                                  Verifying
+```
+
+Preparation failures are item-local. A failed download does not corrupt or reorder other queue items.
+
+Providers that cannot safely prepare a package return `Unsupported`; the item remains eligible for the provider's normal trusted sequential installation path.
+
+## Windows / WinGet preparation
+
+For the public `winget` source, `WinGetProvider` may use `winget download` with:
+
+- exact package ID;
+- exact configured trusted source;
+- AgenStart-owned absolute download directory;
+- explicit package/source agreement flags only when the user approved them;
+- no force, override or hash-bypass flags.
+
+The Microsoft Store source is deliberately excluded from direct preparation in this version because its account/licensing flow remains owned by WinGet.
+
+After WinGet downloads a package, AgenStart:
+
+1. reads the WinGet-emitted merged manifest;
+2. matches the expected exact package identifier;
+3. requires the manifest installer SHA-256;
+4. independently re-hashes the downloaded installer;
+5. allows prepared execution only for a conservative set of installer types (`exe`, Inno, Nullsoft, Burn, MSI/Wix);
+6. falls back to normal WinGet installation when dependencies or safe silent invocation cannot be preserved;
+7. re-checks the installer SHA-256 immediately before execution.
+
+The public preparation result contains an opaque preparation ID, not an arbitrary executable path supplied by UI/user input.
+
+## Sequential installation guarantee
+
+Even while later packages are downloading, the orchestrator consumes ready items only in the original approved sequence.
+
+At most one call to `InstallAsync` or `InstallPreparedAsync` is active at a time. This avoids MSI/UAC/PATH/reboot-sensitive installer contention.
 
 ## Execution sequence
 
-For each approved queued item the orchestrator performs:
+For each approved item:
 
-1. mark item `Running` and increment attempt count;
-2. refresh installed-state verification before provider execution;
-3. if already installed, mark `Succeeded` with `AlreadyInstalled` and skip provider execution;
-4. locate the registered provider by exact provider ID;
-5. check provider availability;
-6. resolve the exact trusted package reference;
-7. call `IPackageProvider.InstallAsync` with the typed user-approved request;
-8. normalize cancellation/failure results;
-9. refresh installed-state verification after a verifiable provider completion;
-10. derive the final queue item state and publish progress.
+1. increment attempt count;
+2. refresh installed-state verification;
+3. skip provider execution if already installed;
+4. check the registered exact provider;
+5. resolve the exact trusted package reference;
+6. optionally prepare/download it using the bounded preparation pool;
+7. mark it `Ready`;
+8. execute it only when every earlier executable queue position has been consumed;
+9. mark `Verifying` and refresh installed state;
+10. derive the terminal queue state and publish progress.
 
-No fuzzy package lookup, source fallback, arbitrary command or shell execution is introduced by the orchestrator.
+No fuzzy package lookup, automatic source fallback or arbitrary provider argument injection is introduced by the orchestrator.
 
 ## Post-install verification
 
-Provider exit status alone is not enough to claim installation success.
+Provider exit status alone is not enough to claim success.
 
 `SoftwareInventoryInstallationVerifier` refreshes `IInstalledSoftwareInventoryProvider` and resolves the application through `SoftwareStateResolver`.
-
-Mapping:
 
 ```text
 Installed -> Verified
@@ -85,102 +149,77 @@ Missing   -> NotInstalled
 Unknown   -> Unknown
 ```
 
-A provider result of `Succeeded`, `AlreadyInstalled` or `RebootRequired` becomes final `Succeeded` only when installed state is verified.
-
-If the provider completed but inventory proves the application is still missing, the item becomes `Failed` and may be retried.
-
-If inventory is incomplete/ambiguous after a provider completion, the item becomes `Failed` with retry disabled. AgenStart deliberately avoids repeating an installation that may already have succeeded.
+A provider result becomes final `Succeeded` only after installed state is verified.
 
 ## Retry policy
 
-The provider layer performs no implicit retry. Retry policy belongs here.
+There is no implicit retry.
 
-Initial retryable provider states are limited to conditions that may reasonably change without changing package identity:
+Transient preparation/provider failures such as network failure, source unavailability, timeout or provider unavailability can be marked retryable. Retry remains explicit.
 
-```text
-NetworkFailure
-SourceUnavailable
-TimedOut
-ProviderUnavailable
-Failed
-```
+A prepared package may be retained for an explicit retry when the installer failed after preparation. Before any retry, installed-state verification runs again to prevent duplicate side effects.
 
-Retryable resolution states follow the same conservative principle.
-
-`RequiresElevation`, agreement failures, policy blocks, integrity failures, ambiguous packages and unsupported installers are not automatically retryable.
-
-A retry is always explicit. Before invoking the provider again, the orchestrator re-runs installed-state verification. If the package is now detected, the retry finishes as `Succeeded / AlreadyInstalled` without a second provider installation call.
-
-This protects against duplicate side effects when the previous installer completed but its original operation result or immediate verification was inconclusive.
+Integrity failures, policy blocks, ambiguous packages and agreement/elevation requirements are never silently bypassed.
 
 ## Cancellation semantics
 
-Cancellation is cooperative at the application layer and is propagated to provider operations through a linked `CancellationToken`.
+Cancellation is propagated through the linked session token to active preparation and provider operations.
 
 When cancellation is requested:
 
-- the active provider receives cancellation;
-- the current item becomes `Cancelled` when provider execution/resolution reports cancellation or throws due to the linked token;
-- all not-yet-started `Queued` items become `Cancelled`;
-- already `Succeeded`, `Failed` or `Skipped` items remain unchanged;
+- active downloads/preparation receive cancellation;
+- active installer execution receives cancellation;
+- not-yet-consumed queued items become `Cancelled`;
+- completed terminal items remain unchanged;
 - the session ends as `Cancelled`.
 
-A cancelled session cannot be resumed or retried in V1. The user creates a new session from a fresh approved selection instead.
+Prepared files that have already completed can be retained only while the active orchestrator needs them safely; successful verified installations release their preparation cache best-effort.
 
-## Progress and observability
+## Progress and UI contract
 
-`InstallationSession.ProgressChanged` publishes structured `InstallationProgressEvent` values containing:
+`InstallationSession.ProgressChanged` emits structured snapshots with activity, downloaded/required bytes when known, terminal state, retry eligibility and timestamps.
 
-- session ID and state;
-- item snapshot when applicable;
-- stable diagnostic/event code;
-- human-readable message;
-- UTC timestamp.
+The desktop UI can therefore distinguish:
 
-These events are suitable for the future Avalonia UI and for privacy-minimal local diagnostics. They are not telemetry by themselves.
+```text
+Resolving
+Downloading
+Ready
+Installing
+Verifying
+Verified / Failed / Cancelled
+```
 
-## Final report
-
-`InstallationReport` includes every original selection, including skipped items, with:
-
-- deterministic sequence;
-- application/package identity;
-- final state;
-- attempt count;
-- last normalized provider status;
-- diagnostic code/message;
-- installed version when verified;
-- retry eligibility;
-- reboot requirement;
-- start/completion timestamps.
-
-Summary counters expose succeeded, failed, skipped and cancelled totals.
+No fake percentage is required when a provider cannot expose trustworthy byte totals.
 
 ## Security properties
 
-The orchestrator preserves ADR-0002 and the #4 provider boundary:
+The pipeline preserves the existing trust boundary:
 
+- approved applications only;
+- exact typed provider/package/source identity;
+- trusted WinGet sources only;
+- no arbitrary installer URLs;
 - no `cmd.exe` or PowerShell command construction;
-- no arbitrary provider arguments;
-- no fuzzy execution-time package selection;
-- no automatic source fallback;
+- no `--override`, `--force` or security-hash bypass;
+- independent SHA-256 verification of prepared installers;
+- SHA-256 checked again immediately before prepared execution;
+- unsupported or unsafe preparation falls back to the normal WinGet path;
+- installer execution remains sequential;
 - no automatic elevation broker;
-- no implicit retry;
-- no installation of unapproved recommendations;
 - no success claim without post-install verification.
 
 ## Verification gate
 
-`Installation tests` runs on every relevant `push` and `pull_request`, plus manual dispatch.
+Installation and Windows provider tests cover:
 
-The test suite covers:
-
-- approved-only queue execution;
-- deterministic sequential order;
-- skipped non-approved items;
-- normalized retryable provider failure;
-- retry without duplicate installation;
-- session cancellation and cancellation of remaining queued items;
-- post-install unknown state not being claimed as success;
-- reboot-required success after verification;
-- real `SoftwareInventoryInstallationVerifier` mapping for installed and incomplete inventory states.
+- approved-only execution;
+- bounded concurrent preparation with at least two overlapping preparations;
+- sequential deterministic installation despite concurrent downloads;
+- isolated preparation failure;
+- cancellation before installer execution;
+- exact WinGet download command construction;
+- no security-bypass arguments;
+- prepared installer SHA-256 verification and tamper rejection;
+- Store preparation fallback;
+- existing retry, cancellation and post-install verification behavior.
