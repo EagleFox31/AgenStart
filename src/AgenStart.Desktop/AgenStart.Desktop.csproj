@@ -16,8 +16,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\AgenStart.Application\AgenStart.Application.csproj" />
     <ProjectReference Include="..\AgenStart.Catalogue\AgenStart.Catalogue.csproj" />
     <ProjectReference Include="..\AgenStart.Core\AgenStart.Core.csproj" />
+    <ProjectReference Include="..\AgenStart.PackageManagement\AgenStart.PackageManagement.csproj" />
     <ProjectReference Include="..\AgenStart.Platform.Windows\AgenStart.Platform.Windows.csproj" />
     <ProjectReference Include="..\AgenStart.Recommendations\AgenStart.Recommendations.csproj" />
     <ProjectReference Include="..\AgenStart.SoftwareInventory\AgenStart.SoftwareInventory.csproj" />
