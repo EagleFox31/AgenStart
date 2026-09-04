@@ -1,0 +1,111 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="using:AgenStart.Desktop.LocalData"
+             x:Class="AgenStart.Desktop.Views.SettingsView"
+             x:DataType="local:LocalExperienceViewModel">
+  <Grid MaxWidth="1040" HorizontalAlignment="Left">
+    <StackPanel>
+      <TextBlock Classes="eyebrow" Text="SETTINGS" Margin="0,0,0,20" />
+      <TextBlock Classes="pageTitle" Text="Settings" />
+      <TextBlock Classes="subtitle" Text="Control how AgenStart behaves on this device." Margin="0,12,0,0" />
+      <Border Height="1" Background="{StaticResource AgenDividerBrush}" Margin="0,28,0,26" />
+
+      <TextBlock Text="General" FontSize="20" FontWeight="SemiBold" />
+      <Border Classes="dataRow" Margin="0,8,0,0">
+        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="30">
+          <StackPanel>
+            <TextBlock Text="Analyse this PC when AgenStart starts" FontSize="16" FontWeight="SemiBold" />
+            <TextBlock Text="Runs the same read-only local capability scan used by Your PC." Foreground="{StaticResource AgenMutedBrush}" FontSize="13" Margin="0,4,0,0" />
+          </StackPanel>
+          <CheckBox Grid.Column="1" IsChecked="{Binding AnalyzeOnStartup, Mode=TwoWay}" VerticalAlignment="Center" />
+        </Grid>
+      </Border>
+      <Border Classes="dataRow">
+        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="30">
+          <StackPanel>
+            <TextBlock Text="Theme" FontSize="16" FontWeight="SemiBold" />
+            <TextBlock Text="AgenStart currently follows the system theme baseline." Foreground="{StaticResource AgenMutedBrush}" FontSize="13" Margin="0,4,0,0" />
+          </StackPanel>
+          <TextBlock Grid.Column="1" Text="System" Foreground="{StaticResource AgenMutedBrush}" VerticalAlignment="Center" />
+        </Grid>
+      </Border>
+
+      <TextBlock Text="Installation" FontSize="20" FontWeight="SemiBold" Margin="0,28,0,0" />
+      <Border Classes="dataRow" Margin="0,8,0,0">
+        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="30">
+          <StackPanel>
+            <TextBlock Text="Package provider" FontSize="16" FontWeight="SemiBold" />
+            <TextBlock Text="Exact catalogue package identities are resolved through WinGet." Foreground="{StaticResource AgenMutedBrush}" FontSize="13" Margin="0,4,0,0" />
+          </StackPanel>
+          <TextBlock Grid.Column="1" Text="WinGet" Foreground="{StaticResource AgenTealBrush}" FontWeight="SemiBold" VerticalAlignment="Center" />
+        </Grid>
+      </Border>
+      <Border Classes="dataRow">
+        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="30">
+          <StackPanel>
+            <TextBlock Text="Package agreements" FontSize="16" FontWeight="SemiBold" />
+            <TextBlock Text="AgenStart requires explicit approval on the Review screen before accepting provider agreements." Foreground="{StaticResource AgenMutedBrush}" FontSize="13" Margin="0,4,0,0" />
+          </StackPanel>
+          <TextBlock Grid.Column="1" Text="Required" Foreground="{StaticResource AgenMutedBrush}" VerticalAlignment="Center" />
+        </Grid>
+      </Border>
+
+      <TextBlock Text="Privacy" FontSize="20" FontWeight="SemiBold" Margin="0,28,0,0" />
+      <Border Classes="dataRow" Margin="0,8,0,0">
+        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="30">
+          <StackPanel>
+            <TextBlock Text="Anonymous product analytics" FontSize="16" FontWeight="SemiBold" />
+            <TextBlock Text="Not available yet. No telemetry is sent by this build. Privacy-first telemetry is tracked in #15." Foreground="{StaticResource AgenMutedBrush}" FontSize="13" Margin="0,4,0,0" TextWrapping="Wrap" />
+          </StackPanel>
+          <CheckBox Grid.Column="1" IsChecked="False" IsEnabled="{Binding TelemetryAvailable}" VerticalAlignment="Center" />
+        </Grid>
+      </Border>
+      <Border Classes="dataRow">
+        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="30">
+          <StackPanel>
+            <TextBlock Text="Local AgenStart data" FontSize="16" FontWeight="SemiBold" />
+            <TextBlock Text="History and preferences are stored only in AgenStart's local application-data folder." Foreground="{StaticResource AgenMutedBrush}" FontSize="13" Margin="0,4,0,0" />
+          </StackPanel>
+          <Button Grid.Column="1" Classes="secondary" Content="Clear local data" Click="ClearLocalDataButton_OnClick" />
+        </Grid>
+      </Border>
+
+      <Border IsVisible="{Binding ClearConfirmationVisible}" BorderBrush="#AAB2B2" BorderThickness="1" CornerRadius="8" Padding="18" Margin="0,14,0,0">
+        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="24">
+          <StackPanel>
+            <TextBlock Text="Clear local AgenStart data?" FontWeight="SemiBold" />
+            <TextBlock Text="This removes setup history and resets local preferences. Installed applications are not touched." Foreground="{StaticResource AgenMutedBrush}" FontSize="13" Margin="0,4,0,0" />
+          </StackPanel>
+          <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+            <Button Classes="secondary" Content="Cancel" Click="CancelClearButton_OnClick" />
+            <Button Classes="primary" Content="Clear" Click="ConfirmClearButton_OnClick" />
+          </StackPanel>
+        </Grid>
+      </Border>
+      <TextBlock Text="{Binding StorageStatus}" Foreground="{StaticResource AgenMutedBrush}" FontSize="12" Margin="0,10,0,0" />
+
+      <TextBlock Text="Setup profiles" FontSize="20" FontWeight="SemiBold" Margin="0,28,0,0" />
+      <Border Classes="dataRow" Margin="0,8,0,0">
+        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="30">
+          <StackPanel>
+            <TextBlock Text="Manage exported setups" FontSize="16" FontWeight="SemiBold" />
+            <TextBlock Text="Reusable import/export profiles will be enabled by milestone #9." Foreground="{StaticResource AgenMutedBrush}" FontSize="13" Margin="0,4,0,0" />
+          </StackPanel>
+          <Button Grid.Column="1" Classes="secondary" Content="Manage" IsEnabled="{Binding ExportManagementAvailable}" />
+        </Grid>
+      </Border>
+
+      <TextBlock Text="About" FontSize="20" FontWeight="SemiBold" Margin="0,28,0,0" />
+      <Border Classes="dataRow" Margin="0,8,0,0">
+        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="30">
+          <StackPanel>
+            <TextBlock Text="AgenStart" FontSize="17" FontWeight="SemiBold" />
+            <TextBlock Text="0.1.0-alpha · BY AGENSTUDIO" Foreground="{StaticResource AgenMutedBrush}" FontSize="13" Margin="0,4,0,0" />
+            <TextBlock Text="Think sharp. Build what matters." Foreground="{StaticResource AgenMutedBrush}" FontSize="13" Margin="0,3,0,0" />
+          </StackPanel>
+          <TextBlock Grid.Column="1" Text="Local-first" Foreground="{StaticResource AgenTealBrush}" FontWeight="SemiBold" VerticalAlignment="Center" />
+        </Grid>
+      </Border>
+    </StackPanel>
+  </Grid>
+</UserControl>

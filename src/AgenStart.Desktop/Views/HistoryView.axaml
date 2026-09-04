@@ -1,0 +1,84 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="using:AgenStart.Desktop.LocalData"
+             x:Class="AgenStart.Desktop.Views.HistoryView"
+             x:DataType="local:LocalExperienceViewModel">
+  <Grid MaxWidth="1160" HorizontalAlignment="Left">
+    <StackPanel>
+      <TextBlock Classes="eyebrow" Text="HISTORY" Margin="0,0,0,20" />
+      <TextBlock Classes="pageTitle" Text="Setup history" />
+      <TextBlock Classes="subtitle" Text="Previous AgenStart setup sessions stored locally on this device." Margin="0,12,0,0" />
+      <Border Height="1" Background="{StaticResource AgenDividerBrush}" Margin="0,28,0,24" />
+
+      <Grid ColumnDefinitions="1.2*,0.8*" ColumnSpacing="48">
+        <StackPanel Grid.Column="0">
+          <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,10">
+            <TextBlock Text="Sessions" FontSize="20" FontWeight="SemiBold" />
+            <TextBlock Grid.Column="1" Text="Local only" Foreground="{StaticResource AgenMutedBrush}" FontSize="13" VerticalAlignment="Center" />
+          </Grid>
+
+          <ListBox ItemsSource="{Binding HistoryEntries}" SelectedItem="{Binding SelectedHistory, Mode=TwoWay}" Background="Transparent" BorderThickness="0">
+            <ListBox.ItemTemplate>
+              <DataTemplate x:DataType="local:SetupHistoryRowViewModel">
+                <Border BorderBrush="{StaticResource AgenDividerBrush}" BorderThickness="0,0,0,1" Padding="8,14">
+                  <Grid ColumnDefinitions="150,*,170" ColumnSpacing="18">
+                    <StackPanel>
+                      <TextBlock Text="{Binding CompletedAt}" FontWeight="SemiBold" />
+                      <TextBlock Text="{Binding Profile}" Foreground="{StaticResource AgenTealBrush}" FontSize="13" Margin="0,4,0,0" />
+                    </StackPanel>
+                    <StackPanel Grid.Column="1">
+                      <TextBlock Text="{Binding ApplicationSummary}" FontSize="15" FontWeight="SemiBold" />
+                      <TextBlock Text="{Binding Outcome}" Foreground="{StaticResource AgenMutedBrush}" FontSize="13" Margin="0,4,0,0" />
+                    </StackPanel>
+                    <StackPanel Grid.Column="2" HorizontalAlignment="Right">
+                      <TextBlock Text="{Binding InstalledCount, StringFormat='{}{0} installed'}" TextAlignment="Right" />
+                      <TextBlock Text="{Binding FailedCount, StringFormat='{}{0} failed'}" Foreground="{StaticResource AgenMutedBrush}" FontSize="12" TextAlignment="Right" Margin="0,4,0,0" />
+                    </StackPanel>
+                  </Grid>
+                </Border>
+              </DataTemplate>
+            </ListBox.ItemTemplate>
+          </ListBox>
+
+          <Border BorderBrush="{StaticResource AgenDividerBrush}" BorderThickness="1" CornerRadius="8" Padding="18" Margin="0,22,0,0">
+            <StackPanel Orientation="Horizontal" Spacing="12">
+              <TextBlock Text="↶" Foreground="{StaticResource AgenTealBrush}" FontSize="20" />
+              <StackPanel>
+                <TextBlock Text="No cloud history" FontWeight="SemiBold" />
+                <TextBlock Text="Session summaries stay in AgenStart's local application-data folder." Foreground="{StaticResource AgenMutedBrush}" FontSize="13" Margin="0,4,0,0" />
+              </StackPanel>
+            </StackPanel>
+          </Border>
+        </StackPanel>
+
+        <StackPanel Grid.Column="1" Spacing="14">
+          <TextBlock Text="Session details" FontSize="20" FontWeight="SemiBold" />
+          <Border BorderBrush="{StaticResource AgenDividerBrush}" BorderThickness="1" CornerRadius="8" Padding="20">
+            <StackPanel Spacing="12">
+              <TextBlock Text="{Binding SelectedHistory.Profile}" FontSize="24" FontWeight="SemiBold" />
+              <TextBlock Text="{Binding SelectedHistory.CompletedAt}" Foreground="{StaticResource AgenMutedBrush}" />
+              <Border Height="1" Background="{StaticResource AgenDividerBrush}" Margin="0,4" />
+              <Grid ColumnDefinitions="*,*">
+                <StackPanel><TextBlock Text="{Binding SelectedHistory.ProcessedCount}" Foreground="{StaticResource AgenTealBrush}" FontSize="20" FontWeight="SemiBold" /><TextBlock Text="processed" Foreground="{StaticResource AgenMutedBrush}" FontSize="12" /></StackPanel>
+                <StackPanel Grid.Column="1"><TextBlock Text="{Binding SelectedHistory.FailedCount}" FontSize="20" FontWeight="SemiBold" /><TextBlock Text="failed" Foreground="{StaticResource AgenMutedBrush}" FontSize="12" /></StackPanel>
+              </Grid>
+              <TextBlock Text="Applications" FontWeight="SemiBold" Margin="0,8,0,0" />
+              <ItemsControl ItemsSource="{Binding SelectedHistory.Applications}">
+                <ItemsControl.ItemTemplate>
+                  <DataTemplate x:DataType="local:SetupHistoryApplication">
+                    <Grid ColumnDefinitions="*,150" Margin="0,5">
+                      <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis" />
+                      <TextBlock Grid.Column="1" Text="{Binding Result}" Foreground="{StaticResource AgenMutedBrush}" TextAlignment="Right" />
+                    </Grid>
+                  </DataTemplate>
+                </ItemsControl.ItemTemplate>
+              </ItemsControl>
+              <Button Classes="secondary" Content="Export setup" IsEnabled="{Binding ExportManagementAvailable}" Margin="0,10,0,0" />
+              <TextBlock Text="Reusable setup export arrives with milestone #9." Foreground="{StaticResource AgenMutedBrush}" FontSize="12" TextWrapping="Wrap" />
+            </StackPanel>
+          </Border>
+        </StackPanel>
+      </Grid>
+    </StackPanel>
+  </Grid>
+</UserControl>
