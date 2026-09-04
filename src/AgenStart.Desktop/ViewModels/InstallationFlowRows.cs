@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using AgenStart.Application.Installation;
+using AgenStart.PackageManagement;
 
 namespace AgenStart.Desktop.ViewModels;
 
@@ -100,7 +101,7 @@ public sealed class InstallationRowViewModel : INotifyPropertyChanged
         {
             InstallationQueueItemState.Queued => "Waiting",
             InstallationQueueItemState.Running => "Installing",
-            InstallationQueueItemState.Succeeded when snapshot.LastOperationStatus == PackageManagement.PackageOperationStatus.AlreadyInstalled => "Already installed",
+            InstallationQueueItemState.Succeeded when snapshot.LastOperationStatus == PackageOperationStatus.AlreadyInstalled => "Already installed",
             InstallationQueueItemState.Succeeded => snapshot.RequiresReboot ? "Installed · restart required" : "Installed",
             InstallationQueueItemState.Failed => "Failed",
             InstallationQueueItemState.Skipped => "Skipped",
