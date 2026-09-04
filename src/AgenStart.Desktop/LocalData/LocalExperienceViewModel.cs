@@ -54,7 +54,13 @@ public sealed class LocalExperienceViewModel : INotifyPropertyChanged
     public SetupHistoryRowViewModel? SelectedHistory
     {
         get => _selectedHistory;
-        set => SetField(ref _selectedHistory, value);
+        set
+        {
+            if (SetField(ref _selectedHistory, value))
+            {
+                OnPropertyChanged(nameof(CanExportSelectedHistory));
+            }
+        }
     }
 
     public bool AnalyzeOnStartup
@@ -84,6 +90,7 @@ public sealed class LocalExperienceViewModel : INotifyPropertyChanged
     }
 
     public bool HasHistory => HistoryEntries.Count > 0;
+    public bool CanExportSelectedHistory => SelectedHistory is not null;
     public bool TelemetryAvailable => false;
     public bool ExportManagementAvailable => false;
 
