@@ -22,37 +22,32 @@
         <StackPanel Grid.Row="1" Spacing="1">
           <Grid>
             <Border x:Name="OverviewStripe" Width="3" Height="42" Background="{StaticResource AgenAccentBrush}" HorizontalAlignment="Left" CornerRadius="0,3,3,0" />
-            <Button x:Name="OverviewButton" Classes="nav active" Click="OverviewButton_OnClick">
-              <StackPanel Orientation="Horizontal" Spacing="14"><TextBlock Text="⌂" FontSize="22" Width="24" TextAlignment="Center" /><TextBlock Text="Overview" VerticalAlignment="Center" /></StackPanel>
-            </Button>
+            <Button x:Name="OverviewButton" Classes="nav active" Click="OverviewButton_OnClick"><StackPanel Orientation="Horizontal" Spacing="14"><TextBlock Text="⌂" FontSize="22" Width="24" TextAlignment="Center" /><TextBlock Text="Overview" VerticalAlignment="Center" /></StackPanel></Button>
           </Grid>
           <Grid>
             <Border x:Name="YourPcStripe" Width="3" Height="42" Background="{StaticResource AgenAccentBrush}" HorizontalAlignment="Left" CornerRadius="0,3,3,0" IsVisible="False" />
-            <Button x:Name="YourPcButton" Classes="nav" Click="YourPcButton_OnClick">
-              <StackPanel Orientation="Horizontal" Spacing="14"><TextBlock Text="▣" FontSize="18" Width="24" TextAlignment="Center" /><TextBlock Text="Your PC" VerticalAlignment="Center" /></StackPanel>
-            </Button>
+            <Button x:Name="YourPcButton" Classes="nav" Click="YourPcButton_OnClick"><StackPanel Orientation="Horizontal" Spacing="14"><TextBlock Text="▣" FontSize="18" Width="24" TextAlignment="Center" /><TextBlock Text="Your PC" VerticalAlignment="Center" /></StackPanel></Button>
           </Grid>
           <Grid>
             <Border x:Name="UsageProfileStripe" Width="3" Height="42" Background="{StaticResource AgenAccentBrush}" HorizontalAlignment="Left" CornerRadius="0,3,3,0" IsVisible="False" />
-            <Button x:Name="UsageProfileButton" Classes="nav" Click="UsageProfileButton_OnClick">
-              <StackPanel Orientation="Horizontal" Spacing="14"><TextBlock Text="○" FontSize="21" Width="24" TextAlignment="Center" /><TextBlock Text="Usage profile" VerticalAlignment="Center" /></StackPanel>
-            </Button>
+            <Button x:Name="UsageProfileButton" Classes="nav" Click="UsageProfileButton_OnClick"><StackPanel Orientation="Horizontal" Spacing="14"><TextBlock Text="○" FontSize="21" Width="24" TextAlignment="Center" /><TextBlock Text="Usage profile" VerticalAlignment="Center" /></StackPanel></Button>
           </Grid>
           <Grid>
             <Border x:Name="RecommendationsStripe" Width="3" Height="42" Background="{StaticResource AgenAccentBrush}" HorizontalAlignment="Left" CornerRadius="0,3,3,0" IsVisible="False" />
-            <Button x:Name="RecommendationsButton" Classes="nav" Click="RecommendationsButton_OnClick">
-              <StackPanel Orientation="Horizontal" Spacing="14"><TextBlock Text="✦" FontSize="20" Width="24" TextAlignment="Center" /><TextBlock Text="Recommendations" VerticalAlignment="Center" /></StackPanel>
-            </Button>
+            <Button x:Name="RecommendationsButton" Classes="nav" Click="RecommendationsButton_OnClick"><StackPanel Orientation="Horizontal" Spacing="14"><TextBlock Text="✦" FontSize="20" Width="24" TextAlignment="Center" /><TextBlock Text="Recommendations" VerticalAlignment="Center" /></StackPanel></Button>
           </Grid>
-          <Button Classes="nav" IsEnabled="False">
-            <StackPanel Orientation="Horizontal" Spacing="14"><TextBlock Text="✓" FontSize="20" Width="24" TextAlignment="Center" /><TextBlock Text="Review" VerticalAlignment="Center" /></StackPanel>
-          </Button>
-          <Button Classes="nav" IsEnabled="False">
-            <StackPanel Orientation="Horizontal" Spacing="14"><TextBlock Text="↓" FontSize="21" Width="24" TextAlignment="Center" /><TextBlock Text="Installation" VerticalAlignment="Center" /></StackPanel>
-          </Button>
-          <Button Classes="nav" IsEnabled="False">
-            <StackPanel Orientation="Horizontal" Spacing="14"><TextBlock Text="▤" FontSize="18" Width="24" TextAlignment="Center" /><TextBlock Text="Report" VerticalAlignment="Center" /></StackPanel>
-          </Button>
+          <Grid>
+            <Border x:Name="ReviewStripe" Width="3" Height="42" Background="{StaticResource AgenAccentBrush}" HorizontalAlignment="Left" CornerRadius="0,3,3,0" IsVisible="False" />
+            <Button x:Name="ReviewButton" Classes="nav" Click="ReviewButton_OnClick"><StackPanel Orientation="Horizontal" Spacing="14"><TextBlock Text="✓" FontSize="20" Width="24" TextAlignment="Center" /><TextBlock Text="Review" VerticalAlignment="Center" /></StackPanel></Button>
+          </Grid>
+          <Grid>
+            <Border x:Name="InstallationStripe" Width="3" Height="42" Background="{StaticResource AgenAccentBrush}" HorizontalAlignment="Left" CornerRadius="0,3,3,0" IsVisible="False" />
+            <Button x:Name="InstallationButton" Classes="nav" Click="InstallationButton_OnClick"><StackPanel Orientation="Horizontal" Spacing="14"><TextBlock Text="↓" FontSize="21" Width="24" TextAlignment="Center" /><TextBlock Text="Installation" VerticalAlignment="Center" /></StackPanel></Button>
+          </Grid>
+          <Grid>
+            <Border x:Name="ReportStripe" Width="3" Height="42" Background="{StaticResource AgenAccentBrush}" HorizontalAlignment="Left" CornerRadius="0,3,3,0" IsVisible="False" />
+            <Button x:Name="ReportButton" Classes="nav" Click="ReportButton_OnClick"><StackPanel Orientation="Horizontal" Spacing="14"><TextBlock Text="▤" FontSize="18" Width="24" TextAlignment="Center" /><TextBlock Text="Report" VerticalAlignment="Center" /></StackPanel></Button>
+          </Grid>
         </StackPanel>
 
         <StackPanel Grid.Row="2" Spacing="1">
@@ -82,27 +77,23 @@
                 <ProgressBar IsIndeterminate="True" IsVisible="{Binding IsBusy}" Height="3" Margin="0,18,80,0" />
                 <StackPanel Orientation="Horizontal" Spacing="10" Margin="0,40,0,0"><TextBlock Text="▱" Foreground="{StaticResource AgenTealBrush}" FontSize="21" /><TextBlock Text="Machine analysis stays on this device." Foreground="{StaticResource AgenMutedBrush}" FontSize="14" VerticalAlignment="Center" /></StackPanel>
               </StackPanel>
-              <Grid Grid.Column="1" RowDefinitions="*,Auto,*" VerticalAlignment="Center" MinHeight="500">
-                <StackPanel Grid.Row="1" HorizontalAlignment="Center" Width="390" Spacing="12">
-                  <Border Width="74" Height="74" CornerRadius="37" BorderThickness="2" BorderBrush="{StaticResource AgenTealBrush}" HorizontalAlignment="Center"><TextBlock Text="✓" FontSize="35" Foreground="{StaticResource AgenTealBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" /></Border>
-                  <TextBlock Text="{Binding StatusTitle}" FontSize="26" FontWeight="SemiBold" TextAlignment="Center" Margin="0,9,0,0" />
-                  <TextBlock Text="{Binding StatusMessage}" Classes="subtitle" TextAlignment="Center" TextWrapping="Wrap" />
-                  <Border Height="1" Background="{StaticResource AgenDividerBrush}" Margin="0,16,0,12" />
-                  <TextBlock Text="You stay in control of what gets installed." Foreground="{StaticResource AgenMutedBrush}" FontSize="14" TextAlignment="Center" />
-                </StackPanel>
-              </Grid>
+              <StackPanel Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="390" Spacing="12">
+                <Border Width="74" Height="74" CornerRadius="37" BorderThickness="2" BorderBrush="{StaticResource AgenTealBrush}" HorizontalAlignment="Center"><TextBlock Text="✓" FontSize="35" Foreground="{StaticResource AgenTealBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" /></Border>
+                <TextBlock Text="{Binding StatusTitle}" FontSize="26" FontWeight="SemiBold" TextAlignment="Center" Margin="0,9,0,0" />
+                <TextBlock Text="{Binding StatusMessage}" Classes="subtitle" TextAlignment="Center" TextWrapping="Wrap" />
+                <Border Height="1" Background="{StaticResource AgenDividerBrush}" Margin="0,16,0,12" />
+                <TextBlock Text="You stay in control of what gets installed." Foreground="{StaticResource AgenMutedBrush}" FontSize="14" TextAlignment="Center" />
+              </StackPanel>
             </Grid>
           </Grid>
 
           <Grid x:Name="YourPcPanel" IsVisible="False" MaxWidth="1120" HorizontalAlignment="Left">
-            <Grid RowDefinitions="Auto,Auto,*">
-              <StackPanel Grid.Row="0">
-                <TextBlock Classes="eyebrow" Text="YOUR PC" Margin="0,0,0,22" />
-                <TextBlock Classes="pageTitle" Text="Your PC" />
-                <TextBlock Classes="subtitle" Text="AgenStart detected the essentials locally." Margin="0,13,0,0" />
-                <Border Height="1" Background="{StaticResource AgenDividerBrush}" Margin="0,30,0,26" />
-              </StackPanel>
-              <Grid Grid.Row="1" ColumnDefinitions="1.35*,0.65*" ColumnSpacing="52">
+            <StackPanel>
+              <TextBlock Classes="eyebrow" Text="YOUR PC" Margin="0,0,0,22" />
+              <TextBlock Classes="pageTitle" Text="Your PC" />
+              <TextBlock Classes="subtitle" Text="AgenStart detected the essentials locally." Margin="0,13,0,0" />
+              <Border Height="1" Background="{StaticResource AgenDividerBrush}" Margin="0,30,0,26" />
+              <Grid ColumnDefinitions="1.35*,0.65*" ColumnSpacing="52">
                 <StackPanel Grid.Column="0">
                   <Border Classes="dataRow"><Grid ColumnDefinitions="42,*,150"><TextBlock Text="▣" FontSize="20" /><TextBlock Grid.Column="1" Text="{Binding OperatingSystem}" FontSize="17" /><TextBlock Grid.Column="2" Text="Detected" Foreground="{StaticResource AgenMutedBrush}" /></Grid></Border>
                   <Border Classes="dataRow"><Grid ColumnDefinitions="42,*,150"><TextBlock Text="◉" FontSize="20" /><TextBlock Grid.Column="1" Text="{Binding Cpu}" FontSize="17" /><TextBlock Grid.Column="2" Text="Detected" Foreground="{StaticResource AgenMutedBrush}" /></Grid></Border>
@@ -113,10 +104,7 @@
                   <Border Classes="dataRow"><Grid ColumnDefinitions="42,*,150"><TextBlock Text="64" FontSize="13" FontWeight="Bold" /><TextBlock Grid.Column="1" Text="{Binding Architecture}" FontSize="17" /><TextBlock Grid.Column="2" Text="Supported" Foreground="{StaticResource AgenMutedBrush}" /></Grid></Border>
                   <Border Classes="dataRow"><Grid ColumnDefinitions="42,*,150"><TextBlock Text="⬡" FontSize="20" /><TextBlock Grid.Column="1" Text="{Binding WinGet}" FontSize="17" /><TextBlock Grid.Column="2" Text="Available" Foreground="{StaticResource AgenMutedBrush}" /></Grid></Border>
                   <Border Classes="dataRow"><Grid ColumnDefinitions="42,*,150"><TextBlock Text="i" FontSize="18" FontWeight="SemiBold" /><TextBlock Grid.Column="1" Text="{Binding WinGetVersion, StringFormat='WinGet version {0}'}" FontSize="17" /><TextBlock Grid.Column="2" Text="Detected" Foreground="{StaticResource AgenMutedBrush}" /></Grid></Border>
-                  <StackPanel Orientation="Horizontal" Spacing="14" Margin="0,26,0,0">
-                    <Button Classes="primary" Content="Choose usage profile" Click="ContinueToProfile_OnClick" />
-                    <Button x:Name="RefreshButton" Classes="secondary" Content="Refresh analysis" Click="RefreshButton_OnClick" />
-                  </StackPanel>
+                  <StackPanel Orientation="Horizontal" Spacing="14" Margin="0,26,0,0"><Button Classes="primary" Content="Choose usage profile" Click="ContinueToProfile_OnClick" /><Button x:Name="RefreshButton" Classes="secondary" Content="Refresh analysis" Click="RefreshButton_OnClick" /></StackPanel>
                 </StackPanel>
                 <StackPanel Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="310" Spacing="12">
                   <Border Width="74" Height="74" CornerRadius="37" BorderThickness="2" BorderBrush="{StaticResource AgenTealBrush}" HorizontalAlignment="Center"><TextBlock Text="✓" FontSize="35" Foreground="{StaticResource AgenTealBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" /></Border>
@@ -124,8 +112,8 @@
                   <TextBlock Text="{Binding StatusMessage}" Classes="subtitle" TextWrapping="Wrap" TextAlignment="Center" />
                 </StackPanel>
               </Grid>
-              <Border Grid.Row="2" BorderBrush="{StaticResource AgenDividerBrush}" BorderThickness="0,1,0,0" Margin="0,30,0,0" Padding="0,24,0,0"><StackPanel Orientation="Horizontal" Spacing="12"><TextBlock Text="▱" Foreground="{StaticResource AgenTealBrush}" FontSize="21" /><TextBlock Text="{Binding AnalysisDiagnostic}" Foreground="{StaticResource AgenMutedBrush}" FontSize="14" VerticalAlignment="Center" /></StackPanel></Border>
-            </Grid>
+              <Border BorderBrush="{StaticResource AgenDividerBrush}" BorderThickness="0,1,0,0" Margin="0,30,0,0" Padding="0,24,0,0"><StackPanel Orientation="Horizontal" Spacing="12"><TextBlock Text="▱" Foreground="{StaticResource AgenTealBrush}" FontSize="21" /><TextBlock Text="{Binding AnalysisDiagnostic}" Foreground="{StaticResource AgenMutedBrush}" FontSize="14" VerticalAlignment="Center" /></StackPanel></Border>
+            </StackPanel>
           </Grid>
 
           <Grid x:Name="UsageProfilePanel" IsVisible="False" MaxWidth="1120" HorizontalAlignment="Left">
@@ -142,18 +130,12 @@
                   <Border BorderBrush="{StaticResource AgenDividerBrush}" BorderThickness="1" CornerRadius="7" Padding="16,10"><RadioButton GroupName="UsageProfile" Click="BusinessProfile_OnChecked"><StackPanel><TextBlock Text="Business" FontSize="17" FontWeight="SemiBold" /><TextBlock Text="Office, communication, productivity and collaboration." Foreground="{StaticResource AgenMutedBrush}" /></StackPanel></RadioButton></Border>
                   <Border BorderBrush="{StaticResource AgenDividerBrush}" BorderThickness="1" CornerRadius="7" Padding="16,10"><RadioButton GroupName="UsageProfile" Click="CreationProfile_OnChecked"><StackPanel><TextBlock Text="Creation" FontSize="17" FontWeight="SemiBold" /><TextBlock Text="Design, media, content and creative workflows." Foreground="{StaticResource AgenMutedBrush}" /></StackPanel></RadioButton></Border>
                   <Border BorderBrush="{StaticResource AgenDividerBrush}" BorderThickness="1" CornerRadius="7" Padding="16,10"><RadioButton GroupName="UsageProfile" Click="TrainingProfile_OnChecked"><StackPanel><TextBlock Text="Training" FontSize="17" FontWeight="SemiBold" /><TextBlock Text="Learning, course tools and guided study setups." Foreground="{StaticResource AgenMutedBrush}" /></StackPanel></RadioButton></Border>
-                  <StackPanel Orientation="Horizontal" Spacing="14" Margin="0,25,0,0">
-                    <Button Classes="primary" Content="Build my recommendations" Click="BuildRecommendationsButton_OnClick" />
-                    <Button Classes="secondary" Content="Back" Click="ProfileBackButton_OnClick" />
-                  </StackPanel>
+                  <StackPanel Orientation="Horizontal" Spacing="14" Margin="0,25,0,0"><Button Classes="primary" Content="Build my recommendations" Click="BuildRecommendationsButton_OnClick" /><Button Classes="secondary" Content="Back" Click="ProfileBackButton_OnClick" /></StackPanel>
                   <ProgressBar IsIndeterminate="True" IsVisible="{Binding IsBusy}" Height="3" Margin="0,15,80,0" />
                 </StackPanel>
                 <StackPanel Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="300" Spacing="12">
                   <Border Width="68" Height="68" CornerRadius="34" BorderThickness="2" BorderBrush="{StaticResource AgenTealBrush}" HorizontalAlignment="Center"><TextBlock Text="&lt;/&gt;" Foreground="{StaticResource AgenTealBrush}" FontSize="19" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" /></Border>
-                  <TextBlock Text="Selected:" Foreground="{StaticResource AgenMutedBrush}" TextAlignment="Center" Margin="0,8,0,0" />
-                  <TextBlock Text="{Binding SelectedProfileName}" FontSize="24" FontWeight="SemiBold" TextAlignment="Center" />
-                  <Border Height="1" Background="{StaticResource AgenDividerBrush}" Margin="0,8" />
-                  <TextBlock Text="{Binding SelectedProfileDescription}" Classes="subtitle" TextWrapping="Wrap" TextAlignment="Center" />
+                  <TextBlock Text="Selected:" Foreground="{StaticResource AgenMutedBrush}" TextAlignment="Center" Margin="0,8,0,0" /><TextBlock Text="{Binding SelectedProfileName}" FontSize="24" FontWeight="SemiBold" TextAlignment="Center" /><Border Height="1" Background="{StaticResource AgenDividerBrush}" Margin="0,8" /><TextBlock Text="{Binding SelectedProfileDescription}" Classes="subtitle" TextWrapping="Wrap" TextAlignment="Center" />
                 </StackPanel>
               </Grid>
             </StackPanel>
@@ -162,43 +144,66 @@
           <Grid x:Name="RecommendationsPanel" IsVisible="False" MaxWidth="1160" HorizontalAlignment="Left">
             <StackPanel>
               <Grid ColumnDefinitions="*,Auto" ColumnSpacing="34">
-                <StackPanel>
-                  <TextBlock Classes="eyebrow" Text="RECOMMENDATIONS" Margin="0,0,0,20" />
-                  <TextBlock Classes="pageTitle" Text="Recommended for this PC" />
-                  <TextBlock Classes="subtitle" Text="{Binding RecommendationStatus}" Margin="0,12,0,0" TextWrapping="Wrap" />
-                </StackPanel>
-                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="28" VerticalAlignment="Bottom" Margin="0,0,0,5">
-                  <StackPanel><TextBlock Text="{Binding RecommendationCount}" Foreground="{StaticResource AgenTealBrush}" FontSize="20" FontWeight="SemiBold" TextAlignment="Center" /><TextBlock Text="recommendations" Foreground="{StaticResource AgenMutedBrush}" FontSize="12" /></StackPanel>
-                  <StackPanel><TextBlock Text="{Binding SelectedCount}" Foreground="{StaticResource AgenTealBrush}" FontSize="20" FontWeight="SemiBold" TextAlignment="Center" /><TextBlock Text="selected" Foreground="{StaticResource AgenMutedBrush}" FontSize="12" /></StackPanel>
-                  <StackPanel><TextBlock Text="{Binding AlreadyInstalledCount}" Foreground="{StaticResource AgenTealBrush}" FontSize="20" FontWeight="SemiBold" TextAlignment="Center" /><TextBlock Text="already installed" Foreground="{StaticResource AgenMutedBrush}" FontSize="12" /></StackPanel>
-                  <StackPanel><TextBlock Text="{Binding OptionalCount}" Foreground="{StaticResource AgenTealBrush}" FontSize="20" FontWeight="SemiBold" TextAlignment="Center" /><TextBlock Text="optional" Foreground="{StaticResource AgenMutedBrush}" FontSize="12" /></StackPanel>
-                </StackPanel>
+                <StackPanel><TextBlock Classes="eyebrow" Text="RECOMMENDATIONS" Margin="0,0,0,20" /><TextBlock Classes="pageTitle" Text="Recommended for this PC" /><TextBlock Classes="subtitle" Text="{Binding RecommendationStatus}" Margin="0,12,0,0" TextWrapping="Wrap" /></StackPanel>
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="28" VerticalAlignment="Bottom" Margin="0,0,0,5"><StackPanel><TextBlock Text="{Binding RecommendationCount}" Foreground="{StaticResource AgenTealBrush}" FontSize="20" FontWeight="SemiBold" TextAlignment="Center" /><TextBlock Text="recommendations" Foreground="{StaticResource AgenMutedBrush}" FontSize="12" /></StackPanel><StackPanel><TextBlock Text="{Binding SelectedCount}" Foreground="{StaticResource AgenTealBrush}" FontSize="20" FontWeight="SemiBold" TextAlignment="Center" /><TextBlock Text="selected" Foreground="{StaticResource AgenMutedBrush}" FontSize="12" /></StackPanel><StackPanel><TextBlock Text="{Binding AlreadyInstalledCount}" Foreground="{StaticResource AgenTealBrush}" FontSize="20" FontWeight="SemiBold" TextAlignment="Center" /><TextBlock Text="already installed" Foreground="{StaticResource AgenMutedBrush}" FontSize="12" /></StackPanel></StackPanel>
               </Grid>
               <Border Height="1" Background="{StaticResource AgenDividerBrush}" Margin="0,28,0,8" />
-
               <ItemsControl ItemsSource="{Binding Recommendations}">
-                <ItemsControl.ItemTemplate>
-                  <DataTemplate x:DataType="vm:RecommendationRowViewModel">
-                    <Border BorderBrush="{StaticResource AgenDividerBrush}" BorderThickness="0,0,0,1" Padding="10,13">
-                      <Grid ColumnDefinitions="58,*,190,54" ColumnSpacing="16">
-                        <Border Width="38" Height="38" CornerRadius="8" Background="#E7EFEC" VerticalAlignment="Center"><TextBlock Text="{Binding Initials}" Foreground="{StaticResource AgenTealBrush}" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" /></Border>
-                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                          <TextBlock Text="{Binding Name}" FontSize="16" FontWeight="SemiBold" />
-                          <TextBlock Text="{Binding Reason}" Foreground="{StaticResource AgenMutedBrush}" FontSize="13" TextTrimming="CharacterEllipsis" />
-                        </StackPanel>
-                        <TextBlock Grid.Column="2" Text="{Binding Status}" Foreground="{StaticResource AgenTextBrush}" VerticalAlignment="Center" />
-                        <CheckBox Grid.Column="3" IsChecked="{Binding IsSelected, Mode=TwoWay}" IsEnabled="{Binding CanSelect}" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                      </Grid>
-                    </Border>
-                  </DataTemplate>
-                </ItemsControl.ItemTemplate>
+                <ItemsControl.ItemTemplate><DataTemplate x:DataType="vm:RecommendationRowViewModel"><Border BorderBrush="{StaticResource AgenDividerBrush}" BorderThickness="0,0,0,1" Padding="10,13"><Grid ColumnDefinitions="58,*,190,54" ColumnSpacing="16"><Border Width="38" Height="38" CornerRadius="8" Background="#E7EFEC" VerticalAlignment="Center"><TextBlock Text="{Binding Initials}" Foreground="{StaticResource AgenTealBrush}" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" /></Border><StackPanel Grid.Column="1" VerticalAlignment="Center"><TextBlock Text="{Binding Name}" FontSize="16" FontWeight="SemiBold" /><TextBlock Text="{Binding Reason}" Foreground="{StaticResource AgenMutedBrush}" FontSize="13" TextTrimming="CharacterEllipsis" /></StackPanel><TextBlock Grid.Column="2" Text="{Binding Status}" VerticalAlignment="Center" /><CheckBox Grid.Column="3" IsChecked="{Binding IsSelected, Mode=TwoWay}" IsEnabled="{Binding CanSelect}" HorizontalAlignment="Center" VerticalAlignment="Center" /></Grid></Border></DataTemplate></ItemsControl.ItemTemplate>
               </ItemsControl>
+              <StackPanel Orientation="Horizontal" Spacing="14" Margin="0,22,0,0"><Button Classes="primary" Content="Review setup" IsEnabled="{Binding CanReview}" Click="ReviewSetupButton_OnClick" /><Button Classes="secondary" Content="Select essentials only" Click="SelectEssentialsButton_OnClick" /></StackPanel>
+              <Border BorderBrush="{StaticResource AgenDividerBrush}" BorderThickness="0,1,0,0" Margin="0,24,0,0" Padding="0,20,0,0"><TextBlock Text="Nothing will be installed until you approve the final setup." Foreground="{StaticResource AgenMutedBrush}" FontSize="14" /></Border>
+            </StackPanel>
+          </Grid>
 
-              <StackPanel Orientation="Horizontal" Spacing="14" Margin="0,22,0,0">
-                <Button Classes="primary" Content="Review setup" IsEnabled="False" />
-                <Button Classes="secondary" Content="Select essentials only" Click="SelectEssentialsButton_OnClick" />
-              </StackPanel>
-              <Border BorderBrush="{StaticResource AgenDividerBrush}" BorderThickness="0,1,0,0" Margin="0,24,0,0" Padding="0,20,0,0"><StackPanel Orientation="Horizontal" Spacing="12"><TextBlock Text="▱" Foreground="{StaticResource AgenTealBrush}" FontSize="21" /><TextBlock Text="Nothing will be installed until you approve the final setup." Foreground="{StaticResource AgenMutedBrush}" FontSize="14" VerticalAlignment="Center" /></StackPanel></Border>
+          <Grid x:Name="ReviewPanel" IsVisible="False" MaxWidth="1160" HorizontalAlignment="Left">
+            <StackPanel>
+              <Grid ColumnDefinitions="*,Auto" ColumnSpacing="32">
+                <StackPanel><TextBlock Classes="eyebrow" Text="REVIEW" Margin="0,0,0,20" /><TextBlock Classes="pageTitle" Text="Review your setup" /><TextBlock Classes="subtitle" Text="Nothing will be installed until you approve this plan." Margin="0,12,0,0" /></StackPanel>
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="30" VerticalAlignment="Bottom" Margin="0,0,0,5"><StackPanel><TextBlock Text="{Binding ReviewTotalCount}" Foreground="{StaticResource AgenTealBrush}" FontSize="20" FontWeight="SemiBold" TextAlignment="Center" /><TextBlock Text="in plan" Foreground="{StaticResource AgenMutedBrush}" FontSize="12" /></StackPanel><StackPanel><TextBlock Text="{Binding ReviewAlreadyInstalledCount}" Foreground="{StaticResource AgenTealBrush}" FontSize="20" FontWeight="SemiBold" TextAlignment="Center" /><TextBlock Text="already installed" Foreground="{StaticResource AgenMutedBrush}" FontSize="12" /></StackPanel><StackPanel><TextBlock Text="{Binding ReviewInstallCount}" Foreground="{StaticResource AgenTealBrush}" FontSize="20" FontWeight="SemiBold" TextAlignment="Center" /><TextBlock Text="to install" Foreground="{StaticResource AgenMutedBrush}" FontSize="12" /></StackPanel></StackPanel>
+              </Grid>
+              <Border Height="1" Background="{StaticResource AgenDividerBrush}" Margin="0,28,0,8" />
+              <ItemsControl ItemsSource="{Binding ReviewItems}"><ItemsControl.ItemTemplate><DataTemplate x:DataType="vm:ReviewRowViewModel"><Border BorderBrush="{StaticResource AgenDividerBrush}" BorderThickness="0,0,0,1" Padding="10,14"><Grid ColumnDefinitions="58,*,180,110" ColumnSpacing="16"><Border Width="38" Height="38" CornerRadius="8" Background="#E7EFEC"><TextBlock Text="{Binding Initials}" Foreground="{StaticResource AgenTealBrush}" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" /></Border><StackPanel Grid.Column="1"><TextBlock Text="{Binding Name}" FontSize="16" FontWeight="SemiBold" /><TextBlock Text="{Binding Reason}" Foreground="{StaticResource AgenMutedBrush}" FontSize="13" TextTrimming="CharacterEllipsis" /></StackPanel><TextBlock Grid.Column="2" Text="{Binding Status}" VerticalAlignment="Center" /><Button Grid.Column="3" Content="Remove" Background="Transparent" BorderThickness="0" Foreground="{StaticResource AgenTealBrush}" IsVisible="{Binding CanRemove}" Click="RemoveReviewItem_OnClick" /></Grid></Border></DataTemplate></ItemsControl.ItemTemplate></ItemsControl>
+              <Border BorderBrush="{StaticResource AgenDividerBrush}" BorderThickness="1" CornerRadius="8" Padding="18" Margin="0,24,0,0"><CheckBox IsChecked="{Binding AgreementsAccepted, Mode=TwoWay}"><StackPanel Margin="8,0,0,0"><TextBlock Text="Allow WinGet to accept required package and source agreements for this approved setup." FontWeight="SemiBold" /><TextBlock Text="Only the applications listed above are eligible for installation." Foreground="{StaticResource AgenMutedBrush}" FontSize="13" Margin="0,4,0,0" /></StackPanel></CheckBox></Border>
+              <StackPanel Orientation="Horizontal" Spacing="14" Margin="0,20,0,0"><Button Classes="primary" Content="Start installation" IsEnabled="{Binding CanStartInstallation}" Click="StartInstallationButton_OnClick" /><Button Classes="secondary" Content="Back to recommendations" Click="ReviewBackButton_OnClick" /></StackPanel>
+              <TextBlock Text="AgenStart will install only the applications shown above." Foreground="{StaticResource AgenMutedBrush}" FontSize="14" Margin="0,22,0,0" />
+            </StackPanel>
+          </Grid>
+
+          <Grid x:Name="InstallationPanel" IsVisible="False" MaxWidth="1160" HorizontalAlignment="Left">
+            <StackPanel>
+              <TextBlock Classes="eyebrow" Text="INSTALLATION" Margin="0,0,0,20" />
+              <TextBlock Classes="pageTitle" Text="Setting up your PC" />
+              <TextBlock Classes="subtitle" Text="{Binding InstallationStatus}" Margin="0,12,0,0" TextWrapping="Wrap" />
+              <Border Height="1" Background="{StaticResource AgenDividerBrush}" Margin="0,30,0,28" />
+              <Grid ColumnDefinitions="1.15*,0.85*" ColumnSpacing="52">
+                <StackPanel Grid.Column="0">
+                  <TextBlock Text="Installation queue" FontSize="20" FontWeight="SemiBold" Margin="0,0,0,10" />
+                  <ItemsControl ItemsSource="{Binding InstallationItems}"><ItemsControl.ItemTemplate><DataTemplate x:DataType="vm:InstallationRowViewModel"><Border BorderBrush="{StaticResource AgenDividerBrush}" BorderThickness="0,0,0,1" Padding="10,13"><Grid ColumnDefinitions="54,*,170,90" ColumnSpacing="14"><Border Width="36" Height="36" CornerRadius="8" Background="#E7EFEC"><TextBlock Text="{Binding Initials}" Foreground="{StaticResource AgenTealBrush}" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" /></Border><StackPanel Grid.Column="1"><TextBlock Text="{Binding Name}" FontSize="16" FontWeight="SemiBold" /><TextBlock Text="{Binding Message}" Foreground="{StaticResource AgenMutedBrush}" FontSize="12" TextTrimming="CharacterEllipsis" /></StackPanel><TextBlock Grid.Column="2" Text="{Binding Status}" VerticalAlignment="Center" /><Button Grid.Column="3" Content="Retry" Background="Transparent" BorderThickness="0" Foreground="{StaticResource AgenTealBrush}" IsVisible="{Binding CanRetry}" Click="RetryInstallationItem_OnClick" /></Grid></Border></DataTemplate></ItemsControl.ItemTemplate></ItemsControl>
+                </StackPanel>
+                <StackPanel Grid.Column="1" Spacing="16">
+                  <TextBlock Text="Current task" FontSize="18" FontWeight="SemiBold" /><TextBlock Text="{Binding CurrentInstallationName}" FontSize="26" FontWeight="SemiBold" /><ProgressBar IsIndeterminate="True" IsVisible="{Binding IsInstalling}" Height="5" />
+                  <Grid ColumnDefinitions="*,*,*" Margin="0,12,0,0"><StackPanel><TextBlock Text="{Binding InstallationCompletedCount}" Foreground="{StaticResource AgenTealBrush}" FontSize="22" FontWeight="SemiBold" /><TextBlock Text="completed" Foreground="{StaticResource AgenMutedBrush}" /></StackPanel><StackPanel Grid.Column="1"><TextBlock Text="{Binding InstallationRemainingCount}" FontSize="22" FontWeight="SemiBold" /><TextBlock Text="remaining" Foreground="{StaticResource AgenMutedBrush}" /></StackPanel><StackPanel Grid.Column="2"><TextBlock Text="{Binding InstallationFailedCount}" FontSize="22" FontWeight="SemiBold" /><TextBlock Text="failed" Foreground="{StaticResource AgenMutedBrush}" /></StackPanel></Grid>
+                  <Button Classes="secondary" Content="Cancel installation" IsEnabled="{Binding IsInstalling}" Click="CancelInstallationButton_OnClick" Margin="0,10,0,0" />
+                  <Button Classes="secondary" Content="View report" IsVisible="{Binding HasReport}" Click="ViewReportButton_OnClick" />
+                  <Border Height="1" Background="{StaticResource AgenDividerBrush}" Margin="0,10,0,0" /><TextBlock Text="Packages are resolved through exact trusted provider identities. AgenStart does not execute arbitrary shell commands." Foreground="{StaticResource AgenMutedBrush}" FontSize="13" TextWrapping="Wrap" />
+                </StackPanel>
+              </Grid>
+            </StackPanel>
+          </Grid>
+
+          <Grid x:Name="ReportPanel" IsVisible="False" MaxWidth="1160" HorizontalAlignment="Left">
+            <StackPanel>
+              <TextBlock Classes="eyebrow" Text="REPORT" Margin="0,0,0,20" />
+              <TextBlock Classes="pageTitle" Text="Your PC is ready" />
+              <TextBlock Classes="subtitle" Text="{Binding ReportStatus}" Margin="0,12,0,0" TextWrapping="Wrap" />
+              <Border Height="1" Background="{StaticResource AgenDividerBrush}" Margin="0,28,0,24" />
+              <Grid ColumnDefinitions="90,*,*,*,*" ColumnSpacing="18"><Border Width="64" Height="64" CornerRadius="32" BorderBrush="{StaticResource AgenTealBrush}" BorderThickness="2"><TextBlock Text="✓" Foreground="{StaticResource AgenTealBrush}" FontSize="30" HorizontalAlignment="Center" VerticalAlignment="Center" /></Border><StackPanel Grid.Column="1"><TextBlock Text="{Binding ReportProcessedCount}" Foreground="{StaticResource AgenTealBrush}" FontSize="22" FontWeight="SemiBold" /><TextBlock Text="applications processed" Foreground="{StaticResource AgenMutedBrush}" /></StackPanel><StackPanel Grid.Column="2"><TextBlock Text="{Binding ReportInstalledCount}" Foreground="{StaticResource AgenTealBrush}" FontSize="22" FontWeight="SemiBold" /><TextBlock Text="installed" Foreground="{StaticResource AgenMutedBrush}" /></StackPanel><StackPanel Grid.Column="3"><TextBlock Text="{Binding ReportAlreadyInstalledCount}" Foreground="{StaticResource AgenTealBrush}" FontSize="22" FontWeight="SemiBold" /><TextBlock Text="already installed" Foreground="{StaticResource AgenMutedBrush}" /></StackPanel><StackPanel Grid.Column="4"><TextBlock Text="{Binding ReportFailedCount}" FontSize="22" FontWeight="SemiBold" /><TextBlock Text="failed" Foreground="{StaticResource AgenMutedBrush}" /></StackPanel></Grid>
+              <TextBlock Text="Installation results" FontSize="20" FontWeight="SemiBold" Margin="0,32,0,10" />
+              <ItemsControl ItemsSource="{Binding ReportItems}"><ItemsControl.ItemTemplate><DataTemplate x:DataType="vm:ReportRowViewModel"><Border BorderBrush="{StaticResource AgenDividerBrush}" BorderThickness="0,0,0,1" Padding="10,13"><Grid ColumnDefinitions="54,*,190,160" ColumnSpacing="14"><Border Width="36" Height="36" CornerRadius="8" Background="#E7EFEC"><TextBlock Text="{Binding Initials}" Foreground="{StaticResource AgenTealBrush}" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" /></Border><TextBlock Grid.Column="1" Text="{Binding Name}" FontSize="16" FontWeight="SemiBold" VerticalAlignment="Center" /><TextBlock Grid.Column="2" Text="{Binding Result}" VerticalAlignment="Center" /><TextBlock Grid.Column="3" Text="{Binding InstalledVersion}" Foreground="{StaticResource AgenMutedBrush}" VerticalAlignment="Center" /></Grid></Border></DataTemplate></ItemsControl.ItemTemplate></ItemsControl>
+              <Border IsVisible="{Binding ReportRequiresReboot}" BorderBrush="#AAB2B2" BorderThickness="1" CornerRadius="8" Padding="16" Margin="0,20,0,0"><StackPanel><TextBlock Text="Restart recommended" FontWeight="SemiBold" /><TextBlock Text="One or more installed applications require Windows to restart before all features become available." Foreground="{StaticResource AgenMutedBrush}" FontSize="13" Margin="0,4,0,0" /></StackPanel></Border>
+              <Grid ColumnDefinitions="*,Auto" Margin="0,22,0,0"><StackPanel Orientation="Horizontal" Spacing="14"><Button Classes="primary" Content="Finish" Click="FinishButton_OnClick" /><Button Classes="secondary" Content="Export this setup" IsEnabled="False" /></StackPanel><StackPanel Grid.Column="1"><TextBlock Text="Completed at" Foreground="{StaticResource AgenMutedBrush}" FontSize="12" /><TextBlock Text="{Binding ReportCompletedAt}" FontWeight="SemiBold" /></StackPanel></Grid>
+              <TextBlock Text="Setup export will be enabled by the reproducible profiles milestone." Foreground="{StaticResource AgenMutedBrush}" FontSize="13" Margin="0,20,0,0" />
             </StackPanel>
           </Grid>
         </Grid>
