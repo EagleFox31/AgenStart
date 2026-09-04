@@ -8,6 +8,7 @@ internal sealed record WinGetPreparedPackage(
     string PreparationId,
     string RootDirectory,
     string InstallerPath,
+    string InstallerSha256,
     string InstallerType,
     IReadOnlyList<string> SilentArguments,
     IReadOnlySet<int> SuccessExitCodes)
@@ -166,6 +167,7 @@ internal static class WinGetPreparedPackageInspector
                     preparationId,
                     root,
                     installerPath,
+                    manifest.InstallerSha256,
                     installerType,
                     silentArguments,
                     successCodes),
@@ -191,7 +193,7 @@ internal static class WinGetPreparedPackageInspector
         {
             var raw = lines[index];
             var trimmed = raw.Trim();
-            if (trimmed.Length == 0 || trimmed.StartsWith('#'))
+            if (trimmed.Length == 0 || trimmed[0] == '#')
             {
                 continue;
             }
@@ -468,7 +470,7 @@ internal static class WinGetPreparedPackageInspector
         return count;
     }
 
-    private static bool IsWithinRoot(string root, string path)
+    internal static bool IsWithinRoot(string root, string path)
     {
         var fullRoot = Path.GetFullPath(root)
             .TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar) + Path.DirectorySeparatorChar;
