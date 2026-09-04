@@ -16,7 +16,16 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\AgenStart.Catalogue\AgenStart.Catalogue.csproj" />
     <ProjectReference Include="..\AgenStart.Core\AgenStart.Core.csproj" />
     <ProjectReference Include="..\AgenStart.Platform.Windows\AgenStart.Platform.Windows.csproj" />
+    <ProjectReference Include="..\AgenStart.Recommendations\AgenStart.Recommendations.csproj" />
+    <ProjectReference Include="..\AgenStart.SoftwareInventory\AgenStart.SoftwareInventory.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="..\..\docs\product\catalogue.fixtures.json"
+             Link="Data\catalogue.json"
+             CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>
