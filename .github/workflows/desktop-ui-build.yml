@@ -3,17 +3,19 @@ name: Desktop UI build
 on:
   push:
     paths:
-      - "src/AgenStart.Desktop/**"
-      - "src/AgenStart.Core/**"
-      - "src/AgenStart.Platform.Windows/**"
+      - "src/**"
+      - "docs/product/catalogue.fixtures.json"
       - ".github/workflows/desktop-ui-build.yml"
+      - ".github/workflows/release.yml"
+      - "version.txt"
       - "global.json"
   pull_request:
     paths:
-      - "src/AgenStart.Desktop/**"
-      - "src/AgenStart.Core/**"
-      - "src/AgenStart.Platform.Windows/**"
+      - "src/**"
+      - "docs/product/catalogue.fixtures.json"
       - ".github/workflows/desktop-ui-build.yml"
+      - ".github/workflows/release.yml"
+      - "version.txt"
       - "global.json"
   workflow_dispatch:
 
@@ -35,6 +37,9 @@ jobs:
 
       - name: Restore
         run: dotnet restore src/AgenStart.Desktop/AgenStart.Desktop.csproj
+
+      - name: Verify formatting
+        run: dotnet format src/AgenStart.Desktop/AgenStart.Desktop.csproj --verify-no-changes --no-restore --verbosity minimal
 
       - name: Build
         run: dotnet build src/AgenStart.Desktop/AgenStart.Desktop.csproj --configuration Release --no-restore --verbosity normal
