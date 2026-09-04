@@ -41,6 +41,7 @@ public sealed partial class MainWindow
         PolishUsageProfiles();
         AddProfileGuidance();
         AddRecommendationLoadingCard();
+        InstallRecommendationProgressTracking();
         RecommendationsPanel.LayoutUpdated += (_, _) => ApplyRecommendationStatusVisuals();
         _viewModel.PropertyChanged += (_, args) =>
         {
@@ -231,11 +232,10 @@ public sealed partial class MainWindow
 
         var steps = new StackPanel { Spacing = 8 };
         steps.Children.Add(BuildLoadingStep("✓", "Machine capabilities already analysed", SuccessBrush));
-        steps.Children.Add(BuildLoadingStep("○", "Read installed applications", TealBrush));
-        steps.Children.Add(BuildLoadingStep("○", "Load the trusted software catalogue", TealBrush));
-        steps.Children.Add(BuildLoadingStep("○", "Match apps to the selected usage profile", TealBrush));
-        steps.Children.Add(BuildLoadingStep("○", "Apply compatibility and installed-state rules", TealBrush));
-        steps.Children.Add(BuildLoadingStep("○", "Finalize the recommendation list", TealBrush));
+        steps.Children.Add(BuildLoadingStep("○", "Load the trusted software catalogue", GuidanceMutedBrush));
+        steps.Children.Add(BuildLoadingStep("○", "Read installed applications", GuidanceMutedBrush));
+        steps.Children.Add(BuildLoadingStep("○", "Apply compatibility, installed-state and profile rules", GuidanceMutedBrush));
+        steps.Children.Add(BuildLoadingStep("○", "Finalize the recommendation list", GuidanceMutedBrush));
 
         var content = new StackPanel { Spacing = 10 };
         content.Children.Add(new TextBlock
@@ -247,16 +247,11 @@ public sealed partial class MainWindow
         });
         content.Children.Add(new TextBlock
         {
-            Text = "AgenStart is checking these inputs before showing your final list. No fake percentage is used.",
+            Text = "AgenStart shows the real pipeline phase currently in progress. No fake percentage is used.",
             FontSize = 13,
             Foreground = GuidanceMutedBrush,
-            TextWrapping = TextWrapping.Wrap
-        });
-        content.Children.Add(new ProgressBar
-        {
-            IsIndeterminate = true,
-            Height = 3,
-            Margin = new Avalonia.Thickness(0, 2, 0, 4)
+            TextWrapping = TextWrapping.Wrap,
+            Margin = new Avalonia.Thickness(0, 0, 0, 4)
         });
         content.Children.Add(steps);
 
@@ -290,7 +285,7 @@ public sealed partial class MainWindow
         row.Children.Add(new TextBlock
         {
             Text = text,
-            Foreground = GuidanceMutedBrush,
+            Foreground = brush,
             FontSize = 13,
             VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center
         });
@@ -301,7 +296,8 @@ public sealed partial class MainWindow
     {
         if (_recommendationLoadingCard is not null)
         {
-            _recommendationLoadingCard.IsVisible = UsageProfilePanel.IsVisible && _viewModel.IsBusy;
+            _recommendationLoadingCard.IsVisible = UsageProfilePanel.IsVisible &&
+                                                   (_viewModel.IsBusy || _recommendationProgressFailed);
         }
     }
 
