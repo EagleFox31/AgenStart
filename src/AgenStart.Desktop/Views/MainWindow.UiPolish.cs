@@ -17,10 +17,13 @@ public sealed partial class MainWindow
     private static readonly IBrush GuidanceBackgroundBrush = new SolidColorBrush(Color.Parse("#EEF3F1"));
     private static readonly IBrush GuidanceMutedBrush = new SolidColorBrush(Color.Parse("#69747A"));
     private static readonly IBrush GuidanceTextBrush = new SolidColorBrush(Color.Parse("#10242B"));
+    private static readonly IBrush SuccessBrush = new SolidColorBrush(Color.Parse("#2F7D5B"));
+    private static readonly IBrush TealBrush = new SolidColorBrush(Color.Parse("#176D64"));
 
     private bool _uiPolishApplied;
     private TextBlock? _profileGuidanceText;
     private TextBlock? _profileSummaryIcon;
+    private Border? _recommendationLoadingCard;
 
     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
     {
@@ -35,16 +38,19 @@ public sealed partial class MainWindow
         PolishMachineRows();
         PolishUsageProfiles();
         AddProfileGuidance();
+        AddRecommendationLoadingCard();
         RecommendationsPanel.LayoutUpdated += (_, _) => ApplyRecommendationStatusVisuals();
         _viewModel.PropertyChanged += (_, args) =>
         {
             if (args.PropertyName is nameof(MainWindowViewModel.HasRecommendations)
-                or nameof(MainWindowViewModel.SelectedProfile))
+                or nameof(MainWindowViewModel.SelectedProfile)
+                or nameof(MainWindowViewModel.IsBusy))
             {
                 Avalonia.Threading.Dispatcher.UIThread.Post(() =>
                 {
                     RefreshProfileCardStates();
                     RefreshProfileGuidance();
+                    RefreshRecommendationLoadingCard();
                     ApplyRecommendationStatusVisuals();
                 });
             }
@@ -208,6 +214,92 @@ public sealed partial class MainWindow
                 UserProfile.Training => "◎",
                 _ => "○"
             };
+        }
+    }
+
+    private void AddRecommendationLoadingCard()
+    {
+        var progressBar = UsageProfilePanel.GetVisualDescendants().OfType<ProgressBar>().FirstOrDefault();
+        if (progressBar?.Parent is not StackPanel leftColumn || _recommendationLoadingCard is not null)
+        {
+            return;
+        }
+
+        progressBar.IsVisible = false;
+
+        var steps = new StackPanel { Spacing = 8 };
+        steps.Children.Add(BuildLoadingStep("✓", "Machine capabilities already analysed", SuccessBrush));
+        steps.Children.Add(BuildLoadingStep("○", "Read installed applications", TealBrush));
+        steps.Children.Add(BuildLoadingStep("○", "Load the trusted software catalogue", TealBrush));
+        steps.Children.Add(BuildLoadingStep("○", "Match apps to the selected usage profile", TealBrush));
+        steps.Children.Add(BuildLoadingStep("○", "Apply compatibility and installed-state rules", TealBrush));
+        steps.Children.Add(BuildLoadingStep("○", "Finalize the recommendation list", TealBrush));
+
+        var content = new StackPanel { Spacing = 10 };
+        content.Children.Add(new TextBlock
+        {
+            Text = "Building your recommendations",
+            FontSize = 16,
+            FontWeight = FontWeight.SemiBold,
+            Foreground = GuidanceTextBrush
+        });
+        content.Children.Add(new TextBlock
+        {
+            Text = "AgenStart is checking these inputs before showing your final list. No fake percentage is used.",
+            FontSize = 13,
+            Foreground = GuidanceMutedBrush,
+            TextWrapping = TextWrapping.Wrap
+        });
+        content.Children.Add(new ProgressBar
+        {
+            IsIndeterminate = true,
+            Height = 3,
+            Margin = new Avalonia.Thickness(0, 2, 0, 4)
+        });
+        content.Children.Add(steps);
+
+        _recommendationLoadingCard = new Border
+        {
+            Background = GuidanceBackgroundBrush,
+            BorderBrush = ProfileDefaultBorderBrush,
+            BorderThickness = new Avalonia.Thickness(1),
+            CornerRadius = new Avalonia.CornerRadius(8),
+            Padding = new Avalonia.Thickness(16, 14),
+            Margin = new Avalonia.Thickness(0, 16, 0, 0),
+            IsVisible = false,
+            Child = content
+        };
+
+        leftColumn.Children.Add(_recommendationLoadingCard);
+        RefreshRecommendationLoadingCard();
+    }
+
+    private static Control BuildLoadingStep(string icon, string text, IBrush brush)
+    {
+        var row = new StackPanel { Orientation = Avalonia.Layout.Orientation.Horizontal, Spacing = 9 };
+        row.Children.Add(new TextBlock
+        {
+            Text = icon,
+            Width = 18,
+            TextAlignment = Avalonia.Media.TextAlignment.Center,
+            Foreground = brush,
+            FontWeight = FontWeight.SemiBold
+        });
+        row.Children.Add(new TextBlock
+        {
+            Text = text,
+            Foreground = GuidanceMutedBrush,
+            FontSize = 13,
+            VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center
+        });
+        return row;
+    }
+
+    private void RefreshRecommendationLoadingCard()
+    {
+        if (_recommendationLoadingCard is not null)
+        {
+            _recommendationLoadingCard.IsVisible = UsageProfilePanel.IsVisible && _viewModel.IsBusy;
         }
     }
 
