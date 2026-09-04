@@ -37,6 +37,34 @@ Target visual density: 4/10.
 
 The UI must not drift into SaaS dashboard, app-store, cyberpunk, gaming, glassmorphism or oversized marketing-page patterns.
 
+## AgenStart identity
+
+Production direction: **Concept 03** from the approved Windows smoke-test logo explorations.
+
+The identity combines:
+
+- the dark navy AgenStart `A`
+- a teal forward-progress / automation route
+- the Windows / PC block motif
+- the `AgenStart` wordmark
+- `BY AGENSTUDIO` as the product-signature line when the full lockup is used
+
+Desktop source assets:
+
+- `src/AgenStart.Desktop/Assets/agenstart-app-icon.png` — runtime/window/sidebar mark
+- `src/AgenStart.Desktop/Assets/agenstart-app-icon.ico` — Windows executable icon with 16, 24, 32, 48 and 64 px frames
+
+Usage rules:
+
+- **Dark navigation:** use the light app-icon tile alongside a white `AgenStart` wordmark and teal `BY AGENSTUDIO` signature.
+- **Light surfaces:** use the navy/teal mark on the warm off-white background; avoid placing the full lockup inside decorative cards unless branding is the content.
+- **Small sizes:** use the app-icon mark only. Never shrink the complete wordmark into the Windows title bar/taskbar.
+- **Clear space:** preserve at least one quarter of the icon width around the standalone mark and at least the cap-height of `AgenStart` around the full lockup.
+- **Minimum practical sizes:** 16 px is icon-only; 24/32/48 px remain icon-only; the full lockup begins at roughly 120 px of usable horizontal width.
+- **Do not recolor status semantics from the logo palette.** Teal is the product accent, while success/warning/error retain their own semantic colors.
+
+The Windows executable, window chrome and taskbar must resolve to the same AgenStart mark. Generic Avalonia/.NET icons are not acceptable in production builds.
+
 ## Navigation model
 
 Primary guided flow:
