@@ -36,6 +36,7 @@ public sealed partial class MainWindow
         }
 
         _uiPolishApplied = true;
+        ApplyBranding();
         PolishMachineRows();
         PolishUsageProfiles();
         AddProfileGuidance();
