@@ -1,16 +1,31 @@
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Globalization;
 using System.Runtime.CompilerServices;
+using AgenStart.Catalogue;
+using AgenStart.Core.Catalogue;
 using AgenStart.Core.Machine;
 using AgenStart.Platform.Windows.Inventory;
+using AgenStart.Platform.Windows.SoftwareInventory;
+using AgenStart.Recommendations;
+using AgenStart.SoftwareInventory;
 
 namespace AgenStart.Desktop.ViewModels;
 
 public sealed class MainWindowViewModel : INotifyPropertyChanged
 {
     private readonly IMachineInventoryProvider _machineInventory;
+    private readonly IInstalledSoftwareInventoryProvider _softwareInventory;
+    private readonly SoftwareStateResolver _softwareStateResolver;
+    private readonly RecommendationEngine _recommendationEngine;
+    private readonly SoftwareCatalogueLoader _catalogueLoader;
+
+    private MachineSnapshot? _machineSnapshot;
     private bool _isBusy;
     private bool _hasSnapshot;
+    private bool _hasRecommendations;
+    private UserProfile _selectedProfile = UserProfile.Development;
+    private string _recommendationStatus = "Choose a usage profile to build recommendations.";
     private string _statusTitle = "Ready for analysis";
     private string _statusMessage = "AgenStart can inspect the essential capabilities of this PC locally.";
     private string _operatingSystem = "Not analysed";
@@ -24,12 +39,23 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
     private string _winGetVersion = "Not analysed";
     private string _analysisDiagnostic = "No personal files or account information are inspected.";
 
-    public MainWindowViewModel(IMachineInventoryProvider? machineInventory = null)
+    public MainWindowViewModel(
+        IMachineInventoryProvider? machineInventory = null,
+        IInstalledSoftwareInventoryProvider? softwareInventory = null,
+        SoftwareStateResolver? softwareStateResolver = null,
+        RecommendationEngine? recommendationEngine = null,
+        SoftwareCatalogueLoader? catalogueLoader = null)
     {
         _machineInventory = machineInventory ?? new WindowsMachineInventoryProvider();
+        _softwareInventory = softwareInventory ?? new WindowsInstalledSoftwareInventoryProvider();
+        _softwareStateResolver = softwareStateResolver ?? new SoftwareStateResolver();
+        _recommendationEngine = recommendationEngine ?? new RecommendationEngine();
+        _catalogueLoader = catalogueLoader ?? new SoftwareCatalogueLoader();
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;
+
+    public ObservableCollection<RecommendationRowViewModel> Recommendations { get; } = [];
 
     public bool IsBusy
     {
@@ -42,6 +68,50 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         get => _hasSnapshot;
         private set => SetField(ref _hasSnapshot, value);
     }
+
+    public bool HasRecommendations
+    {
+        get => _hasRecommendations;
+        private set => SetField(ref _hasRecommendations, value);
+    }
+
+    public UserProfile SelectedProfile
+    {
+        get => _selectedProfile;
+        private set
+        {
+            if (!SetField(ref _selectedProfile, value))
+            {
+                return;
+            }
+
+            OnPropertyChanged(nameof(SelectedProfileName));
+            OnPropertyChanged(nameof(SelectedProfileDescription));
+        }
+    }
+
+    public string SelectedProfileName => SelectedProfile.ToString();
+
+    public string SelectedProfileDescription => SelectedProfile switch
+    {
+        UserProfile.Personal => "Everyday apps, browsing, communication and media.",
+        UserProfile.Development => "Code, databases, terminals and developer tools.",
+        UserProfile.Business => "Office, communication, productivity and collaboration.",
+        UserProfile.Creation => "Design, media, content and creative workflows.",
+        UserProfile.Training => "Learning, course tools and guided study setups.",
+        _ => string.Empty
+    };
+
+    public string RecommendationStatus
+    {
+        get => _recommendationStatus;
+        private set => SetField(ref _recommendationStatus, value);
+    }
+
+    public int RecommendationCount => Recommendations.Count;
+    public int SelectedCount => Recommendations.Count(row => row.IsSelected);
+    public int AlreadyInstalledCount => Recommendations.Count(row => row.Disposition == RecommendationDisposition.AlreadyInstalled);
+    public int OptionalCount => Recommendations.Count(row => row.Level == RecommendationLevel.Optional && row.Disposition == RecommendationDisposition.Recommended);
 
     public string StatusTitle
     {
@@ -115,6 +185,18 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         private set => SetField(ref _analysisDiagnostic, value);
     }
 
+    public void SelectProfile(UserProfile profile)
+    {
+        if (SelectedProfile == profile)
+        {
+            return;
+        }
+
+        SelectedProfile = profile;
+        ClearRecommendations();
+        RecommendationStatus = "Profile changed. Build recommendations when you're ready.";
+    }
+
     public async Task AnalyzeAsync(CancellationToken cancellationToken = default)
     {
         if (IsBusy)
@@ -148,9 +230,109 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         }
     }
 
+    public async Task BuildRecommendationsAsync(CancellationToken cancellationToken = default)
+    {
+        if (IsBusy || _machineSnapshot is null)
+        {
+            return;
+        }
+
+        IsBusy = true;
+        RecommendationStatus = "Checking installed software and building recommendations…";
+
+        try
+        {
+            var cataloguePath = Path.Combine(AppContext.BaseDirectory, "Data", "catalogue.json");
+            using var catalogueStream = File.OpenRead(cataloguePath);
+            var catalogue = _catalogueLoader.Load(catalogueStream);
+
+            var installedSoftware = await _softwareInventory
+                .CaptureAsync(cancellationToken)
+                .ConfigureAwait(true);
+            var softwareState = _softwareStateResolver.Resolve(catalogue.DetectionTargets, installedSoftware);
+            var plan = _recommendationEngine.Build(new RecommendationRequest(
+                SelectedProfile,
+                _machineSnapshot,
+                softwareState,
+                catalogue.Definitions));
+
+            ClearRecommendations();
+            var metadata = catalogue.Applications.ToDictionary(
+                application => application.Id,
+                StringComparer.OrdinalIgnoreCase);
+
+            foreach (var decision in plan.Decisions)
+            {
+                var description = metadata.TryGetValue(decision.ApplicationId, out var application)
+                    ? application.Description
+                    : string.Empty;
+                var row = new RecommendationRowViewModel(decision, description);
+                row.PropertyChanged += RecommendationRow_OnPropertyChanged;
+                Recommendations.Add(row);
+            }
+
+            HasRecommendations = true;
+            RecommendationStatus = $"Based on your {SelectedProfileName} profile, machine capabilities and software already installed.";
+            RaiseRecommendationSummary();
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            RecommendationStatus = "Recommendation analysis cancelled.";
+        }
+        catch (Exception)
+        {
+            ClearRecommendations();
+            RecommendationStatus = "AgenStart could not build recommendations from the local catalogue and inventory.";
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
+    public void SelectEssentialsOnly()
+    {
+        foreach (var row in Recommendations.Where(row => row.CanSelect))
+        {
+            row.IsSelected = row.Level == RecommendationLevel.Essential;
+        }
+
+        RaiseRecommendationSummary();
+    }
+
+    private void RecommendationRow_OnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(RecommendationRowViewModel.IsSelected))
+        {
+            OnPropertyChanged(nameof(SelectedCount));
+        }
+    }
+
+    private void ClearRecommendations()
+    {
+        foreach (var row in Recommendations)
+        {
+            row.PropertyChanged -= RecommendationRow_OnPropertyChanged;
+        }
+
+        Recommendations.Clear();
+        HasRecommendations = false;
+        RaiseRecommendationSummary();
+    }
+
+    private void RaiseRecommendationSummary()
+    {
+        OnPropertyChanged(nameof(RecommendationCount));
+        OnPropertyChanged(nameof(SelectedCount));
+        OnPropertyChanged(nameof(AlreadyInstalledCount));
+        OnPropertyChanged(nameof(OptionalCount));
+    }
+
     private void ApplySnapshot(MachineSnapshot snapshot)
     {
+        _machineSnapshot = snapshot;
         HasSnapshot = snapshot.Platform.Kind == PlatformKind.Windows;
+        ClearRecommendations();
 
         OperatingSystem = snapshot.Platform.Edition
             ?? (snapshot.Platform.Kind == PlatformKind.Windows ? "Windows" : "Unsupported platform");
@@ -176,6 +358,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         {
             StatusTitle = "PC ready";
             StatusMessage = "Essential capabilities detected locally.";
+            RecommendationStatus = "Choose a usage profile to build recommendations.";
         }
         else
         {
@@ -222,14 +405,18 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged
         return $"{Math.Round(bytes / gib):0} GB";
     }
 
-    private void SetField<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)
+    private bool SetField<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)
     {
         if (EqualityComparer<T>.Default.Equals(field, value))
         {
-            return;
+            return false;
         }
 
         field = value;
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        OnPropertyChanged(propertyName);
+        return true;
     }
+
+    private void OnPropertyChanged([CallerMemberName] string? propertyName = null) =>
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 }
