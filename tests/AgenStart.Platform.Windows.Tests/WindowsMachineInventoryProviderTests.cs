@@ -46,7 +46,7 @@ public sealed class WindowsMachineInventoryProviderTests
             new FakeLocator(),
             new FakeRunner());
 
-        var snapshot = await provider.CaptureAsync();
+        var snapshot = await provider.CaptureAsync(TestContext.Current.CancellationToken);
 
         Assert.Equal(PlatformKind.Unknown, snapshot.Platform.Kind);
         Assert.Equal(PackageManagerKind.None, snapshot.PackageManager.Kind);
