@@ -52,6 +52,47 @@ public static partial class WinGetCommandBuilder
         ]);
     }
 
+    public static WinGetCommand BuildDownload(
+        PackageInstallRequest request,
+        string downloadDirectory)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+        ValidateApplicationId(request.ApplicationId);
+        ValidateReference(request.Package);
+        ArgumentException.ThrowIfNullOrWhiteSpace(downloadDirectory);
+
+        if (!Path.IsPathFullyQualified(downloadDirectory))
+        {
+            throw new ArgumentException(
+                "WinGet download output must be an AgenStart-owned absolute path.",
+                nameof(downloadDirectory));
+        }
+
+        var arguments = new List<string>
+        {
+            "download",
+            "--id", request.Package.PackageId,
+            "--exact",
+            "--source", request.Package.Source,
+            "--download-directory", downloadDirectory,
+            "--disable-interactivity"
+        };
+
+        AddScope(arguments, request.Package.ScopePreference, nameof(request));
+
+        if (request.AcceptPackageAgreements)
+        {
+            arguments.Add("--accept-package-agreements");
+        }
+
+        if (request.AcceptSourceAgreements)
+        {
+            arguments.Add("--accept-source-agreements");
+        }
+
+        return new WinGetCommand(arguments);
+    }
+
     public static WinGetCommand BuildInstall(PackageInstallRequest request)
     {
         ArgumentNullException.ThrowIfNull(request);
@@ -68,24 +109,7 @@ public static partial class WinGetCommandBuilder
             "--no-upgrade"
         };
 
-        switch (request.Package.ScopePreference)
-        {
-            case PackageScope.User:
-                arguments.Add("--scope");
-                arguments.Add("user");
-                break;
-            case PackageScope.Machine:
-                arguments.Add("--scope");
-                arguments.Add("machine");
-                break;
-            case PackageScope.Default:
-                break;
-            default:
-                throw new ArgumentOutOfRangeException(
-                    nameof(request),
-                    request.Package.ScopePreference,
-                    "Unsupported package scope.");
-        }
+        AddScope(arguments, request.Package.ScopePreference, nameof(request));
 
         if (request.Silent)
         {
@@ -124,6 +148,31 @@ public static partial class WinGetCommandBuilder
         }
 
         ValidateSource(package.Source);
+    }
+
+    private static void AddScope(
+        List<string> arguments,
+        PackageScope scope,
+        string parameterName)
+    {
+        switch (scope)
+        {
+            case PackageScope.User:
+                arguments.Add("--scope");
+                arguments.Add("user");
+                break;
+            case PackageScope.Machine:
+                arguments.Add("--scope");
+                arguments.Add("machine");
+                break;
+            case PackageScope.Default:
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(
+                    parameterName,
+                    scope,
+                    "Unsupported package scope.");
+        }
     }
 
     private static void ValidateSource(string source)

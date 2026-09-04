@@ -12,6 +12,20 @@ public enum InstallationQueueItemState
     Cancelled
 }
 
+public enum InstallationItemActivity
+{
+    Waiting = 0,
+    Resolving,
+    Downloading,
+    Ready,
+    Installing,
+    Verifying,
+    Completed,
+    Failed,
+    Skipped,
+    Cancelled
+}
+
 public enum InstallationSessionState
 {
     Ready,
@@ -54,6 +68,7 @@ public sealed record InstallationItemSnapshot(
     string ApplicationId,
     ProviderPackageReference Package,
     InstallationQueueItemState State,
+    InstallationItemActivity Activity,
     int AttemptCount,
     PackageOperationStatus? LastOperationStatus,
     string? DiagnosticCode,
@@ -61,6 +76,8 @@ public sealed record InstallationItemSnapshot(
     string? InstalledVersion,
     bool CanRetry,
     bool RequiresReboot,
+    long? BytesDownloaded,
+    long? BytesRequired,
     DateTimeOffset? StartedAtUtc,
     DateTimeOffset? CompletedAtUtc);
 
