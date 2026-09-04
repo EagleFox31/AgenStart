@@ -1,3 +1,4 @@
+using AgenStart.Core.Recommendations;
 using AgenStart.SoftwareInventory;
 
 namespace AgenStart.Platform.Windows.SoftwareInventory;
@@ -24,7 +25,12 @@ public sealed class WindowsInstalledSoftwareInventoryProvider : IInstalledSoftwa
             timeProvider);
     }
 
-    public Task<InstalledSoftwareSnapshot> CaptureAsync(
-        CancellationToken cancellationToken = default) =>
-        _inner.CaptureAsync(cancellationToken);
+    public async Task<InstalledSoftwareSnapshot> CaptureAsync(
+        CancellationToken cancellationToken = default)
+    {
+        RecommendationPipelineDiagnostics.Report(RecommendationPipelineStage.ReadingInstalledApplications);
+        var snapshot = await _inner.CaptureAsync(cancellationToken).ConfigureAwait(false);
+        RecommendationPipelineDiagnostics.Report(RecommendationPipelineStage.ApplyingInstalledStateRules);
+        return snapshot;
+    }
 }
