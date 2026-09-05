@@ -415,11 +415,27 @@ public sealed partial class MainWindow
 
     private void ScheduleRecommendationLogoDecoration()
     {
-        Dispatcher.UIThread.Post(() =>
+        Dispatcher.UIThread.Post(TryDecorateRecommendationUi);
+        DispatcherTimer.RunOnce(TryDecorateRecommendationUi, TimeSpan.FromMilliseconds(120));
+        DispatcherTimer.RunOnce(TryDecorateRecommendationUi, TimeSpan.FromMilliseconds(350));
+    }
+
+    private void TryDecorateRecommendationUi()
+    {
+        if (!RecommendationsPanel.IsVisible)
         {
+            return;
+        }
+
+        try
+        {
+            DecorateRecommendationPresentation();
             DecorateRecommendationLogos();
-            DispatcherTimer.RunOnce(DecorateRecommendationLogos, TimeSpan.FromMilliseconds(80));
-        });
+        }
+        catch (Exception exception)
+        {
+            System.Diagnostics.Debug.WriteLine($"Recommendation decoration failed: {exception}");
+        }
     }
 
     private void DecorateRecommendationPresentation()
@@ -600,13 +616,6 @@ public sealed partial class MainWindow
 
     private void DecorateRecommendationLogos()
     {
-        if (!RecommendationsPanel.IsVisible)
-        {
-            return;
-        }
-
-        DecorateRecommendationPresentation();
-
         var initials = RecommendationsPanel
             .GetVisualDescendants()
             .OfType<TextBlock>()
@@ -624,17 +633,34 @@ public sealed partial class MainWindow
                 continue;
             }
 
-            tile.Background = RecommendationMetricBrush;
-            tile.Padding = new Thickness(7);
-            tile.Child = new Avalonia.Svg.Skia.Svg(new Uri("avares://AgenStart.Desktop/"))
+            try
             {
-                Path = row.LogoAssetPath,
-                Width = 30,
-                Height = 30,
-                Stretch = Stretch.Uniform,
-                HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center,
-                VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center
-            };
+                var source = Avalonia.Svg.Skia.SvgSource.Load(
+                    row.LogoAssetPath,
+                    new Uri("avares://AgenStart.Desktop/"));
+
+                if (source is null)
+                {
+                    continue;
+                }
+
+                tile.Background = RecommendationMetricBrush;
+                tile.Padding = new Thickness(7);
+                tile.Child = new Image
+                {
+                    Source = new Avalonia.Svg.Skia.SvgImage { Source = source },
+                    Width = 30,
+                    Height = 30,
+                    Stretch = Stretch.Uniform,
+                    HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center,
+                    VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center
+                };
+            }
+            catch (Exception exception)
+            {
+                System.Diagnostics.Debug.WriteLine($"Logo load failed for {row.ApplicationId}: {exception}");
+                tile.Child = text;
+            }
         }
     }
 }
