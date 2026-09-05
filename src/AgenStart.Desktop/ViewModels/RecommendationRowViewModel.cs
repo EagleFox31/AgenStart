@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using Avalonia.Media;
 using AgenStart.Core.Catalogue;
+using AgenStart.Desktop.Icons;
 using AgenStart.Recommendations;
 
 namespace AgenStart.Desktop.ViewModels;
@@ -36,7 +37,7 @@ public sealed class RecommendationRowViewModel : INotifyPropertyChanged
         StatusIcon = BuildStatusIcon(decision);
         (StatusBrush, StatusBackgroundBrush) = BuildStatusBrushes(decision);
         Initials = BuildInitials(decision.ApplicationName);
-        LogoAssetPath = BuildLogoAssetPath(decision.ApplicationId);
+        IconSource = AppIconService.Shared.Resolve(decision.ApplicationId);
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;
@@ -46,9 +47,9 @@ public sealed class RecommendationRowViewModel : INotifyPropertyChanged
     public string Description { get; }
     public string Reason { get; }
     public string Initials { get; }
-    public string? LogoAssetPath { get; }
-    public bool HasLogo => LogoAssetPath is not null;
-    public bool ShowInitials => !HasLogo;
+    public IImage? IconSource { get; }
+    public bool HasLogo => IconSource is not null;
+    public bool ShowInitials => IconSource is null;
     public RecommendationLevel Level { get; }
     public RecommendationDisposition Disposition { get; }
     public bool CanSelect { get; }
@@ -134,19 +135,6 @@ public sealed class RecommendationRowViewModel : INotifyPropertyChanged
             _ => (TealBrush, SoftTealBrush)
         };
     }
-
-    private static string? BuildLogoAssetPath(string applicationId) => applicationId switch
-    {
-        "git" => "avares://AgenStart.Desktop/Assets/AppLogos/git.svg",
-        "visual-studio-code" => "avares://AgenStart.Desktop/Assets/AppLogos/visual-studio-code.svg",
-        "firefox" => "avares://AgenStart.Desktop/Assets/AppLogos/firefox-browser.svg",
-        "vlc" => "avares://AgenStart.Desktop/Assets/AppLogos/vlc-media-player.svg",
-        "7zip" => "avares://AgenStart.Desktop/Assets/AppLogos/7zip.svg",
-        "obs-studio" => "avares://AgenStart.Desktop/Assets/AppLogos/obs-studio.svg",
-        "powertoys" => "avares://AgenStart.Desktop/Assets/AppLogos/microsoft-powertoys.svg",
-        "docker-desktop" => "avares://AgenStart.Desktop/Assets/AppLogos/docker.svg",
-        _ => null
-    };
 
     private static string BuildInitials(string name)
     {
