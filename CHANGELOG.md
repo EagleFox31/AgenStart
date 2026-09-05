@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.1](https://github.com/EagleFox31/AgenStart/compare/v0.2.0...v0.2.1) (2026-09-05)
+
+
+### Bug Fixes
+
+* keep decorative branding from blocking startup ([782d636](https://github.com/EagleFox31/AgenStart/commit/782d6360b4404ed6bcccd0e96e3d63c8fceb2b11))
+* prevent branding assets from blocking desktop startup ([e441b19](https://github.com/EagleFox31/AgenStart/commit/e441b190dd49304d57c3a035ef4f4c92c91e6709))
+
 ## [0.2.0](https://github.com/EagleFox31/AgenStart/compare/v0.1.0...v0.2.0) (2026-09-04)
 
 
