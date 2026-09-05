@@ -449,7 +449,7 @@ public sealed partial class MainWindow
 
             tile.Background = new SolidColorBrush(Color.Parse("#F2F5F3"));
             tile.Padding = new Thickness(6);
-            tile.Child = new Avalonia.Svg.Skia.Svg
+            tile.Child = new Avalonia.Svg.Skia.Svg(new Uri("avares://AgenStart.Desktop/"))
             {
                 Path = row.LogoAssetPath,
                 Width = 28,
