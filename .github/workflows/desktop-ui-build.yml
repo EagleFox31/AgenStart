@@ -73,3 +73,11 @@ jobs:
 
           Write-Host "AgenStart remained alive for 8 seconds after packaged launch."
           Stop-Process -Id $process.Id -Force
+
+      - name: Upload validated Windows package
+        uses: actions/upload-artifact@v4
+        with:
+          name: AgenStart-win-x64-validated
+          path: artifacts/smoke/**
+          if-no-files-found: error
+          retention-days: 7
