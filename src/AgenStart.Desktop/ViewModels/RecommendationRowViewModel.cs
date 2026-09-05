@@ -1,5 +1,4 @@
 using System.ComponentModel;
-using System.Runtime.CompilerServices;
 using Avalonia.Media;
 using AgenStart.Core.Catalogue;
 using AgenStart.Recommendations;
@@ -37,6 +36,7 @@ public sealed class RecommendationRowViewModel : INotifyPropertyChanged
         StatusIcon = BuildStatusIcon(decision);
         (StatusBrush, StatusBackgroundBrush) = BuildStatusBrushes(decision);
         Initials = BuildInitials(decision.ApplicationName);
+        LogoAssetPath = BuildLogoAssetPath(decision.ApplicationId);
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;
@@ -46,6 +46,9 @@ public sealed class RecommendationRowViewModel : INotifyPropertyChanged
     public string Description { get; }
     public string Reason { get; }
     public string Initials { get; }
+    public string? LogoAssetPath { get; }
+    public bool HasLogo => LogoAssetPath is not null;
+    public bool ShowInitials => !HasLogo;
     public RecommendationLevel Level { get; }
     public RecommendationDisposition Disposition { get; }
     public bool CanSelect { get; }
@@ -131,6 +134,14 @@ public sealed class RecommendationRowViewModel : INotifyPropertyChanged
             _ => (TealBrush, SoftTealBrush)
         };
     }
+
+    private static string? BuildLogoAssetPath(string applicationId) => applicationId switch
+    {
+        "obs-studio" => "/Assets/AppLogos/obs-studio.svg",
+        "visual-studio-code" => "/Assets/AppLogos/visual-studio-code.svg",
+        "vlc" => "/Assets/AppLogos/vlc-media-player.svg",
+        _ => null
+    };
 
     private static string BuildInitials(string name)
     {
