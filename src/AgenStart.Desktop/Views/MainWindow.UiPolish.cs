@@ -37,9 +37,10 @@ public sealed partial class MainWindow
 
         _uiPolishApplied = true;
 
-        // Dynamic visual-tree decoration is deliberately deferred from startup.
-        // The packaged Windows launch smoke test must prove the base shell is stable
-        // before optional polish is reintroduced one safe piece at a time.
+        // Keep startup decoration one-shot and free of LayoutUpdated mutations.
+        // This restores visual polish without reintroducing the recursive layout loop
+        // that caused the packaged Windows StackOverflowException.
+        ApplyStableUiPolish();
     }
 
     private void PolishMachineRows()
