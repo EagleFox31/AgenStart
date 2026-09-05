@@ -43,3 +43,41 @@ jobs:
 
       - name: Build
         run: dotnet build src/AgenStart.Desktop/AgenStart.Desktop.csproj --configuration Release --no-restore --verbosity normal
+
+      - name: Publish Windows smoke package
+        shell: pwsh
+        run: |
+          dotnet publish src/AgenStart.Desktop/AgenStart.Desktop.csproj `
+            --configuration Release `
+            --runtime win-x64 `
+            --self-contained true `
+            --output artifacts/smoke
+
+      - name: Launch packaged desktop app
+        shell: pwsh
+        run: |
+          $exe = Resolve-Path "artifacts/smoke/AgenStart.Desktop.exe"
+          $startedAt = Get-Date
+          $process = Start-Process -FilePath $exe -PassThru
+          Start-Sleep -Seconds 8
+
+          if ($process.HasExited) {
+            Write-Host "AgenStart exited during startup smoke test with code $($process.ExitCode)."
+            Write-Host "Recent Application log entries:"
+            Get-WinEvent -FilterHashtable @{ LogName = 'Application'; StartTime = $startedAt.AddSeconds(-2) } -ErrorAction SilentlyContinue |
+              Where-Object { $_.Message -match 'AgenStart|\.NET Runtime|Application Error|Avalonia' } |
+              Select-Object -First 10 TimeCreated, ProviderName, Id, LevelDisplayName, Message |
+              Format-List
+            throw "Packaged AgenStart did not survive the startup smoke window."
+          }
+
+          Write-Host "AgenStart remained alive for 8 seconds after packaged launch."
+          Stop-Process -Id $process.Id -Force
+
+      - name: Upload validated Windows package
+        uses: actions/upload-artifact@v4
+        with:
+          name: AgenStart-win-x64-validated
+          path: artifacts/smoke/**
+          if-no-files-found: error
+          retention-days: 7
