@@ -6,9 +6,9 @@ AgenStart includes or references third-party software and visual assets. Those m
 
 AgenStart bundles selected application logos solely to identify software in the recommendation, review, installation, history, and reporting experiences.
 
-Initial logo assets are sourced from [`ln-dev7/logos-apps`](https://github.com/ln-dev7/logos-apps), a public collection of SVG logos.
+Most bundled logo assets are sourced from [`ln-dev7/logos-apps`](https://github.com/ln-dev7/logos-apps), a public collection of SVG logos. The Firefox glyph is sourced from [`simple-icons/simple-icons`](https://github.com/simple-icons/simple-icons).
 
-The repository code, website, and organization of `ln-dev7/logos-apps` are published under the MIT License. **The logos themselves are not covered by that MIT license.** Product names, logos, trademarks, and registered trademarks remain the property of their respective owners.
+The repository code, website, and organization of `ln-dev7/logos-apps` are published under the MIT License. **The logos themselves are not covered by that MIT license.** Product names, logos, trademarks, and registered trademarks remain the property of their respective owners. Simple Icons is distributed under CC0-1.0, but the trademarks represented by its icons remain subject to the rights of their respective owners.
 
 AgenStart's use of a logo:
 
@@ -25,11 +25,16 @@ AgenStart installs software only through the trusted provider metadata defined i
 
 The following SVG files are currently vendored locally so the desktop application remains usable offline:
 
-- `obs-studio.svg` — OBS Studio / OBS Project — source: `ln-dev7/logos-apps/logos/obs-studio.svg`;
+- `git.svg` — Git — source: `ln-dev7/logos-apps/logos/git.svg`;
 - `visual-studio-code.svg` — Visual Studio Code / Microsoft — source: `ln-dev7/logos-apps/logos/visual-studio-code.svg`;
-- `vlc-media-player.svg` — VLC media player / VideoLAN — source: `ln-dev7/logos-apps/logos/vlc-media-player.svg`.
+- `firefox-browser.svg` — Firefox Browser / Mozilla — source: `simple-icons/simple-icons/icons/firefoxbrowser.svg`;
+- `vlc-media-player.svg` — VLC media player / VideoLAN — source: `ln-dev7/logos-apps/logos/vlc-media-player.svg`;
+- `7zip.svg` — 7-Zip — source: `ln-dev7/logos-apps/logos/7zip.svg`;
+- `obs-studio.svg` — OBS Studio / OBS Project — source: `ln-dev7/logos-apps/logos/obs-studio.svg`;
+- `microsoft-powertoys.svg` — Microsoft PowerToys — source: `ln-dev7/logos-apps/logos/microsoft-powertoys.svg`;
+- `docker.svg` — Docker — source: `ln-dev7/logos-apps/logos/docker.svg`.
 
-Imported into AgenStart on 2026-09-05. Source collection: https://github.com/ln-dev7/logos-apps
+Imported into AgenStart on 2026-09-05. Source collections: https://github.com/ln-dev7/logos-apps and https://github.com/simple-icons/simple-icons
 
 ## SVG rendering
 
