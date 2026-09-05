@@ -47,6 +47,7 @@
     <Setter Property="Margin" Value="12,3" />
     <Setter Property="Padding" Value="18,0" />
     <Setter Property="HorizontalContentAlignment" Value="Left" />
+    <Setter Property="VerticalContentAlignment" Value="Center" />
     <Setter Property="Background" Value="Transparent" />
     <Setter Property="Foreground" Value="#DDE6EA" />
     <Setter Property="BorderThickness" Value="0" />
@@ -94,6 +95,8 @@
     <Setter Property="MinWidth" Value="220" />
     <Setter Property="Height" Value="54" />
     <Setter Property="Padding" Value="24,0" />
+    <Setter Property="HorizontalContentAlignment" Value="Center" />
+    <Setter Property="VerticalContentAlignment" Value="Center" />
     <Setter Property="Background" Value="{StaticResource AgenTealBrush}" />
     <Setter Property="Foreground" Value="White" />
     <Setter Property="BorderThickness" Value="0" />
@@ -102,21 +105,35 @@
     <Setter Property="FontWeight" Value="SemiBold" />
   </Style>
 
+  <Style Selector="Button.primary /template/ ContentPresenter">
+    <Setter Property="HorizontalContentAlignment" Value="Center" />
+    <Setter Property="VerticalContentAlignment" Value="Center" />
+  </Style>
+
   <Style Selector="Button.primary:pointerover /template/ ContentPresenter">
     <Setter Property="Background" Value="#145E57" />
     <Setter Property="Foreground" Value="White" />
+    <Setter Property="HorizontalContentAlignment" Value="Center" />
+    <Setter Property="VerticalContentAlignment" Value="Center" />
   </Style>
 
   <Style Selector="Button.secondary">
     <Setter Property="MinWidth" Value="190" />
     <Setter Property="Height" Value="54" />
     <Setter Property="Padding" Value="22,0" />
+    <Setter Property="HorizontalContentAlignment" Value="Center" />
+    <Setter Property="VerticalContentAlignment" Value="Center" />
     <Setter Property="Background" Value="Transparent" />
     <Setter Property="Foreground" Value="{StaticResource AgenTextBrush}" />
     <Setter Property="BorderBrush" Value="#AAB2B2" />
     <Setter Property="BorderThickness" Value="1" />
     <Setter Property="CornerRadius" Value="8" />
     <Setter Property="FontSize" Value="16" />
+  </Style>
+
+  <Style Selector="Button.secondary /template/ ContentPresenter">
+    <Setter Property="HorizontalContentAlignment" Value="Center" />
+    <Setter Property="VerticalContentAlignment" Value="Center" />
   </Style>
 
   <Style Selector="Button.secondary:pointerover">
@@ -127,6 +144,8 @@
   <Style Selector="Button.secondary:pointerover /template/ ContentPresenter">
     <Setter Property="Background" Value="#EEF2F0" />
     <Setter Property="Foreground" Value="{StaticResource AgenTextBrush}" />
+    <Setter Property="HorizontalContentAlignment" Value="Center" />
+    <Setter Property="VerticalContentAlignment" Value="Center" />
   </Style>
 
   <Style Selector="RadioButton.profileCard">
