@@ -1,8 +1,11 @@
+using System.Collections.Specialized;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Interactivity;
 using Avalonia.LogicalTree;
 using Avalonia.Media;
 using Avalonia.Threading;
+using Avalonia.VisualTree;
 using AgenStart.Core.Recommendations;
 using AgenStart.Desktop.ViewModels;
 
@@ -20,6 +23,7 @@ public sealed partial class MainWindow
     private static readonly IBrush StableDangerBorderBrush = new SolidColorBrush(Color.Parse("#F1B5AE"));
 
     private bool _stableUiPolishInstalled;
+    private bool _recommendationLogoDecorationInstalled;
     private IDisposable? _stableRecommendationProgressSubscription;
     private StackPanel? _stableRecommendationProgressBlock;
     private ProgressBar? _stableRecommendationProgressBar;
@@ -37,6 +41,7 @@ public sealed partial class MainWindow
         NormalizeSidebarNavigation();
         DecorateMachineStatusRows();
         InstallStableRecommendationProgress();
+        InstallRecommendationLogoDecoration();
     }
 
     private void NormalizeSidebarNavigation()
@@ -283,22 +288,27 @@ public sealed partial class MainWindow
             Dispatcher.UIThread.Post(() => UpdateStableRecommendationProgress(stage)));
 
         _viewModel.PropertyChanged += StableRecommendationProgressViewModel_OnPropertyChanged;
-        _viewModel.Recommendations.CollectionChanged += (_, args) =>
-        {
-            if (_viewModel.IsBusy && args.NewItems is { Count: > 0 })
-            {
-                Dispatcher.UIThread.Post(() => SetStableRecommendationProgress(
-                    95,
-                    "Finalizing recommendation list…"));
-            }
-        };
+        _viewModel.Recommendations.CollectionChanged += StableRecommendationProgressRecommendations_OnCollectionChanged;
 
         Closed += (_, _) =>
         {
             _stableRecommendationProgressSubscription?.Dispose();
             _stableRecommendationProgressSubscription = null;
             _viewModel.PropertyChanged -= StableRecommendationProgressViewModel_OnPropertyChanged;
+            _viewModel.Recommendations.CollectionChanged -= StableRecommendationProgressRecommendations_OnCollectionChanged;
         };
+    }
+
+    private void StableRecommendationProgressRecommendations_OnCollectionChanged(
+        object? sender,
+        NotifyCollectionChangedEventArgs args)
+    {
+        if (_viewModel.IsBusy && args.NewItems is { Count: > 0 })
+        {
+            Dispatcher.UIThread.Post(() => SetStableRecommendationProgress(
+                95,
+                "Finalizing recommendation list…"));
+        }
     }
 
     private void StableRecommendationProgressViewModel_OnPropertyChanged(
@@ -372,5 +382,82 @@ public sealed partial class MainWindow
         _stableRecommendationProgressBar.Value = bounded;
         _stableRecommendationProgressLabel.Text = label;
         _stableRecommendationProgressPercent.Text = $"{bounded:0}%";
+    }
+
+    private void InstallRecommendationLogoDecoration()
+    {
+        if (_recommendationLogoDecorationInstalled)
+        {
+            return;
+        }
+
+        _recommendationLogoDecorationInstalled = true;
+        _viewModel.Recommendations.CollectionChanged += RecommendationLogos_OnCollectionChanged;
+        RecommendationsButton.Click += RecommendationLogos_OnNavigationClick;
+
+        Closed += (_, _) =>
+        {
+            _viewModel.Recommendations.CollectionChanged -= RecommendationLogos_OnCollectionChanged;
+            RecommendationsButton.Click -= RecommendationLogos_OnNavigationClick;
+        };
+    }
+
+    private void RecommendationLogos_OnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs args)
+    {
+        ScheduleRecommendationLogoDecoration();
+    }
+
+    private void RecommendationLogos_OnNavigationClick(object? sender, RoutedEventArgs args)
+    {
+        ScheduleRecommendationLogoDecoration();
+    }
+
+    private void ScheduleRecommendationLogoDecoration()
+    {
+        // No LayoutUpdated mutation here: logo decoration is intentionally one-shot per render pass
+        // so it cannot recreate the recursive layout loop that previously caused startup stack overflows.
+        Dispatcher.UIThread.Post(() =>
+        {
+            DecorateRecommendationLogos();
+            DispatcherTimer.RunOnce(DecorateRecommendationLogos, TimeSpan.FromMilliseconds(80));
+        });
+    }
+
+    private void DecorateRecommendationLogos()
+    {
+        if (!RecommendationsPanel.IsVisible)
+        {
+            return;
+        }
+
+        var initials = RecommendationsPanel
+            .GetVisualDescendants()
+            .OfType<TextBlock>()
+            .Where(text => text.DataContext is RecommendationRowViewModel row &&
+                           row.HasLogo &&
+                           string.Equals(text.Text, row.Initials, StringComparison.Ordinal))
+            .ToList();
+
+        foreach (var text in initials)
+        {
+            if (text.DataContext is not RecommendationRowViewModel row ||
+                row.LogoAssetPath is null ||
+                text.Parent is not Border tile)
+            {
+                continue;
+            }
+
+            tile.Background = new SolidColorBrush(Color.Parse("#F2F5F3"));
+            tile.Padding = new Thickness(6);
+            tile.Child = new Avalonia.Svg.Skia.Svg
+            {
+                Path = row.LogoAssetPath,
+                Width = 28,
+                Height = 28,
+                Stretch = Stretch.Uniform,
+                HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center,
+                VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center
+            };
+        }
     }
 }
