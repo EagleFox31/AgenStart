@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Avalonia.Controls;
 using Avalonia.LogicalTree;
 using Avalonia.Media;
@@ -12,67 +13,81 @@ public sealed partial class MainWindow
 
     private void ApplyBranding()
     {
-        ApplyWindowIcon();
-        ApplySidebarBrandLockup();
+        TryApplyWindowIcon();
+        TryApplySidebarBrandLockup();
     }
 
-    private void ApplyWindowIcon()
+    private void TryApplyWindowIcon()
     {
-        using var iconStream = AssetLoader.Open(AgenStartIconUri);
-        Icon = new WindowIcon(iconStream);
-    }
-
-    private void ApplySidebarBrandLockup()
-    {
-        var productName = this.GetLogicalDescendants()
-            .OfType<TextBlock>()
-            .FirstOrDefault(text => string.Equals(text.Text, "AgenStart", StringComparison.Ordinal));
-
-        if (productName?.Parent is not StackPanel brandHost || brandHost.Tag as string == "agenstart-brand-lockup")
+        try
         {
-            return;
+            using var iconStream = AssetLoader.Open(AgenStartIconUri);
+            Icon = new WindowIcon(iconStream);
         }
+        catch (Exception exception)
+        {
+            Trace.TraceWarning("AgenStart window icon could not be loaded: {0}", exception.Message);
+        }
+    }
 
-        using var imageStream = AssetLoader.Open(AgenStartIconUri);
-        var mark = new Image
+    private void TryApplySidebarBrandLockup()
+    {
+        try
         {
-            Source = new Bitmap(imageStream),
-            Width = 46,
-            Height = 46,
-            Stretch = Stretch.Uniform
-        };
+            var productName = this.GetLogicalDescendants()
+                .OfType<TextBlock>()
+                .FirstOrDefault(text => string.Equals(text.Text, "AgenStart", StringComparison.Ordinal));
 
-        var words = new StackPanel
-        {
-            Spacing = 2,
-            VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center
-        };
-        words.Children.Add(new TextBlock
-        {
-            Text = "AgenStart",
-            Foreground = Brushes.White,
-            FontSize = 24,
-            FontWeight = FontWeight.SemiBold
-        });
-        words.Children.Add(new TextBlock
-        {
-            Text = "BY AGENSTUDIO",
-            Foreground = new SolidColorBrush(Color.Parse("#45CFC1")),
-            FontSize = 9.5,
-            FontWeight = FontWeight.SemiBold,
-            LetterSpacing = 2.1
-        });
+            if (productName?.Parent is not StackPanel brandHost || brandHost.Tag as string == "agenstart-brand-lockup")
+            {
+                return;
+            }
 
-        var lockup = new StackPanel
-        {
-            Orientation = Avalonia.Layout.Orientation.Horizontal,
-            Spacing = 12
-        };
-        lockup.Children.Add(mark);
-        lockup.Children.Add(words);
+            using var imageStream = AssetLoader.Open(AgenStartIconUri);
+            var mark = new Image
+            {
+                Source = new Bitmap(imageStream),
+                Width = 46,
+                Height = 46,
+                Stretch = Stretch.Uniform
+            };
 
-        brandHost.Children.Clear();
-        brandHost.Children.Add(lockup);
-        brandHost.Tag = "agenstart-brand-lockup";
+            var words = new StackPanel
+            {
+                Spacing = 2,
+                VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center
+            };
+            words.Children.Add(new TextBlock
+            {
+                Text = "AgenStart",
+                Foreground = Brushes.White,
+                FontSize = 24,
+                FontWeight = FontWeight.SemiBold
+            });
+            words.Children.Add(new TextBlock
+            {
+                Text = "BY AGENSTUDIO",
+                Foreground = new SolidColorBrush(Color.Parse("#45CFC1")),
+                FontSize = 9.5,
+                FontWeight = FontWeight.SemiBold,
+                LetterSpacing = 2.1
+            });
+
+            var lockup = new StackPanel
+            {
+                Orientation = Avalonia.Layout.Orientation.Horizontal,
+                Spacing = 12
+            };
+            lockup.Children.Add(mark);
+            lockup.Children.Add(words);
+
+            brandHost.Children.Clear();
+            brandHost.Children.Add(lockup);
+            brandHost.Tag = "agenstart-brand-lockup";
+        }
+        catch (Exception exception)
+        {
+            Trace.TraceWarning("AgenStart sidebar branding could not be loaded: {0}", exception.Message);
+        }
     }
 }
