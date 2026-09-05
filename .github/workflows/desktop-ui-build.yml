@@ -53,6 +53,15 @@ jobs:
             --self-contained true `
             --output artifacts/smoke
 
+      - name: Validate packaged recommendation icons
+        shell: pwsh
+        run: |
+          $exe = Resolve-Path "artifacts/smoke/AgenStart.Desktop.exe"
+          $process = Start-Process -FilePath $exe -ArgumentList "--icon-smoke" -PassThru -Wait
+          if ($process.ExitCode -ne 0) {
+            throw "Packaged application icon resolution smoke failed with code $($process.ExitCode)."
+          }
+
       - name: Launch packaged desktop app
         shell: pwsh
         run: |
