@@ -424,7 +424,11 @@ public sealed partial class MainWindow
 
     private void DecorateRecommendationPresentation()
     {
-        if (RecommendationsPanel.Child is not StackPanel root)
+        var root = RecommendationsPanel.Children
+            .OfType<StackPanel>()
+            .FirstOrDefault();
+
+        if (root is null)
         {
             return;
         }
