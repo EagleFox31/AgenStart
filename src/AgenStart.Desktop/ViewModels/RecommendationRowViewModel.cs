@@ -137,9 +137,14 @@ public sealed class RecommendationRowViewModel : INotifyPropertyChanged
 
     private static string? BuildLogoAssetPath(string applicationId) => applicationId switch
     {
-        "obs-studio" => "avares://AgenStart.Desktop/Assets/AppLogos/obs-studio.svg",
+        "git" => "avares://AgenStart.Desktop/Assets/AppLogos/git.svg",
         "visual-studio-code" => "avares://AgenStart.Desktop/Assets/AppLogos/visual-studio-code.svg",
+        "firefox" => "avares://AgenStart.Desktop/Assets/AppLogos/firefox-browser.svg",
         "vlc" => "avares://AgenStart.Desktop/Assets/AppLogos/vlc-media-player.svg",
+        "7zip" => "avares://AgenStart.Desktop/Assets/AppLogos/7zip.svg",
+        "obs-studio" => "avares://AgenStart.Desktop/Assets/AppLogos/obs-studio.svg",
+        "powertoys" => "avares://AgenStart.Desktop/Assets/AppLogos/microsoft-powertoys.svg",
+        "docker-desktop" => "avares://AgenStart.Desktop/Assets/AppLogos/docker.svg",
         _ => null
     };
 
