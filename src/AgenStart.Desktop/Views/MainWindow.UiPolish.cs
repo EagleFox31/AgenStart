@@ -30,10 +30,16 @@ public sealed partial class MainWindow
     {
         base.OnAttachedToVisualTree(e);
 
+        if (_uiPolishApplied)
+        {
+            return;
+        }
+
+        _uiPolishApplied = true;
+
         // Dynamic visual-tree decoration is deliberately deferred from startup.
         // The packaged Windows launch smoke test must prove the base shell is stable
         // before optional polish is reintroduced one safe piece at a time.
-        _uiPolishApplied = true;
     }
 
     private void PolishMachineRows()
