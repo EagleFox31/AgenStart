@@ -21,6 +21,9 @@ public sealed partial class MainWindow
     private static readonly IBrush StableDangerBrush = new SolidColorBrush(Color.Parse("#B42318"));
     private static readonly IBrush StableSoftDangerBrush = new SolidColorBrush(Color.Parse("#FDECEA"));
     private static readonly IBrush StableDangerBorderBrush = new SolidColorBrush(Color.Parse("#F1B5AE"));
+    private static readonly IBrush RecommendationCardBrush = new SolidColorBrush(Color.Parse("#FBFAF6"));
+    private static readonly IBrush RecommendationMetricBrush = new SolidColorBrush(Color.Parse("#EEF3F1"));
+    private static readonly IBrush RecommendationBorderBrush = new SolidColorBrush(Color.Parse("#D9DEDC"));
 
     private bool _stableUiPolishInstalled;
     private bool _recommendationLogoDecorationInstalled;
@@ -65,7 +68,6 @@ public sealed partial class MainWindow
                 continue;
             }
 
-            // One fixed icon rail + one fixed text start for every navigation item.
             stack.Spacing = 0;
             icon.Width = 34;
             icon.MinWidth = 34;
@@ -136,7 +138,6 @@ public sealed partial class MainWindow
                 continue;
             }
 
-            // Keep the original bound TextBlock alive so status changes remain live after analysis.
             grid.Children.Remove(status);
             status.FontSize = 13;
             status.FontWeight = FontWeight.SemiBold;
@@ -414,13 +415,183 @@ public sealed partial class MainWindow
 
     private void ScheduleRecommendationLogoDecoration()
     {
-        // No LayoutUpdated mutation here: logo decoration is intentionally one-shot per render pass
-        // so it cannot recreate the recursive layout loop that previously caused startup stack overflows.
         Dispatcher.UIThread.Post(() =>
         {
             DecorateRecommendationLogos();
             DispatcherTimer.RunOnce(DecorateRecommendationLogos, TimeSpan.FromMilliseconds(80));
         });
+    }
+
+    private void DecorateRecommendationPresentation()
+    {
+        if (RecommendationsPanel.Child is not StackPanel root)
+        {
+            return;
+        }
+
+        var headerGrid = root.Children.OfType<Grid>().FirstOrDefault();
+        var stats = headerGrid?.Children
+            .OfType<StackPanel>()
+            .FirstOrDefault(panel => Grid.GetColumn(panel) == 1 &&
+                                     panel.Orientation == Avalonia.Layout.Orientation.Horizontal);
+
+        if (stats is not null)
+        {
+            stats.Spacing = 10;
+            stats.VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center;
+
+            var metrics = stats.Children.OfType<StackPanel>().ToList();
+            foreach (var metric in metrics)
+            {
+                var index = stats.Children.IndexOf(metric);
+                if (index < 0)
+                {
+                    continue;
+                }
+
+                metric.Spacing = 2;
+                var card = new Border
+                {
+                    MinWidth = 112,
+                    Background = RecommendationMetricBrush,
+                    BorderBrush = RecommendationBorderBrush,
+                    BorderThickness = new Thickness(1),
+                    CornerRadius = new CornerRadius(10),
+                    Padding = new Thickness(14, 10),
+                    Child = metric
+                };
+
+                stats.Children.RemoveAt(index);
+                stats.Children.Insert(index, card);
+            }
+        }
+
+        var items = root.Children.OfType<ItemsControl>().FirstOrDefault();
+        if (items is not null)
+        {
+            items.Margin = new Thickness(0, 8, 0, 0);
+        }
+
+        var divider = root.Children
+            .OfType<Border>()
+            .FirstOrDefault(border => Math.Abs(border.Height - 1d) < 0.1d);
+        if (divider is not null)
+        {
+            divider.Margin = new Thickness(0, 28, 0, 16);
+        }
+
+        var rowBorders = RecommendationsPanel
+            .GetVisualDescendants()
+            .OfType<Border>()
+            .Where(border => border.DataContext is RecommendationRowViewModel &&
+                             border.Child is Grid grid &&
+                             grid.ColumnDefinitions.Count >= 4)
+            .ToList();
+
+        foreach (var rowBorder in rowBorders)
+        {
+            if (rowBorder.DataContext is not RecommendationRowViewModel row || rowBorder.Child is not Grid grid)
+            {
+                continue;
+            }
+
+            rowBorder.Background = RecommendationCardBrush;
+            rowBorder.BorderBrush = RecommendationBorderBrush;
+            rowBorder.BorderThickness = new Thickness(1);
+            rowBorder.CornerRadius = new CornerRadius(10);
+            rowBorder.Padding = new Thickness(16, 14);
+            rowBorder.Margin = new Thickness(0, 0, 0, 10);
+
+            grid.ColumnSpacing = 18;
+            grid.ColumnDefinitions[0].Width = new GridLength(64);
+            grid.ColumnDefinitions[2].Width = new GridLength(190);
+            grid.ColumnDefinitions[3].Width = new GridLength(56);
+
+            var logoTile = grid.Children
+                .OfType<Border>()
+                .FirstOrDefault(border => Grid.GetColumn(border) == 0);
+            if (logoTile is not null)
+            {
+                logoTile.Width = 48;
+                logoTile.Height = 48;
+                logoTile.CornerRadius = new CornerRadius(10);
+                logoTile.Background = RecommendationMetricBrush;
+                logoTile.VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center;
+            }
+
+            var status = grid.Children
+                .OfType<TextBlock>()
+                .FirstOrDefault(text => Grid.GetColumn(text) == 2);
+            if (status is not null)
+            {
+                grid.Children.Remove(status);
+                status.FontSize = 13;
+                status.FontWeight = FontWeight.SemiBold;
+                status.Foreground = row.StatusBrush;
+                status.VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center;
+
+                var statusIcon = new TextBlock
+                {
+                    Text = row.StatusIcon,
+                    Foreground = row.StatusBrush,
+                    FontSize = 13,
+                    FontWeight = FontWeight.SemiBold,
+                    VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center
+                };
+
+                var badgeContent = new StackPanel
+                {
+                    Orientation = Avalonia.Layout.Orientation.Horizontal,
+                    Spacing = 6
+                };
+                badgeContent.Children.Add(statusIcon);
+                badgeContent.Children.Add(status);
+
+                var badge = new Border
+                {
+                    Background = row.StatusBackgroundBrush,
+                    CornerRadius = new CornerRadius(14),
+                    Padding = new Thickness(10, 5),
+                    HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Left,
+                    VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
+                    Child = badgeContent
+                };
+                Grid.SetColumn(badge, 2);
+                grid.Children.Add(badge);
+            }
+
+            var checkBox = grid.Children
+                .OfType<CheckBox>()
+                .FirstOrDefault(control => Grid.GetColumn(control) == 3);
+            if (checkBox is not null)
+            {
+                checkBox.HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center;
+                checkBox.VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center;
+            }
+        }
+
+        var actionBar = root.Children
+            .OfType<StackPanel>()
+            .FirstOrDefault(panel => panel.Orientation == Avalonia.Layout.Orientation.Horizontal &&
+                                     panel.Children.OfType<Button>()
+                                         .Any(button => string.Equals(button.Content as string, "Review setup", StringComparison.Ordinal)));
+        if (actionBar is not null)
+        {
+            actionBar.Spacing = 12;
+            actionBar.Margin = new Thickness(0, 14, 0, 0);
+        }
+
+        var footer = root.Children
+            .OfType<Border>()
+            .FirstOrDefault(border => border.Child is TextBlock text &&
+                                      text.Text?.StartsWith("Nothing will be installed", StringComparison.Ordinal) == true);
+        if (footer?.Child is TextBlock footerText)
+        {
+            footer.Margin = new Thickness(0, 18, 0, 0);
+            footer.Padding = new Thickness(0, 18, 0, 0);
+            footerText.Text = "▱  Nothing will be installed until you approve the final setup.";
+            footerText.FontSize = 13;
+        }
     }
 
     private void DecorateRecommendationLogos()
@@ -429,6 +600,8 @@ public sealed partial class MainWindow
         {
             return;
         }
+
+        DecorateRecommendationPresentation();
 
         var initials = RecommendationsPanel
             .GetVisualDescendants()
@@ -447,13 +620,13 @@ public sealed partial class MainWindow
                 continue;
             }
 
-            tile.Background = new SolidColorBrush(Color.Parse("#F2F5F3"));
-            tile.Padding = new Thickness(6);
+            tile.Background = RecommendationMetricBrush;
+            tile.Padding = new Thickness(7);
             tile.Child = new Avalonia.Svg.Skia.Svg(new Uri("avares://AgenStart.Desktop/"))
             {
                 Path = row.LogoAssetPath,
-                Width = 28,
-                Height = 28,
+                Width = 30,
+                Height = 30,
                 Stretch = Stretch.Uniform,
                 HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center,
                 VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center
