@@ -12,6 +12,12 @@ public sealed partial class MainWindow
 {
     private static readonly IBrush StableSoftSuccessBrush = new SolidColorBrush(Color.Parse("#E7F3EC"));
     private static readonly IBrush StableSuccessBorderBrush = new SolidColorBrush(Color.Parse("#B9D8C5"));
+    private static readonly IBrush StableWarningBrush = new SolidColorBrush(Color.Parse("#9A6700"));
+    private static readonly IBrush StableSoftWarningBrush = new SolidColorBrush(Color.Parse("#FFF4D6"));
+    private static readonly IBrush StableWarningBorderBrush = new SolidColorBrush(Color.Parse("#E5C66B"));
+    private static readonly IBrush StableDangerBrush = new SolidColorBrush(Color.Parse("#B42318"));
+    private static readonly IBrush StableSoftDangerBrush = new SolidColorBrush(Color.Parse("#FDECEA"));
+    private static readonly IBrush StableDangerBorderBrush = new SolidColorBrush(Color.Parse("#F1B5AE"));
 
     private bool _stableUiPolishInstalled;
     private IDisposable? _stableRecommendationProgressSubscription;
@@ -35,9 +41,12 @@ public sealed partial class MainWindow
 
     private void NormalizeSidebarNavigation()
     {
-        foreach (var button in this.GetLogicalDescendants()
-                     .OfType<Button>()
-                     .Where(button => button.Classes.Contains("nav")))
+        var buttons = this.GetLogicalDescendants()
+            .OfType<Button>()
+            .Where(button => button.Classes.Contains("nav"))
+            .ToList();
+
+        foreach (var button in buttons)
         {
             button.HorizontalContentAlignment = Avalonia.Layout.HorizontalAlignment.Left;
             button.Padding = new Thickness(18, 0);
@@ -51,7 +60,7 @@ public sealed partial class MainWindow
                 continue;
             }
 
-            // Use one fixed icon rail and one fixed text start for every navigation item.
+            // One fixed icon rail + one fixed text start for every navigation item.
             stack.Spacing = 0;
             icon.Width = 34;
             icon.MinWidth = 34;
@@ -71,9 +80,12 @@ public sealed partial class MainWindow
 
     private void DecorateMachineStatusRows()
     {
-        foreach (var row in YourPcPanel.GetLogicalDescendants()
-                     .OfType<Border>()
-                     .Where(border => border.Classes.Contains("dataRow")))
+        var rows = YourPcPanel.GetLogicalDescendants()
+            .OfType<Border>()
+            .Where(border => border.Classes.Contains("dataRow"))
+            .ToList();
+
+        foreach (var row in rows)
         {
             row.ClipToBounds = true;
 
@@ -84,7 +96,7 @@ public sealed partial class MainWindow
 
             grid.ColumnSpacing = 16;
             grid.ColumnDefinitions[0].Width = new GridLength(46);
-            grid.ColumnDefinitions[2].Width = new GridLength(132);
+            grid.ColumnDefinitions[2].Width = new GridLength(150);
 
             var icon = grid.Children
                 .OfType<TextBlock>()
@@ -119,30 +131,79 @@ public sealed partial class MainWindow
                 continue;
             }
 
-            var statusText = status.Text ?? string.Empty;
-            var badgeText = new TextBlock
+            // Keep the original bound TextBlock alive so status changes remain live after analysis.
+            grid.Children.Remove(status);
+            status.FontSize = 13;
+            status.FontWeight = FontWeight.SemiBold;
+            status.VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center;
+
+            var statusIcon = new TextBlock
             {
-                Text = $"✓  {statusText}",
-                Foreground = SuccessBrush,
                 FontSize = 13,
                 FontWeight = FontWeight.SemiBold,
                 VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center
             };
 
+            var badgeContent = new StackPanel
+            {
+                Orientation = Avalonia.Layout.Orientation.Horizontal,
+                Spacing = 6
+            };
+            badgeContent.Children.Add(statusIcon);
+            badgeContent.Children.Add(status);
+
             var badge = new Border
             {
-                Background = StableSoftSuccessBrush,
-                BorderBrush = StableSuccessBorderBrush,
                 BorderThickness = new Thickness(1),
                 CornerRadius = new CornerRadius(13),
                 Padding = new Thickness(10, 5),
                 HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Left,
                 VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
-                Child = badgeText
+                Child = badgeContent
             };
 
+            void RefreshSemanticBadge()
+            {
+                var text = status.Text ?? string.Empty;
+                var lower = text.ToLowerInvariant();
+
+                if (lower.Contains("unavailable") || lower.Contains("failed") || lower.Contains("unsupported") || lower.Contains("missing"))
+                {
+                    statusIcon.Text = "×";
+                    statusIcon.Foreground = StableDangerBrush;
+                    status.Foreground = StableDangerBrush;
+                    badge.Background = StableSoftDangerBrush;
+                    badge.BorderBrush = StableDangerBorderBrush;
+                    return;
+                }
+
+                if (lower.Contains("limited") || lower.Contains("warning") || lower.Contains("unknown"))
+                {
+                    statusIcon.Text = "!";
+                    statusIcon.Foreground = StableWarningBrush;
+                    status.Foreground = StableWarningBrush;
+                    badge.Background = StableSoftWarningBrush;
+                    badge.BorderBrush = StableWarningBorderBrush;
+                    return;
+                }
+
+                statusIcon.Text = "✓";
+                statusIcon.Foreground = SuccessBrush;
+                status.Foreground = SuccessBrush;
+                badge.Background = StableSoftSuccessBrush;
+                badge.BorderBrush = StableSuccessBorderBrush;
+            }
+
+            status.PropertyChanged += (_, args) =>
+            {
+                if (args.Property == TextBlock.TextProperty)
+                {
+                    RefreshSemanticBadge();
+                }
+            };
+
+            RefreshSemanticBadge();
             Grid.SetColumn(badge, 2);
-            grid.Children.Remove(status);
             grid.Children.Add(badge);
         }
     }
