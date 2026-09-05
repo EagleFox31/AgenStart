@@ -37,10 +37,10 @@ public sealed partial class MainWindow
 
         _uiPolishApplied = true;
 
-        // Keep startup decoration one-shot and free of LayoutUpdated mutations.
-        // This restores visual polish without reintroducing the recursive layout loop
-        // that caused the packaged Windows StackOverflowException.
-        ApplyStableUiPolish();
+        // Never mutate the logical/visual tree while Avalonia is still attaching it.
+        // Deferring the one-shot decoration avoids the re-entrant layout recursion that
+        // previously caused a packaged Windows StackOverflowException.
+        Avalonia.Threading.Dispatcher.UIThread.Post(ApplyStableUiPolish);
     }
 
     private void PolishMachineRows()
