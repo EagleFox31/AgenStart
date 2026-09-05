@@ -30,34 +30,10 @@ public sealed partial class MainWindow
     {
         base.OnAttachedToVisualTree(e);
 
-        if (_uiPolishApplied)
-        {
-            return;
-        }
-
+        // Dynamic visual-tree decoration is deliberately deferred from startup.
+        // The packaged Windows launch smoke test must prove the base shell is stable
+        // before optional polish is reintroduced one safe piece at a time.
         _uiPolishApplied = true;
-        ApplyBranding();
-        PolishMachineRows();
-        PolishUsageProfiles();
-        AddProfileGuidance();
-        AddRecommendationLoadingCard();
-        InstallRecommendationProgressTracking();
-        RecommendationsPanel.LayoutUpdated += (_, _) => ApplyRecommendationStatusVisuals();
-        _viewModel.PropertyChanged += (_, args) =>
-        {
-            if (args.PropertyName is nameof(MainWindowViewModel.HasRecommendations)
-                or nameof(MainWindowViewModel.SelectedProfile)
-                or nameof(MainWindowViewModel.IsBusy))
-            {
-                Avalonia.Threading.Dispatcher.UIThread.Post(() =>
-                {
-                    RefreshProfileCardStates();
-                    RefreshProfileGuidance();
-                    RefreshRecommendationLoadingCard();
-                    ApplyRecommendationStatusVisuals();
-                });
-            }
-        };
     }
 
     private void PolishMachineRows()
