@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Avalonia;
 using AgenStart.Desktop.Icons;
 
@@ -5,35 +6,6 @@ namespace AgenStart.Desktop;
 
 internal static class Program
 {
-    private static readonly string[] IconSmokeApplicationIds =
-    [
-        "7zip",
-        "anki",
-        "bitwarden",
-        "copyq",
-        "dbeaver",
-        "discord",
-        "docker-desktop",
-        "firefox",
-        "flow-launcher",
-        "git",
-        "github-cli",
-        "localsend",
-        "obs-studio",
-        "obsidian",
-        "postman",
-        "powershell",
-        "powertoys",
-        "quicklook",
-        "sharex",
-        "steam",
-        "visual-studio-code",
-        "vlc",
-        "windows-terminal",
-        "zoom",
-        "zotero"
-    ];
-
     [STAThread]
     public static int Main(string[] args)
     {
@@ -57,18 +29,45 @@ internal static class Program
         {
             BuildAvaloniaApp().SetupWithoutStarting();
 
-            foreach (var applicationId in IconSmokeApplicationIds)
+            var cataloguePath = Path.Combine(AppContext.BaseDirectory, "Data", "catalogue.json");
+            if (!File.Exists(cataloguePath))
             {
+                return 3;
+            }
+
+            using var document = JsonDocument.Parse(File.ReadAllText(cataloguePath));
+            if (!document.RootElement.TryGetProperty("applications", out var applications) ||
+                applications.ValueKind != JsonValueKind.Array ||
+                applications.GetArrayLength() == 0)
+            {
+                return 4;
+            }
+
+            foreach (var application in applications.EnumerateArray())
+            {
+                if (!application.TryGetProperty("id", out var idElement))
+                {
+                    return 5;
+                }
+
+                var applicationId = idElement.GetString();
+                if (string.IsNullOrWhiteSpace(applicationId))
+                {
+                    return 5;
+                }
+
                 if (AppIconService.Shared.Resolve(applicationId) is null)
                 {
+                    Console.Error.WriteLine($"Missing packaged icon for catalogue application: {applicationId}");
                     return 2;
                 }
             }
 
             return 0;
         }
-        catch
+        catch (Exception exception)
         {
+            Console.Error.WriteLine(exception);
             return 1;
         }
     }
