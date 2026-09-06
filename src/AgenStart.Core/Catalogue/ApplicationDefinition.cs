@@ -14,9 +14,7 @@ public enum UserProfile
     Gaming = 1 << 5,
 
     // Backward-compatible aliases for existing setup profiles/catalogue data.
-    [Obsolete("Use Creative.")]
     Creation = Creative,
-    [Obsolete("Use Learning.")]
     Training = Learning
 }
 
