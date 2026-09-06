@@ -1,6 +1,7 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using AgenStart.Core.Catalogue;
+using AgenStart.Core.Recommendations;
 
 namespace AgenStart.Desktop.Views;
 
@@ -43,6 +44,52 @@ public sealed partial class UsageProfilesView : UserControl
         {
             _updating = false;
         }
+    }
+
+    public void BeginRecommendationBuild()
+    {
+        BuildButton.IsEnabled = false;
+        BackButton.IsEnabled = false;
+        RecommendationProgressHost.IsVisible = true;
+        SetRecommendationProgress(10, "Starting recommendation analysis…");
+    }
+
+    public void UpdateRecommendationProgress(RecommendationPipelineStage stage)
+    {
+        switch (stage)
+        {
+            case RecommendationPipelineStage.LoadingTrustedCatalogue:
+                SetRecommendationProgress(25, "Loading trusted software catalogue…");
+                break;
+            case RecommendationPipelineStage.ReadingInstalledApplications:
+                SetRecommendationProgress(50, "Reading installed applications…");
+                break;
+            case RecommendationPipelineStage.EvaluatingRecommendationRules:
+                SetRecommendationProgress(75, "Applying compatibility and profile rules…");
+                break;
+            case RecommendationPipelineStage.FinalizingRecommendations:
+                SetRecommendationProgress(90, "Finalizing recommendation list…");
+                break;
+        }
+    }
+
+    public void CompleteRecommendationBuild()
+    {
+        SetRecommendationProgress(100, "Recommendations ready");
+        BuildButton.IsEnabled = true;
+        BackButton.IsEnabled = true;
+    }
+
+    public void FailRecommendationBuild(string? message)
+    {
+        RecommendationProgressHost.IsVisible = true;
+        RecommendationProgressBar.Value = 0;
+        RecommendationProgressPercent.Text = "Stopped";
+        RecommendationProgressLabel.Text = string.IsNullOrWhiteSpace(message)
+            ? "AgenStart could not build recommendations."
+            : message;
+        BuildButton.IsEnabled = true;
+        BackButton.IsEnabled = true;
     }
 
     private void ProfileCheckBox_OnClick(object? sender, RoutedEventArgs e)
@@ -104,5 +151,14 @@ public sealed partial class UsageProfilesView : UserControl
         if (GamingCheckBox.IsChecked == true) selected.Add("Gaming");
 
         SelectedProfilesText.Text = string.Join(" + ", selected);
+    }
+
+    private void SetRecommendationProgress(double value, string label)
+    {
+        var bounded = Math.Clamp(value, 0, 100);
+        RecommendationProgressHost.IsVisible = true;
+        RecommendationProgressBar.Value = bounded;
+        RecommendationProgressPercent.Text = $"{bounded:0}%";
+        RecommendationProgressLabel.Text = label;
     }
 }
