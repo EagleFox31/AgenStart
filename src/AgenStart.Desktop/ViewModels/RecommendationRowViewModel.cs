@@ -28,7 +28,16 @@ public sealed class RecommendationRowViewModel : INotifyPropertyChanged
         ApplicationId = decision.ApplicationId;
         Name = decision.ApplicationName;
         Description = description;
-        Reason = decision.Reasons.FirstOrDefault()?.Message ?? "Recommended for this setup.";
+
+        // The card's first explanatory line must answer “what is this for?” in plain language.
+        Reason = description;
+        WhyRecommended = string.Join(
+            " · ",
+            decision.Reasons
+                .Where(reason => reason.Code.StartsWith("profile.", StringComparison.Ordinal))
+                .Select(reason => reason.Message)
+                .Distinct(StringComparer.OrdinalIgnoreCase));
+
         Level = decision.Level;
         Disposition = decision.Disposition;
         CanSelect = decision.Disposition == RecommendationDisposition.Recommended;
@@ -46,6 +55,7 @@ public sealed class RecommendationRowViewModel : INotifyPropertyChanged
     public string Name { get; }
     public string Description { get; }
     public string Reason { get; }
+    public string WhyRecommended { get; }
     public string Initials { get; }
     public IImage? IconSource { get; }
     public bool HasLogo => IconSource is not null;
@@ -85,6 +95,7 @@ public sealed class RecommendationRowViewModel : INotifyPropertyChanged
         {
             RecommendationLevel.Essential => "Essential",
             RecommendationLevel.Recommended => "Recommended",
+            RecommendationLevel.Gem => "Gem",
             RecommendationLevel.Optional => "Optional",
             _ => "Recommended"
         }
@@ -102,6 +113,7 @@ public sealed class RecommendationRowViewModel : INotifyPropertyChanged
         {
             RecommendationLevel.Essential => "◆",
             RecommendationLevel.Recommended => "✦",
+            RecommendationLevel.Gem => "✦",
             RecommendationLevel.Optional => "○",
             _ => "✦"
         }
@@ -131,6 +143,7 @@ public sealed class RecommendationRowViewModel : INotifyPropertyChanged
         {
             RecommendationLevel.Essential => (TealBrush, SoftTealBrush),
             RecommendationLevel.Recommended => (TealBrush, SoftTealBrush),
+            RecommendationLevel.Gem => (TealBrush, SoftTealBrush),
             RecommendationLevel.Optional => (MutedBrush, SoftNeutralBrush),
             _ => (TealBrush, SoftTealBrush)
         };
