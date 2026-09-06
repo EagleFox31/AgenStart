@@ -8,14 +8,17 @@ namespace AgenStart.Desktop.ViewModels;
 
 public sealed class RecommendationRowViewModel : INotifyPropertyChanged
 {
-    private static readonly IBrush TealBrush = new SolidColorBrush(Color.Parse("#176D64"));
-    private static readonly IBrush SuccessBrush = new SolidColorBrush(Color.Parse("#2F7D5B"));
-    private static readonly IBrush GemBrush = new SolidColorBrush(Color.Parse("#8A691F"));
-    private static readonly IBrush AttentionBrush = new SolidColorBrush(Color.Parse("#9A6700"));
-    private static readonly IBrush SoftTealBrush = new SolidColorBrush(Color.Parse("#E7F1EE"));
-    private static readonly IBrush SoftSuccessBrush = new SolidColorBrush(Color.Parse("#E7F3EC"));
-    private static readonly IBrush SoftGemBrush = new SolidColorBrush(Color.Parse("#F4EEDC"));
-    private static readonly IBrush SoftAttentionBrush = new SolidColorBrush(Color.Parse("#F7EEDB"));
+    // Keep badge hues intentionally far apart so users can scan the list without
+    // having to read every label: blue = recommendation, green = installed,
+    // violet = gem, red = attention.
+    private static readonly IBrush RecommendedBrush = new SolidColorBrush(Color.Parse("#1D4ED8"));
+    private static readonly IBrush InstalledBrush = new SolidColorBrush(Color.Parse("#2E7D32"));
+    private static readonly IBrush GemBrush = new SolidColorBrush(Color.Parse("#6D3FB5"));
+    private static readonly IBrush AttentionBrush = new SolidColorBrush(Color.Parse("#B42318"));
+    private static readonly IBrush SoftRecommendedBrush = new SolidColorBrush(Color.Parse("#E8F0FE"));
+    private static readonly IBrush SoftInstalledBrush = new SolidColorBrush(Color.Parse("#E6F4EA"));
+    private static readonly IBrush SoftGemBrush = new SolidColorBrush(Color.Parse("#F0E8FA"));
+    private static readonly IBrush SoftAttentionBrush = new SolidColorBrush(Color.Parse("#FDECEA"));
     private static readonly IBrush TransparentBrush = new SolidColorBrush(Colors.Transparent);
 
     private bool _isSelected;
@@ -142,7 +145,7 @@ public sealed class RecommendationRowViewModel : INotifyPropertyChanged
     {
         if (decision.Disposition == RecommendationDisposition.AlreadyInstalled)
         {
-            return (SuccessBrush, SoftSuccessBrush);
+            return (InstalledBrush, SoftInstalledBrush);
         }
 
         if (IsAttentionState(decision.Disposition))
@@ -152,7 +155,7 @@ public sealed class RecommendationRowViewModel : INotifyPropertyChanged
 
         return decision.Level switch
         {
-            RecommendationLevel.Recommended => (TealBrush, SoftTealBrush),
+            RecommendationLevel.Recommended => (RecommendedBrush, SoftRecommendedBrush),
             RecommendationLevel.Gem => (GemBrush, SoftGemBrush),
             // No visible pill for Essential or Optional. The existing border remains
             // layout-neutral because both its text and background are transparent.
