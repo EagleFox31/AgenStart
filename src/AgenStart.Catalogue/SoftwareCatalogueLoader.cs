@@ -302,7 +302,7 @@ public sealed class SoftwareCatalogueLoader
     private static void ValidatePackageId(string packageId, string applicationId)
     {
         if (packageId[0] is '-' or '/' || packageId.Any(character =>
-                !(char.IsLetterOrDigit(character) || character is '.' or '-' or '_')))
+                !(char.IsLetterOrDigit(character) || character is '.' or '-' or '_' or '+')))
         {
             throw new InvalidDataException(
                 $"Unsafe package id '{packageId}' for application '{applicationId}'.");
