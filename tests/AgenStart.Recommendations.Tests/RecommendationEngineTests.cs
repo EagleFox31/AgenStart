@@ -12,11 +12,12 @@ public sealed class RecommendationEngineTests
 
     [Theory]
     [InlineData(UserProfile.Personal)]
-    [InlineData(UserProfile.Development)]
     [InlineData(UserProfile.Business)]
-    [InlineData(UserProfile.Creation)]
-    [InlineData(UserProfile.Training)]
-    public void Build_SupportsEveryInitialProfileWithHumanReadableReason(UserProfile profile)
+    [InlineData(UserProfile.Learning)]
+    [InlineData(UserProfile.Development)]
+    [InlineData(UserProfile.Creative)]
+    [InlineData(UserProfile.Gaming)]
+    public void Build_SupportsEveryCurrentProfileWithHumanReadableReason(UserProfile profile)
     {
         var application = Application(
             $"{profile.ToString().ToLowerInvariant()}-tool",
@@ -34,9 +35,58 @@ public sealed class RecommendationEngineTests
         Assert.Equal(RecommendationDisposition.Recommended, decision.Disposition);
         Assert.True(decision.SelectedByDefault);
         Assert.False(string.IsNullOrWhiteSpace(decision.ProfileReasonKey));
-        Assert.Contains(
-            decision.Reasons,
-            reason => reason.Message.Contains(profile.ToString(), StringComparison.Ordinal));
+        Assert.Contains(decision.Reasons, reason => reason.Code.StartsWith("profile.", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public void Build_MultiSelectDeduplicatesApplicationAndKeepsStrongestProfileLevel()
+    {
+        var application = Application(
+            "shared-tool",
+            "Shared Tool",
+            UserProfile.Personal,
+            RecommendationLevel.Gem) with
+        {
+            Recommendations =
+            [
+                new ProfileRecommendation(UserProfile.Personal, RecommendationLevel.Gem, "personal.shared"),
+                new ProfileRecommendation(UserProfile.Business, RecommendationLevel.Recommended, "business.shared")
+            ]
+        };
+
+        var plan = _engine.Build(Request(
+            UserProfile.Personal | UserProfile.Business,
+            CapableMachine(),
+            [Missing(application.Id)],
+            [application]));
+
+        var decision = Assert.Single(plan.Decisions);
+        Assert.Equal(RecommendationLevel.Recommended, decision.Level);
+        Assert.True(decision.SelectedByDefault);
+        Assert.Equal(2, decision.MatchedProfiles?.Count);
+        Assert.Contains(UserProfile.Personal, decision.MatchedProfiles!);
+        Assert.Contains(UserProfile.Business, decision.MatchedProfiles!);
+        Assert.Equal(2, decision.Reasons.Count(reason => reason.Code.StartsWith("profile.", StringComparison.Ordinal)));
+    }
+
+    [Fact]
+    public void Build_GemIsVisibleButNeverPreselected()
+    {
+        var application = Application(
+            "hidden-gem",
+            "Hidden Gem",
+            UserProfile.Personal,
+            RecommendationLevel.Gem);
+
+        var decision = Assert.Single(_engine.Build(Request(
+            UserProfile.Personal,
+            CapableMachine(),
+            [Missing(application.Id)],
+            [application])).Decisions);
+
+        Assert.Equal(RecommendationDisposition.Recommended, decision.Disposition);
+        Assert.Equal(RecommendationLevel.Gem, decision.Level);
+        Assert.False(decision.SelectedByDefault);
     }
 
     [Fact]
@@ -131,12 +181,12 @@ public sealed class RecommendationEngineTests
         var application = Application(
             "obs-studio",
             "OBS Studio",
-            UserProfile.Creation,
+            UserProfile.Creative,
             RecommendationLevel.Recommended,
             minimum: Requirements(gpuRequired: true));
 
         var plan = _engine.Build(Request(
-            UserProfile.Creation,
+            UserProfile.Creative,
             CapableMachine(gpu: GpuCapabilityState.Unavailable),
             [Missing(application.Id)],
             [application]));
