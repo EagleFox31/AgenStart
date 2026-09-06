@@ -2,19 +2,29 @@ using AgenStart.Core.Machine;
 
 namespace AgenStart.Core.Catalogue;
 
+[Flags]
 public enum UserProfile
 {
-    Personal,
-    Development,
-    Business,
-    Creation,
-    Training
+    None = 0,
+    Personal = 1 << 0,
+    Development = 1 << 1,
+    Business = 1 << 2,
+    Creative = 1 << 3,
+    Learning = 1 << 4,
+    Gaming = 1 << 5,
+
+    // Backward-compatible aliases for existing setup profiles/catalogue data.
+    [Obsolete("Use Creative.")]
+    Creation = Creative,
+    [Obsolete("Use Learning.")]
+    Training = Learning
 }
 
 public enum RecommendationLevel
 {
     Essential,
     Recommended,
+    Gem,
     Optional
 }
 
