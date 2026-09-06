@@ -155,7 +155,10 @@ public sealed partial class MainWindow
     {
         var rows = RecommendationsPanel.GetLogicalDescendants()
             .OfType<Border>()
-            .Where(border => border.DataContext is RecommendationRowViewModel && border.Child is Grid)
+            .Where(border =>
+                border.DataContext is RecommendationRowViewModel &&
+                border.Child is Grid grid &&
+                grid.ColumnDefinitions.Count == 4)
             .ToArray();
 
         foreach (var card in rows)
