@@ -14,7 +14,7 @@ public sealed partial class UsageProfilesView : UserControl
         SetSelection(UserProfile.Development);
     }
 
-    public event EventHandler<UserProfile>? SelectionChanged;
+    public event Action<UserProfile>? SelectionChanged;
     public event EventHandler? BuildRequested;
     public event EventHandler? BackRequested;
 
@@ -72,7 +72,7 @@ public sealed partial class UsageProfilesView : UserControl
         }
 
         RefreshSummary();
-        SelectionChanged?.Invoke(this, selected);
+        SelectionChanged?.Invoke(selected);
     }
 
     private void BuildButton_OnClick(object? sender, RoutedEventArgs e) =>
