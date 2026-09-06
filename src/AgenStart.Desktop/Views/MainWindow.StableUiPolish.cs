@@ -1,11 +1,7 @@
-using System.Collections.Specialized;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.LogicalTree;
 using Avalonia.Media;
-using Avalonia.Threading;
-using AgenStart.Core.Recommendations;
-using AgenStart.Desktop.ViewModels;
 
 namespace AgenStart.Desktop.Views;
 
@@ -21,11 +17,6 @@ public sealed partial class MainWindow
     private static readonly IBrush StableDangerBorderBrush = new SolidColorBrush(Color.Parse("#F1B5AE"));
 
     private bool _stableUiPolishInstalled;
-    private IDisposable? _stableRecommendationProgressSubscription;
-    private StackPanel? _stableRecommendationProgressBlock;
-    private ProgressBar? _stableRecommendationProgressBar;
-    private TextBlock? _stableRecommendationProgressLabel;
-    private TextBlock? _stableRecommendationProgressPercent;
 
     private void ApplyStableUiPolish()
     {
@@ -37,7 +28,10 @@ public sealed partial class MainWindow
         _stableUiPolishInstalled = true;
         NormalizeSidebarNavigation();
         DecorateMachineStatusRows();
-        InstallStableRecommendationProgress();
+
+        // Recommendation progress belongs exclusively to UsageProfilesView.
+        // Do not inject or re-parent its ProgressBar here: doing so creates a
+        // second label/percentage row for the exact same pipeline state.
     }
 
     private void NormalizeSidebarNavigation()
@@ -205,176 +199,5 @@ public sealed partial class MainWindow
             Grid.SetColumn(badge, 2);
             grid.Children.Add(badge);
         }
-    }
-
-    private void InstallStableRecommendationProgress()
-    {
-        if (_stableRecommendationProgressSubscription is not null)
-        {
-            return;
-        }
-
-        var existingProgressBar = UsageProfilePanel.GetLogicalDescendants()
-            .OfType<ProgressBar>()
-            .FirstOrDefault();
-
-        if (existingProgressBar?.Parent is not StackPanel parent)
-        {
-            return;
-        }
-
-        var index = parent.Children.IndexOf(existingProgressBar);
-        if (index < 0)
-        {
-            return;
-        }
-
-        parent.Children.RemoveAt(index);
-
-        existingProgressBar.IsIndeterminate = false;
-        existingProgressBar.Minimum = 0;
-        existingProgressBar.Maximum = 100;
-        existingProgressBar.Value = 0;
-        existingProgressBar.Height = 6;
-        existingProgressBar.Margin = new Thickness(0);
-        existingProgressBar.IsVisible = true;
-
-        _stableRecommendationProgressLabel = new TextBlock
-        {
-            Text = "Preparing recommendation pipeline…",
-            Foreground = GuidanceMutedBrush,
-            FontSize = 13,
-            VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center
-        };
-
-        _stableRecommendationProgressPercent = new TextBlock
-        {
-            Text = "0%",
-            Foreground = GuidanceTextBrush,
-            FontSize = 13,
-            FontWeight = FontWeight.SemiBold,
-            HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Right,
-            VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center
-        };
-
-        var header = new Grid
-        {
-            ColumnDefinitions = new ColumnDefinitions("*,Auto"),
-            ColumnSpacing = 12
-        };
-        header.Children.Add(_stableRecommendationProgressLabel);
-        Grid.SetColumn(_stableRecommendationProgressPercent, 1);
-        header.Children.Add(_stableRecommendationProgressPercent);
-
-        _stableRecommendationProgressBlock = new StackPanel
-        {
-            Spacing = 7,
-            Margin = new Thickness(0, 16, 80, 0),
-            IsVisible = false
-        };
-        _stableRecommendationProgressBlock.Children.Add(header);
-        _stableRecommendationProgressBlock.Children.Add(existingProgressBar);
-        _stableRecommendationProgressBar = existingProgressBar;
-
-        parent.Children.Insert(index, _stableRecommendationProgressBlock);
-
-        _stableRecommendationProgressSubscription = RecommendationPipelineDiagnostics.Subscribe(stage =>
-            Dispatcher.UIThread.Post(() => UpdateStableRecommendationProgress(stage)));
-
-        _viewModel.PropertyChanged += StableRecommendationProgressViewModel_OnPropertyChanged;
-        _viewModel.Recommendations.CollectionChanged += StableRecommendationProgressRecommendations_OnCollectionChanged;
-
-        Closed += (_, _) =>
-        {
-            _stableRecommendationProgressSubscription?.Dispose();
-            _stableRecommendationProgressSubscription = null;
-            _viewModel.PropertyChanged -= StableRecommendationProgressViewModel_OnPropertyChanged;
-            _viewModel.Recommendations.CollectionChanged -= StableRecommendationProgressRecommendations_OnCollectionChanged;
-        };
-    }
-
-    private void StableRecommendationProgressRecommendations_OnCollectionChanged(
-        object? sender,
-        NotifyCollectionChangedEventArgs args)
-    {
-        if (_viewModel.IsBusy && args.NewItems is { Count: > 0 })
-        {
-            Dispatcher.UIThread.Post(() => SetStableRecommendationProgress(
-                95,
-                "Finalizing recommendation list…"));
-        }
-    }
-
-    private void StableRecommendationProgressViewModel_OnPropertyChanged(
-        object? sender,
-        System.ComponentModel.PropertyChangedEventArgs args)
-    {
-        if (args.PropertyName is not nameof(MainWindowViewModel.IsBusy))
-        {
-            return;
-        }
-
-        Dispatcher.UIThread.Post(() =>
-        {
-            if (_stableRecommendationProgressBlock is null)
-            {
-                return;
-            }
-
-            if (_viewModel.IsBusy && UsageProfilePanel.IsVisible)
-            {
-                _stableRecommendationProgressBlock.IsVisible = true;
-                SetStableRecommendationProgress(10, "Starting recommendation analysis…");
-                return;
-            }
-
-            if (_viewModel.HasRecommendations)
-            {
-                SetStableRecommendationProgress(100, "Recommendations ready");
-            }
-
-            _stableRecommendationProgressBlock.IsVisible = false;
-        });
-    }
-
-    private void UpdateStableRecommendationProgress(RecommendationPipelineStage stage)
-    {
-        if (!_viewModel.IsBusy || !UsageProfilePanel.IsVisible || _stableRecommendationProgressBlock is null)
-        {
-            return;
-        }
-
-        _stableRecommendationProgressBlock.IsVisible = true;
-
-        switch (stage)
-        {
-            case RecommendationPipelineStage.LoadingTrustedCatalogue:
-                SetStableRecommendationProgress(25, "Loading trusted software catalogue…");
-                break;
-            case RecommendationPipelineStage.ReadingInstalledApplications:
-                SetStableRecommendationProgress(50, "Reading installed applications…");
-                break;
-            case RecommendationPipelineStage.EvaluatingRecommendationRules:
-                SetStableRecommendationProgress(75, "Applying compatibility and profile rules…");
-                break;
-            case RecommendationPipelineStage.FinalizingRecommendations:
-                SetStableRecommendationProgress(90, "Finalizing recommendation list…");
-                break;
-        }
-    }
-
-    private void SetStableRecommendationProgress(double value, string label)
-    {
-        if (_stableRecommendationProgressBar is null ||
-            _stableRecommendationProgressLabel is null ||
-            _stableRecommendationProgressPercent is null)
-        {
-            return;
-        }
-
-        var bounded = Math.Clamp(value, 0, 100);
-        _stableRecommendationProgressBar.Value = bounded;
-        _stableRecommendationProgressLabel.Text = label;
-        _stableRecommendationProgressPercent.Text = $"{bounded:0}%";
     }
 }
