@@ -25,16 +25,33 @@ AgenStart installs software only through the trusted provider metadata defined i
 
 The following SVG files are currently vendored locally so the desktop application remains usable offline:
 
-- `git.svg` — Git — source: `ln-dev7/logos-apps/logos/git.svg`;
-- `visual-studio-code.svg` — Visual Studio Code / Microsoft — source: `ln-dev7/logos-apps/logos/visual-studio-code.svg`;
-- `firefox-browser.svg` — Firefox Browser / Mozilla — source: `simple-icons/simple-icons/icons/firefoxbrowser.svg`;
-- `vlc-media-player.svg` — VLC media player / VideoLAN — source: `ln-dev7/logos-apps/logos/vlc-media-player.svg`;
 - `7zip.svg` — 7-Zip — source: `ln-dev7/logos-apps/logos/7zip.svg`;
-- `obs-studio.svg` — OBS Studio / OBS Project — source: `ln-dev7/logos-apps/logos/obs-studio.svg`;
+- `anki.svg` — Anki — source: `ln-dev7/logos-apps/logos/anki.svg`;
+- `bitwarden.svg` — Bitwarden — source: `ln-dev7/logos-apps/logos/bitwarden.svg`;
+- `copyq.svg` — CopyQ — source: `ln-dev7/logos-apps/logos/copyq.svg`;
+- `dbeaver.svg` — DBeaver — source: `ln-dev7/logos-apps/logos/dbeaver.svg`;
+- `discord.svg` — Discord — source: `ln-dev7/logos-apps/logos/discord.svg`;
+- `docker.svg` — Docker — source: `ln-dev7/logos-apps/logos/docker.svg`;
+- `firefox-browser.svg` — Firefox Browser / Mozilla — source: `simple-icons/simple-icons/icons/firefoxbrowser.svg`;
+- `flow-launcher.svg` — Flow Launcher — source: `ln-dev7/logos-apps/logos/flow-launcher.svg`;
+- `git.svg` — Git — source: `ln-dev7/logos-apps/logos/git.svg`;
+- `github-cli.svg` — GitHub mark used to identify GitHub CLI — source: `ln-dev7/logos-apps/logos/github.svg`;
+- `localsend.svg` — LocalSend — source: `ln-dev7/logos-apps/logos/localsend.svg`;
 - `microsoft-powertoys.svg` — Microsoft PowerToys — source: `ln-dev7/logos-apps/logos/microsoft-powertoys.svg`;
-- `docker.svg` — Docker — source: `ln-dev7/logos-apps/logos/docker.svg`.
+- `obs-studio.svg` — OBS Studio / OBS Project — source: `ln-dev7/logos-apps/logos/obs-studio.svg`;
+- `obsidian.svg` — Obsidian — source: `ln-dev7/logos-apps/logos/obsidian.svg`;
+- `postman.svg` — Postman — source: `ln-dev7/logos-apps/logos/postman.svg`;
+- `powershell.svg` — PowerShell — source: `ln-dev7/logos-apps/logos/powershell.svg`;
+- `quicklook.svg` — QuickLook — source: `ln-dev7/logos-apps/logos/quicklook.svg`;
+- `sharex.svg` — ShareX — source: `ln-dev7/logos-apps/logos/sharex.svg`;
+- `steam.svg` — Steam — source: `ln-dev7/logos-apps/logos/steam.svg`;
+- `visual-studio-code.svg` — Visual Studio Code / Microsoft — source: `ln-dev7/logos-apps/logos/visual-studio-code.svg`;
+- `vlc-media-player.svg` — VLC media player / VideoLAN — source: `ln-dev7/logos-apps/logos/vlc-media-player.svg`;
+- `windows-terminal.svg` — Windows Terminal / Microsoft — source: `ln-dev7/logos-apps/logos/windows-terminal.svg`;
+- `zoom.svg` — Zoom — source: `ln-dev7/logos-apps/logos/zoom.svg`;
+- `zotero.svg` — Zotero — source: `ln-dev7/logos-apps/logos/zotero.svg`.
 
-Imported into AgenStart on 2026-09-05. Source collections: https://github.com/ln-dev7/logos-apps and https://github.com/simple-icons/simple-icons
+Initial logo set imported on 2026-09-05; expanded offline logo coverage on 2026-09-06. Source collections: https://github.com/ln-dev7/logos-apps and https://github.com/simple-icons/simple-icons
 
 ## SVG rendering
 

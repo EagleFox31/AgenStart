@@ -8,13 +8,30 @@ internal static class Program
     private static readonly string[] IconSmokeApplicationIds =
     [
         "7zip",
+        "anki",
+        "bitwarden",
+        "copyq",
+        "dbeaver",
+        "discord",
         "docker-desktop",
         "firefox",
+        "flow-launcher",
         "git",
+        "github-cli",
+        "localsend",
         "obs-studio",
+        "obsidian",
+        "postman",
+        "powershell",
         "powertoys",
+        "quicklook",
+        "sharex",
+        "steam",
         "visual-studio-code",
-        "vlc"
+        "vlc",
+        "windows-terminal",
+        "zoom",
+        "zotero"
     ];
 
     [STAThread]
