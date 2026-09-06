@@ -21,7 +21,7 @@ public sealed partial class MainWindow
 
         var view = new UsageProfilesView();
         view.SetSelection(_viewModel.SelectedProfile);
-        view.SelectionChanged += (_, profiles) =>
+        view.SelectionChanged += profiles =>
         {
             if (profiles == UserProfile.None)
             {
