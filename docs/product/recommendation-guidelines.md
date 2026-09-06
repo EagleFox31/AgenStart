@@ -34,6 +34,8 @@ Legacy `creation` and `training` values remain readable as aliases of `creative`
 
 Installed-state, compatibility, lifecycle and conflict checks can always downgrade or block selection.
 
+These four levels are ranking semantics, not four mandatory visual badges. The UI intentionally exposes fewer flags than the engine has internal states.
+
 ## Plain-language descriptions
 
 Every catalogue application must have a concise description that answers “what is this for?” without marketing copy or unexplained technical jargon.
@@ -87,9 +89,22 @@ Recommendation cards should show, in this order:
 - app icon or safe fallback;
 - app name;
 - plain-language purpose;
-- level/status badge;
+- a status flag only when it adds useful information;
 - selection control;
 - optional “Why AgenStart recommends this” explanation when space allows.
+
+Keep the recommendation surface visually quiet. The visible flag vocabulary is deliberately limited to four categories:
+
+- **Installed** — the app is already on this PC;
+- **Recommended** — a strong recommendation;
+- **Gem** — a less-obvious discovery worth considering;
+- **Attention** — compatibility, availability, inventory or conflict needs review.
+
+`Essential` is communicated through ranking and default selection instead of another badge. `Optional` has no badge. Detailed technical states remain available to the product logic and explanatory copy, but they must not create a rainbow of separate pills.
+
+Color must not be the only carrier of meaning: every visible flag also uses text and an icon. Recommended uses AgenStart teal, Installed uses success green, Gem uses a restrained warm accent, and Attention uses warning amber.
+
+Recommendation-build progress has one owner and one presentation. Show one stage label, one percentage and one progress bar; never duplicate the same stage/percentage in nested progress presenters.
 
 The recommendation UI must remain functional if artwork is missing or corrupt. Icons are cosmetic and must never be allowed to break recommendation or installation logic.
 
