@@ -69,6 +69,12 @@ public sealed class SoftwareCatalogueLoader
         var name = RequireText(dto.Name, $"application[{id}].name");
         var publisher = RequireText(dto.Publisher, $"application[{id}].publisher");
         var description = RequireText(dto.Description, $"application[{id}].description");
+        if (description.Length > 180)
+        {
+            throw new InvalidDataException(
+                $"Application '{id}' description must stay under 180 characters and explain the app in plain language.");
+        }
+
         var lifecycle = ParseLifecycle(dto.Lifecycle?.Status, id);
 
         if (dto.Recommendations is null)
@@ -236,8 +242,9 @@ public sealed class SoftwareCatalogueLoader
             "personal" => UserProfile.Personal,
             "development" => UserProfile.Development,
             "business" => UserProfile.Business,
-            "creation" => UserProfile.Creation,
-            "training" => UserProfile.Training,
+            "creative" or "creation" => UserProfile.Creative,
+            "learning" or "training" or "study" => UserProfile.Learning,
+            "gaming" => UserProfile.Gaming,
             _ => throw new InvalidDataException(
                 $"Unsupported profile '{value}' for application '{applicationId}'.")
         };
@@ -247,6 +254,7 @@ public sealed class SoftwareCatalogueLoader
         {
             "essential" => RecommendationLevel.Essential,
             "recommended" => RecommendationLevel.Recommended,
+            "gem" => RecommendationLevel.Gem,
             "optional" => RecommendationLevel.Optional,
             _ => throw new InvalidDataException(
                 $"Unsupported recommendation level '{value}' for application '{applicationId}'.")
@@ -294,7 +302,7 @@ public sealed class SoftwareCatalogueLoader
     private static void ValidatePackageId(string packageId, string applicationId)
     {
         if (packageId[0] is '-' or '/' || packageId.Any(character =>
-                !(char.IsLetterOrDigit(character) || character is '.' or '-' or '_')))
+                !(char.IsLetterOrDigit(character) || character is '.' or '-' or '_' or '+')))
         {
             throw new InvalidDataException(
                 $"Unsafe package id '{packageId}' for application '{applicationId}'.");

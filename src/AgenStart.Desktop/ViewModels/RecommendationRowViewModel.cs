@@ -1,23 +1,25 @@
 using System.ComponentModel;
-using System.Runtime.CompilerServices;
 using Avalonia.Media;
 using AgenStart.Core.Catalogue;
+using AgenStart.Desktop.Icons;
 using AgenStart.Recommendations;
 
 namespace AgenStart.Desktop.ViewModels;
 
 public sealed class RecommendationRowViewModel : INotifyPropertyChanged
 {
-    private static readonly IBrush TealBrush = new SolidColorBrush(Color.Parse("#176D64"));
-    private static readonly IBrush SuccessBrush = new SolidColorBrush(Color.Parse("#2F7D5B"));
-    private static readonly IBrush WarningBrush = new SolidColorBrush(Color.Parse("#9A6700"));
-    private static readonly IBrush DangerBrush = new SolidColorBrush(Color.Parse("#A84E3E"));
-    private static readonly IBrush MutedBrush = new SolidColorBrush(Color.Parse("#69747A"));
-    private static readonly IBrush SoftTealBrush = new SolidColorBrush(Color.Parse("#E7F1EE"));
-    private static readonly IBrush SoftSuccessBrush = new SolidColorBrush(Color.Parse("#E7F3EC"));
-    private static readonly IBrush SoftWarningBrush = new SolidColorBrush(Color.Parse("#F7EEDB"));
-    private static readonly IBrush SoftDangerBrush = new SolidColorBrush(Color.Parse("#F8E8E4"));
-    private static readonly IBrush SoftNeutralBrush = new SolidColorBrush(Color.Parse("#ECEFEE"));
+    // Keep badge hues intentionally far apart so users can scan the list without
+    // having to read every label: blue = recommendation, green = installed,
+    // violet = gem, red = attention.
+    private static readonly IBrush RecommendedBrush = new SolidColorBrush(Color.Parse("#1D4ED8"));
+    private static readonly IBrush InstalledBrush = new SolidColorBrush(Color.Parse("#2E7D32"));
+    private static readonly IBrush GemBrush = new SolidColorBrush(Color.Parse("#6D3FB5"));
+    private static readonly IBrush AttentionBrush = new SolidColorBrush(Color.Parse("#B42318"));
+    private static readonly IBrush SoftRecommendedBrush = new SolidColorBrush(Color.Parse("#E8F0FE"));
+    private static readonly IBrush SoftInstalledBrush = new SolidColorBrush(Color.Parse("#E6F4EA"));
+    private static readonly IBrush SoftGemBrush = new SolidColorBrush(Color.Parse("#F0E8FA"));
+    private static readonly IBrush SoftAttentionBrush = new SolidColorBrush(Color.Parse("#FDECEA"));
+    private static readonly IBrush TransparentBrush = new SolidColorBrush(Colors.Transparent);
 
     private bool _isSelected;
 
@@ -28,15 +30,26 @@ public sealed class RecommendationRowViewModel : INotifyPropertyChanged
         ApplicationId = decision.ApplicationId;
         Name = decision.ApplicationName;
         Description = description;
-        Reason = decision.Reasons.FirstOrDefault()?.Message ?? "Recommended for this setup.";
+
+        // The card's first explanatory line must answer “what is this for?” in plain language.
+        Reason = description;
+        WhyRecommended = string.Join(
+            " · ",
+            decision.Reasons
+                .Where(reason => reason.Code.StartsWith("profile.", StringComparison.Ordinal))
+                .Select(reason => reason.Message)
+                .Distinct(StringComparer.OrdinalIgnoreCase));
+
         Level = decision.Level;
         Disposition = decision.Disposition;
         CanSelect = decision.Disposition == RecommendationDisposition.Recommended;
         _isSelected = CanSelect && decision.SelectedByDefault;
         Status = BuildStatus(decision);
         StatusIcon = BuildStatusIcon(decision);
+        StatusDetail = BuildStatusDetail(decision);
         (StatusBrush, StatusBackgroundBrush) = BuildStatusBrushes(decision);
         Initials = BuildInitials(decision.ApplicationName);
+        IconSource = AppIconService.Shared.Resolve(decision.ApplicationId);
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;
@@ -45,12 +58,17 @@ public sealed class RecommendationRowViewModel : INotifyPropertyChanged
     public string Name { get; }
     public string Description { get; }
     public string Reason { get; }
+    public string WhyRecommended { get; }
     public string Initials { get; }
+    public IImage? IconSource { get; }
+    public bool HasLogo => IconSource is not null;
+    public bool ShowInitials => IconSource is null;
     public RecommendationLevel Level { get; }
     public RecommendationDisposition Disposition { get; }
     public bool CanSelect { get; }
     public string Status { get; }
     public string StatusIcon { get; }
+    public string? StatusDetail { get; }
     public IBrush StatusBrush { get; }
     public IBrush StatusBackgroundBrush { get; }
 
@@ -69,68 +87,90 @@ public sealed class RecommendationRowViewModel : INotifyPropertyChanged
         }
     }
 
-    private static string BuildStatus(RecommendationDecision decision) => decision.Disposition switch
+    private static string BuildStatus(RecommendationDecision decision)
     {
-        RecommendationDisposition.AlreadyInstalled => "Already installed",
-        RecommendationDisposition.Incompatible => "Not compatible",
-        RecommendationDisposition.CompatibilityUnknown => "Compatibility unknown",
-        RecommendationDisposition.InventoryUnknown => "Inventory incomplete",
-        RecommendationDisposition.Conflict => "Conflict",
-        RecommendationDisposition.Unavailable => "Unavailable",
-        _ => decision.Level switch
+        if (decision.Disposition == RecommendationDisposition.AlreadyInstalled)
         {
-            RecommendationLevel.Essential => "Essential",
-            RecommendationLevel.Recommended => "Recommended",
-            RecommendationLevel.Optional => "Optional",
-            _ => "Recommended"
+            return "Installed";
         }
-    };
 
-    private static string BuildStatusIcon(RecommendationDecision decision) => decision.Disposition switch
-    {
-        RecommendationDisposition.AlreadyInstalled => "✓",
-        RecommendationDisposition.Incompatible => "!",
-        RecommendationDisposition.CompatibilityUnknown => "?",
-        RecommendationDisposition.InventoryUnknown => "?",
-        RecommendationDisposition.Conflict => "!",
-        RecommendationDisposition.Unavailable => "!",
-        _ => decision.Level switch
+        if (IsAttentionState(decision.Disposition))
         {
-            RecommendationLevel.Essential => "◆",
-            RecommendationLevel.Recommended => "✦",
-            RecommendationLevel.Optional => "○",
-            _ => "✦"
+            return "Attention";
         }
+
+        return decision.Level switch
+        {
+            RecommendationLevel.Recommended => "Recommended",
+            RecommendationLevel.Gem => "Gem",
+            // Essential is communicated by ranking + default selection.
+            // Optional is intentionally unbadged to keep the list quiet.
+            RecommendationLevel.Essential => string.Empty,
+            RecommendationLevel.Optional => string.Empty,
+            _ => string.Empty
+        };
+    }
+
+    private static string BuildStatusIcon(RecommendationDecision decision)
+    {
+        if (decision.Disposition == RecommendationDisposition.AlreadyInstalled)
+        {
+            return "✓";
+        }
+
+        if (IsAttentionState(decision.Disposition))
+        {
+            return "!";
+        }
+
+        return decision.Level switch
+        {
+            RecommendationLevel.Recommended => "✦",
+            RecommendationLevel.Gem => "◆",
+            _ => string.Empty
+        };
+    }
+
+    private static string? BuildStatusDetail(RecommendationDecision decision) => decision.Disposition switch
+    {
+        RecommendationDisposition.Incompatible => "This app is not compatible with this PC.",
+        RecommendationDisposition.CompatibilityUnknown => "AgenStart could not confirm compatibility for this PC.",
+        RecommendationDisposition.InventoryUnknown => "Installed-app inventory is incomplete, so this status may need review.",
+        RecommendationDisposition.Conflict => "This app conflicts with another recommendation or selection.",
+        RecommendationDisposition.Unavailable => "No trusted install source is currently available for this app.",
+        _ => null
     };
 
     private static (IBrush Foreground, IBrush Background) BuildStatusBrushes(RecommendationDecision decision)
     {
         if (decision.Disposition == RecommendationDisposition.AlreadyInstalled)
         {
-            return (SuccessBrush, SoftSuccessBrush);
+            return (InstalledBrush, SoftInstalledBrush);
         }
 
-        if (decision.Disposition == RecommendationDisposition.Incompatible)
+        if (IsAttentionState(decision.Disposition))
         {
-            return (DangerBrush, SoftDangerBrush);
-        }
-
-        if (decision.Disposition is RecommendationDisposition.CompatibilityUnknown
-            or RecommendationDisposition.InventoryUnknown
-            or RecommendationDisposition.Conflict
-            or RecommendationDisposition.Unavailable)
-        {
-            return (WarningBrush, SoftWarningBrush);
+            return (AttentionBrush, SoftAttentionBrush);
         }
 
         return decision.Level switch
         {
-            RecommendationLevel.Essential => (TealBrush, SoftTealBrush),
-            RecommendationLevel.Recommended => (TealBrush, SoftTealBrush),
-            RecommendationLevel.Optional => (MutedBrush, SoftNeutralBrush),
-            _ => (TealBrush, SoftTealBrush)
+            RecommendationLevel.Recommended => (RecommendedBrush, SoftRecommendedBrush),
+            RecommendationLevel.Gem => (GemBrush, SoftGemBrush),
+            // No visible pill for Essential or Optional. The existing border remains
+            // layout-neutral because both its text and background are transparent.
+            RecommendationLevel.Essential => (TransparentBrush, TransparentBrush),
+            RecommendationLevel.Optional => (TransparentBrush, TransparentBrush),
+            _ => (TransparentBrush, TransparentBrush)
         };
     }
+
+    private static bool IsAttentionState(RecommendationDisposition disposition) =>
+        disposition is RecommendationDisposition.Incompatible
+            or RecommendationDisposition.CompatibilityUnknown
+            or RecommendationDisposition.InventoryUnknown
+            or RecommendationDisposition.Conflict
+            or RecommendationDisposition.Unavailable;
 
     private static string BuildInitials(string name)
     {

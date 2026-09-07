@@ -15,6 +15,7 @@ public sealed class RecommendationEngine
         ArgumentNullException.ThrowIfNull(request.Software);
         ArgumentNullException.ThrowIfNull(request.Applications);
 
+        var activeProfiles = ExpandProfiles(request.Profile);
         var applications = BuildApplicationIndex(request.Applications);
         ValidateGraphReferences(applications);
         var software = BuildSoftwareIndex(request.Software.Applications);
@@ -23,15 +24,15 @@ public sealed class RecommendationEngine
 
         foreach (var application in applications.Values)
         {
-            var profileRule = ResolveProfileRule(application, request.Profile);
-            if (profileRule is null)
+            var resolvedProfile = ResolveProfileRule(application, activeProfiles);
+            if (resolvedProfile is null)
             {
                 continue;
             }
 
             decisions.Add(Evaluate(
                 application,
-                profileRule,
+                resolvedProfile,
                 request.Profile,
                 request.Machine,
                 software));
@@ -47,6 +48,27 @@ public sealed class RecommendationEngine
                 .ThenBy(decision => decision.ApplicationName, StringComparer.OrdinalIgnoreCase)
                 .ThenBy(decision => decision.ApplicationId, StringComparer.OrdinalIgnoreCase)
                 .ToArray());
+    }
+
+    private static IReadOnlyList<UserProfile> ExpandProfiles(UserProfile profiles)
+    {
+        var supported = new[]
+        {
+            UserProfile.Personal,
+            UserProfile.Development,
+            UserProfile.Business,
+            UserProfile.Creative,
+            UserProfile.Learning,
+            UserProfile.Gaming
+        };
+
+        var result = supported.Where(profile => profiles.HasFlag(profile)).ToArray();
+        if (result.Length == 0)
+        {
+            throw new InvalidOperationException("At least one usage profile must be selected.");
+        }
+
+        return result;
     }
 
     private static Dictionary<string, ApplicationDefinition> BuildApplicationIndex(
@@ -131,43 +153,63 @@ public sealed class RecommendationEngine
         }
     }
 
-    private static ProfileRecommendation? ResolveProfileRule(
+    private static ResolvedProfileRule? ResolveProfileRule(
         ApplicationDefinition application,
-        UserProfile profile)
+        IReadOnlyList<UserProfile> profiles)
     {
-        var matches = application.Recommendations
-            .Where(rule => rule.Profile == profile)
-            .ToArray();
+        var matches = new List<ProfileRecommendation>();
 
-        if (matches.Length > 1)
+        foreach (var profile in profiles)
         {
-            throw new InvalidOperationException(
-                $"Application {application.Id} contains duplicate recommendations for profile {profile}.");
+            var profileMatches = application.Recommendations
+                .Where(rule => rule.Profile == profile)
+                .ToArray();
+
+            if (profileMatches.Length > 1)
+            {
+                throw new InvalidOperationException(
+                    $"Application {application.Id} contains duplicate recommendations for profile {profile}.");
+            }
+
+            if (profileMatches.Length == 0)
+            {
+                continue;
+            }
+
+            var rule = profileMatches[0];
+            RequireText(rule.ReasonKey, $"Recommendation reason key for {application.Id}/{profile}");
+            matches.Add(rule);
         }
 
-        if (matches.Length == 0)
+        if (matches.Count == 0)
         {
             return null;
         }
 
-        var rule = matches[0];
-        RequireText(rule.ReasonKey, $"Recommendation reason key for {application.Id}/{profile}");
-        return rule;
+        var strongest = matches
+            .OrderBy(rule => LevelRank(rule.Level))
+            .ThenBy(rule => Array.IndexOf(profiles.ToArray(), rule.Profile))
+            .First();
+
+        return new ResolvedProfileRule(
+            strongest,
+            matches.Select(rule => rule.Profile).Distinct().ToArray(),
+            matches.ToArray());
     }
 
     private static RecommendationDecision Evaluate(
         ApplicationDefinition application,
-        ProfileRecommendation profileRule,
-        UserProfile profile,
+        ResolvedProfileRule resolvedProfile,
+        UserProfile selectedProfiles,
         MachineSnapshot machine,
         IReadOnlyDictionary<string, DetectedApplicationState> software)
     {
-        var reasons = new List<RecommendationReason>
-        {
-            new(
-                $"profile.{profileRule.ReasonKey}",
-                ProfileMessage(application.Name, profile, profileRule.Level))
-        };
+        var profileRule = resolvedProfile.Strongest;
+        var reasons = resolvedProfile.Rules
+            .Select(rule => new RecommendationReason(
+                $"profile.{rule.ReasonKey}",
+                ProfileMessage(application.Name, rule.Profile, rule.Level)))
+            .ToList();
 
         if (software.TryGetValue(application.Id, out var installedState))
         {
@@ -186,8 +228,8 @@ public sealed class RecommendationEngine
 
                 return Decision(
                     application,
-                    profile,
-                    profileRule,
+                    selectedProfiles,
+                    resolvedProfile,
                     RecommendationDisposition.AlreadyInstalled,
                     false,
                     reasons);
@@ -201,8 +243,8 @@ public sealed class RecommendationEngine
 
                 return Decision(
                     application,
-                    profile,
-                    profileRule,
+                    selectedProfiles,
+                    resolvedProfile,
                     RecommendationDisposition.InventoryUnknown,
                     false,
                     reasons);
@@ -216,8 +258,8 @@ public sealed class RecommendationEngine
 
             return Decision(
                 application,
-                profile,
-                profileRule,
+                selectedProfiles,
+                resolvedProfile,
                 RecommendationDisposition.InventoryUnknown,
                 false,
                 reasons);
@@ -228,8 +270,8 @@ public sealed class RecommendationEngine
             reasons.Add(LifecycleReason(application));
             return Decision(
                 application,
-                profile,
-                profileRule,
+                selectedProfiles,
+                resolvedProfile,
                 RecommendationDisposition.Unavailable,
                 false,
                 reasons);
@@ -242,8 +284,8 @@ public sealed class RecommendationEngine
         {
             return Decision(
                 application,
-                profile,
-                profileRule,
+                selectedProfiles,
+                resolvedProfile,
                 RecommendationDisposition.Incompatible,
                 false,
                 reasons);
@@ -253,8 +295,8 @@ public sealed class RecommendationEngine
         {
             return Decision(
                 application,
-                profile,
-                profileRule,
+                selectedProfiles,
+                resolvedProfile,
                 RecommendationDisposition.CompatibilityUnknown,
                 false,
                 reasons);
@@ -264,10 +306,10 @@ public sealed class RecommendationEngine
 
         return Decision(
             application,
-            profile,
-            profileRule,
+            selectedProfiles,
+            resolvedProfile,
             RecommendationDisposition.Recommended,
-            profileRule.Level != RecommendationLevel.Optional,
+            profileRule.Level is RecommendationLevel.Essential or RecommendationLevel.Recommended,
             reasons);
     }
 
@@ -609,7 +651,7 @@ public sealed class RecommendationEngine
     private static RecommendationDecision Decision(
         ApplicationDefinition application,
         UserProfile profile,
-        ProfileRecommendation profileRule,
+        ResolvedProfileRule resolvedProfile,
         RecommendationDisposition disposition,
         bool selectedByDefault,
         IReadOnlyList<RecommendationReason> reasons) =>
@@ -617,11 +659,12 @@ public sealed class RecommendationEngine
             application.Id,
             application.Name,
             profile,
-            profileRule.Level,
-            profileRule.ReasonKey,
+            resolvedProfile.Strongest.Level,
+            resolvedProfile.Strongest.ReasonKey,
             disposition,
             selectedByDefault,
-            reasons.ToArray());
+            reasons.ToArray(),
+            resolvedProfile.MatchedProfiles);
 
     private static RecommendationReason LifecycleReason(ApplicationDefinition application) =>
         application.Lifecycle switch
@@ -642,13 +685,26 @@ public sealed class RecommendationEngine
         level switch
         {
             RecommendationLevel.Essential =>
-                $"{applicationName} is essential for the {profile} profile.",
+                $"{applicationName} is essential for {ProfileLabel(profile)}.",
             RecommendationLevel.Recommended =>
-                $"{applicationName} is recommended for the {profile} profile.",
+                $"{applicationName} is a strong match for {ProfileLabel(profile)}.",
+            RecommendationLevel.Gem =>
+                $"{applicationName} is a useful hidden gem for {ProfileLabel(profile)}.",
             RecommendationLevel.Optional =>
-                $"{applicationName} is an optional suggestion for the {profile} profile.",
+                $"{applicationName} is an optional suggestion for {ProfileLabel(profile)}.",
             _ => throw new ArgumentOutOfRangeException(nameof(level))
         };
+
+    private static string ProfileLabel(UserProfile profile) => profile switch
+    {
+        UserProfile.Personal => "everyday use",
+        UserProfile.Development => "development",
+        UserProfile.Business => "work and business",
+        UserProfile.Creative => "creative work",
+        UserProfile.Learning => "study and learning",
+        UserProfile.Gaming => "gaming",
+        _ => profile.ToString()
+    };
 
     private static IReadOnlyList<RecommendationReason> AppendReason(
         IReadOnlyList<RecommendationReason> existing,
@@ -660,7 +716,8 @@ public sealed class RecommendationEngine
         {
             RecommendationLevel.Essential => 0,
             RecommendationLevel.Recommended => 1,
-            RecommendationLevel.Optional => 2,
+            RecommendationLevel.Gem => 2,
+            RecommendationLevel.Optional => 3,
             _ => int.MaxValue
         };
 
@@ -693,6 +750,11 @@ public sealed class RecommendationEngine
 
         return value.Trim();
     }
+
+    private sealed record ResolvedProfileRule(
+        ProfileRecommendation Strongest,
+        IReadOnlyList<UserProfile> MatchedProfiles,
+        IReadOnlyList<ProfileRecommendation> Rules);
 
     private sealed record CompatibilityResult(
         bool HasHardFailure,

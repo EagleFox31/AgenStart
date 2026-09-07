@@ -36,28 +36,11 @@ public sealed partial class MainWindow
         }
 
         _uiPolishApplied = true;
-        ApplyBranding();
-        PolishMachineRows();
-        PolishUsageProfiles();
-        AddProfileGuidance();
-        AddRecommendationLoadingCard();
-        InstallRecommendationProgressTracking();
-        RecommendationsPanel.LayoutUpdated += (_, _) => ApplyRecommendationStatusVisuals();
-        _viewModel.PropertyChanged += (_, args) =>
-        {
-            if (args.PropertyName is nameof(MainWindowViewModel.HasRecommendations)
-                or nameof(MainWindowViewModel.SelectedProfile)
-                or nameof(MainWindowViewModel.IsBusy))
-            {
-                Avalonia.Threading.Dispatcher.UIThread.Post(() =>
-                {
-                    RefreshProfileCardStates();
-                    RefreshProfileGuidance();
-                    RefreshRecommendationLoadingCard();
-                    ApplyRecommendationStatusVisuals();
-                });
-            }
-        };
+
+        // Never mutate the logical/visual tree while Avalonia is still attaching it.
+        // Deferring the one-shot decoration avoids the re-entrant layout recursion that
+        // previously caused a packaged Windows StackOverflowException.
+        Avalonia.Threading.Dispatcher.UIThread.Post(ApplyStableUiPolish);
     }
 
     private void PolishMachineRows()

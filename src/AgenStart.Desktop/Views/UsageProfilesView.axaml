@@ -1,0 +1,71 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="AgenStart.Desktop.Views.UsageProfilesView">
+  <Grid ColumnDefinitions="1.45*,0.55*" ColumnSpacing="50">
+    <StackPanel Grid.Column="0" Spacing="10">
+      <TextBlock Text="Choose how you use this PC" FontSize="19" FontWeight="SemiBold" Margin="0,0,0,4" />
+      <TextBlock Text="Select one or more uses. AgenStart merges them, removes duplicates, and only preselects the strongest matches." Foreground="{StaticResource AgenMutedBrush}" FontSize="13" TextWrapping="Wrap" Margin="0,0,0,10" />
+
+      <Border BorderBrush="{StaticResource AgenDividerBrush}" BorderThickness="1" CornerRadius="8" Padding="16,12">
+        <CheckBox x:Name="PersonalCheckBox" Click="ProfileCheckBox_OnClick">
+          <StackPanel><TextBlock Text="Personal / Everyday" FontSize="17" FontWeight="SemiBold" /><TextBlock Text="Browsing, media, files, passwords and useful everyday utilities." Foreground="{StaticResource AgenMutedBrush}" FontSize="13" /></StackPanel>
+        </CheckBox>
+      </Border>
+      <Border BorderBrush="{StaticResource AgenDividerBrush}" BorderThickness="1" CornerRadius="8" Padding="16,12">
+        <CheckBox x:Name="BusinessCheckBox" Click="ProfileCheckBox_OnClick">
+          <StackPanel><TextBlock Text="Business / Work" FontSize="17" FontWeight="SemiBold" /><TextBlock Text="Documents, meetings, communication, cloud files and productivity." Foreground="{StaticResource AgenMutedBrush}" FontSize="13" /></StackPanel>
+        </CheckBox>
+      </Border>
+      <Border BorderBrush="{StaticResource AgenDividerBrush}" BorderThickness="1" CornerRadius="8" Padding="16,12">
+        <CheckBox x:Name="LearningCheckBox" Click="ProfileCheckBox_OnClick">
+          <StackPanel><TextBlock Text="Study / Learning" FontSize="17" FontWeight="SemiBold" /><TextBlock Text="Notes, research, flashcards, PDFs, courses and study tools." Foreground="{StaticResource AgenMutedBrush}" FontSize="13" /></StackPanel>
+        </CheckBox>
+      </Border>
+      <Border BorderBrush="{StaticResource AgenDividerBrush}" BorderThickness="1" CornerRadius="8" Padding="16,12">
+        <CheckBox x:Name="DevelopmentCheckBox" Click="ProfileCheckBox_OnClick">
+          <StackPanel><TextBlock Text="Development" FontSize="17" FontWeight="SemiBold" /><TextBlock Text="Code editors, Git, terminals, API tools, databases and containers." Foreground="{StaticResource AgenMutedBrush}" FontSize="13" /></StackPanel>
+        </CheckBox>
+      </Border>
+      <Border BorderBrush="{StaticResource AgenDividerBrush}" BorderThickness="1" CornerRadius="8" Padding="16,12">
+        <CheckBox x:Name="CreativeCheckBox" Click="ProfileCheckBox_OnClick">
+          <StackPanel><TextBlock Text="Creative" FontSize="17" FontWeight="SemiBold" /><TextBlock Text="Recording, image work, audio, video, design and 3D tools." Foreground="{StaticResource AgenMutedBrush}" FontSize="13" /></StackPanel>
+        </CheckBox>
+      </Border>
+      <Border BorderBrush="{StaticResource AgenDividerBrush}" BorderThickness="1" CornerRadius="8" Padding="16,12">
+        <CheckBox x:Name="GamingCheckBox" Click="ProfileCheckBox_OnClick">
+          <StackPanel><TextBlock Text="Gaming" FontSize="17" FontWeight="SemiBold" /><TextBlock Text="Game launchers, voice chat, monitoring, streaming and gaming utilities." Foreground="{StaticResource AgenMutedBrush}" FontSize="13" /></StackPanel>
+        </CheckBox>
+      </Border>
+
+      <StackPanel Orientation="Horizontal" Spacing="14" Margin="0,18,0,0">
+        <Button x:Name="BuildButton" Classes="primary" Content="Build my recommendations" Click="BuildButton_OnClick" />
+        <Button x:Name="BackButton" Classes="secondary" Content="Back" Click="BackButton_OnClick" />
+      </StackPanel>
+
+      <Border x:Name="RecommendationProgressHost"
+              IsVisible="False"
+              BorderBrush="{StaticResource AgenDividerBrush}"
+              BorderThickness="1"
+              CornerRadius="8"
+              Padding="16,13"
+              Margin="0,8,0,0"
+              Background="#FBFAF6">
+        <StackPanel Spacing="8">
+          <Grid ColumnDefinitions="*,Auto" ColumnSpacing="14">
+            <TextBlock x:Name="RecommendationProgressLabel" Text="Starting recommendation analysis…" Foreground="{StaticResource AgenMutedBrush}" FontSize="13" />
+            <TextBlock x:Name="RecommendationProgressPercent" Grid.Column="1" Text="10%" Foreground="{StaticResource AgenTealBrush}" FontSize="13" FontWeight="SemiBold" />
+          </Grid>
+          <ProgressBar x:Name="RecommendationProgressBar" Minimum="0" Maximum="100" Value="10" Height="6" IsIndeterminate="False" />
+        </StackPanel>
+      </Border>
+    </StackPanel>
+
+    <StackPanel Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="310" Spacing="12">
+      <Border Width="70" Height="70" CornerRadius="35" BorderThickness="2" BorderBrush="{StaticResource AgenTealBrush}" HorizontalAlignment="Center"><TextBlock Text="✦" Foreground="{StaticResource AgenTealBrush}" FontSize="25" HorizontalAlignment="Center" VerticalAlignment="Center" /></Border>
+      <TextBlock Text="Selected uses" Foreground="{StaticResource AgenMutedBrush}" TextAlignment="Center" Margin="0,8,0,0" />
+      <TextBlock x:Name="SelectedProfilesText" FontSize="22" FontWeight="SemiBold" TextAlignment="Center" TextWrapping="Wrap" />
+      <Border Height="1" Background="{StaticResource AgenDividerBrush}" Margin="0,8" />
+      <TextBlock Text="AgenStart combines these profiles, deduplicates apps and keeps gems optional by default." Classes="subtitle" TextWrapping="Wrap" TextAlignment="Center" />
+    </StackPanel>
+  </Grid>
+</UserControl>

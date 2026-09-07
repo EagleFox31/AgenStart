@@ -1,260 +1,706 @@
 {
   "schemaVersion": "1.0.0",
-  "catalogueVersion": "0.1.0",
+  "catalogueVersion": "0.2.0",
   "applications": [
     {
-      "id": "git",
-      "name": "Git",
-      "publisher": "Git Project",
-      "description": "Distributed version control system.",
-      "categories": ["development"],
-      "tags": ["source-control", "cli"],
+      "id": "7zip",
+      "name": "7-Zip",
+      "publisher": "Igor Pavlov",
+      "description": "Opens and compresses ZIP, 7z and many other archive formats so downloaded files are easy to unpack.",
+      "categories": ["utilities"],
+      "tags": ["archive", "compression"],
       "lifecycle": {"status": "active"},
       "recommendations": [
-        {"profile": "development", "level": "essential", "reasonKey": "development.source-control"}
+        {"profile": "personal", "level": "essential", "reasonKey": "personal.archives"},
+        {"profile": "business", "level": "recommended", "reasonKey": "business.archives"},
+        {"profile": "learning", "level": "recommended", "reasonKey": "learning.archives"},
+        {"profile": "development", "level": "recommended", "reasonKey": "development.archives"},
+        {"profile": "gaming", "level": "optional", "reasonKey": "gaming.archives"}
       ],
       "requirements": {
-        "minimum": {"minRamMiB": 512, "minFreeStorageMiB": 500, "gpuRequired": false, "architectures": ["x64", "arm64", "x86"]},
-        "recommended": {"minRamMiB": 4096, "minFreeStorageMiB": 1024, "gpuRequired": false, "architectures": ["x64", "arm64", "x86"]}
+        "minimum": {"minRamMiB": 256, "minFreeStorageMiB": 200, "gpuRequired": false, "architectures": ["x64", "arm64", "x86"]},
+        "recommended": {"minRamMiB": 2048, "minFreeStorageMiB": 500, "gpuRequired": false, "architectures": ["x64", "arm64", "x86"]}
       },
-      "platformSupport": [
-        {"platform": "windows", "status": "supported", "architectures": ["x64", "arm64", "x86"]},
-        {"platform": "macos", "status": "planned", "architectures": ["x64", "arm64"]}
-      ],
-      "providers": [
-        {"platform": "windows", "type": "winget", "packageId": "Git.Git", "source": "winget", "scopePreference": "any"},
-        {"platform": "macos", "type": "homebrew-formula", "token": "git"}
-      ],
-      "verification": [
-        {"platform": "windows", "type": "provider-query"},
-        {"platform": "windows", "type": "command-version", "executable": "git", "arguments": ["--version"]},
-        {"platform": "macos", "type": "provider-query"}
-      ],
-      "dependencies": [],
-      "conflicts": [],
-      "curation": {"homepage": "https://git-scm.com/", "license": "GPL-2.0-only", "trust": "official-publisher"}
-    },
-    {
-      "id": "visual-studio-code",
-      "name": "Visual Studio Code",
-      "publisher": "Microsoft",
-      "description": "Extensible source-code editor for development workflows.",
-      "categories": ["development"],
-      "tags": ["editor", "ide"],
-      "lifecycle": {"status": "active"},
-      "recommendations": [
-        {"profile": "development", "level": "recommended", "reasonKey": "development.code-editor"},
-        {"profile": "training", "level": "recommended", "reasonKey": "training.code-editor"}
-      ],
-      "requirements": {
-        "minimum": {"minRamMiB": 2048, "minFreeStorageMiB": 1000, "gpuRequired": false, "architectures": ["x64", "arm64"]},
-        "recommended": {"minRamMiB": 4096, "minFreeStorageMiB": 1024, "gpuRequired": false, "architectures": ["x64", "arm64"]}
-      },
-      "platformSupport": [
-        {"platform": "windows", "status": "supported", "architectures": ["x64", "arm64"]},
-        {"platform": "macos", "status": "planned", "architectures": ["x64", "arm64"]}
-      ],
-      "providers": [
-        {"platform": "windows", "type": "winget", "packageId": "Microsoft.VisualStudioCode", "source": "winget", "scopePreference": "user"},
-        {"platform": "macos", "type": "homebrew-cask", "token": "visual-studio-code"}
-      ],
-      "verification": [
-        {"platform": "windows", "type": "provider-query"},
-        {"platform": "macos", "type": "provider-query"}
-      ],
-      "dependencies": [],
-      "conflicts": [],
-      "curation": {"homepage": "https://code.visualstudio.com/", "license": "Microsoft Software License Terms", "trust": "official-publisher"}
+      "platformSupport": [{"platform": "windows", "status": "supported", "architectures": ["x64", "arm64", "x86"]}],
+      "providers": [{"platform": "windows", "type": "winget", "packageId": "7zip.7zip", "source": "winget", "scopePreference": "any"}],
+      "dependencies": [], "conflicts": [],
+      "curation": {"homepage": "https://www.7-zip.org/", "trust": "official-publisher"}
     },
     {
       "id": "firefox",
       "name": "Mozilla Firefox",
       "publisher": "Mozilla",
-      "description": "Privacy-oriented web browser.",
-      "categories": ["browser"],
-      "tags": ["browser", "web"],
+      "description": "A web browser for everyday browsing with strong privacy controls and broad website compatibility.",
+      "categories": ["browser"], "tags": ["browser", "privacy"],
       "lifecycle": {"status": "active"},
       "recommendations": [
-        {"profile": "personal", "level": "recommended", "reasonKey": "personal.web-browser"},
+        {"profile": "personal", "level": "recommended", "reasonKey": "personal.browser"},
+        {"profile": "learning", "level": "recommended", "reasonKey": "learning.browser"},
         {"profile": "development", "level": "optional", "reasonKey": "development.browser-testing"}
       ],
       "requirements": {
         "minimum": {"minRamMiB": 2048, "minFreeStorageMiB": 500, "gpuRequired": false, "architectures": ["x64", "arm64"]},
         "recommended": {"minRamMiB": 4096, "minFreeStorageMiB": 1024, "gpuRequired": false, "architectures": ["x64", "arm64"]}
       },
-      "platformSupport": [
-        {"platform": "windows", "status": "supported", "architectures": ["x64", "arm64"]},
-        {"platform": "macos", "status": "planned", "architectures": ["x64", "arm64"]}
-      ],
-      "providers": [
-        {"platform": "windows", "type": "winget", "packageId": "Mozilla.Firefox", "source": "winget", "scopePreference": "any"},
-        {"platform": "macos", "type": "homebrew-cask", "token": "firefox"}
-      ],
-      "verification": [
-        {"platform": "windows", "type": "provider-query"},
-        {"platform": "macos", "type": "provider-query"}
-      ],
-      "dependencies": [],
-      "conflicts": [],
-      "curation": {"homepage": "https://www.mozilla.org/firefox/", "license": "MPL-2.0", "trust": "official-publisher"}
+      "platformSupport": [{"platform": "windows", "status": "supported", "architectures": ["x64", "arm64"]}],
+      "providers": [{"platform": "windows", "type": "winget", "packageId": "Mozilla.Firefox", "source": "winget", "scopePreference": "any"}],
+      "dependencies": [], "conflicts": []
     },
     {
       "id": "vlc",
       "name": "VLC media player",
       "publisher": "VideoLAN",
-      "description": "Cross-platform media player.",
-      "categories": ["media"],
-      "tags": ["audio", "video", "player"],
+      "description": "Plays almost any video or audio file without making you hunt for extra codecs.",
+      "categories": ["media"], "tags": ["video", "audio", "player"],
       "lifecycle": {"status": "active"},
       "recommendations": [
-        {"profile": "personal", "level": "recommended", "reasonKey": "personal.media-player"},
-        {"profile": "training", "level": "optional", "reasonKey": "training.media-playback"}
+        {"profile": "personal", "level": "essential", "reasonKey": "personal.media"},
+        {"profile": "learning", "level": "recommended", "reasonKey": "learning.course-media"},
+        {"profile": "creative", "level": "recommended", "reasonKey": "creative.preview-media"}
       ],
       "requirements": {
         "minimum": {"minRamMiB": 1024, "minFreeStorageMiB": 500, "gpuRequired": false, "architectures": ["x64", "arm64"]},
         "recommended": {"minRamMiB": 4096, "minFreeStorageMiB": 1024, "gpuRequired": false, "architectures": ["x64", "arm64"]}
       },
-      "platformSupport": [
-        {"platform": "windows", "status": "supported", "architectures": ["x64", "arm64"]},
-        {"platform": "macos", "status": "planned", "architectures": ["x64", "arm64"]}
-      ],
-      "providers": [
-        {"platform": "windows", "type": "winget", "packageId": "VideoLAN.VLC", "source": "winget", "scopePreference": "any"},
-        {"platform": "macos", "type": "homebrew-cask", "token": "vlc"}
-      ],
-      "verification": [
-        {"platform": "windows", "type": "provider-query"},
-        {"platform": "macos", "type": "provider-query"}
-      ],
-      "dependencies": [],
-      "conflicts": [],
-      "curation": {"homepage": "https://www.videolan.org/vlc/", "license": "GPL-2.0-or-later", "trust": "official-publisher"}
-    },
-    {
-      "id": "7zip",
-      "name": "7-Zip",
-      "publisher": "Igor Pavlov",
-      "description": "File archiver with support for common archive formats.",
-      "categories": ["utilities"],
-      "tags": ["archive", "compression"],
-      "lifecycle": {"status": "active"},
-      "recommendations": [
-        {"profile": "personal", "level": "recommended", "reasonKey": "personal.archive-tool"},
-        {"profile": "development", "level": "recommended", "reasonKey": "development.archive-tool"},
-        {"profile": "business", "level": "recommended", "reasonKey": "business.archive-tool"}
-      ],
-      "requirements": {
-        "minimum": {"minRamMiB": 256, "minFreeStorageMiB": 200, "gpuRequired": false, "architectures": ["x64", "arm64", "x86"]},
-        "recommended": {"minRamMiB": 4096, "minFreeStorageMiB": 1024, "gpuRequired": false, "architectures": ["x64", "arm64", "x86"]}
-      },
-      "platformSupport": [
-        {"platform": "windows", "status": "supported", "architectures": ["x64", "arm64", "x86"]},
-        {"platform": "macos", "status": "planned", "architectures": ["x64", "arm64"]}
-      ],
-      "providers": [
-        {"platform": "windows", "type": "winget", "packageId": "7zip.7zip", "source": "winget", "scopePreference": "any"},
-        {"platform": "macos", "type": "homebrew-formula", "token": "sevenzip"}
-      ],
-      "verification": [
-        {"platform": "windows", "type": "provider-query"},
-        {"platform": "macos", "type": "provider-query"}
-      ],
-      "dependencies": [],
-      "conflicts": [],
-      "curation": {"homepage": "https://www.7-zip.org/", "license": "LGPL-2.1-or-later", "trust": "official-publisher"}
-    },
-    {
-      "id": "obs-studio",
-      "name": "OBS Studio",
-      "publisher": "OBS Project",
-      "description": "Open-source video recording and live-streaming application.",
-      "categories": ["media", "creation"],
-      "tags": ["recording", "streaming"],
-      "lifecycle": {"status": "active"},
-      "recommendations": [
-        {"profile": "creation", "level": "recommended", "reasonKey": "creation.screen-recording"},
-        {"profile": "training", "level": "recommended", "reasonKey": "training.screen-recording"}
-      ],
-      "requirements": {
-        "minimum": {"minRamMiB": 4096, "minFreeStorageMiB": 1000, "gpuRequired": true, "architectures": ["x64", "arm64"]},
-        "recommended": {"minRamMiB": 4096, "minFreeStorageMiB": 1024, "gpuRequired": true, "architectures": ["x64", "arm64"]}
-      },
-      "platformSupport": [
-        {"platform": "windows", "status": "supported", "architectures": ["x64", "arm64"]},
-        {"platform": "macos", "status": "planned", "architectures": ["x64", "arm64"]}
-      ],
-      "providers": [
-        {"platform": "windows", "type": "winget", "packageId": "OBSProject.OBSStudio", "source": "winget", "scopePreference": "any"},
-        {"platform": "macos", "type": "homebrew-cask", "token": "obs"}
-      ],
-      "verification": [
-        {"platform": "windows", "type": "provider-query"},
-        {"platform": "macos", "type": "provider-query"}
-      ],
-      "dependencies": [],
-      "conflicts": [],
-      "curation": {"homepage": "https://obsproject.com/", "license": "GPL-2.0-or-later", "trust": "official-publisher"}
+      "platformSupport": [{"platform": "windows", "status": "supported", "architectures": ["x64", "arm64"]}],
+      "providers": [{"platform": "windows", "type": "winget", "packageId": "VideoLAN.VLC", "source": "winget", "scopePreference": "any"}],
+      "dependencies": [], "conflicts": []
     },
     {
       "id": "powertoys",
       "name": "Microsoft PowerToys",
       "publisher": "Microsoft",
-      "description": "Windows productivity utilities for power users.",
-      "categories": ["system", "productivity"],
-      "tags": ["windows", "utilities"],
+      "description": "Adds useful Windows tools for window layouts, bulk renaming, OCR, quick launching and other daily shortcuts.",
+      "categories": ["system", "productivity"], "tags": ["windows", "utilities"],
       "lifecycle": {"status": "active"},
       "recommendations": [
-        {"profile": "development", "level": "recommended", "reasonKey": "development.windows-productivity"},
-        {"profile": "business", "level": "optional", "reasonKey": "business.windows-productivity"}
+        {"profile": "personal", "level": "gem", "reasonKey": "personal.windows-tools"},
+        {"profile": "business", "level": "recommended", "reasonKey": "business.windows-tools"},
+        {"profile": "development", "level": "recommended", "reasonKey": "development.windows-tools"},
+        {"profile": "creative", "level": "gem", "reasonKey": "creative.windows-tools"}
       ],
       "requirements": {
         "minimum": {"minRamMiB": 2048, "minFreeStorageMiB": 1000, "gpuRequired": false, "architectures": ["x64", "arm64"]},
-        "recommended": {"minRamMiB": 4096, "minFreeStorageMiB": 1024, "gpuRequired": false, "architectures": ["x64", "arm64"]}
+        "recommended": {"minRamMiB": 4096, "minFreeStorageMiB": 1500, "gpuRequired": false, "architectures": ["x64", "arm64"]}
       },
-      "platformSupport": [
-        {"platform": "windows", "status": "supported", "architectures": ["x64", "arm64"]}
+      "platformSupport": [{"platform": "windows", "status": "supported", "architectures": ["x64", "arm64"]}],
+      "providers": [{"platform": "windows", "type": "winget", "packageId": "Microsoft.PowerToys", "source": "winget", "scopePreference": "any"}],
+      "dependencies": [], "conflicts": []
+    },
+    {
+      "id": "everything",
+      "name": "Everything",
+      "publisher": "voidtools",
+      "description": "Finds files and folders on your PC by name almost instantly, much faster than normal Windows search.",
+      "categories": ["utilities"], "tags": ["search", "files", "gem"],
+      "lifecycle": {"status": "active"},
+      "recommendations": [
+        {"profile": "personal", "level": "gem", "reasonKey": "personal.fast-file-search"},
+        {"profile": "business", "level": "gem", "reasonKey": "business.fast-file-search"},
+        {"profile": "development", "level": "gem", "reasonKey": "development.fast-file-search"}
       ],
-      "providers": [
-        {"platform": "windows", "type": "winget", "packageId": "Microsoft.PowerToys", "source": "winget", "scopePreference": "any"}
+      "requirements": {
+        "minimum": {"minRamMiB": 256, "minFreeStorageMiB": 100, "gpuRequired": false, "architectures": ["x64", "x86"]},
+        "recommended": {"minRamMiB": 1024, "minFreeStorageMiB": 250, "gpuRequired": false, "architectures": ["x64", "x86"]}
+      },
+      "platformSupport": [{"platform": "windows", "status": "supported", "architectures": ["x64", "x86"]}],
+      "providers": [{"platform": "windows", "type": "winget", "packageId": "voidtools.Everything", "source": "winget", "scopePreference": "any"}],
+      "dependencies": [], "conflicts": []
+    },
+    {
+      "id": "localsend",
+      "name": "LocalSend",
+      "publisher": "Tien Do Nam",
+      "description": "Sends files between your PC and nearby phones or computers over local Wi-Fi without uploading them to a cloud.",
+      "categories": ["utilities"], "tags": ["files", "local", "privacy", "gem"],
+      "lifecycle": {"status": "active"},
+      "recommendations": [
+        {"profile": "personal", "level": "gem", "reasonKey": "personal.local-file-transfer"},
+        {"profile": "business", "level": "gem", "reasonKey": "business.local-file-transfer"},
+        {"profile": "learning", "level": "gem", "reasonKey": "learning.local-file-transfer"}
       ],
-      "verification": [
-        {"platform": "windows", "type": "provider-query"}
+      "requirements": {
+        "minimum": {"minRamMiB": 1024, "minFreeStorageMiB": 300, "gpuRequired": false, "architectures": ["x64", "arm64"]},
+        "recommended": {"minRamMiB": 2048, "minFreeStorageMiB": 500, "gpuRequired": false, "architectures": ["x64", "arm64"]}
+      },
+      "platformSupport": [{"platform": "windows", "status": "supported", "architectures": ["x64", "arm64"]}],
+      "providers": [{"platform": "windows", "type": "winget", "packageId": "LocalSend.LocalSend", "source": "winget", "scopePreference": "any"}],
+      "dependencies": [], "conflicts": []
+    },
+    {
+      "id": "bitwarden",
+      "name": "Bitwarden",
+      "publisher": "Bitwarden Inc.",
+      "description": "Stores your passwords in a secure vault and can fill them in for you instead of reusing easy passwords.",
+      "categories": ["security"], "tags": ["passwords", "security"],
+      "lifecycle": {"status": "active"},
+      "recommendations": [
+        {"profile": "personal", "level": "recommended", "reasonKey": "personal.password-manager"},
+        {"profile": "business", "level": "recommended", "reasonKey": "business.password-manager"}
       ],
-      "dependencies": [],
-      "conflicts": [],
-      "curation": {"homepage": "https://github.com/microsoft/PowerToys", "license": "MIT", "trust": "official-publisher"}
+      "requirements": {
+        "minimum": {"minRamMiB": 1024, "minFreeStorageMiB": 500, "gpuRequired": false, "architectures": ["x64", "arm64"]},
+        "recommended": {"minRamMiB": 2048, "minFreeStorageMiB": 750, "gpuRequired": false, "architectures": ["x64", "arm64"]}
+      },
+      "platformSupport": [{"platform": "windows", "status": "supported", "architectures": ["x64", "arm64"]}],
+      "providers": [{"platform": "windows", "type": "winget", "packageId": "Bitwarden.Bitwarden", "source": "winget", "scopePreference": "user"}],
+      "dependencies": [], "conflicts": []
+    },
+    {
+      "id": "sharex",
+      "name": "ShareX",
+      "publisher": "ShareX Team",
+      "description": "Takes screenshots, records the screen, extracts text with OCR and quickly annotates what you captured.",
+      "categories": ["productivity"], "tags": ["screenshots", "recording", "ocr", "gem"],
+      "lifecycle": {"status": "active"},
+      "recommendations": [
+        {"profile": "personal", "level": "gem", "reasonKey": "personal.capture-tools"},
+        {"profile": "business", "level": "gem", "reasonKey": "business.capture-tools"},
+        {"profile": "development", "level": "gem", "reasonKey": "development.capture-tools"},
+        {"profile": "creative", "level": "recommended", "reasonKey": "creative.capture-tools"}
+      ],
+      "requirements": {
+        "minimum": {"minRamMiB": 1024, "minFreeStorageMiB": 500, "gpuRequired": false, "architectures": ["x64"]},
+        "recommended": {"minRamMiB": 2048, "minFreeStorageMiB": 1000, "gpuRequired": false, "architectures": ["x64"]}
+      },
+      "platformSupport": [{"platform": "windows", "status": "supported", "architectures": ["x64"]}],
+      "providers": [{"platform": "windows", "type": "winget", "packageId": "ShareX.ShareX", "source": "winget", "scopePreference": "any"}],
+      "dependencies": [], "conflicts": []
+    },
+    {
+      "id": "flow-launcher",
+      "name": "Flow Launcher",
+      "publisher": "Flow-Launcher Team",
+      "description": "Lets you open apps, files, websites and quick commands from one keyboard search box instead of digging through menus.",
+      "categories": ["productivity"], "tags": ["launcher", "search", "gem"],
+      "lifecycle": {"status": "active"},
+      "recommendations": [
+        {"profile": "personal", "level": "gem", "reasonKey": "personal.keyboard-launcher"},
+        {"profile": "business", "level": "gem", "reasonKey": "business.keyboard-launcher"},
+        {"profile": "development", "level": "gem", "reasonKey": "development.keyboard-launcher"}
+      ],
+      "requirements": {
+        "minimum": {"minRamMiB": 1024, "minFreeStorageMiB": 300, "gpuRequired": false, "architectures": ["x64"]},
+        "recommended": {"minRamMiB": 2048, "minFreeStorageMiB": 500, "gpuRequired": false, "architectures": ["x64"]}
+      },
+      "platformSupport": [{"platform": "windows", "status": "supported", "architectures": ["x64"]}],
+      "providers": [{"platform": "windows", "type": "winget", "packageId": "Flow-Launcher.Flow-Launcher", "source": "winget", "scopePreference": "user"}],
+      "dependencies": [], "conflicts": []
+    },
+    {
+      "id": "wiztree",
+      "name": "WizTree",
+      "publisher": "Antibody Software",
+      "description": "Shows what is taking up space on your drive so you can quickly find giant folders and files.",
+      "categories": ["utilities"], "tags": ["storage", "disk", "gem"],
+      "lifecycle": {"status": "active"},
+      "recommendations": [
+        {"profile": "personal", "level": "gem", "reasonKey": "personal.disk-space"},
+        {"profile": "development", "level": "gem", "reasonKey": "development.disk-space"}
+      ],
+      "requirements": {
+        "minimum": {"minRamMiB": 256, "minFreeStorageMiB": 100, "gpuRequired": false, "architectures": ["x64", "x86"]},
+        "recommended": {"minRamMiB": 1024, "minFreeStorageMiB": 250, "gpuRequired": false, "architectures": ["x64", "x86"]}
+      },
+      "platformSupport": [{"platform": "windows", "status": "supported", "architectures": ["x64", "x86"]}],
+      "providers": [{"platform": "windows", "type": "winget", "packageId": "AntibodySoftware.WizTree", "source": "winget", "scopePreference": "any"}],
+      "dependencies": [], "conflicts": []
+    },
+    {
+      "id": "quicklook",
+      "name": "QuickLook",
+      "publisher": "Paddy Xu",
+      "description": "Press Space to preview many files without fully opening them, similar to Quick Look on macOS.",
+      "categories": ["utilities"], "tags": ["preview", "files", "gem"],
+      "lifecycle": {"status": "active"},
+      "recommendations": [
+        {"profile": "personal", "level": "gem", "reasonKey": "personal.file-preview"},
+        {"profile": "creative", "level": "gem", "reasonKey": "creative.file-preview"}
+      ],
+      "requirements": {
+        "minimum": {"minRamMiB": 512, "minFreeStorageMiB": 250, "gpuRequired": false, "architectures": ["x64"]},
+        "recommended": {"minRamMiB": 2048, "minFreeStorageMiB": 500, "gpuRequired": false, "architectures": ["x64"]}
+      },
+      "platformSupport": [{"platform": "windows", "status": "supported", "architectures": ["x64"]}],
+      "providers": [{"platform": "windows", "type": "winget", "packageId": "QL-Win.QuickLook", "source": "winget", "scopePreference": "user"}],
+      "dependencies": [], "conflicts": []
+    },
+    {
+      "id": "copyq",
+      "name": "CopyQ",
+      "publisher": "Lukas Holecek",
+      "description": "Keeps a searchable history of things you copy, so text or snippets are not lost when you copy something else.",
+      "categories": ["productivity"], "tags": ["clipboard", "gem"],
+      "lifecycle": {"status": "active"},
+      "recommendations": [
+        {"profile": "personal", "level": "gem", "reasonKey": "personal.clipboard-history"},
+        {"profile": "business", "level": "gem", "reasonKey": "business.clipboard-history"},
+        {"profile": "development", "level": "gem", "reasonKey": "development.clipboard-history"}
+      ],
+      "requirements": {
+        "minimum": {"minRamMiB": 512, "minFreeStorageMiB": 250, "gpuRequired": false, "architectures": ["x64"]},
+        "recommended": {"minRamMiB": 1024, "minFreeStorageMiB": 500, "gpuRequired": false, "architectures": ["x64"]}
+      },
+      "platformSupport": [{"platform": "windows", "status": "supported", "architectures": ["x64"]}],
+      "providers": [{"platform": "windows", "type": "winget", "packageId": "hluk.CopyQ", "source": "winget", "scopePreference": "user"}],
+      "dependencies": [], "conflicts": []
+    },
+    {
+      "id": "sumatrapdf",
+      "name": "SumatraPDF",
+      "publisher": "Krzysztof Kowalczyk",
+      "description": "A very lightweight PDF and ebook reader that opens documents quickly without a heavy editing suite.",
+      "categories": ["documents"], "tags": ["pdf", "reader"],
+      "lifecycle": {"status": "active"},
+      "recommendations": [
+        {"profile": "personal", "level": "recommended", "reasonKey": "personal.pdf-reader"},
+        {"profile": "business", "level": "recommended", "reasonKey": "business.pdf-reader"},
+        {"profile": "learning", "level": "essential", "reasonKey": "learning.pdf-reader"}
+      ],
+      "requirements": {
+        "minimum": {"minRamMiB": 256, "minFreeStorageMiB": 200, "gpuRequired": false, "architectures": ["x64", "arm64", "x86"]},
+        "recommended": {"minRamMiB": 1024, "minFreeStorageMiB": 300, "gpuRequired": false, "architectures": ["x64", "arm64", "x86"]}
+      },
+      "platformSupport": [{"platform": "windows", "status": "supported", "architectures": ["x64", "arm64", "x86"]}],
+      "providers": [{"platform": "windows", "type": "winget", "packageId": "SumatraPDF.SumatraPDF", "source": "winget", "scopePreference": "any"}],
+      "dependencies": [], "conflicts": []
+    },
+    {
+      "id": "libreoffice",
+      "name": "LibreOffice",
+      "publisher": "The Document Foundation",
+      "description": "A free office suite for writing documents, working with spreadsheets and making presentations.",
+      "categories": ["office"], "tags": ["documents", "spreadsheets", "presentations"],
+      "lifecycle": {"status": "active"},
+      "recommendations": [
+        {"profile": "business", "level": "recommended", "reasonKey": "business.office-suite"},
+        {"profile": "learning", "level": "essential", "reasonKey": "learning.office-suite"},
+        {"profile": "personal", "level": "optional", "reasonKey": "personal.office-suite"}
+      ],
+      "requirements": {
+        "minimum": {"minRamMiB": 2048, "minFreeStorageMiB": 2000, "gpuRequired": false, "architectures": ["x64"]},
+        "recommended": {"minRamMiB": 4096, "minFreeStorageMiB": 3000, "gpuRequired": false, "architectures": ["x64"]}
+      },
+      "platformSupport": [{"platform": "windows", "status": "supported", "architectures": ["x64"]}],
+      "providers": [{"platform": "windows", "type": "winget", "packageId": "TheDocumentFoundation.LibreOffice", "source": "winget", "scopePreference": "any"}],
+      "dependencies": [], "conflicts": []
+    },
+    {
+      "id": "thunderbird",
+      "name": "Mozilla Thunderbird",
+      "publisher": "Mozilla",
+      "description": "Brings several email accounts into one desktop inbox instead of keeping multiple browser tabs open.",
+      "categories": ["communication"], "tags": ["email"],
+      "lifecycle": {"status": "active"},
+      "recommendations": [
+        {"profile": "business", "level": "recommended", "reasonKey": "business.email-client"},
+        {"profile": "personal", "level": "optional", "reasonKey": "personal.email-client"}
+      ],
+      "requirements": {
+        "minimum": {"minRamMiB": 2048, "minFreeStorageMiB": 1000, "gpuRequired": false, "architectures": ["x64"]},
+        "recommended": {"minRamMiB": 4096, "minFreeStorageMiB": 2000, "gpuRequired": false, "architectures": ["x64"]}
+      },
+      "platformSupport": [{"platform": "windows", "status": "supported", "architectures": ["x64"]}],
+      "providers": [{"platform": "windows", "type": "winget", "packageId": "Mozilla.Thunderbird", "source": "winget", "scopePreference": "user"}],
+      "dependencies": [], "conflicts": []
+    },
+    {
+      "id": "zoom",
+      "name": "Zoom",
+      "publisher": "Zoom Video Communications",
+      "description": "Handles video meetings, calls and webinars when work or classes use Zoom.",
+      "categories": ["communication"], "tags": ["meetings", "video"],
+      "lifecycle": {"status": "active"},
+      "recommendations": [
+        {"profile": "business", "level": "recommended", "reasonKey": "business.meetings"},
+        {"profile": "learning", "level": "recommended", "reasonKey": "learning.classes"}
+      ],
+      "requirements": {
+        "minimum": {"minRamMiB": 2048, "minFreeStorageMiB": 1000, "gpuRequired": false, "architectures": ["x64"]},
+        "recommended": {"minRamMiB": 4096, "minFreeStorageMiB": 1500, "gpuRequired": false, "architectures": ["x64"]}
+      },
+      "platformSupport": [{"platform": "windows", "status": "supported", "architectures": ["x64"]}],
+      "providers": [{"platform": "windows", "type": "winget", "packageId": "Zoom.Zoom", "source": "winget", "scopePreference": "user"}],
+      "dependencies": [], "conflicts": []
+    },
+    {
+      "id": "obsidian",
+      "name": "Obsidian",
+      "publisher": "Obsidian",
+      "description": "Keeps notes as local Markdown files and lets you link ideas together like a personal knowledge base.",
+      "categories": ["learning", "productivity"], "tags": ["notes", "markdown", "gem"],
+      "lifecycle": {"status": "active"},
+      "recommendations": [
+        {"profile": "learning", "level": "recommended", "reasonKey": "learning.notes"},
+        {"profile": "development", "level": "gem", "reasonKey": "development.notes"},
+        {"profile": "business", "level": "gem", "reasonKey": "business.notes"}
+      ],
+      "requirements": {
+        "minimum": {"minRamMiB": 2048, "minFreeStorageMiB": 500, "gpuRequired": false, "architectures": ["x64", "arm64"]},
+        "recommended": {"minRamMiB": 4096, "minFreeStorageMiB": 1000, "gpuRequired": false, "architectures": ["x64", "arm64"]}
+      },
+      "platformSupport": [{"platform": "windows", "status": "supported", "architectures": ["x64", "arm64"]}],
+      "providers": [{"platform": "windows", "type": "winget", "packageId": "Obsidian.Obsidian", "source": "winget", "scopePreference": "user"}],
+      "dependencies": [], "conflicts": []
+    },
+    {
+      "id": "anki",
+      "name": "Anki",
+      "publisher": "Anki",
+      "description": "Uses spaced-repetition flashcards to bring back what you need to review before you forget it.",
+      "categories": ["learning"], "tags": ["flashcards", "study"],
+      "lifecycle": {"status": "active"},
+      "recommendations": [{"profile": "learning", "level": "recommended", "reasonKey": "learning.flashcards"}],
+      "requirements": {
+        "minimum": {"minRamMiB": 1024, "minFreeStorageMiB": 1000, "gpuRequired": false, "architectures": ["x64"]},
+        "recommended": {"minRamMiB": 2048, "minFreeStorageMiB": 2000, "gpuRequired": false, "architectures": ["x64"]}
+      },
+      "platformSupport": [{"platform": "windows", "status": "supported", "architectures": ["x64"]}],
+      "providers": [{"platform": "windows", "type": "winget", "packageId": "Anki.Anki", "source": "winget", "scopePreference": "user"}],
+      "dependencies": [], "conflicts": []
+    },
+    {
+      "id": "zotero",
+      "name": "Zotero",
+      "publisher": "Corporation for Digital Scholarship",
+      "description": "Collects research sources, keeps PDFs organized and builds citations and bibliographies for reports or theses.",
+      "categories": ["learning"], "tags": ["research", "citations", "gem"],
+      "lifecycle": {"status": "active"},
+      "recommendations": [{"profile": "learning", "level": "gem", "reasonKey": "learning.research-library"}],
+      "requirements": {
+        "minimum": {"minRamMiB": 2048, "minFreeStorageMiB": 1000, "gpuRequired": false, "architectures": ["x64"]},
+        "recommended": {"minRamMiB": 4096, "minFreeStorageMiB": 3000, "gpuRequired": false, "architectures": ["x64"]}
+      },
+      "platformSupport": [{"platform": "windows", "status": "supported", "architectures": ["x64"]}],
+      "providers": [{"platform": "windows", "type": "winget", "packageId": "DigitalScholar.Zotero", "source": "winget", "scopePreference": "user"}],
+      "dependencies": [], "conflicts": []
+    },
+    {
+      "id": "xournalpp",
+      "name": "Xournal++",
+      "publisher": "The Xournal++ Team",
+      "description": "Lets you handwrite notes and draw directly on PDFs, especially useful with a pen or graphics tablet.",
+      "categories": ["learning"], "tags": ["pdf", "handwriting", "notes", "gem"],
+      "lifecycle": {"status": "active"},
+      "recommendations": [{"profile": "learning", "level": "gem", "reasonKey": "learning.pdf-annotation"}],
+      "requirements": {
+        "minimum": {"minRamMiB": 1024, "minFreeStorageMiB": 500, "gpuRequired": false, "architectures": ["x64"]},
+        "recommended": {"minRamMiB": 2048, "minFreeStorageMiB": 1000, "gpuRequired": false, "architectures": ["x64"]}
+      },
+      "platformSupport": [{"platform": "windows", "status": "supported", "architectures": ["x64"]}],
+      "providers": [{"platform": "windows", "type": "winget", "packageId": "Xournal++.Xournal++", "source": "winget", "scopePreference": "user"}],
+      "dependencies": [], "conflicts": []
+    },
+    {
+      "id": "git",
+      "name": "Git",
+      "publisher": "Git Project",
+      "description": "Tracks changes in your code and lets you work safely with GitHub, GitLab and other source-control services.",
+      "categories": ["development"], "tags": ["source-control", "cli"],
+      "lifecycle": {"status": "active"},
+      "recommendations": [{"profile": "development", "level": "essential", "reasonKey": "development.source-control"}],
+      "requirements": {
+        "minimum": {"minRamMiB": 512, "minFreeStorageMiB": 500, "gpuRequired": false, "architectures": ["x64", "arm64", "x86"]},
+        "recommended": {"minRamMiB": 2048, "minFreeStorageMiB": 1000, "gpuRequired": false, "architectures": ["x64", "arm64", "x86"]}
+      },
+      "platformSupport": [{"platform": "windows", "status": "supported", "architectures": ["x64", "arm64", "x86"]}],
+      "providers": [{"platform": "windows", "type": "winget", "packageId": "Git.Git", "source": "winget", "scopePreference": "any"}],
+      "dependencies": [], "conflicts": []
+    },
+    {
+      "id": "visual-studio-code",
+      "name": "Visual Studio Code",
+      "publisher": "Microsoft",
+      "description": "A flexible code editor for Python, JavaScript, web work and many other languages through extensions.",
+      "categories": ["development"], "tags": ["editor", "ide"],
+      "lifecycle": {"status": "active"},
+      "recommendations": [{"profile": "development", "level": "essential", "reasonKey": "development.code-editor"}],
+      "requirements": {
+        "minimum": {"minRamMiB": 2048, "minFreeStorageMiB": 1000, "gpuRequired": false, "architectures": ["x64", "arm64"]},
+        "recommended": {"minRamMiB": 4096, "minFreeStorageMiB": 2000, "gpuRequired": false, "architectures": ["x64", "arm64"]}
+      },
+      "platformSupport": [{"platform": "windows", "status": "supported", "architectures": ["x64", "arm64"]}],
+      "providers": [{"platform": "windows", "type": "winget", "packageId": "Microsoft.VisualStudioCode", "source": "winget", "scopePreference": "user"}],
+      "dependencies": [], "conflicts": []
+    },
+    {
+      "id": "windows-terminal",
+      "name": "Windows Terminal",
+      "publisher": "Microsoft",
+      "description": "Puts PowerShell, Command Prompt and WSL shells into one modern tabbed terminal window.",
+      "categories": ["development"], "tags": ["terminal", "cli"],
+      "lifecycle": {"status": "active"},
+      "recommendations": [{"profile": "development", "level": "recommended", "reasonKey": "development.terminal"}],
+      "requirements": {
+        "minimum": {"minRamMiB": 1024, "minFreeStorageMiB": 500, "gpuRequired": false, "architectures": ["x64", "arm64"]},
+        "recommended": {"minRamMiB": 2048, "minFreeStorageMiB": 750, "gpuRequired": false, "architectures": ["x64", "arm64"]}
+      },
+      "platformSupport": [{"platform": "windows", "status": "supported", "architectures": ["x64", "arm64"]}],
+      "providers": [{"platform": "windows", "type": "winget", "packageId": "Microsoft.WindowsTerminal", "source": "winget", "scopePreference": "user"}],
+      "dependencies": [], "conflicts": []
+    },
+    {
+      "id": "powershell",
+      "name": "PowerShell 7",
+      "publisher": "Microsoft",
+      "description": "A modern command shell and scripting tool for automating Windows tasks, APIs, files and developer workflows.",
+      "categories": ["development"], "tags": ["shell", "automation"],
+      "lifecycle": {"status": "active"},
+      "recommendations": [{"profile": "development", "level": "recommended", "reasonKey": "development.shell"}],
+      "requirements": {
+        "minimum": {"minRamMiB": 512, "minFreeStorageMiB": 500, "gpuRequired": false, "architectures": ["x64", "arm64"]},
+        "recommended": {"minRamMiB": 2048, "minFreeStorageMiB": 750, "gpuRequired": false, "architectures": ["x64", "arm64"]}
+      },
+      "platformSupport": [{"platform": "windows", "status": "supported", "architectures": ["x64", "arm64"]}],
+      "providers": [{"platform": "windows", "type": "winget", "packageId": "Microsoft.PowerShell", "source": "winget", "scopePreference": "any"}],
+      "dependencies": [], "conflicts": []
+    },
+    {
+      "id": "github-cli",
+      "name": "GitHub CLI",
+      "publisher": "GitHub",
+      "description": "Lets you work with GitHub pull requests, issues and repositories directly from the terminal beside your code.",
+      "categories": ["development"], "tags": ["github", "cli", "gem"],
+      "lifecycle": {"status": "active"},
+      "recommendations": [{"profile": "development", "level": "gem", "reasonKey": "development.github-cli"}],
+      "requirements": {
+        "minimum": {"minRamMiB": 256, "minFreeStorageMiB": 250, "gpuRequired": false, "architectures": ["x64", "arm64"]},
+        "recommended": {"minRamMiB": 1024, "minFreeStorageMiB": 500, "gpuRequired": false, "architectures": ["x64", "arm64"]}
+      },
+      "platformSupport": [{"platform": "windows", "status": "supported", "architectures": ["x64", "arm64"]}],
+      "providers": [{"platform": "windows", "type": "winget", "packageId": "GitHub.cli", "source": "winget", "scopePreference": "any"}],
+      "dependencies": ["git"], "conflicts": []
+    },
+    {
+      "id": "dbeaver",
+      "name": "DBeaver",
+      "publisher": "DBeaver Corp",
+      "description": "One desktop app for browsing and managing PostgreSQL, MySQL, SQLite, SQL Server and many other databases.",
+      "categories": ["development"], "tags": ["database", "sql", "gem"],
+      "lifecycle": {"status": "active"},
+      "recommendations": [{"profile": "development", "level": "gem", "reasonKey": "development.database-client"}],
+      "requirements": {
+        "minimum": {"minRamMiB": 2048, "minFreeStorageMiB": 1000, "gpuRequired": false, "architectures": ["x64"]},
+        "recommended": {"minRamMiB": 4096, "minFreeStorageMiB": 2000, "gpuRequired": false, "architectures": ["x64"]}
+      },
+      "platformSupport": [{"platform": "windows", "status": "supported", "architectures": ["x64"]}],
+      "providers": [{"platform": "windows", "type": "winget", "packageId": "dbeaver.dbeaver", "source": "winget", "scopePreference": "user"}],
+      "dependencies": [], "conflicts": []
+    },
+    {
+      "id": "postman",
+      "name": "Postman",
+      "publisher": "Postman",
+      "description": "Sends requests to APIs so you can test endpoints, inspect responses and debug backend work without writing a temporary client.",
+      "categories": ["development"], "tags": ["api", "testing"],
+      "lifecycle": {"status": "active"},
+      "recommendations": [{"profile": "development", "level": "optional", "reasonKey": "development.api-client"}],
+      "requirements": {
+        "minimum": {"minRamMiB": 4096, "minFreeStorageMiB": 1500, "gpuRequired": false, "architectures": ["x64"]},
+        "recommended": {"minRamMiB": 8192, "minFreeStorageMiB": 2500, "gpuRequired": false, "architectures": ["x64"]}
+      },
+      "platformSupport": [{"platform": "windows", "status": "supported", "architectures": ["x64"]}],
+      "providers": [{"platform": "windows", "type": "winget", "packageId": "Postman.Postman", "source": "winget", "scopePreference": "user"}],
+      "dependencies": [], "conflicts": []
     },
     {
       "id": "docker-desktop",
       "name": "Docker Desktop",
       "publisher": "Docker",
-      "description": "Desktop environment for running and managing containers.",
-      "categories": ["development"],
-      "tags": ["containers", "docker"],
+      "description": "Runs apps and databases inside isolated containers so development dependencies do not have to be installed directly on Windows.",
+      "categories": ["development"], "tags": ["containers", "docker"],
       "lifecycle": {"status": "active"},
-      "recommendations": [
-        {"profile": "development", "level": "optional", "reasonKey": "development.containers"}
-      ],
+      "recommendations": [{"profile": "development", "level": "optional", "reasonKey": "development.containers"}],
       "requirements": {
         "minimum": {"minRamMiB": 8192, "minFreeStorageMiB": 8192, "gpuRequired": false, "architectures": ["x64", "arm64"]},
-        "recommended": {"minRamMiB": 8192, "minFreeStorageMiB": 8192, "gpuRequired": false, "architectures": ["x64", "arm64"]}
+        "recommended": {"minRamMiB": 16384, "minFreeStorageMiB": 16384, "gpuRequired": false, "architectures": ["x64", "arm64"]}
       },
-      "platformSupport": [
-        {"platform": "windows", "status": "supported", "architectures": ["x64", "arm64"]},
-        {"platform": "macos", "status": "planned", "architectures": ["x64", "arm64"]}
+      "platformSupport": [{"platform": "windows", "status": "supported", "architectures": ["x64", "arm64"]}],
+      "providers": [{"platform": "windows", "type": "winget", "packageId": "Docker.DockerDesktop", "source": "winget", "scopePreference": "any"}],
+      "dependencies": [], "conflicts": []
+    },
+    {
+      "id": "obs-studio",
+      "name": "OBS Studio",
+      "publisher": "OBS Project",
+      "description": "Records your screen and cameras or streams live content to services such as YouTube and Twitch.",
+      "categories": ["creative", "gaming"], "tags": ["recording", "streaming"],
+      "lifecycle": {"status": "active"},
+      "recommendations": [
+        {"profile": "creative", "level": "recommended", "reasonKey": "creative.screen-recording"},
+        {"profile": "gaming", "level": "recommended", "reasonKey": "gaming.streaming"},
+        {"profile": "learning", "level": "optional", "reasonKey": "learning.screen-recording"}
       ],
-      "providers": [
-        {"platform": "windows", "type": "winget", "packageId": "Docker.DockerDesktop", "source": "winget", "scopePreference": "any"},
-        {"platform": "macos", "type": "homebrew-cask", "token": "docker"}
+      "requirements": {
+        "minimum": {"minRamMiB": 4096, "minFreeStorageMiB": 1000, "gpuRequired": true, "architectures": ["x64", "arm64"]},
+        "recommended": {"minRamMiB": 8192, "minFreeStorageMiB": 4000, "gpuRequired": true, "architectures": ["x64", "arm64"]}
+      },
+      "platformSupport": [{"platform": "windows", "status": "supported", "architectures": ["x64", "arm64"]}],
+      "providers": [{"platform": "windows", "type": "winget", "packageId": "OBSProject.OBSStudio", "source": "winget", "scopePreference": "any"}],
+      "dependencies": [], "conflicts": []
+    },
+    {
+      "id": "krita",
+      "name": "Krita",
+      "publisher": "Krita Foundation",
+      "description": "A free drawing and digital-painting app for illustrations, concept art, textures and visual notes.",
+      "categories": ["creative"], "tags": ["drawing", "painting"],
+      "lifecycle": {"status": "active"},
+      "recommendations": [{"profile": "creative", "level": "recommended", "reasonKey": "creative.digital-art"}],
+      "requirements": {
+        "minimum": {"minRamMiB": 4096, "minFreeStorageMiB": 1500, "gpuRequired": false, "architectures": ["x64"]},
+        "recommended": {"minRamMiB": 8192, "minFreeStorageMiB": 3000, "gpuRequired": true, "architectures": ["x64"]}
+      },
+      "platformSupport": [{"platform": "windows", "status": "supported", "architectures": ["x64"]}],
+      "providers": [{"platform": "windows", "type": "winget", "packageId": "KDE.Krita", "source": "winget", "scopePreference": "user"}],
+      "dependencies": [], "conflicts": []
+    },
+    {
+      "id": "audacity",
+      "name": "Audacity",
+      "publisher": "Audacity Team",
+      "description": "Records and edits audio for voiceovers, podcasts, music clips and quick cleanup of noisy recordings.",
+      "categories": ["creative"], "tags": ["audio", "recording"],
+      "lifecycle": {"status": "active"},
+      "recommendations": [{"profile": "creative", "level": "recommended", "reasonKey": "creative.audio-editing"}],
+      "requirements": {
+        "minimum": {"minRamMiB": 2048, "minFreeStorageMiB": 1000, "gpuRequired": false, "architectures": ["x64"]},
+        "recommended": {"minRamMiB": 4096, "minFreeStorageMiB": 3000, "gpuRequired": false, "architectures": ["x64"]}
+      },
+      "platformSupport": [{"platform": "windows", "status": "supported", "architectures": ["x64"]}],
+      "providers": [{"platform": "windows", "type": "winget", "packageId": "Audacity.Audacity", "source": "winget", "scopePreference": "user"}],
+      "dependencies": [], "conflicts": []
+    },
+    {
+      "id": "blender",
+      "name": "Blender",
+      "publisher": "Blender Foundation",
+      "description": "A complete free 3D suite for modelling, animation, rendering, visual effects and some video work.",
+      "categories": ["creative"], "tags": ["3d", "animation"],
+      "lifecycle": {"status": "active"},
+      "recommendations": [{"profile": "creative", "level": "optional", "reasonKey": "creative.3d"}],
+      "requirements": {
+        "minimum": {"minRamMiB": 8192, "minFreeStorageMiB": 4000, "gpuRequired": true, "architectures": ["x64"]},
+        "recommended": {"minRamMiB": 16384, "minFreeStorageMiB": 8000, "gpuRequired": true, "architectures": ["x64"]}
+      },
+      "platformSupport": [{"platform": "windows", "status": "supported", "architectures": ["x64"]}],
+      "providers": [{"platform": "windows", "type": "winget", "packageId": "BlenderFoundation.Blender", "source": "winget", "scopePreference": "any"}],
+      "dependencies": [], "conflicts": []
+    },
+    {
+      "id": "inkscape",
+      "name": "Inkscape",
+      "publisher": "Inkscape",
+      "description": "Creates vector graphics such as logos, icons and diagrams that stay sharp when resized.",
+      "categories": ["creative"], "tags": ["vector", "svg", "design"],
+      "lifecycle": {"status": "active"},
+      "recommendations": [{"profile": "creative", "level": "gem", "reasonKey": "creative.vector-design"}],
+      "requirements": {
+        "minimum": {"minRamMiB": 2048, "minFreeStorageMiB": 1500, "gpuRequired": false, "architectures": ["x64"]},
+        "recommended": {"minRamMiB": 4096, "minFreeStorageMiB": 2500, "gpuRequired": false, "architectures": ["x64"]}
+      },
+      "platformSupport": [{"platform": "windows", "status": "supported", "architectures": ["x64"]}],
+      "providers": [{"platform": "windows", "type": "winget", "packageId": "Inkscape.Inkscape", "source": "winget", "scopePreference": "user"}],
+      "dependencies": [], "conflicts": []
+    },
+    {
+      "id": "handbrake",
+      "name": "HandBrake",
+      "publisher": "The HandBrake Team",
+      "description": "Converts and compresses video files into practical formats when a recording is too large or incompatible.",
+      "categories": ["creative"], "tags": ["video", "conversion", "gem"],
+      "lifecycle": {"status": "active"},
+      "recommendations": [{"profile": "creative", "level": "gem", "reasonKey": "creative.video-conversion"}],
+      "requirements": {
+        "minimum": {"minRamMiB": 4096, "minFreeStorageMiB": 2000, "gpuRequired": false, "architectures": ["x64"]},
+        "recommended": {"minRamMiB": 8192, "minFreeStorageMiB": 5000, "gpuRequired": false, "architectures": ["x64"]}
+      },
+      "platformSupport": [{"platform": "windows", "status": "supported", "architectures": ["x64"]}],
+      "providers": [{"platform": "windows", "type": "winget", "packageId": "HandBrake.HandBrake", "source": "winget", "scopePreference": "any"}],
+      "dependencies": [], "conflicts": []
+    },
+    {
+      "id": "kdenlive",
+      "name": "Kdenlive",
+      "publisher": "KDE e.V.",
+      "description": "A free non-linear video editor for putting clips, audio, titles and effects together on a timeline.",
+      "categories": ["creative"], "tags": ["video", "editing"],
+      "lifecycle": {"status": "active"},
+      "recommendations": [{"profile": "creative", "level": "optional", "reasonKey": "creative.video-editing"}],
+      "requirements": {
+        "minimum": {"minRamMiB": 8192, "minFreeStorageMiB": 4000, "gpuRequired": true, "architectures": ["x64"]},
+        "recommended": {"minRamMiB": 16384, "minFreeStorageMiB": 8000, "gpuRequired": true, "architectures": ["x64"]}
+      },
+      "platformSupport": [{"platform": "windows", "status": "supported", "architectures": ["x64"]}],
+      "providers": [{"platform": "windows", "type": "winget", "packageId": "KDE.Kdenlive", "source": "winget", "scopePreference": "user"}],
+      "dependencies": [], "conflicts": []
+    },
+    {
+      "id": "steam",
+      "name": "Steam",
+      "publisher": "Valve Corporation",
+      "description": "Installs, updates and launches a large library of PC games and keeps your Steam purchases in one place.",
+      "categories": ["gaming"], "tags": ["games", "launcher"],
+      "lifecycle": {"status": "active"},
+      "recommendations": [{"profile": "gaming", "level": "essential", "reasonKey": "gaming.main-launcher"}],
+      "requirements": {
+        "minimum": {"minRamMiB": 2048, "minFreeStorageMiB": 2000, "gpuRequired": false, "architectures": ["x64"]},
+        "recommended": {"minRamMiB": 4096, "minFreeStorageMiB": 4000, "gpuRequired": false, "architectures": ["x64"]}
+      },
+      "platformSupport": [{"platform": "windows", "status": "supported", "architectures": ["x64"]}],
+      "providers": [{"platform": "windows", "type": "winget", "packageId": "Valve.Steam", "source": "winget", "scopePreference": "any"}],
+      "dependencies": [], "conflicts": []
+    },
+    {
+      "id": "discord",
+      "name": "Discord",
+      "publisher": "Discord Inc.",
+      "description": "Provides voice chat, text channels and screen sharing for gaming groups, communities and friends.",
+      "categories": ["gaming", "communication"], "tags": ["voice", "chat"],
+      "lifecycle": {"status": "active"},
+      "recommendations": [
+        {"profile": "gaming", "level": "recommended", "reasonKey": "gaming.voice-chat"},
+        {"profile": "personal", "level": "optional", "reasonKey": "personal.community-chat"}
       ],
-      "verification": [
-        {"platform": "windows", "type": "provider-query"},
-        {"platform": "windows", "type": "command-version", "executable": "docker", "arguments": ["--version"]},
-        {"platform": "macos", "type": "provider-query"}
-      ],
-      "dependencies": [],
-      "conflicts": [],
-      "curation": {"homepage": "https://www.docker.com/products/docker-desktop/", "license": "Docker Subscription Service Agreement", "trust": "official-publisher"}
+      "requirements": {
+        "minimum": {"minRamMiB": 2048, "minFreeStorageMiB": 1000, "gpuRequired": false, "architectures": ["x64"]},
+        "recommended": {"minRamMiB": 4096, "minFreeStorageMiB": 2000, "gpuRequired": false, "architectures": ["x64"]}
+      },
+      "platformSupport": [{"platform": "windows", "status": "supported", "architectures": ["x64"]}],
+      "providers": [{"platform": "windows", "type": "winget", "packageId": "Discord.Discord", "source": "winget", "scopePreference": "user"}],
+      "dependencies": [], "conflicts": []
+    },
+    {
+      "id": "playnite",
+      "name": "Playnite",
+      "publisher": "Josef Nemec",
+      "description": "Combines games from Steam, GOG and other libraries into one clean launcher instead of opening each store separately.",
+      "categories": ["gaming"], "tags": ["games", "library", "gem"],
+      "lifecycle": {"status": "active"},
+      "recommendations": [{"profile": "gaming", "level": "gem", "reasonKey": "gaming.unified-library"}],
+      "requirements": {
+        "minimum": {"minRamMiB": 1024, "minFreeStorageMiB": 500, "gpuRequired": false, "architectures": ["x64"]},
+        "recommended": {"minRamMiB": 2048, "minFreeStorageMiB": 1000, "gpuRequired": false, "architectures": ["x64"]}
+      },
+      "platformSupport": [{"platform": "windows", "status": "supported", "architectures": ["x64"]}],
+      "providers": [{"platform": "windows", "type": "winget", "packageId": "Playnite.Playnite", "source": "winget", "scopePreference": "user"}],
+      "dependencies": [], "conflicts": []
+    },
+    {
+      "id": "hwinfo",
+      "name": "HWiNFO",
+      "publisher": "REALiX",
+      "description": "Shows detailed hardware information, temperatures and sensor readings so you can see whether a gaming PC is overheating or throttling.",
+      "categories": ["gaming", "utilities"], "tags": ["hardware", "monitoring", "gem"],
+      "lifecycle": {"status": "active"},
+      "recommendations": [{"profile": "gaming", "level": "gem", "reasonKey": "gaming.hardware-monitoring"}],
+      "requirements": {
+        "minimum": {"minRamMiB": 512, "minFreeStorageMiB": 250, "gpuRequired": false, "architectures": ["x64"]},
+        "recommended": {"minRamMiB": 1024, "minFreeStorageMiB": 500, "gpuRequired": false, "architectures": ["x64"]}
+      },
+      "platformSupport": [{"platform": "windows", "status": "supported", "architectures": ["x64"]}],
+      "providers": [{"platform": "windows", "type": "winget", "packageId": "REALiX.HWiNFO", "source": "winget", "scopePreference": "any"}],
+      "dependencies": [], "conflicts": []
     }
   ]
 }
