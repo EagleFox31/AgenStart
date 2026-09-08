@@ -1,0 +1,116 @@
+/* AgenStart landing v5 — fixes discovered by reviewing real full-page screenshots. */
+
+/* Keep brand assets local so navbar/footer/favicon do not depend on a remote fetch. */
+.brand-logo,
+.product-brand-lockup > img {
+  content: url("/brand/agenstart-mark.svg") !important;
+}
+
+/* Keep the featured Gem logos local as well; these were visibly blank during review. */
+.gem-card:nth-child(1) .gem-mark img { content: url("/app-logos/localsend.svg") !important; }
+.gem-card:nth-child(2) .gem-mark img { content: url("/app-logos/everything.svg") !important; }
+.gem-card:nth-child(4) .gem-mark img { content: url("/app-logos/quicklook.svg") !important; }
+
+/* Hero review: the overlay was swallowing the actual background image. */
+.hero-shade {
+  background:
+    linear-gradient(90deg, rgba(4,16,21,.86) 0%, rgba(4,16,21,.66) 29%, rgba(4,16,21,.26) 48%, rgba(4,16,21,.04) 70%, rgba(4,16,21,.06) 100%),
+    linear-gradient(180deg, rgba(2,10,14,.02) 58%, rgba(2,10,14,.42) 100%) !important;
+}
+.hero-copy h1 { color: #fff !important; }
+.hero-copy .hero-body { color: rgba(240,247,248,.80) !important; }
+
+/* Product reveal review: this section had nearly a full screen of dead white space. */
+.portal {
+  min-height: 118vh !important;
+  padding-top: 96px !important;
+  padding-bottom: 54px !important;
+}
+.portal-intro { margin-bottom: 34px !important; }
+.portal-shell { margin-bottom: 0 !important; }
+
+/* Story review: 5 useful steps were spread across an unnecessarily huge dark section. */
+.story-section {
+  padding-top: 108px !important;
+  padding-bottom: 112px !important;
+}
+.story-steps {
+  gap: 7vh !important;
+  padding: 44px 0 !important;
+}
+.story-step {
+  min-height: 29vh !important;
+  padding-top: 26px !important;
+  padding-bottom: 26px !important;
+}
+.story-step h3 { max-width: 520px; }
+.story-step > p:last-child { max-width: 500px !important; }
+
+/* Curation review: keep the punch, remove unnecessary height. */
+.manifesto {
+  min-height: 78vh !important;
+  padding-top: 98px !important;
+  padding-bottom: 98px !important;
+}
+.manifesto h2 {
+  font-size: clamp(48px, 6vw, 86px) !important;
+}
+
+/* Gems review: avoid huge bottom void after the cards. */
+.gems {
+  min-height: auto !important;
+  padding-top: 104px !important;
+  padding-bottom: 110px !important;
+}
+.gem-grid { margin-top: 48px !important; }
+
+/* Local-first review: image should read as a deliberate split, not a washed-out ghost. */
+.privacy-bg {
+  filter: saturate(.90) contrast(1.02) brightness(.92) !important;
+}
+.privacy-shade {
+  background: linear-gradient(90deg,#f7f5ef 0%,#f7f5ef 49%,rgba(247,245,239,.90) 57%,rgba(247,245,239,.16) 77%,rgba(247,245,239,.04)) !important;
+}
+
+/* Trusted-install review: keep the diagram compact and centered. */
+.trust {
+  padding-top: 98px !important;
+  padding-bottom: 100px !important;
+}
+.trust .section-heading { max-width: 760px !important; }
+.trust .section-heading h2 {
+  font-size: clamp(40px, 4.5vw, 62px) !important;
+}
+.trust-flow { margin-top: 42px !important; }
+.trust-stage {
+  min-height: 150px !important;
+  width: 160px !important;
+}
+
+/* Footer brand mark was visibly blank in the screenshot; keep enough contrast. */
+.footer-brand .brand-logo {
+  background: rgba(69,207,193,.08);
+  border: 1px solid rgba(69,207,193,.26);
+}
+
+@media (max-width: 1100px) {
+  .portal { min-height: 110vh !important; }
+  .story-steps { gap: 4vh !important; }
+  .story-step { min-height: 26vh !important; }
+}
+
+@media (max-width: 760px) {
+  .portal {
+    min-height: auto !important;
+    padding-bottom: 86px !important;
+  }
+  .story-steps {
+    gap: 28px !important;
+    padding-top: 26px !important;
+  }
+  .story-step {
+    min-height: auto !important;
+    padding-block: 30px !important;
+  }
+  .manifesto { min-height: auto !important; }
+}
