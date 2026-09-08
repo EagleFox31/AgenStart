@@ -3,18 +3,16 @@ import "./globals.css";
 import "./landing-v2.css";
 import "./landing-v3.css";
 import "./landing-v4.css";
-
-const brandIcon =
-  "https://raw.githubusercontent.com/EagleFox31/AgenStart/703df5cebee65fb03409037d16a36721401857dd/src/AgenStart.Desktop/Assets/agenstart-app-icon.png";
+import "./landing-v5.css";
 
 export const metadata: Metadata = {
   title: "AgenStart — Set up Windows properly",
   description:
     "AgenStart analyses your PC locally, recommends useful software and installs only what you approve.",
   icons: {
-    icon: brandIcon,
-    shortcut: brandIcon,
-    apple: brandIcon,
+    icon: "/brand/agenstart-mark.svg",
+    shortcut: "/brand/agenstart-mark.svg",
+    apple: "/brand/agenstart-mark.svg",
   },
 };
 
