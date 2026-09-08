@@ -1,387 +1,326 @@
-"use client";
+'use client';
 
-import { useEffect, useRef, useState } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import Lenis from "lenis";
-import { copy, type Locale } from "@/lib/copy";
+import { useEffect, useRef, useState } from 'react';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import Lenis from 'lenis';
+
+import type { LocaleCopy } from '@/lib/copy';
+
+gsap.registerPlugin(ScrollTrigger);
+
+type Props = {
+  copy: LocaleCopy;
+  locale: 'en' | 'fr';
+};
+
+const walkthroughScreens = ['analysis', 'profiles', 'recommendations', 'confirm', 'installation'] as const;
+type WalkthroughScreen = (typeof walkthroughScreens)[number];
 
 const appRows = [
-  ["VS Code", "Recommended", "status-blue"],
-  ["PowerToys", "Installed", "status-green"],
-  ["LocalSend", "Gem", "status-purple"],
-  ["Docker Desktop", "Attention", "status-red"],
+  ['01', 'VS', 'VS Code', 'Code, debug and work with Git without carrying a full IDE.', 'Recommended', 'status-blue'],
+  ['02', 'PT', 'PowerToys', 'Useful Windows tools for layouts, renaming, OCR and shortcuts.', 'Installed', 'status-green'],
+  ['03', 'LS', 'LocalSend', 'Send files between nearby devices over your local network.', 'Gem', 'status-purple'],
+  ['04', 'BW', 'Bitwarden', 'Keep passwords in one secure vault across your devices.', 'Recommended', 'status-blue'],
+  ['05', 'WZ', 'WizTree', 'See what is actually using your storage in seconds.', 'Attention', 'status-red'],
 ] as const;
 
-function ProductMock({ activeStep }: { activeStep: number }) {
-  const labels = ["Overview", "Your PC", "Usage profile", "Recommendations", "Confirm", "Installation", "Report"];
-  const active = [1, 2, 3, 4, 5][Math.min(activeStep, 4)];
-
+function ProductMock({ screen }: { screen: WalkthroughScreen }) {
   return (
-    <div className="product-screen">
+    <div className="product-screen" data-screen={screen}>
       <aside className="product-sidebar">
         <div className="product-brand">AgenStart</div>
         <div className="product-brand-sub">BY AGENSTUDIO</div>
         <div className="product-nav">
-          {labels.map((label, index) => (
-            <div key={label} className={`product-nav-item ${index === active ? "is-active" : ""}`}>
-              <span>{index === active ? "●" : "○"}</span>
-              {label}
-            </div>
-          ))}
+          {['Overview', 'Your PC', 'Usage profile', 'Recommendations', 'Confirm', 'Installation'].map((item, index) => {
+            const activeIndex = screen === 'analysis' ? 1 : screen === 'profiles' ? 2 : screen === 'recommendations' ? 3 : screen === 'confirm' ? 4 : 5;
+            return (
+              <div className={`product-nav-item ${index === activeIndex ? 'is-active' : ''}`} key={item}>
+                <span>{index === activeIndex ? '●' : '○'}</span>{item}
+              </div>
+            );
+          })}
         </div>
       </aside>
 
       <div className="product-main">
-        <div className="product-kicker">{activeStep === 0 ? "YOUR PC" : activeStep === 1 ? "USAGE PROFILE" : activeStep === 2 ? "RECOMMENDATIONS" : activeStep === 3 ? "CONFIRM" : "INSTALLATION"}</div>
-        <h3>{activeStep === 0 ? "Your PC" : activeStep === 1 ? "What will you use this PC for?" : activeStep === 2 ? "Recommended for this PC" : activeStep === 3 ? "Confirm your setup" : "Installing your setup"}</h3>
-        <p className="product-subtitle">AgenStart keeps the setup precise, visible and under your control.</p>
-
-        {activeStep === 0 && (
-          <div className="machine-grid">
-            {["Windows 11 Pro", "Intel Core i7", "16 GB memory", "NVIDIA graphics", "476 GB free", "WinGet available"].map((item) => (
-              <div className="machine-row" key={item}>
-                <span>{item}</span><b>✓</b>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {activeStep === 1 && (
-          <div className="profile-grid">
-            {["Personal", "Business", "Study", "Development", "Creative", "Gaming"].map((item, index) => (
-              <div className={`profile-card ${[1, 3, 4].includes(index) ? "is-selected" : ""}`} key={item}>
-                <span className="profile-check">{[1, 3, 4].includes(index) ? "✓" : ""}</span>
-                <strong>{item}</strong>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {activeStep === 2 && (
-          <div className="app-list">
-            {appRows.map(([name, status, color], index) => (
-              <div className="app-row" key={name}>
-                <div className="app-order">0{index + 1}</div>
-                <div className="app-logo">{name.slice(0, 1)}</div>
-                <div className="app-copy"><strong>{name}</strong><span>Useful software selected for this setup.</span></div>
-                <div className={`app-status ${color}`}>{status}</div>
-                <div className="app-check">{index < 3 ? "✓" : ""}</div>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {activeStep === 3 && (
-          <div className="confirm-plan">
-            <div><span>5</span><small>in plan</small></div>
-            <div><span>1</span><small>already installed</small></div>
-            <div><span>4</span><small>to install</small></div>
-            <div className="confirm-list">
-              {["VS Code", "LocalSend", "Bitwarden", "WizTree"].map((item) => <div key={item}><b>✓</b>{item}</div>)}
+        {screen === 'analysis' && (
+          <>
+            <div className="product-kicker">YOUR PC</div>
+            <h3>Your PC</h3>
+            <p className="product-subtitle">AgenStart detected the essentials locally.</p>
+            <div className="machine-grid">
+              {[
+                ['Windows 11 Pro', 'Detected'],
+                ['Intel Core i7', 'Detected'],
+                ['16 GB memory', 'Available'],
+                ['NVIDIA graphics', 'Detected'],
+                ['64-bit', 'Supported'],
+                ['WinGet', 'Available'],
+              ].map(([value, state]) => <div className="machine-row" key={value}><span>{value}</span><b>✓ {state}</b></div>)}
             </div>
-            <button type="button" className="mock-primary">Confirm</button>
-          </div>
+          </>
         )}
 
-        {activeStep >= 4 && (
-          <div className="install-list">
-            {["VS Code", "PowerToys", "LocalSend", "Bitwarden"].map((item, index) => (
-              <div className="install-row" key={item}>
-                <span>{item}</span>
-                <div className="install-progress"><i style={{ width: index === 3 ? "68%" : "100%" }} /></div>
-                <strong>{index === 3 ? "Installing" : "Installed ✓"}</strong>
+        {screen === 'profiles' && (
+          <>
+            <div className="product-kicker">USAGE PROFILE</div>
+            <h3>What will you use this PC for?</h3>
+            <p className="product-subtitle">Choose one or more. Your uses are additive.</p>
+            <div className="profile-grid">
+              {['Personal / Everyday', 'Business / Work', 'Study / Learning', 'Development', 'Creative', 'Gaming'].map((profile, i) => (
+                <div className={`profile-card ${[0, 3, 4].includes(i) ? 'is-selected' : ''}`} key={profile}>
+                  {[0, 3, 4].includes(i) && <span className="profile-check">✓</span>}
+                  {profile}
+                </div>
+              ))}
+            </div>
+          </>
+        )}
+
+        {screen === 'recommendations' && (
+          <>
+            <div className="product-kicker">RECOMMENDATIONS</div>
+            <h3>Recommended for this PC</h3>
+            <p className="product-subtitle">A curated list based on this machine, your uses and what is already installed.</p>
+            <div className="app-list">
+              {appRows.map(([order, logo, name, description, status, className]) => (
+                <div className="app-row" key={name}>
+                  <span className="app-order">{order}</span>
+                  <span className="app-logo">{logo}</span>
+                  <span className="app-copy"><strong>{name}</strong><span>{description}</span></span>
+                  <span className={`app-status ${className}`}>{status}</span>
+                  <span className="app-check">✓</span>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
+
+        {screen === 'confirm' && (
+          <>
+            <div className="product-kicker">CONFIRM</div>
+            <h3>Confirm your setup</h3>
+            <p className="product-subtitle">Nothing is installed until you approve this plan.</p>
+            <div className="confirm-plan">
+              <div><span>8</span><small>in plan</small></div>
+              <div><span>2</span><small>already installed</small></div>
+              <div><span>6</span><small>to install</small></div>
+              <div className="confirm-list">
+                {['PowerToys', 'Firefox', 'PowerShell 7', 'LocalSend'].map(item => <div key={item}><b>✓</b>{item}</div>)}
               </div>
-            ))}
-          </div>
+              <button className="mock-primary">Confirm</button>
+            </div>
+          </>
+        )}
+
+        {screen === 'installation' && (
+          <>
+            <div className="product-kicker">INSTALLATION</div>
+            <h3>Setting up this PC</h3>
+            <p className="product-subtitle">Trusted package sources. One calm queue.</p>
+            <div className="install-list">
+              {[['VS Code', 100], ['PowerToys', 100], ['LocalSend', 78], ['Bitwarden', 38]].map(([name, progress]) => (
+                <div className="install-row" key={name as string}>
+                  <span>{name}</span>
+                  <div className="install-progress"><i style={{ width: `${progress}%` }} /></div>
+                  <strong>{progress === 100 ? 'Verified' : 'Installing'}</strong>
+                </div>
+              ))}
+            </div>
+          </>
         )}
       </div>
     </div>
   );
 }
 
-export function LandingExperience({ locale }: { locale: Locale }) {
-  const t = copy[locale];
-  const root = useRef<HTMLDivElement>(null);
-  const [activeStep, setActiveStep] = useState(0);
+export default function LandingExperience({ copy, locale }: Props) {
+  const rootRef = useRef<HTMLDivElement>(null);
+  const [activeScreen, setActiveScreen] = useState<WalkthroughScreen>('analysis');
+  const otherLocale = locale === 'en' ? 'fr' : 'en';
 
   useEffect(() => {
-    document.documentElement.lang = locale;
-    window.localStorage.setItem("agenstart-locale", locale);
-    gsap.registerPlugin(ScrollTrigger);
+    const root = rootRef.current;
+    if (!root) return;
 
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduced) return;
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduceMotion) return;
 
     const lenis = new Lenis({ duration: 1.05, smoothWheel: true });
-    let raf = 0;
-    const frame = (time: number) => {
+    const raf = (time: number) => {
       lenis.raf(time);
-      raf = requestAnimationFrame(frame);
+      requestAnimationFrame(raf);
     };
-    raf = requestAnimationFrame(frame);
-    lenis.on("scroll", ScrollTrigger.update);
+    requestAnimationFrame(raf);
+    lenis.on('scroll', ScrollTrigger.update);
 
-    const ctx = gsap.context(() => {
-      gsap.from(".hero-reveal", {
-        y: 54,
-        opacity: 0,
-        duration: 1.15,
-        stagger: 0.09,
-        ease: "power3.out",
+    const context = gsap.context(() => {
+      gsap.fromTo('.hero-bg', { scale: 1.045 }, {
+        scale: 1.12,
+        yPercent: 9,
+        ease: 'none',
+        scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: true },
       });
 
-      gsap.from(".hero-float", {
-        y: 34,
-        opacity: 0,
-        scale: 0.96,
-        duration: 1,
-        stagger: 0.12,
-        delay: 0.35,
-        ease: "power3.out",
+      gsap.from('.hero-copy > *', { y: 38, opacity: 0, duration: 1.05, stagger: 0.09, ease: 'power3.out' });
+      gsap.from('.hero-float', { y: 28, opacity: 0, scale: 0.96, duration: 1, stagger: 0.12, ease: 'power3.out', delay: 0.3 });
+
+      gsap.to('.float-1', { yPercent: -44, ease: 'none', scrollTrigger: { trigger: '.hero', scrub: true } });
+      gsap.to('.float-2', { yPercent: -25, ease: 'none', scrollTrigger: { trigger: '.hero', scrub: true } });
+      gsap.to('.float-3', { yPercent: -62, ease: 'none', scrollTrigger: { trigger: '.hero', scrub: true } });
+
+      gsap.fromTo('.portal-shell', { scale: 0.72, borderRadius: 28 }, {
+        scale: 1,
+        borderRadius: 4,
+        ease: 'none',
+        scrollTrigger: { trigger: '.portal', start: 'top top', end: 'bottom bottom', scrub: true, pin: '.portal-shell' },
       });
 
-      gsap.to(".hero-bg", {
-        yPercent: 18,
-        scale: 1.1,
-        ease: "none",
-        scrollTrigger: { trigger: ".hero", start: "top top", end: "bottom top", scrub: true },
-      });
-      gsap.to(".hero-depth-front", {
-        yPercent: -24,
-        ease: "none",
-        scrollTrigger: { trigger: ".hero", start: "top top", end: "bottom top", scrub: true },
+      gsap.to('.gems-bg', {
+        yPercent: 10,
+        scale: 1.18,
+        ease: 'none',
+        scrollTrigger: { trigger: '.gems', start: 'top bottom', end: 'bottom top', scrub: true },
       });
 
-      gsap.fromTo(
-        ".portal-shell",
-        { scale: 0.7, borderRadius: 28 },
-        {
-          scale: 1,
-          borderRadius: 8,
-          ease: "none",
-          scrollTrigger: {
-            trigger: ".portal",
-            start: "top top",
-            end: "+=1200",
-            pin: true,
-            scrub: true,
-          },
-        },
-      );
+      gsap.to('.gem-1', { yPercent: -32, ease: 'none', scrollTrigger: { trigger: '.gems', scrub: true } });
+      gsap.to('.gem-2', { yPercent: 24, ease: 'none', scrollTrigger: { trigger: '.gems', scrub: true } });
+      gsap.to('.gem-3', { yPercent: -48, ease: 'none', scrollTrigger: { trigger: '.gems', scrub: true } });
+      gsap.to('.gem-4', { yPercent: 36, ease: 'none', scrollTrigger: { trigger: '.gems', scrub: true } });
 
-      gsap.utils.toArray<HTMLElement>(".story-step").forEach((step, index) => {
+      gsap.to('.privacy-bg', { yPercent: 9, scale: 1.12, ease: 'none', scrollTrigger: { trigger: '.privacy', start: 'top bottom', end: 'bottom top', scrub: true } });
+      gsap.to('.cta-bg', { yPercent: 8, scale: 1.12, ease: 'none', scrollTrigger: { trigger: '.final-cta', start: 'top bottom', end: 'bottom top', scrub: true } });
+
+      gsap.fromTo('.ready-panel', { clipPath: 'inset(0 100% 0 0)' }, {
+        clipPath: 'inset(0 0% 0 0)',
+        ease: 'none',
+        scrollTrigger: { trigger: '.before-after', start: 'top top', end: 'bottom bottom', scrub: true, pin: true },
+      });
+
+      document.querySelectorAll<HTMLElement>('.story-step').forEach((step, index) => {
         ScrollTrigger.create({
           trigger: step,
-          start: "top 58%",
-          end: "bottom 42%",
-          onEnter: () => setActiveStep(index),
-          onEnterBack: () => setActiveStep(index),
+          start: 'top center',
+          end: 'bottom center',
+          onEnter: () => setActiveScreen(walkthroughScreens[index] ?? 'analysis'),
+          onEnterBack: () => setActiveScreen(walkthroughScreens[index] ?? 'analysis'),
         });
       });
-
-      gsap.to(".manifesto-cloud", {
-        xPercent: -18,
-        ease: "none",
-        scrollTrigger: { trigger: ".manifesto", start: "top bottom", end: "bottom top", scrub: true },
-      });
-
-      gsap.utils.toArray<HTMLElement>(".gem-card").forEach((card, index) => {
-        gsap.to(card, {
-          yPercent: index % 2 === 0 ? -24 : 18,
-          rotate: index % 2 === 0 ? -1.5 : 1.5,
-          ease: "none",
-          scrollTrigger: { trigger: ".gems", start: "top bottom", end: "bottom top", scrub: 0.7 },
-        });
-      });
-
-      gsap.utils.toArray<HTMLElement>(".trust-stage").forEach((stage) => {
-        gsap.from(stage, {
-          opacity: 0.25,
-          y: 28,
-          scrollTrigger: { trigger: stage, start: "top 78%", end: "top 50%", scrub: true },
-        });
-      });
-
-      gsap.fromTo(
-        ".ready-panel",
-        { clipPath: "inset(0 100% 0 0)" },
-        {
-          clipPath: "inset(0 0% 0 0)",
-          ease: "none",
-          scrollTrigger: { trigger: ".before-after", start: "top top", end: "+=900", pin: true, scrub: true },
-        },
-      );
     }, root);
 
     return () => {
-      ctx.revert();
-      cancelAnimationFrame(raf);
+      context.revert();
       lenis.destroy();
     };
-  }, [locale]);
-
-  const otherLocale = locale === "en" ? "fr" : "en";
+  }, []);
 
   return (
-    <div ref={root} className="site-shell">
-      <header className="site-nav">
-        <a className="brand" href={`/${locale}`} aria-label="AgenStart home"><span>A</span><strong>AgenStart</strong></a>
-        <nav className="nav-links" aria-label="Main navigation">
-          <a href="#product">{t.nav.product}</a>
-          <a href="#how">{t.nav.how}</a>
-          <a href="#gems">{t.nav.gems}</a>
-          <a href="#privacy">{t.nav.privacy}</a>
-        </nav>
-        <div className="nav-actions">
-          <a className="lang-link" href={`/${otherLocale}`} onClick={() => window.localStorage.setItem("agenstart-locale", otherLocale)}>{otherLocale.toUpperCase()}</a>
-          <a className="nav-download" href="#download">{t.nav.download}</a>
+    <div ref={rootRef} className="site-shell">
+      <nav className="site-nav">
+        <a className="brand" href={`/${locale}`}><span>A</span><strong>AgenStart</strong></a>
+        <div className="nav-links">
+          <a href="#product">{copy.nav.product}</a><a href="#how">{copy.nav.how}</a><a href="#gems">{copy.nav.gems}</a><a href="#privacy">{copy.nav.privacy}</a>
         </div>
-      </header>
+        <div className="nav-actions">
+          <a className="lang-link" href={`/${otherLocale}`}>{otherLocale.toUpperCase()}</a>
+          <a className="github-link" href="https://github.com/EagleFox31/AgenStart">GitHub</a>
+          <a className="nav-download" href="https://github.com/EagleFox31/AgenStart">{copy.nav.download}</a>
+        </div>
+      </nav>
 
-      <main>
-        <section className="hero" id="product">
-          <div className="hero-bg" aria-hidden="true" />
-          <div className="hero-shade" aria-hidden="true" />
-          <div className="hero-content">
-            <div className="hero-copy">
-              <p className="eyebrow hero-reveal">{t.hero.eyebrow}</p>
-              <h1 className="hero-reveal">{t.hero.title}</h1>
-              <p className="hero-body hero-reveal">{t.hero.body}</p>
-              <div className="hero-actions hero-reveal">
-                <a className="button button-primary" href="#download">{t.hero.primary}</a>
-                <a className="button button-ghost" href="#how">{t.hero.secondary} <span>↓</span></a>
-              </div>
-            </div>
-
-            <div className="hero-depth-front" aria-label="AgenStart highlights">
-              {t.hero.cards.map(([title, body], index) => (
-                <article className={`hero-float float-${index + 1}`} key={title}>
-                  <div className="float-icon">{index === 0 ? "⌂" : index === 1 ? "39" : index === 2 ? "✦" : "✓"}</div>
-                  <div><strong>{title}</strong><p>{body}</p></div>
-                </article>
-              ))}
-            </div>
-
-            <div className="hero-device" aria-hidden="true">
-              <div className="device-frame"><ProductMock activeStep={2} /></div>
+      <section className="hero">
+        <div className="hero-bg" />
+        <div className="hero-shade" />
+        <div className="hero-content">
+          <div className="hero-copy">
+            <p className="eyebrow">AGENSTART · WINDOWS SETUP ASSISTANT</p>
+            <h1>{copy.hero.title}</h1>
+            <p className="hero-body">{copy.hero.body}</p>
+            <div className="hero-actions">
+              <a className="button button-primary" href="https://github.com/EagleFox31/AgenStart">{copy.hero.download}</a>
+              <a className="button button-ghost" href="#how">{copy.hero.seeHow} ↓</a>
             </div>
           </div>
-          <div className="hero-scroll-mark">SCROLL <span>↓</span></div>
-        </section>
-
-        <section className="portal" id="how">
-          <div className="portal-intro">
-            <p className="eyebrow">{t.portal.eyebrow}</p>
-            <h2>{t.portal.title}</h2>
-          </div>
-          <div className="portal-shell"><ProductMock activeStep={0} /></div>
-        </section>
-
-        <section className="story-section">
-          <div className="story-sticky">
-            <p className="eyebrow">PRODUCT STORY</p>
-            <h2>{t.story.title}</h2>
-            <div className="story-product"><ProductMock activeStep={activeStep} /></div>
-          </div>
-          <div className="story-steps">
-            {t.story.steps.map((step) => (
-              <article className="story-step" key={step.number}>
-                <div className="story-number">{step.number}</div>
-                <p className="story-label">{step.label}</p>
-                <h3>{step.title}</h3>
-                <p>{step.body}</p>
-              </article>
-            ))}
-          </div>
-        </section>
-
-        <section className="manifesto">
-          <div className="manifesto-copy">
-            <h2>{t.manifesto.first}</h2>
-            <h2 className="manifesto-accent">{t.manifesto.second}</h2>
-            <p>{t.manifesto.body}</p>
-          </div>
-          <div className="manifesto-cloud" aria-hidden="true">
-            {["PowerToys", "LocalSend", "Everything", "Bitwarden", "VS Code", "Obsidian", "WizTree", "QuickLook"].map((name, index) => (
-              <span style={{ transform: `translateY(${(index % 3) * 34}px)` }} key={name}>{name}</span>
-            ))}
-          </div>
-        </section>
-
-        <section className="gems" id="gems">
-          <div className="section-heading">
-            <p className="eyebrow">{t.gems.eyebrow}</p>
-            <h2>{t.gems.title}</h2>
-            <p>{t.gems.body}</p>
-          </div>
-          <div className="gem-grid">
-            {t.gems.apps.map(([name, body], index) => (
-              <article className={`gem-card gem-${index + 1}`} key={name}>
-                <div className="gem-mark">◆</div>
-                <div><strong>{name}</strong><p>{body}</p></div>
-              </article>
-            ))}
-          </div>
-        </section>
-
-        <section className="privacy" id="privacy">
-          <div className="privacy-bg" aria-hidden="true" />
-          <div className="privacy-shade" aria-hidden="true" />
-          <div className="privacy-content">
-            <p className="eyebrow">{t.privacy.eyebrow}</p>
-            <h2>{t.privacy.title}</h2>
-            <p className="privacy-lead">{t.privacy.body}</p>
-            <div className="privacy-points">
-              {t.privacy.points.map((point, index) => <div key={point}><span>0{index + 1}</span><strong>{point}</strong></div>)}
+        </div>
+        <div className="hero-depth-front">
+          {copy.hero.cards.map((card, index) => (
+            <div className={`hero-float float-${index + 1}`} key={card.title}>
+              <span className="float-icon">{['⌁', '39', '✦', '✓'][index]}</span>
+              <div><strong>{card.title}</strong><p>{card.body}</p></div>
             </div>
-            <p className="privacy-final">{t.privacy.final}</p>
-          </div>
-        </section>
+          ))}
+        </div>
+        <div className="hero-scroll-mark"><span>↓</span> SCROLL TO ENTER AGENSTART</div>
+      </section>
 
-        <section className="trust">
-          <div className="section-heading compact">
-            <p className="eyebrow">{t.trust.eyebrow}</p>
-            <h2>{t.trust.title}</h2>
-          </div>
-          <div className="trust-flow">
-            {t.trust.stages.map((stage, index) => (
-              <div className="trust-stage" key={stage}>
-                <span>0{index + 1}</span>
-                <strong>{stage}</strong>
-                {index < t.trust.stages.length - 1 && <i>↓</i>}
-              </div>
-            ))}
-          </div>
-          <p className="trust-note">{t.trust.note}</p>
-        </section>
+      <section id="product" className="portal">
+        <div className="portal-intro"><p className="eyebrow">01 · PRODUCT</p><h2>{copy.portal.title}</h2></div>
+        <div className="portal-shell"><ProductMock screen="recommendations" /></div>
+      </section>
 
-        <section className="before-after">
-          <div className="before-panel"><div><span>01</span><h2>{t.beforeAfter.before}</h2><p>Windows. Clean slate. Nothing configured yet.</p></div></div>
-          <div className="ready-panel"><div><span>02</span><h2>{t.beforeAfter.after}</h2><p>Useful apps, trusted sources, one setup you approved.</p></div><div className="ready-apps">{["VS Code", "PowerToys", "LocalSend", "Bitwarden", "Obsidian", "WizTree"].map((app) => <span key={app}>{app}</span>)}</div></div>
-        </section>
+      <section id="how" className="story-section">
+        <div className="story-sticky">
+          <p className="eyebrow">02 · HOW IT WORKS</p>
+          <h2>{copy.story.heading}</h2>
+          <div className="story-product"><ProductMock screen={activeScreen} /></div>
+        </div>
+        <div className="story-steps">
+          {copy.story.steps.map((step, index) => (
+            <article className="story-step" key={step.title}>
+              <span className="story-number">0{index + 1}</span>
+              <p className="story-label">{step.label}</p>
+              <h3>{step.title}</h3>
+              <p>{step.body}</p>
+            </article>
+          ))}
+        </div>
+      </section>
 
-        <section className="final-cta" id="download">
-          <div className="cta-bg" aria-hidden="true" />
-          <div className="cta-shade" aria-hidden="true" />
-          <div className="cta-content">
-            <p className="eyebrow">{t.cta.eyebrow}</p>
-            <h2>{t.cta.title}</h2>
-            <p>{t.cta.body}</p>
-            <div className="cta-actions">
-              <a className="button button-primary" href="https://github.com/EagleFox31/AgenStart">{t.cta.primary}</a>
-              <span>{t.cta.meta}</span>
-            </div>
-            <a className="github-link" href="https://github.com/EagleFox31/AgenStart">{t.cta.github} ↗</a>
-          </div>
-        </section>
-      </main>
+      <section className="manifesto">
+        <div className="manifesto-copy"><p className="eyebrow">03 · CURATION</p><h2>{copy.manifesto.first}<br/><span className="manifesto-accent">{copy.manifesto.second}</span></h2><p>{copy.manifesto.body}</p></div>
+        <div className="manifesto-cloud">{['PowerToys', 'LocalSend', 'Everything', 'Bitwarden', 'Obsidian', 'WizTree'].map(name => <span key={name}>{name}</span>)}</div>
+      </section>
 
-      <footer>
-        <div className="footer-brand"><span>A</span><div><strong>AgenStart</strong><small>by AgenStudio</small></div></div>
-        <p>{t.footer.line}</p>
-        <div className="footer-links"><a href="#product">Product</a><a href="https://github.com/EagleFox31/AgenStart">GitHub</a><a href="#privacy">Privacy</a><a href="#download">Download</a><a href={`/${otherLocale}`}>{otherLocale.toUpperCase()}</a></div>
-      </footer>
+      <section id="gems" className="gems">
+        <div className="gems-bg" />
+        <div className="section-heading"><p className="eyebrow">04 · GEMS</p><h2>{copy.gems.title}</h2><p>{copy.gems.body}</p></div>
+        <div className="gem-grid">
+          {copy.gems.items.map((item, index) => (
+            <article className={`gem-card gem-${index + 1}`} key={item.name}>
+              <span className="gem-mark">◆</span><div><strong>{item.name}</strong><p>{item.body}</p></div>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section id="privacy" className="privacy">
+        <div className="privacy-bg" /><div className="privacy-shade" />
+        <div className="privacy-content">
+          <p className="eyebrow">05 · LOCAL FIRST</p><h2>{copy.privacy.title}</h2><p className="privacy-lead">{copy.privacy.body}</p>
+          <div className="privacy-points">{copy.privacy.points.map((point, index) => <div key={point}><span>0{index + 1}</span><strong>{point}</strong></div>)}</div>
+          <p className="privacy-final">{copy.privacy.final}</p>
+        </div>
+      </section>
+
+      <section className="trust">
+        <div className="section-heading compact"><p className="eyebrow">06 · TRUSTED INSTALLS</p><h2>{copy.trust.title}</h2></div>
+        <div className="trust-flow">
+          {copy.trust.steps.map((stage, index) => <div key={stage} style={{ display: 'contents' }}><div className="trust-stage"><span>0{index + 1}</span><strong>{stage}</strong></div>{index < copy.trust.steps.length - 1 && <span className="trust-arrow">→</span>}</div>)}
+        </div><p className="trust-note">{copy.trust.note}</p>
+      </section>
+
+      <section className="before-after">
+        <div className="before-panel"><div><p className="before-label">BEFORE</p><h2>{copy.beforeAfter.before}</h2></div></div>
+        <div className="ready-panel"><div><p className="before-label">AFTER AGENSTART</p><h2>{copy.beforeAfter.after}</h2></div></div>
+      </section>
+
+      <section className="final-cta">
+        <div className="cta-bg" /><div className="cta-shade" />
+        <div className="cta-copy"><p className="eyebrow">AGENSTART</p><h2>{copy.cta.title}</h2><p>{copy.cta.body}</p><div className="cta-actions"><a className="button button-primary" href="https://github.com/EagleFox31/AgenStart">{copy.cta.download}</a></div><p className="cta-meta">Windows 10 / 11 · x64</p><a className="github-link" href="https://github.com/EagleFox31/AgenStart">{copy.cta.github} ↗</a></div>
+      </section>
+
+      <footer className="site-footer"><div className="footer-top"><div className="footer-brand"><span>A</span><div><strong>AgenStart</strong><small>by AgenStudio</small></div></div><div className="footer-links"><a href="#product">{copy.nav.product}</a><a href="https://github.com/EagleFox31/AgenStart">GitHub</a><a href="#privacy">{copy.nav.privacy}</a><a href={`/${otherLocale}`}>{otherLocale === 'fr' ? 'Français' : 'English'}</a></div></div><div className="footer-bottom"><span>© AgenStudio</span><span>Designing the systems behind decisions.</span></div></footer>
     </div>
   );
 }
