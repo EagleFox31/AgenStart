@@ -1,0 +1,62 @@
+name: Landing build
+
+on:
+  push:
+    branches:
+      - feat/agenstart-landing
+    paths:
+      - "web/**"
+      - ".github/workflows/landing.yml"
+  pull_request:
+    paths:
+      - "web/**"
+      - ".github/workflows/landing.yml"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: web/package.json
+
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Build landing
+        run: npm run build
+
+      - name: Install Chromium for visual review
+        run: npx --yes playwright@1.55.0 install chromium
+
+      - name: Capture full-page landing screenshots
+        shell: bash
+        run: |
+          mkdir -p landing-screenshots
+          npm run start -- -p 3000 > /tmp/agenstart-next.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill $SERVER_PID || true' EXIT
+          for i in {1..40}; do
+            if curl -fsS http://127.0.0.1:3000/en >/dev/null; then
+              break
+            fi
+            sleep 1
+          done
+          npx --yes playwright@1.55.0 screenshot --wait-for-timeout=2200 --viewport-size="1440,1000" --full-page http://127.0.0.1:3000/en landing-screenshots/agenstart-en-full.png
+          npx --yes playwright@1.55.0 screenshot --wait-for-timeout=2200 --viewport-size="1440,1000" --full-page http://127.0.0.1:3000/fr landing-screenshots/agenstart-fr-full.png
+
+      - name: Upload visual review screenshots
+        uses: actions/upload-artifact@v4
+        with:
+          name: agenstart-landing-screenshots
+          path: web/landing-screenshots/*.png
+          if-no-files-found: error
