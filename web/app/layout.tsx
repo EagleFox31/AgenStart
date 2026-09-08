@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import "./landing-v2.css";
 import "./landing-v3.css";
+import "./landing-v4.css";
 
 const brandIcon =
   "https://raw.githubusercontent.com/EagleFox31/AgenStart/703df5cebee65fb03409037d16a36721401857dd/src/AgenStart.Desktop/Assets/agenstart-app-icon.png";
