@@ -51,8 +51,8 @@ jobs:
             fi
             sleep 1
           done
-          npx --yes playwright@1.55.0 screenshot --viewport-size="1440,1000" --full-page http://127.0.0.1:3000/en landing-screenshots/agenstart-en-full.png
-          npx --yes playwright@1.55.0 screenshot --viewport-size="1440,1000" --full-page http://127.0.0.1:3000/fr landing-screenshots/agenstart-fr-full.png
+          npx --yes playwright@1.55.0 screenshot --wait-for-timeout=2200 --viewport-size="1440,1000" --full-page http://127.0.0.1:3000/en landing-screenshots/agenstart-en-full.png
+          npx --yes playwright@1.55.0 screenshot --wait-for-timeout=2200 --viewport-size="1440,1000" --full-page http://127.0.0.1:3000/fr landing-screenshots/agenstart-fr-full.png
 
       - name: Upload visual review screenshots
         uses: actions/upload-artifact@v4
