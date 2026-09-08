@@ -1,0 +1,235 @@
+/* AgenStart landing v3 — brand assets, real app artwork and richer trust cues. */
+
+:root {
+  --asset-root: "https://raw.githubusercontent.com/EagleFox31/AgenStart/703df5cebee65fb03409037d16a36721401857dd";
+}
+
+/* Stable image sources for direct preview deployments. */
+.hero-bg {
+  background-image: url("https://raw.githubusercontent.com/EagleFox31/AgenStart/703df5cebee65fb03409037d16a36721401857dd/web/public/visuals/hero-workspace.webp") !important;
+  background-position: center 52% !important;
+}
+.manifesto {
+  background:
+    linear-gradient(90deg,rgba(6,16,24,.94) 0%,rgba(6,16,24,.78) 44%,rgba(6,16,24,.30) 76%,rgba(6,16,24,.55) 100%),
+    url("https://raw.githubusercontent.com/EagleFox31/AgenStart/703df5cebee65fb03409037d16a36721401857dd/web/public/visuals/gems-depth.webp") center/cover no-repeat !important;
+}
+.gems-bg {
+  background-image: url("https://raw.githubusercontent.com/EagleFox31/AgenStart/703df5cebee65fb03409037d16a36721401857dd/web/public/visuals/gems-depth.webp") !important;
+}
+.privacy-bg {
+  background-image: url("https://raw.githubusercontent.com/EagleFox31/AgenStart/703df5cebee65fb03409037d16a36721401857dd/web/public/visuals/privacy-workspace.webp") !important;
+}
+.before-panel {
+  background:
+    linear-gradient(0deg,rgba(6,16,20,.84),rgba(6,16,20,.18)),
+    url("https://raw.githubusercontent.com/EagleFox31/AgenStart/703df5cebee65fb03409037d16a36721401857dd/web/public/visuals/privacy-workspace.webp") center/cover !important;
+}
+.ready-panel,
+.cta-bg {
+  background-image: url("https://raw.githubusercontent.com/EagleFox31/AgenStart/703df5cebee65fb03409037d16a36721401857dd/web/public/visuals/cta-workspace.webp") !important;
+}
+.ready-panel {
+  background:
+    linear-gradient(0deg,rgba(6,16,20,.82),rgba(6,16,20,.16)),
+    url("https://raw.githubusercontent.com/EagleFox31/AgenStart/703df5cebee65fb03409037d16a36721401857dd/web/public/visuals/cta-workspace.webp") center/cover !important;
+}
+
+/* Real AgenStart brand lockup. */
+.brand-lockup {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+.brand-logo {
+  width: 38px;
+  height: 38px;
+  object-fit: contain;
+  border-radius: 10px;
+  flex: 0 0 auto;
+}
+.brand-copy {
+  display: grid;
+  gap: 2px;
+  line-height: 1;
+}
+.brand-copy strong {
+  color: #fff;
+  font-size: 16px;
+  letter-spacing: -.02em;
+}
+.brand-copy small {
+  color: rgba(69,207,193,.78);
+  font-size: 7px;
+  font-weight: 800;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
+.brand-lockup.is-compact .brand-logo { width: 34px; height: 34px; }
+.brand-lockup.is-compact .brand-copy small { display: none; }
+.site-nav .brand > span { display: none; }
+.site-nav .brand { gap: 0; }
+.footer-brand .brand-lockup .brand-logo { width: 44px; height: 44px; }
+.footer-brand .brand-copy strong { font-size: 18px; }
+.footer-brand .brand-copy small { font-size: 8px; }
+
+/* Product mock branding. */
+.product-brand-lockup {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+.product-brand-lockup > img {
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+}
+.product-brand-lockup > span {
+  display: grid;
+  gap: 3px;
+}
+.product-brand-lockup strong {
+  color: white;
+  font-size: 16px;
+  line-height: 1;
+}
+.product-brand-lockup small {
+  color: var(--teal-bright);
+  font-size: 6px;
+  font-weight: 900;
+  letter-spacing: .16em;
+}
+
+/* Real app logos in product and content cards. */
+.app-logo {
+  width: 34px !important;
+  height: 34px !important;
+  padding: 5px;
+  overflow: hidden;
+  background: rgba(255,255,255,.92) !important;
+  border: 1px solid #dfe4e1;
+}
+.app-logo img,
+.gem-mark img,
+.manifesto-app-logo,
+.confirm-app-icon,
+.install-app-icon {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: contain;
+}
+
+.confirm-list div {
+  align-items: center;
+  gap: 10px !important;
+}
+.confirm-app-icon {
+  width: 22px;
+  height: 22px;
+  flex: 0 0 auto;
+}
+.confirm-list div > span { flex: 1; }
+.confirm-list div > b { margin-left: auto; }
+
+.install-row { grid-template-columns: minmax(150px,1fr) minmax(120px,1.4fr) 80px !important; }
+.install-app {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+.install-app-icon {
+  width: 24px;
+  height: 24px;
+  flex: 0 0 auto;
+}
+
+.manifesto-cloud span {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 12px;
+}
+.manifesto-app-logo {
+  width: 28px;
+  height: 28px;
+  flex: 0 0 auto;
+}
+
+.gem-mark {
+  display: grid;
+  place-items: center;
+  padding: 10px;
+  background: rgba(255,255,255,.92) !important;
+  border: 1px solid rgba(255,255,255,.18);
+}
+.gem-mark img { filter: none; }
+
+/* Trust + privacy icons. */
+.section-icon {
+  width: 48px;
+  height: 48px;
+  display: grid !important;
+  place-items: center;
+  border-radius: 14px;
+  color: var(--teal);
+  background: rgba(69,207,193,.12);
+  border: 1px solid rgba(23,109,100,.14);
+}
+.section-icon svg {
+  width: 25px;
+  height: 25px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.privacy-points div {
+  position: relative;
+  align-content: start;
+  min-height: 190px !important;
+  padding: 22px !important;
+}
+.privacy-number,
+.trust-number {
+  color: #45cfc1 !important;
+  font-size: 10px !important;
+  font-weight: 800;
+  letter-spacing: .08em;
+}
+.privacy-points strong {
+  margin-top: 4px;
+  font-size: 16px !important;
+}
+
+.trust-stage {
+  min-height: 164px !important;
+  gap: 12px;
+}
+.trust-icon {
+  width: 44px;
+  height: 44px;
+  background: #e8f7f4;
+}
+.trust-stage strong { margin-top: auto; }
+
+/* Make the hero image visibly present while preserving text contrast. */
+.hero-shade {
+  background:
+    linear-gradient(90deg, rgba(5,17,22,.91) 0%, rgba(5,17,22,.72) 29%, rgba(5,17,22,.32) 50%, rgba(5,17,22,.08) 72%, rgba(5,17,22,.16) 100%),
+    linear-gradient(180deg, rgba(2,10,14,.08) 56%, rgba(2,10,14,.62) 100%) !important;
+}
+
+@media (max-width: 980px) {
+  .brand-lockup.is-compact .brand-logo { width: 31px; height: 31px; }
+  .install-row { grid-template-columns: 1fr !important; gap: 7px !important; }
+}
+
+@media (max-width: 680px) {
+  .brand-copy strong { font-size: 14px; }
+  .product-brand-lockup > span { display: none; }
+  .product-brand-lockup > img { width: 26px; height: 26px; }
+  .privacy-points div { min-height: 155px !important; }
+  .section-icon { width: 42px; height: 42px; }
+}
