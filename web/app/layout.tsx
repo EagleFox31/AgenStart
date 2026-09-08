@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import "./landing-v2.css";
 
 export const metadata: Metadata = {
   title: "AgenStart — Set up Windows properly",
