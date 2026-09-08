@@ -1,0 +1,50 @@
+/* AgenStart landing v6 — fixes found during second real screenshot review. */
+
+/* v3 hid any direct span child of .brand; BrandLockup itself is a span. */
+.site-nav .brand > .brand-lockup {
+  display: inline-flex !important;
+  width: auto !important;
+  height: auto !important;
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+}
+
+/* The footer inherited the old one-letter mark box around the full BrandLockup. */
+.footer-brand > .brand-lockup {
+  width: auto !important;
+  height: auto !important;
+  display: inline-flex !important;
+  place-items: initial !important;
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  color: inherit !important;
+  font-weight: inherit !important;
+}
+
+/* Use a valid binary hero asset committed locally. */
+.hero-bg {
+  background-image: url("/visuals/agenstart-hero.webp") !important;
+}
+
+/* The product transition was still leaving too much blank canvas. */
+.portal {
+  min-height: 108vh !important;
+  padding-bottom: 30px !important;
+}
+
+.portal-shell {
+  width: min(1180px, 100%) !important;
+}
+
+/* Ensure logo surfaces have no legacy decorative box around the real mark. */
+.brand-lockup .brand-logo,
+.footer-brand .brand-logo {
+  background: transparent !important;
+  border: 0 !important;
+}
+
+@media (max-width: 760px) {
+  .portal { min-height: auto !important; padding-bottom: 76px !important; }
+}
