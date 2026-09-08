@@ -5,14 +5,9 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Lenis from 'lenis';
 
-import type { LocaleCopy } from '@/lib/copy';
+import { copy, type Locale } from '@/lib/copy';
 
 gsap.registerPlugin(ScrollTrigger);
-
-type Props = {
-  copy: LocaleCopy;
-  locale: 'en' | 'fr';
-};
 
 const walkthroughScreens = ['analysis', 'profiles', 'recommendations', 'confirm', 'installation'] as const;
 type WalkthroughScreen = (typeof walkthroughScreens)[number];
@@ -135,10 +130,11 @@ function ProductMock({ screen }: { screen: WalkthroughScreen }) {
   );
 }
 
-export default function LandingExperience({ copy, locale }: Props) {
+export function LandingExperience({ locale }: { locale: Locale }) {
   const rootRef = useRef<HTMLDivElement>(null);
   const [activeScreen, setActiveScreen] = useState<WalkthroughScreen>('analysis');
-  const otherLocale = locale === 'en' ? 'fr' : 'en';
+  const t = copy[locale];
+  const otherLocale: Locale = locale === 'en' ? 'fr' : 'en';
 
   useEffect(() => {
     const root = rootRef.current;
@@ -148,11 +144,12 @@ export default function LandingExperience({ copy, locale }: Props) {
     if (reduceMotion) return;
 
     const lenis = new Lenis({ duration: 1.05, smoothWheel: true });
+    let rafId = 0;
     const raf = (time: number) => {
       lenis.raf(time);
-      requestAnimationFrame(raf);
+      rafId = requestAnimationFrame(raf);
     };
-    requestAnimationFrame(raf);
+    rafId = requestAnimationFrame(raf);
     lenis.on('scroll', ScrollTrigger.update);
 
     const context = gsap.context(() => {
@@ -177,13 +174,7 @@ export default function LandingExperience({ copy, locale }: Props) {
         scrollTrigger: { trigger: '.portal', start: 'top top', end: 'bottom bottom', scrub: true, pin: '.portal-shell' },
       });
 
-      gsap.to('.gems-bg', {
-        yPercent: 10,
-        scale: 1.18,
-        ease: 'none',
-        scrollTrigger: { trigger: '.gems', start: 'top bottom', end: 'bottom top', scrub: true },
-      });
-
+      gsap.to('.gems-bg', { yPercent: 10, scale: 1.18, ease: 'none', scrollTrigger: { trigger: '.gems', start: 'top bottom', end: 'bottom top', scrub: true } });
       gsap.to('.gem-1', { yPercent: -32, ease: 'none', scrollTrigger: { trigger: '.gems', scrub: true } });
       gsap.to('.gem-2', { yPercent: 24, ease: 'none', scrollTrigger: { trigger: '.gems', scrub: true } });
       gsap.to('.gem-3', { yPercent: -48, ease: 'none', scrollTrigger: { trigger: '.gems', scrub: true } });
@@ -198,7 +189,7 @@ export default function LandingExperience({ copy, locale }: Props) {
         scrollTrigger: { trigger: '.before-after', start: 'top top', end: 'bottom bottom', scrub: true, pin: true },
       });
 
-      document.querySelectorAll<HTMLElement>('.story-step').forEach((step, index) => {
+      root.querySelectorAll<HTMLElement>('.story-step').forEach((step, index) => {
         ScrollTrigger.create({
           trigger: step,
           start: 'top center',
@@ -210,6 +201,7 @@ export default function LandingExperience({ copy, locale }: Props) {
     }, root);
 
     return () => {
+      cancelAnimationFrame(rafId);
       context.revert();
       lenis.destroy();
     };
@@ -220,12 +212,12 @@ export default function LandingExperience({ copy, locale }: Props) {
       <nav className="site-nav">
         <a className="brand" href={`/${locale}`}><span>A</span><strong>AgenStart</strong></a>
         <div className="nav-links">
-          <a href="#product">{copy.nav.product}</a><a href="#how">{copy.nav.how}</a><a href="#gems">{copy.nav.gems}</a><a href="#privacy">{copy.nav.privacy}</a>
+          <a href="#product">{t.nav.product}</a><a href="#how">{t.nav.how}</a><a href="#gems">{t.nav.gems}</a><a href="#privacy">{t.nav.privacy}</a>
         </div>
         <div className="nav-actions">
           <a className="lang-link" href={`/${otherLocale}`}>{otherLocale.toUpperCase()}</a>
           <a className="github-link" href="https://github.com/EagleFox31/AgenStart">GitHub</a>
-          <a className="nav-download" href="https://github.com/EagleFox31/AgenStart">{copy.nav.download}</a>
+          <a className="nav-download" href="https://github.com/EagleFox31/AgenStart">{t.nav.download}</a>
         </div>
       </nav>
 
@@ -234,20 +226,20 @@ export default function LandingExperience({ copy, locale }: Props) {
         <div className="hero-shade" />
         <div className="hero-content">
           <div className="hero-copy">
-            <p className="eyebrow">AGENSTART · WINDOWS SETUP ASSISTANT</p>
-            <h1>{copy.hero.title}</h1>
-            <p className="hero-body">{copy.hero.body}</p>
+            <p className="eyebrow">{t.hero.eyebrow}</p>
+            <h1>{t.hero.title}</h1>
+            <p className="hero-body">{t.hero.body}</p>
             <div className="hero-actions">
-              <a className="button button-primary" href="https://github.com/EagleFox31/AgenStart">{copy.hero.download}</a>
-              <a className="button button-ghost" href="#how">{copy.hero.seeHow} ↓</a>
+              <a className="button button-primary" href="https://github.com/EagleFox31/AgenStart">{t.hero.primary}</a>
+              <a className="button button-ghost" href="#how">{t.hero.secondary} ↓</a>
             </div>
           </div>
         </div>
         <div className="hero-depth-front">
-          {copy.hero.cards.map((card, index) => (
-            <div className={`hero-float float-${index + 1}`} key={card.title}>
+          {t.hero.cards.map(([title, body], index) => (
+            <div className={`hero-float float-${index + 1}`} key={title}>
               <span className="float-icon">{['⌁', '39', '✦', '✓'][index]}</span>
-              <div><strong>{card.title}</strong><p>{card.body}</p></div>
+              <div><strong>{title}</strong><p>{body}</p></div>
             </div>
           ))}
         </div>
@@ -255,20 +247,20 @@ export default function LandingExperience({ copy, locale }: Props) {
       </section>
 
       <section id="product" className="portal">
-        <div className="portal-intro"><p className="eyebrow">01 · PRODUCT</p><h2>{copy.portal.title}</h2></div>
+        <div className="portal-intro"><p className="eyebrow">{t.portal.eyebrow}</p><h2>{t.portal.title}</h2></div>
         <div className="portal-shell"><ProductMock screen="recommendations" /></div>
       </section>
 
       <section id="how" className="story-section">
         <div className="story-sticky">
-          <p className="eyebrow">02 · HOW IT WORKS</p>
-          <h2>{copy.story.heading}</h2>
+          <p className="eyebrow">02 · {t.nav.how}</p>
+          <h2>{t.story.title}</h2>
           <div className="story-product"><ProductMock screen={activeScreen} /></div>
         </div>
         <div className="story-steps">
-          {copy.story.steps.map((step, index) => (
+          {t.story.steps.map((step, index) => (
             <article className="story-step" key={step.title}>
-              <span className="story-number">0{index + 1}</span>
+              <span className="story-number">{step.number}</span>
               <p className="story-label">{step.label}</p>
               <h3>{step.title}</h3>
               <p>{step.body}</p>
@@ -278,17 +270,17 @@ export default function LandingExperience({ copy, locale }: Props) {
       </section>
 
       <section className="manifesto">
-        <div className="manifesto-copy"><p className="eyebrow">03 · CURATION</p><h2>{copy.manifesto.first}<br/><span className="manifesto-accent">{copy.manifesto.second}</span></h2><p>{copy.manifesto.body}</p></div>
+        <div className="manifesto-copy"><p className="eyebrow">03 · CURATION</p><h2>{t.manifesto.first}<br/><span className="manifesto-accent">{t.manifesto.second}</span></h2><p>{t.manifesto.body}</p></div>
         <div className="manifesto-cloud">{['PowerToys', 'LocalSend', 'Everything', 'Bitwarden', 'Obsidian', 'WizTree'].map(name => <span key={name}>{name}</span>)}</div>
       </section>
 
       <section id="gems" className="gems">
         <div className="gems-bg" />
-        <div className="section-heading"><p className="eyebrow">04 · GEMS</p><h2>{copy.gems.title}</h2><p>{copy.gems.body}</p></div>
+        <div className="section-heading"><p className="eyebrow">{t.gems.eyebrow}</p><h2>{t.gems.title}</h2><p>{t.gems.body}</p></div>
         <div className="gem-grid">
-          {copy.gems.items.map((item, index) => (
-            <article className={`gem-card gem-${index + 1}`} key={item.name}>
-              <span className="gem-mark">◆</span><div><strong>{item.name}</strong><p>{item.body}</p></div>
+          {t.gems.apps.map(([name, body], index) => (
+            <article className={`gem-card gem-${index + 1}`} key={name}>
+              <span className="gem-mark">◆</span><div><strong>{name}</strong><p>{body}</p></div>
             </article>
           ))}
         </div>
@@ -297,30 +289,30 @@ export default function LandingExperience({ copy, locale }: Props) {
       <section id="privacy" className="privacy">
         <div className="privacy-bg" /><div className="privacy-shade" />
         <div className="privacy-content">
-          <p className="eyebrow">05 · LOCAL FIRST</p><h2>{copy.privacy.title}</h2><p className="privacy-lead">{copy.privacy.body}</p>
-          <div className="privacy-points">{copy.privacy.points.map((point, index) => <div key={point}><span>0{index + 1}</span><strong>{point}</strong></div>)}</div>
-          <p className="privacy-final">{copy.privacy.final}</p>
+          <p className="eyebrow">{t.privacy.eyebrow}</p><h2>{t.privacy.title}</h2><p className="privacy-lead">{t.privacy.body}</p>
+          <div className="privacy-points">{t.privacy.points.map((point, index) => <div key={point}><span>0{index + 1}</span><strong>{point}</strong></div>)}</div>
+          <p className="privacy-final">{t.privacy.final}</p>
         </div>
       </section>
 
       <section className="trust">
-        <div className="section-heading compact"><p className="eyebrow">06 · TRUSTED INSTALLS</p><h2>{copy.trust.title}</h2></div>
+        <div className="section-heading compact"><p className="eyebrow">{t.trust.eyebrow}</p><h2>{t.trust.title}</h2></div>
         <div className="trust-flow">
-          {copy.trust.steps.map((stage, index) => <div key={stage} style={{ display: 'contents' }}><div className="trust-stage"><span>0{index + 1}</span><strong>{stage}</strong></div>{index < copy.trust.steps.length - 1 && <span className="trust-arrow">→</span>}</div>)}
-        </div><p className="trust-note">{copy.trust.note}</p>
+          {t.trust.stages.map((stage, index) => <div key={stage} style={{ display: 'contents' }}><div className="trust-stage"><span>0{index + 1}</span><strong>{stage}</strong></div>{index < t.trust.stages.length - 1 && <span className="trust-arrow">→</span>}</div>)}
+        </div><p className="trust-note">{t.trust.note}</p>
       </section>
 
       <section className="before-after">
-        <div className="before-panel"><div><p className="before-label">BEFORE</p><h2>{copy.beforeAfter.before}</h2></div></div>
-        <div className="ready-panel"><div><p className="before-label">AFTER AGENSTART</p><h2>{copy.beforeAfter.after}</h2></div></div>
+        <div className="before-panel"><div><p className="before-label">BEFORE</p><h2>{t.beforeAfter.before}</h2></div></div>
+        <div className="ready-panel"><div><p className="before-label">AFTER AGENSTART</p><h2>{t.beforeAfter.after}</h2></div></div>
       </section>
 
       <section className="final-cta">
         <div className="cta-bg" /><div className="cta-shade" />
-        <div className="cta-copy"><p className="eyebrow">AGENSTART</p><h2>{copy.cta.title}</h2><p>{copy.cta.body}</p><div className="cta-actions"><a className="button button-primary" href="https://github.com/EagleFox31/AgenStart">{copy.cta.download}</a></div><p className="cta-meta">Windows 10 / 11 · x64</p><a className="github-link" href="https://github.com/EagleFox31/AgenStart">{copy.cta.github} ↗</a></div>
+        <div className="cta-copy"><p className="eyebrow">{t.cta.eyebrow}</p><h2>{t.cta.title}</h2><p>{t.cta.body}</p><div className="cta-actions"><a className="button button-primary" href="https://github.com/EagleFox31/AgenStart">{t.cta.primary}</a></div><p className="cta-meta">{t.cta.meta}</p><a className="github-link" href="https://github.com/EagleFox31/AgenStart">{t.cta.github} ↗</a></div>
       </section>
 
-      <footer className="site-footer"><div className="footer-top"><div className="footer-brand"><span>A</span><div><strong>AgenStart</strong><small>by AgenStudio</small></div></div><div className="footer-links"><a href="#product">{copy.nav.product}</a><a href="https://github.com/EagleFox31/AgenStart">GitHub</a><a href="#privacy">{copy.nav.privacy}</a><a href={`/${otherLocale}`}>{otherLocale === 'fr' ? 'Français' : 'English'}</a></div></div><div className="footer-bottom"><span>© AgenStudio</span><span>Designing the systems behind decisions.</span></div></footer>
+      <footer className="site-footer"><div className="footer-top"><div className="footer-brand"><span>A</span><div><strong>AgenStart</strong><small>by AgenStudio</small></div></div><div className="footer-links"><a href="#product">{t.nav.product}</a><a href="https://github.com/EagleFox31/AgenStart">GitHub</a><a href="#privacy">{t.nav.privacy}</a><a href={`/${otherLocale}`}>{otherLocale === 'fr' ? 'Français' : 'English'}</a></div></div><div className="footer-bottom"><span>© AgenStudio</span><span>{t.footer.line}</span></div></footer>
     </div>
   );
 }
