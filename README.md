@@ -295,6 +295,12 @@ AgenStart is not intended to be:
 
 **Trust is part of the product.**
 
+## License
+
+AgenStart is proprietary software owned by **EagleFox31** and published under the **AgenStudio** brand. Public access to this repository does not grant permission to copy, modify, redistribute, deploy or commercially reuse the code.
+
+Third-party components remain subject to their own licences. See [`LICENSE`](LICENSE) and [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md).
+
 ---
 
 <p align="center">
