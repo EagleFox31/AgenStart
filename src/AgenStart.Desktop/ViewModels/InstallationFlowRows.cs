@@ -2,6 +2,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using AgenStart.Application.Installation;
 using AgenStart.PackageManagement;
+using Avalonia.Media.Imaging;
 
 namespace AgenStart.Desktop.ViewModels;
 
@@ -18,6 +19,9 @@ public sealed class ReviewRowViewModel
         ApplicationId = applicationId;
         Name = name;
         Initials = initials;
+        Logo = ApplicationLogoResolver.Resolve(applicationId);
+        HasLogo = Logo is not null;
+        ShowInitials = !HasLogo;
         Reason = reason;
         WillInstall = willInstall;
         AlreadyInstalled = alreadyInstalled;
@@ -26,6 +30,9 @@ public sealed class ReviewRowViewModel
     public string ApplicationId { get; }
     public string Name { get; }
     public string Initials { get; }
+    public Bitmap? Logo { get; }
+    public bool HasLogo { get; }
+    public bool ShowInitials { get; }
     public string Reason { get; }
     public bool WillInstall { get; }
     public bool AlreadyInstalled { get; }
@@ -50,6 +57,9 @@ public sealed class InstallationRowViewModel : INotifyPropertyChanged
         ApplicationId = applicationId;
         Name = name;
         Initials = initials;
+        Logo = ApplicationLogoResolver.Resolve(applicationId);
+        HasLogo = Logo is not null;
+        ShowInitials = !HasLogo;
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;
@@ -57,6 +67,9 @@ public sealed class InstallationRowViewModel : INotifyPropertyChanged
     public string ApplicationId { get; }
     public string Name { get; }
     public string Initials { get; }
+    public Bitmap? Logo { get; }
+    public bool HasLogo { get; }
+    public bool ShowInitials { get; }
 
     public InstallationQueueItemState State
     {
@@ -244,6 +257,9 @@ public sealed class ReportRowViewModel
         ApplicationId = applicationId;
         Name = name;
         Initials = initials;
+        Logo = ApplicationLogoResolver.Resolve(applicationId);
+        HasLogo = Logo is not null;
+        ShowInitials = !HasLogo;
         Result = result;
         InstalledVersion = installedVersion ?? "—";
         RequiresReboot = requiresReboot;
@@ -252,6 +268,9 @@ public sealed class ReportRowViewModel
     public string ApplicationId { get; }
     public string Name { get; }
     public string Initials { get; }
+    public Bitmap? Logo { get; }
+    public bool HasLogo { get; }
+    public bool ShowInitials { get; }
     public string Result { get; }
     public string InstalledVersion { get; }
     public bool RequiresReboot { get; }

@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Avalonia.Media;
+using Avalonia.Media.Imaging;
 using AgenStart.Core.Catalogue;
 using AgenStart.Recommendations;
 
@@ -37,6 +38,9 @@ public sealed class RecommendationRowViewModel : INotifyPropertyChanged
         StatusIcon = BuildStatusIcon(decision);
         (StatusBrush, StatusBackgroundBrush) = BuildStatusBrushes(decision);
         Initials = BuildInitials(decision.ApplicationName);
+        Logo = ApplicationLogoResolver.Resolve(ApplicationId);
+        HasLogo = Logo is not null;
+        ShowInitials = !HasLogo;
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;
@@ -46,6 +50,9 @@ public sealed class RecommendationRowViewModel : INotifyPropertyChanged
     public string Description { get; }
     public string Reason { get; }
     public string Initials { get; }
+    public Bitmap? Logo { get; }
+    public bool HasLogo { get; }
+    public bool ShowInitials { get; }
     public RecommendationLevel Level { get; }
     public RecommendationDisposition Disposition { get; }
     public bool CanSelect { get; }
