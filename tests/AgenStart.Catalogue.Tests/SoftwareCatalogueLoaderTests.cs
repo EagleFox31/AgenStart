@@ -1,4 +1,5 @@
 using System.Text.Json.Nodes;
+using AgenStart.Core.Catalogue;
 using AgenStart.PackageManagement;
 using Xunit;
 
@@ -12,7 +13,7 @@ public sealed class SoftwareCatalogueLoaderTests
         var catalogue = LoadFixture();
 
         Assert.Equal("1.0.0", catalogue.SchemaVersion);
-        Assert.Equal(8, catalogue.Applications.Count);
+        Assert.Equal(9, catalogue.Applications.Count);
 
         var git = Assert.Single(catalogue.Applications, application => application.Id == "git");
         Assert.Equal("Git Project", git.Publisher);
@@ -20,6 +21,18 @@ public sealed class SoftwareCatalogueLoaderTests
         Assert.Equal(PackageProviderIds.WinGet, git.WindowsPackage.ProviderId);
         Assert.Equal("Git.Git", git.WindowsPackage.PackageId);
         Assert.Equal("winget", git.WindowsPackage.Source);
+
+        var termius = Assert.Single(catalogue.Applications, application => application.Id == "termius");
+        Assert.Equal("Termius Corporation", termius.Publisher);
+        Assert.NotNull(termius.WindowsPackage);
+        Assert.Equal(PackageProviderIds.WinGet, termius.WindowsPackage.ProviderId);
+        Assert.Equal("Termius.Termius", termius.WindowsPackage.PackageId);
+        Assert.Equal("winget", termius.WindowsPackage.Source);
+
+        var recommendation = Assert.Single(termius.Definition.Recommendations);
+        Assert.Equal(UserProfile.Development, recommendation.Profile);
+        Assert.Equal(RecommendationLevel.Recommended, recommendation.Level);
+        Assert.Equal("development.remote-infrastructure", recommendation.ReasonKey);
     }
 
     [Fact]
