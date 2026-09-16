@@ -5,6 +5,12 @@
     "bootstrap": true,
     "template": "appfactory-product"
   },
+  "repository": {
+    "governance": {
+      "enabled": true,
+      "preset": "solo"
+    }
+  },
   "bootstrap": {
     "phases": [
       "Foundation",
