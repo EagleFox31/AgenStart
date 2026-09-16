@@ -33,7 +33,8 @@ public sealed record RecommendationDecision(
     string ProfileReasonKey,
     RecommendationDisposition Disposition,
     bool SelectedByDefault,
-    IReadOnlyList<RecommendationReason> Reasons);
+    IReadOnlyList<RecommendationReason> Reasons,
+    IReadOnlyList<UserProfile>? MatchedProfiles = null);
 
 public sealed record RecommendationPlan(
     UserProfile Profile,

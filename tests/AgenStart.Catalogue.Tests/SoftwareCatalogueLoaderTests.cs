@@ -13,7 +13,8 @@ public sealed class SoftwareCatalogueLoaderTests
         var catalogue = LoadFixture();
 
         Assert.Equal("1.0.0", catalogue.SchemaVersion);
-        Assert.Equal(9, catalogue.Applications.Count);
+        Assert.Equal("0.2.0", catalogue.CatalogueVersion);
+        Assert.Equal(40, catalogue.Applications.Count);
 
         var git = Assert.Single(catalogue.Applications, application => application.Id == "git");
         Assert.Equal("Git Project", git.Publisher);
@@ -33,6 +34,33 @@ public sealed class SoftwareCatalogueLoaderTests
         Assert.Equal(UserProfile.Development, recommendation.Profile);
         Assert.Equal(RecommendationLevel.Recommended, recommendation.Level);
         Assert.Equal("development.remote-infrastructure", recommendation.ReasonKey);
+    }
+
+    [Fact]
+    public void Load_supports_six_profiles_and_gem_recommendations()
+    {
+        var catalogue = LoadFixture();
+        var recommendations = catalogue.Definitions.SelectMany(application => application.Recommendations).ToArray();
+
+        Assert.Contains(recommendations, rule => rule.Profile == UserProfile.Personal);
+        Assert.Contains(recommendations, rule => rule.Profile == UserProfile.Business);
+        Assert.Contains(recommendations, rule => rule.Profile == UserProfile.Learning);
+        Assert.Contains(recommendations, rule => rule.Profile == UserProfile.Development);
+        Assert.Contains(recommendations, rule => rule.Profile == UserProfile.Creative);
+        Assert.Contains(recommendations, rule => rule.Profile == UserProfile.Gaming);
+        Assert.Contains(recommendations, rule => rule.Level == RecommendationLevel.Gem);
+    }
+
+    [Fact]
+    public void Load_enforces_plain_descriptions_for_every_catalogue_app()
+    {
+        var catalogue = LoadFixture();
+
+        Assert.All(catalogue.Applications, application =>
+        {
+            Assert.False(string.IsNullOrWhiteSpace(application.Description));
+            Assert.InRange(application.Description.Length, 1, 180);
+        });
     }
 
     [Fact]
