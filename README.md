@@ -1,7 +1,14 @@
 # AgenStart
 
-> **A local-first Windows setup assistant that turns a fresh PC into a ready-to-work machine — intelligently, transparently, and reproducibly.**
->
+<p align="center">
+  <img src="src/AgenStart.Desktop/Assets/agenstart-app-icon.png" alt="AgenStart icon" width="120" />
+</p>
+
+<p align="center">
+  <strong>A local-first Windows setup assistant that turns a fresh PC into a ready-to-work machine.</strong><br/>
+  <a href="https://github.com/EagleFox31/AgenStart/releases/tag/v0.2.1">Download the latest Windows release · v0.2.1</a>
+</p>
+
 > **BY AGENSTUDIO** · *Think sharp. Build what matters.*
 
 AgenStart is being built to remove one of the most repetitive parts of owning, preparing, or deploying a Windows PC: figuring out what should be installed, finding trustworthy sources, installing everything one application at a time, and rebuilding the same setup again later.
