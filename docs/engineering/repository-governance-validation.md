@@ -4,7 +4,7 @@ AgenStart is the primary real-world integration consumer for AppFactory Reposito
 
 ## Candidate under test
 
-- AppFactory commit: `eac14d9e6f1a4cc15959949eb6c234912cfa0c0a`
+- AppFactory commit: `b1631349800f85a29dc2948391745e2fc67c1eb6`
 - policy preset: `solo`
 - target: the repository's symbolic default branch
 - workflow: manual `plan` / `apply`
@@ -42,4 +42,12 @@ Repository governance uses the separate `APPFACTORY_GOVERNANCE_TOKEN`; it does n
 
 ## Result
 
-Pending execution after this integration reaches the default branch.
+### Attempt 1 — input-boundary failure, no mutation
+
+The first live `plan` reached the Action but interpreted `governance-mode` as `off`. GitHub exposes that input as `INPUT_GOVERNANCE-MODE`; the candidate read the incorrect underscore form `INPUT_GOVERNANCE_MODE` and requested the unrelated Project token.
+
+The run failed before governance preflight and left the repository with zero Rulesets. AppFactory corrected the platform-input adapter, added literal runtime-boundary tests and recorded the reusable lesson in `LESSON-2026-006`.
+
+### Revised candidate
+
+Pending execution against the corrected commit above.
