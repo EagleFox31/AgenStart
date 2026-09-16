@@ -9,7 +9,7 @@
   <a href="https://github.com/EagleFox31/AgenStart/releases/tag/v0.2.1">Download the latest Windows release · v0.2.1</a>
 </p>
 
-> **BY AGENSTUDIO** · *Think sharp. Build what matters.*
+> **An AgenStudio project by [EagleFox31](https://github.com/EagleFox31)** · *Think sharp. Build what matters.*
 
 AgenStart is being built to remove one of the most repetitive parts of owning, preparing, or deploying a Windows PC: figuring out what should be installed, finding trustworthy sources, installing everything one application at a time, and rebuilding the same setup again later.
 
@@ -300,5 +300,5 @@ AgenStart is not intended to be:
 <p align="center">
   <strong>AgenStart</strong><br/>
   Prepare once. Understand everything. Reproduce anywhere.<br/><br/>
-  <sub>Built by AgenStudio · Think sharp. Build what matters.</sub>
+  <sub>An AgenStudio project by <a href="https://github.com/EagleFox31">EagleFox31</a> · Think sharp. Build what matters.</sub>
 </p>
