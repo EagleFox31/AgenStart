@@ -1,0 +1,464 @@
+/* AgenStart landing v4 — visual cleanup after full-page review. */
+
+:root {
+  --display-font: "Segoe UI Variable Display", "Segoe UI", Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+html,
+body {
+  overflow-x: hidden;
+}
+
+body,
+button,
+a,
+input {
+  font-family: var(--display-font);
+}
+
+/* Remove the editorial serif drift. */
+.hero-copy h1,
+.portal-intro h2,
+.section-heading h2,
+.story-sticky h2,
+.story-step h3,
+.manifesto h2,
+.privacy-content h2,
+.privacy-final,
+.trust .section-heading h2,
+.before-panel h2,
+.ready-panel h2,
+.cta-copy h2 {
+  font-family: var(--display-font) !important;
+  font-weight: 650 !important;
+  letter-spacing: -.055em !important;
+}
+
+/* Navigation: actual brand, quieter chrome. */
+.site-nav {
+  height: 68px !important;
+  padding-inline: max(28px, calc((100vw - 1320px) / 2)) !important;
+  background: rgba(7, 22, 27, .76) !important;
+  border-bottom: 1px solid rgba(255,255,255,.11) !important;
+  backdrop-filter: blur(20px) saturate(135%) !important;
+}
+
+.site-nav .brand-logo {
+  width: 32px !important;
+  height: 32px !important;
+  border-radius: 8px !important;
+}
+
+.site-nav .brand-copy strong {
+  font-size: 15px !important;
+}
+
+.nav-links {
+  gap: 30px !important;
+}
+
+.nav-actions {
+  gap: 12px !important;
+}
+
+/* Hero: use the dedicated generated image, with the product clearly visible. */
+.hero {
+  min-height: 100svh !important;
+}
+
+.hero-bg {
+  inset: 0 !important;
+  background-image: url("/visuals/hero-generated.webp") !important;
+  background-position: center center !important;
+  background-size: cover !important;
+  filter: saturate(.96) contrast(1.03) !important;
+  transform: scale(1.02);
+}
+
+.hero-shade {
+  background:
+    linear-gradient(90deg, rgba(4,16,21,.93) 0%, rgba(4,16,21,.80) 30%, rgba(4,16,21,.44) 48%, rgba(4,16,21,.10) 67%, rgba(4,16,21,.08) 100%),
+    linear-gradient(180deg, rgba(2,10,14,.05) 58%, rgba(2,10,14,.54) 100%) !important;
+}
+
+.hero-content {
+  width: min(1280px, calc(100vw - 72px)) !important;
+  min-height: 100svh !important;
+  grid-template-columns: minmax(0, .84fr) minmax(480px, 1.16fr) !important;
+  padding-top: 116px !important;
+  padding-bottom: 110px !important;
+}
+
+.hero-copy {
+  max-width: 610px !important;
+}
+
+.hero-copy h1 {
+  max-width: 620px !important;
+  font-size: clamp(58px, 6vw, 92px) !important;
+  line-height: .92 !important;
+}
+
+.hero-body {
+  max-width: 550px !important;
+  margin-top: 24px !important;
+  color: rgba(238,245,246,.78) !important;
+  font-size: clamp(16px,1.25vw,19px) !important;
+}
+
+.hero-actions {
+  margin-top: 28px !important;
+}
+
+.hero-depth-front {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  display: block !important;
+  transform: none !important;
+  pointer-events: none;
+}
+
+.hero-float {
+  position: absolute !important;
+  width: 245px !important;
+  min-height: 78px !important;
+  padding: 13px 14px !important;
+  border: 1px solid rgba(255,255,255,.16) !important;
+  border-radius: 16px !important;
+  background: rgba(10,28,34,.70) !important;
+  box-shadow: 0 18px 48px rgba(2,12,16,.30) !important;
+}
+
+.hero-float strong {
+  font-size: 12px !important;
+}
+
+.hero-float p {
+  font-size: 10px !important;
+}
+
+.float-1 { top: 19% !important; right: 5.5% !important; }
+.float-2 { top: 36% !important; right: 1.8% !important; }
+.float-3 { bottom: 24% !important; right: 20% !important; }
+.float-4 { bottom: 10% !important; right: 4.5% !important; }
+
+/* Product reveal: less dead space while preserving the scroll zoom. */
+.portal {
+  min-height: 155vh !important;
+  padding: 108px max(28px, calc((100vw - 1240px)/2)) 120px !important;
+}
+
+.portal-intro {
+  width: min(720px,100%) !important;
+  margin-bottom: 44px !important;
+}
+
+.portal-intro h2 {
+  max-width: 700px !important;
+  font-size: clamp(44px, 5.3vw, 76px) !important;
+  line-height: .98 !important;
+}
+
+.portal-shell {
+  width: min(1140px,100%) !important;
+}
+
+.product-screen {
+  min-height: 500px !important;
+}
+
+.product-sidebar {
+  width: 100%;
+}
+
+.app-logo {
+  border-radius: 9px !important;
+  box-shadow: 0 4px 12px rgba(16,36,43,.05);
+}
+
+/* How it works: dense, intentional storytelling rather than huge empty stretches. */
+.story-section {
+  padding: 130px max(28px, calc((100vw - 1280px)/2)) 150px !important;
+  grid-template-columns: minmax(0, 1.15fr) minmax(320px,.85fr) !important;
+  gap: 7vw !important;
+}
+
+.story-sticky h2 {
+  max-width: 650px !important;
+  font-size: clamp(42px,4.7vw,68px) !important;
+  line-height: .98 !important;
+}
+
+.story-steps {
+  gap: 26vh !important;
+  padding: 70px 0 !important;
+}
+
+.story-step {
+  min-height: 38vh !important;
+  padding-top: 34px;
+}
+
+.story-step h3 {
+  font-size: clamp(32px,3.4vw,50px) !important;
+  line-height: 1.02 !important;
+}
+
+.story-step > p:last-child {
+  margin-top: 16px !important;
+  font-size: 16px !important;
+}
+
+/* Curation chapter: no clipped giant word and no random floating rectangles. */
+.manifesto {
+  min-height: 84vh !important;
+  display: grid !important;
+  grid-template-columns: minmax(0,1.1fr) minmax(360px,.9fr) !important;
+  align-items: center !important;
+  gap: 8vw !important;
+  padding: 120px max(28px, calc((100vw - 1220px)/2)) !important;
+  background:
+    radial-gradient(circle at 76% 44%, rgba(69,207,193,.12), transparent 28%),
+    radial-gradient(circle at 84% 65%, rgba(109,63,181,.13), transparent 26%),
+    #07151a !important;
+}
+
+.manifesto-copy {
+  max-width: 760px !important;
+}
+
+.manifesto h2 {
+  max-width: 760px !important;
+  font-size: clamp(50px,6.5vw,94px) !important;
+  line-height: .94 !important;
+}
+
+.manifesto-copy p {
+  margin-top: 24px !important;
+  font-size: 16px !important;
+}
+
+.manifesto-cloud {
+  position: relative !important;
+  inset: auto !important;
+  width: 100% !important;
+  max-width: none !important;
+  display: grid !important;
+  grid-template-columns: repeat(2,minmax(0,1fr)) !important;
+  gap: 12px !important;
+  opacity: 1 !important;
+}
+
+.manifesto-cloud span {
+  min-width: 0 !important;
+  min-height: 74px !important;
+  padding: 14px 16px !important;
+  border-radius: 16px !important;
+  background: rgba(255,255,255,.055) !important;
+  border: 1px solid rgba(255,255,255,.11) !important;
+}
+
+.manifesto-app-logo {
+  width: 34px !important;
+  height: 34px !important;
+}
+
+/* Gems: real app logos, shorter cards, less black void. */
+.gems {
+  min-height: 100vh !important;
+  padding: 118px max(28px, calc((100vw - 1220px)/2)) 128px !important;
+}
+
+.gems .section-heading {
+  max-width: 800px !important;
+}
+
+.gems .section-heading h2 {
+  font-size: clamp(44px,5vw,72px) !important;
+  line-height: .98 !important;
+}
+
+.gems .section-heading > p:last-child {
+  max-width: 600px !important;
+  font-size: 16px !important;
+}
+
+.gem-grid {
+  min-height: auto !important;
+  grid-template-columns: repeat(4,minmax(0,1fr)) !important;
+  align-items: stretch !important;
+  gap: 14px !important;
+  margin-top: 56px !important;
+}
+
+.gem-card {
+  min-height: 230px !important;
+  padding: 22px !important;
+  transform: none !important;
+  background: linear-gradient(180deg, rgba(10,20,33,.70), rgba(7,15,25,.88)) !important;
+}
+
+.gem-mark {
+  width: 54px !important;
+  height: 54px !important;
+  padding: 9px !important;
+  border-radius: 15px !important;
+}
+
+.gem-card strong {
+  font-size: 18px !important;
+}
+
+.gem-card p {
+  font-size: 14px !important;
+}
+
+/* Local-first: actual icons and a cleaner split layout. */
+.privacy {
+  min-height: 880px !important;
+}
+
+.privacy-bg {
+  inset: 0 0 0 56% !important;
+  opacity: 1 !important;
+  background-position: 58% center !important;
+}
+
+.privacy-shade {
+  background: linear-gradient(90deg,#f7f5ef 0%,#f7f5ef 50%,rgba(247,245,239,.94) 58%,rgba(247,245,239,.22) 80%,rgba(247,245,239,.08)) !important;
+}
+
+.privacy-content {
+  width: min(1220px, calc(100vw - 64px)) !important;
+  padding: 118px 0 !important;
+}
+
+.privacy-content h2 {
+  max-width: 650px !important;
+  font-size: clamp(42px,5vw,70px) !important;
+  line-height: .98 !important;
+}
+
+.privacy-points {
+  max-width: 700px !important;
+  margin-top: 42px !important;
+  gap: 12px !important;
+}
+
+.privacy-points div {
+  min-height: 184px !important;
+  padding: 20px !important;
+  border-radius: 16px !important;
+  background: rgba(251,250,246,.94) !important;
+  box-shadow: 0 14px 34px rgba(16,36,43,.045);
+}
+
+.privacy-final {
+  margin-top: 38px !important;
+  font-size: clamp(34px,4vw,54px) !important;
+  line-height: 1 !important;
+}
+
+/* Trusted install: turn the simplistic boxes into a real visual flow. */
+.trust {
+  padding: 112px max(28px, calc((100vw - 1220px)/2)) 118px !important;
+}
+
+.trust .section-heading {
+  max-width: 820px !important;
+}
+
+.trust .section-heading h2 {
+  font-size: clamp(42px,4.9vw,68px) !important;
+  line-height: .98 !important;
+}
+
+.trust-flow {
+  position: relative;
+  grid-template-columns: repeat(9, auto) !important;
+  gap: 10px !important;
+  margin-top: 50px !important;
+}
+
+.trust-stage {
+  width: 170px !important;
+  min-height: 170px !important;
+  padding: 18px !important;
+  border-radius: 18px !important;
+  background: #fbfaf6 !important;
+  border: 1px solid #d6dcda !important;
+  box-shadow: 0 14px 32px rgba(16,36,43,.045) !important;
+}
+
+.trust-icon {
+  width: 46px !important;
+  height: 46px !important;
+}
+
+.trust-arrow {
+  color: #6d807f !important;
+}
+
+.trust-note {
+  margin-top: 26px !important;
+}
+
+/* Closing chapters: keep them cinematic but not oversized. */
+.before-after {
+  min-height: 78vh !important;
+}
+
+.before-panel h2,
+.ready-panel h2 {
+  font-size: clamp(46px,6vw,88px) !important;
+}
+
+.final-cta {
+  min-height: 88vh !important;
+}
+
+.cta-copy h2 {
+  max-width: 720px !important;
+  font-size: clamp(48px,5.8vw,82px) !important;
+  line-height: .96 !important;
+}
+
+@media (max-width: 1100px) {
+  .hero-depth-front { display: none !important; }
+  .hero-content { grid-template-columns: 1fr !important; }
+  .hero-copy { max-width: 650px !important; }
+  .manifesto { grid-template-columns: 1fr !important; }
+  .manifesto-cloud { max-width: 720px !important; }
+  .gem-grid { grid-template-columns: repeat(2,minmax(0,1fr)) !important; }
+  .trust-flow { grid-template-columns: 1fr !important; }
+  .trust-stage { width: 100% !important; min-height: 120px !important; }
+  .trust-arrow { justify-self: center; transform: rotate(90deg); }
+}
+
+@media (max-width: 760px) {
+  .site-nav { padding-inline: 16px !important; }
+  .nav-links { display: none !important; }
+  .hero-content { width: calc(100vw - 36px) !important; padding-top: 108px !important; }
+  .hero-copy h1 { font-size: clamp(48px,15vw,68px) !important; }
+  .hero-bg { background-position: 63% center !important; }
+  .hero-shade { background: linear-gradient(90deg,rgba(4,16,21,.94),rgba(4,16,21,.74) 60%,rgba(4,16,21,.22)) !important; }
+  .portal { min-height: 140vh !important; padding-inline: 18px !important; }
+  .story-section { padding-inline: 18px !important; grid-template-columns: 1fr !important; }
+  .story-sticky { position: relative !important; top: 0 !important; }
+  .story-steps { gap: 18vh !important; }
+  .manifesto { padding: 92px 18px !important; }
+  .manifesto-cloud { grid-template-columns: 1fr !important; }
+  .gems { padding: 96px 18px 104px !important; }
+  .gem-grid { grid-template-columns: 1fr !important; }
+  .gem-card { min-height: 190px !important; }
+  .privacy { min-height: auto !important; }
+  .privacy-content { width: calc(100vw - 36px) !important; padding: 96px 0 360px !important; }
+  .privacy-bg { inset: auto 0 0 0 !important; height: 350px !important; background-position: center !important; }
+  .privacy-shade { background: linear-gradient(180deg,#f7f5ef 0%,#f7f5ef 63%,rgba(247,245,239,.30) 100%) !important; }
+  .privacy-points { grid-template-columns: 1fr !important; }
+  .privacy-points div { min-height: 150px !important; }
+  .privacy-final { margin-bottom: 0 !important; }
+  .trust { padding: 92px 18px 100px !important; }
+}
