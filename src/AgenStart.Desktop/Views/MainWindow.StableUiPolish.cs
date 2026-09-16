@@ -28,7 +28,6 @@ public sealed partial class MainWindow
         _stableUiPolishInstalled = true;
         NormalizeSidebarNavigation();
         DecorateMachineStatusRows();
-        InstallFlowLogoExperience();
 
         // Recommendation progress belongs exclusively to UsageProfilesView.
         // Do not inject or re-parent its ProgressBar here: doing so creates a

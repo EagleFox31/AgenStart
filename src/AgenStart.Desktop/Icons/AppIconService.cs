@@ -49,6 +49,7 @@ public sealed class AppIconService
             ["sharex"] = "avares://AgenStart.Desktop/Assets/AppLogos/sharex.svg",
             ["steam"] = "avares://AgenStart.Desktop/Assets/AppLogos/steam.svg",
             ["sumatrapdf"] = "avares://AgenStart.Desktop/Assets/AppLogos/sumatrapdf.svg",
+            ["termius"] = "avares://AgenStart.Desktop/Assets/ApplicationLogos/termius.png",
             ["thunderbird"] = "avares://AgenStart.Desktop/Assets/AppLogos/thunderbird.svg",
             ["visual-studio-code"] = "avares://AgenStart.Desktop/Assets/AppLogos/visual-studio-code.svg",
             ["vlc"] = "avares://AgenStart.Desktop/Assets/AppLogos/vlc-media-player.svg",

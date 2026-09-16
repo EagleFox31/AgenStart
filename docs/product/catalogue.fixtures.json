@@ -701,6 +701,34 @@
       "platformSupport": [{"platform": "windows", "status": "supported", "architectures": ["x64"]}],
       "providers": [{"platform": "windows", "type": "winget", "packageId": "REALiX.HWiNFO", "source": "winget", "scopePreference": "any"}],
       "dependencies": [], "conflicts": []
+    },
+    {
+      "id": "termius",
+      "name": "Termius",
+      "publisher": "Termius Corporation",
+      "description": "Modern SSH and SFTP client for managing remote infrastructure.",
+      "categories": ["development", "system"],
+      "tags": ["ssh", "sftp", "terminal", "remote-access"],
+      "lifecycle": {"status": "active"},
+      "recommendations": [
+        {"profile": "development", "level": "recommended", "reasonKey": "development.remote-infrastructure"}
+      ],
+      "requirements": {
+        "minimum": {"minRamMiB": 2048, "minFreeStorageMiB": 500, "gpuRequired": false, "architectures": ["x64", "x86"]},
+        "recommended": {"minRamMiB": 4096, "minFreeStorageMiB": 1024, "gpuRequired": false, "architectures": ["x64", "x86"]}
+      },
+      "platformSupport": [
+        {"platform": "windows", "status": "supported", "architectures": ["x64", "x86"]}
+      ],
+      "providers": [
+        {"platform": "windows", "type": "winget", "packageId": "Termius.Termius", "source": "winget", "scopePreference": "user"}
+      ],
+      "verification": [
+        {"platform": "windows", "type": "provider-query"}
+      ],
+      "dependencies": [],
+      "conflicts": [],
+      "curation": {"homepage": "https://termius.com/free-ssh-client-for-windows", "license": "Proprietary", "trust": "official-publisher"}
     }
   ]
 }
