@@ -146,7 +146,16 @@ The initial catalogue is expected to contain roughly **40–60 carefully selecte
 └───────────────────────────────┘
 ```
 
-The implementation stack is **not considered a casual choice**. Major technical decisions will be documented through ADRs before the architecture becomes expensive to change.
+### Current implementation stack
+
+- **C# / .NET 10** for the application and domain layers;
+- **Avalonia UI 12.1.2** with XAML and compiled bindings for the Windows desktop experience;
+- **WinGet** for trusted package discovery, preparation and installation;
+- **Windows Registry + WinGet export** for installed-software inventory;
+- **xUnit v3** and Microsoft .NET Test SDK for automated tests;
+- a modular architecture split across Core, Application, Catalogue, Package Management, Windows Platform, Recommendations and Software Inventory projects.
+
+The stack is now implemented and versioned. Future architecture-impacting changes will continue to be documented through ADRs.
 
 ---
 
@@ -245,16 +254,25 @@ Product · Feature · Engineering · UX · Security · Quality · Documentation 
 
 ## Current status
 
-**Stage: Product foundation / pre-MVP**
+**Stage: Functional prototype · v0.2.1**
 
-Next decisions:
+The current application already includes:
 
-1. choose and record the desktop technology stack;
-2. define the machine inventory boundary;
-3. define the software catalogue schema;
-4. define provider abstraction and WinGet integration;
-5. establish CI and test strategy;
-6. prototype the end-to-end setup flow with a very small package set.
+- Windows machine and operating-system inventory;
+- installed-software detection through WinGet and the Windows Registry;
+- a curated software catalogue and profile-driven recommendations;
+- explainable recommendation progress and compatibility checks;
+- trusted WinGet package preparation and sequential installation;
+- setup profile import/export, local history, settings and installation reports;
+- automated tests covering the application, catalogue, recommendation and Windows platform layers.
+
+Next priorities:
+
+1. harden packaging and distribution for Windows;
+2. sign release artifacts and define the upgrade strategy;
+3. expand and maintain the curated software catalogue;
+4. strengthen installation recovery, cancellation and retry behaviour;
+5. keep the README, roadmap and release documentation aligned with shipped capabilities.
 
 ---
 
