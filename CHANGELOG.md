@@ -1,5 +1,67 @@
 # Changelog
 
+## [0.3.0](https://github.com/EagleFox31/AgenStart/compare/v0.2.1...v0.3.0) (2026-09-16)
+
+
+### Features
+
+* add 7-Zip application logo ([53d0187](https://github.com/EagleFox31/AgenStart/commit/53d0187c1ef833c4368395d97d58739a10f8662c))
+* add Docker application logo ([9a55c51](https://github.com/EagleFox31/AgenStart/commit/9a55c5114b8e10de7e612eec08509db1d1f4e4cc))
+* add Firefox application logo ([fd6deb8](https://github.com/EagleFox31/AgenStart/commit/fd6deb8bf1671bcf26d3a3096a8eb8db23895462))
+* add Git application logo ([3f524b5](https://github.com/EagleFox31/AgenStart/commit/3f524b5d876051fab3e8e5779d0952d6784f592a))
+* add local SVG rendering for app logos ([3f99320](https://github.com/EagleFox31/AgenStart/commit/3f99320e798dcc04485a17cde274de271cc428cd))
+* add multi-select usage profile view ([ef76b6a](https://github.com/EagleFox31/AgenStart/commit/ef76b6a3174712ac933d48f13cd22a4066360328))
+* add PowerToys application logo ([9b3f6d1](https://github.com/EagleFox31/AgenStart/commit/9b3f6d113d1b86149f4a6117d8bf2e37b7b9ae11))
+* add resilient local-first application icon service ([fe7ca85](https://github.com/EagleFox31/AgenStart/commit/fe7ca85716f3978bd60a409683eada4b90bc5462))
+* carry multi-profile recommendation matches ([145d8ce](https://github.com/EagleFox31/AgenStart/commit/145d8ce6aad0e438852aa134c2c946514f394c12))
+* **catalogue:** recommander Termius aux développeurs ([8ae7310](https://github.com/EagleFox31/AgenStart/commit/8ae7310667a45b152c9f46c744785a84b9f87db7))
+* cover every catalogue app with packaged artwork ([cc6f641](https://github.com/EagleFox31/AgenStart/commit/cc6f641cea7b686b59eda338d3ddb194c7861020))
+* define six multi-select usage profiles ([ded06d6](https://github.com/EagleFox31/AgenStart/commit/ded06d6bd643535a0b4e2c3433c72191782ab73d))
+* drive visible recommendation build progress from pipeline stages ([2ce3b4c](https://github.com/EagleFox31/AgenStart/commit/2ce3b4cef81eb5b6f67e46087b0decc6f570f7a6))
+* expand catalogue for six usage profiles ([796e50d](https://github.com/EagleFox31/AgenStart/commit/796e50d5daa39270b72e2ac5770d1f4d600d4a73))
+* expand offline recommendation logos ([9434393](https://github.com/EagleFox31/AgenStart/commit/9434393b6b00ac46e00bfd32208cc1cc48a9f959))
+* explain recommendations in plain language ([6676ef5](https://github.com/EagleFox31/AgenStart/commit/6676ef5496357c6fe3efbe3fb13aa21244b5f000))
+* install multi-select profile experience ([f6b6af4](https://github.com/EagleFox31/AgenStart/commit/f6b6af44ed2621863e658b9fdf15a87b83b55e46))
+* map recommendation rows to bundled app logos ([e163be5](https://github.com/EagleFox31/AgenStart/commit/e163be5cc736752123ff4ad7147ae504d5785c33))
+* map recommendation rows to bundled app logos ([cdfd864](https://github.com/EagleFox31/AgenStart/commit/cdfd8642e3fc978a0cc044fc35ac93f9c34856b2))
+* merge recommendations across selected profiles ([7c874ec](https://github.com/EagleFox31/AgenStart/commit/7c874ece963903bcd4ef41b9ebc934e6dc3b3d34))
+* number recommendations and keep recommendation title sticky while scrolling ([4e1078f](https://github.com/EagleFox31/AgenStart/commit/4e1078f665dbe8ec4641b678a04b417a6c8ee70a))
+* polish recommendations presentation ([dc1e2fd](https://github.com/EagleFox31/AgenStart/commit/dc1e2fd1055fabf8769b4932f2035569712acb00))
+* render bundled app logos in recommendations ([196bab3](https://github.com/EagleFox31/AgenStart/commit/196bab393f9cdd0a2f2d5834c6c68c43716f3a2d))
+* support new profiles and gem recommendations ([e45e787](https://github.com/EagleFox31/AgenStart/commit/e45e7871b519fea55ac9392f442214d0bab2ed51))
+* **ui:** afficher les logos applicatifs connus ([addd048](https://github.com/EagleFox31/AgenStart/commit/addd048a111bc0f4784dadead3b9aa3a1b71ff91))
+* vendor OBS logo for recommendations ([6f3cd8d](https://github.com/EagleFox31/AgenStart/commit/6f3cd8d2891c5015e592d248861a4993c5e3c4dd))
+* vendor VLC logo for recommendations ([70ce537](https://github.com/EagleFox31/AgenStart/commit/70ce537ac273440705a1e4d435dff40ccd8b1c50))
+* vendor VS Code logo for recommendations ([ea2afc2](https://github.com/EagleFox31/AgenStart/commit/ea2afc2ac68a95dff4abe69f4e027385d02c6731))
+* wire multi-select usage profiles ([9faa221](https://github.com/EagleFox31/AgenStart/commit/9faa221caf02f251affc24d71034e89625a06d73))
+
+
+### Bug Fixes
+
+* accept valid WinGet package ids with plus signs ([1036b1a](https://github.com/EagleFox31/AgenStart/commit/1036b1a41fd244e1373677a8e939115105eeb1a9))
+* activate flow logo preservation ([3772d37](https://github.com/EagleFox31/AgenStart/commit/3772d37332762213349cf15b55ea32ce04f989a7))
+* apply recommendations polish from grid root ([914207c](https://github.com/EagleFox31/AgenStart/commit/914207c4c2792629e9bccf772b389b868e96ead3))
+* apply stable one-shot desktop polish at startup ([316bbe9](https://github.com/EagleFox31/AgenStart/commit/316bbe97515102b57d4d81b1e724b3cac585e550))
+* center primary and secondary button content ([c3046da](https://github.com/EagleFox31/AgenStart/commit/c3046dacc41f135e30f1e0e8985afcfa5a40516b))
+* connect multi-profile build button to visible pipeline progress ([0909741](https://github.com/EagleFox31/AgenStart/commit/09097411b572fe5a936370f2d10e9fcbc1f9a4fa))
+* construct SVG controls with Avalonia base URI ([655f11c](https://github.com/EagleFox31/AgenStart/commit/655f11c919b250005361e23030646a153efa096a))
+* defer stable UI decoration until visual attach completes ([08cfe48](https://github.com/EagleFox31/AgenStart/commit/08cfe48996177ce4cae2cc0b610403777d25e9e0))
+* harden Windows startup and add packaged launch smoke test ([9b0be3f](https://github.com/EagleFox31/AgenStart/commit/9b0be3f4bf44938385313b49d000af92c6004faf))
+* isolate dynamic UI polish from startup ([dca043c](https://github.com/EagleFox31/AgenStart/commit/dca043cdc9069778350410783d7a9d4d315797d5))
+* keep legacy profile aliases warning-free ([f32ac69](https://github.com/EagleFox31/AgenStart/commit/f32ac698774e477309445e10852d55afc2f3f3d2))
+* keep startup polish guard while deferring dynamic UI ([27d2eb2](https://github.com/EagleFox31/AgenStart/commit/27d2eb26c7e0a45fa22e6988b5546e65b811a4b0))
+* make recommendation logos crash-safe ([cdf9e74](https://github.com/EagleFox31/AgenStart/commit/cdf9e748052d68c65e170db587e6e872665321ac))
+* number only recommendation cards ([48b510a](https://github.com/EagleFox31/AgenStart/commit/48b510ac2e75da83c698bf1b56f9fe1b0c7d9654))
+* preserve app logos across confirm and install flow ([b52e5b8](https://github.com/EagleFox31/AgenStart/commit/b52e5b8f5518af3e88e0f07ed37652ee67a3674b))
+* preserve live status bindings in deferred UI polish ([b5f7d6a](https://github.com/EagleFox31/AgenStart/commit/b5f7d6a9fe7515a29d0f91de9a0532d5a686e12f))
+* remove duplicate recommendation progress presenter ([763ae7d](https://github.com/EagleFox31/AgenStart/commit/763ae7da685d72b8d16800ce9a6820ef74174b17))
+* restore recommendation build progress in multi-profile view ([266a411](https://github.com/EagleFox31/AgenStart/commit/266a4119f9448f1bce47aa6b2f4d87e89d6e2bbc))
+* restore safe desktop polish and real recommendation progress ([fb54685](https://github.com/EagleFox31/AgenStart/commit/fb5468597f6b836be7e0740d81e9cc5b40f5e16e))
+* simplify recommendation status flags ([bba3456](https://github.com/EagleFox31/AgenStart/commit/bba345678585ed02f81844736f125be92264090c))
+* use absolute Avalonia resource URIs for app logos ([487373b](https://github.com/EagleFox31/AgenStart/commit/487373b69cf71f411fa09cbeb74fdd17162c565d))
+* use profile selection callback compatible with flags ([f5e4d73](https://github.com/EagleFox31/AgenStart/commit/f5e4d7372b3c18a762808e9c47574dd9fca287a5))
+* wire multi-profile selection callback ([2aeb82a](https://github.com/EagleFox31/AgenStart/commit/2aeb82a7d8d0ea6284905ceb06f9ceb17aadae49))
+
 ## [0.2.1](https://github.com/EagleFox31/AgenStart/compare/v0.2.0...v0.2.1) (2026-09-05)
 
 
