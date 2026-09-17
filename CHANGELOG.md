@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.4.0](https://github.com/EagleFox31/AgenStart/compare/v0.3.0...v0.4.0) (2026-09-17)
+
+
+### Features
+
+* enable continuous governance reconciliation ([8f37524](https://github.com/EagleFox31/AgenStart/commit/8f37524d322468d98dddd0d4bfc036baf9711933))
+* enable continuous governance reconciliation ([b72eb5b](https://github.com/EagleFox31/AgenStart/commit/b72eb5b6c85e9407b858a7ebc10d611c7d831560))
+
+
+### Bug Fixes
+
+* **governance:** pin corrected AppFactory candidate ([d0c8ab4](https://github.com/EagleFox31/AgenStart/commit/d0c8ab47666d5b076fa35dc9479ac4b39fc4dbe3))
+* **governance:** pin corrected AppFactory candidate ([eff0ee8](https://github.com/EagleFox31/AgenStart/commit/eff0ee87fb1c4e58aa4fa2603c69cd81178b7edd))
+
 ## [0.3.0](https://github.com/EagleFox31/AgenStart/compare/v0.2.1...v0.3.0) (2026-09-16)
 
 
