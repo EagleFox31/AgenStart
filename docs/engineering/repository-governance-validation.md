@@ -7,9 +7,21 @@ AgenStart is the primary real-world integration consumer for AppFactory Reposito
 - AppFactory commit: `b1631349800f85a29dc2948391745e2fc67c1eb6`
 - policy preset: `solo`
 - target: the repository's symbolic default branch
-- workflow: manual `plan` / `apply`
+- initial workflow: manual `plan` / `apply`
 
-The workflow is pinned to the exact pre-release candidate so the test cannot change underneath a run. It must move to `EagleFox31/appfactory-project-automation@v1` only after V1 is released.
+The initial workflow was pinned to the exact pre-release candidate so the test could not change underneath a run.
+
+## Continuous operation
+
+After successful manual adoption, AgenStart opts into AppFactory continuous reconciliation from commit `1a5e2b3e996cff77c631235c6dfd42ca710eecb1`. The governance workflow:
+
+- automatically applies approved governance config or workflow changes when they reach the default branch;
+- runs daily at **03:17 UTC** to repair out-of-band drift;
+- retains manual `plan` / `apply` for diagnostics;
+- serializes governance writes through the shared reusable workflow;
+- cannot enter Project automation, merge pull requests or create releases.
+
+The reusable workflow and Action runtime are both pinned to the same immutable candidate until Repository Governance V1 is released, then they move to `@v1`.
 
 ## Baseline before governance
 
