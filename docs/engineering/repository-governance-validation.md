@@ -63,8 +63,17 @@ The corrected candidate passed the first convergence stages:
 
 No unrelated Ruleset or classic branch protection existed before the test, and none was introduced by the plan. The controlled pull request closing issue #69 supplies the protected-branch and pull-request lifecycle evidence.
 
-### Remaining checks
+### Final checks
 
-- merge the controlled evidence pull request and confirm issue #69 closes through the normal lifecycle;
-- introduce one controlled drift inside Ruleset `23570327` and confirm in-place repair;
-- run a final plan and confirm convergence with unrelated repository state unchanged.
+- controlled PR #70 merged through the protected default branch and automatically closed issue #69;
+- Project automation succeeded for issue open, PR open, PR merge and issue close events;
+- the release workflow remained successful after governance activation and did not auto-merge the release PR;
+- a controlled approving-review drift changed the managed value from `0` to `1` without changing any other rule;
+- repair run `35186267729` reported `UPDATE`, changed only `Required approving reviews: 1 -> 0`, and updated Ruleset `23570327` in place;
+- final read-only plan run `35186516718` reported `NO-OP` / `No changes`;
+- the repository retained one AppFactory-managed Ruleset, default branch `main`, release `v0.3.0`, the pre-existing product issue and the unmerged release PR;
+- no AgenStart-specific source logic was added to AppFactory.
+
+## Outcome
+
+**PASS.** AgenStart validates Repository Governance V1 as a retroactive primary consumer: plan safety, single-resource creation, protected pull-request flow, Project/release non-regression, idempotent no-op behavior and minimal in-place drift repair all passed on the live repository.
