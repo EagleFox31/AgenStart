@@ -50,4 +50,21 @@ The run failed before governance preflight and left the repository with zero Rul
 
 ### Revised candidate
 
-Pending execution against the corrected commit above.
+The corrected candidate passed the first convergence stages:
+
+- read-only `plan` run `35164260192` succeeded and proposed one `CREATE` for the AppFactory-managed Ruleset;
+- the repository still exposed zero Rulesets after that plan, proving zero mutation;
+- first `apply` run `35164480545` created Ruleset `23570327` exactly once;
+- the Ruleset targets `~DEFAULT_BRANCH`, blocks deletion and non-fast-forward updates, and requires pull requests with resolved review threads;
+- second `apply` run `35164629329` reported `NO-OP` and `Applied: no changes were necessary`;
+- the managed Ruleset retained the same id and unchanged update timestamp after the no-op;
+- the release workflow completed successfully after the corrected candidate reached `main`;
+- controlled issue #69 triggered Project automation successfully and entered the existing backlog lifecycle.
+
+No unrelated Ruleset or classic branch protection existed before the test, and none was introduced by the plan. The controlled pull request closing issue #69 supplies the protected-branch and pull-request lifecycle evidence.
+
+### Remaining checks
+
+- merge the controlled evidence pull request and confirm issue #69 closes through the normal lifecycle;
+- introduce one controlled drift inside Ruleset `23570327` and confirm in-place repair;
+- run a final plan and confirm convergence with unrelated repository state unchanged.
