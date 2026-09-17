@@ -24,11 +24,11 @@ permissions:
 jobs:
   reconcile:
     if: github.event_name != 'push' || github.ref_name == github.event.repository.default_branch
-    uses: EagleFox31/appfactory-project-automation/.github/workflows/reusable-repository-governance.yml@ef38004e78a052017bac390d817ae189ab49fab4
+    uses: EagleFox31/appfactory-project-automation/.github/workflows/reusable-repository-governance.yml@7aadab7eb24eb111e3fa324dd073c51d7ef763fa
     with:
       governance_mode: ${{ github.event_name == 'workflow_dispatch' && inputs.governance_mode || 'apply' }}
       config_path: .github/project-config.json
-      appfactory_ref: ef38004e78a052017bac390d817ae189ab49fab4
+      appfactory_ref: 7aadab7eb24eb111e3fa324dd073c51d7ef763fa
       authentication: github-app
       app_client_id: ${{ vars.APPFACTORY_APP_CLIENT_ID }}
     secrets:
