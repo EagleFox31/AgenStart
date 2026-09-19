@@ -17,13 +17,14 @@ AgenStart keeps only its product-specific policy/configuration and the workflow 
 .github/workflows/project-automation.yml
 ```
 
-The workflow consumes:
+Automatic Issue and Pull Request events consume:
 
 ```yaml
 uses: EagleFox31/appfactory-project-automation@v1
 ```
 
 The reusable action owns GraphQL Project discovery, item synchronization, field resolution, lifecycle transitions and manual Issue resync parsing.
+Manual resync uses the separately authorized OAuth broker and a pinned AppFactory reusable workflow.
 
 ## Purpose
 
@@ -42,7 +43,7 @@ The automation can:
 
 No Project node ID, field ID or option ID is committed to AgenStart.
 
-## Required repository secret
+## Event workflow credential
 
 Repository secret:
 
@@ -50,7 +51,7 @@ Repository secret:
 PROJECT_TOKEN
 ```
 
-The token must be able to read/write the user-owned GitHub Project. It must never be committed, printed in logs or placed in issue metadata.
+The token must be able to read/write the user-owned GitHub Project. It remains required for automatic Issue and Pull Request events. Manual runs use the `APPFACTORY_PROJECT_BROKER_URL` Actions variable and do not receive this secret. The token must never be committed, printed in logs or placed in issue metadata.
 
 ## Project contract
 
@@ -173,10 +174,11 @@ issue_number = 15
 ```
 
 Manual resync is convergent: it adds the Issue if missing, reapplies configured metadata and aligns `Status` with the Issue state (`Backlog` when open, `Done` when closed).
+The manual job obtains a short-lived OAuth token from the deployed AppFactory broker. It was validated against the existing personal Project without a PAT; automatic events keep their existing credential until a genuine non-owner event can be checked.
 
 ## Security model
 
-Pull Request lifecycle events use `pull_request_target`, not `pull_request`, because `PROJECT_TOKEN` is privileged.
+Pull Request lifecycle events use `pull_request_target`, not `pull_request`, because `PROJECT_TOKEN` is privileged. The manual job has no `PROJECT_TOKEN` and grants `id-token: write` only for its broker exchange.
 
 The workflow:
 

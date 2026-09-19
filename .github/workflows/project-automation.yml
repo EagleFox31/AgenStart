@@ -24,6 +24,7 @@ concurrency:
 
 jobs:
   sync-project:
+    if: ${{ github.event_name != 'workflow_dispatch' }}
     runs-on: ubuntu-latest
 
     steps:
@@ -39,3 +40,19 @@ jobs:
           token: ${{ secrets.PROJECT_TOKEN }}
           config-path: .github/project-config.json
           issue-number: ${{ inputs.issue_number }}
+
+  sync-project-manual:
+    if: ${{ github.event_name == 'workflow_dispatch' }}
+    permissions:
+      contents: read
+      issues: read
+      pull-requests: read
+      id-token: write
+    uses: EagleFox31/appfactory-project-automation/.github/workflows/reusable-project-automation.yml@7ff298087308d7ddcc8e507d8eb9adb56c2e2158
+    with:
+      authentication: broker-user
+      broker_url: ${{ vars.APPFACTORY_PROJECT_BROKER_URL }}
+      broker_audience: appfactory-project-automation
+      appfactory_ref: 7ff298087308d7ddcc8e507d8eb9adb56c2e2158
+      config_path: .github/project-config.json
+      issue_number: ${{ inputs.issue_number }}
