@@ -174,7 +174,7 @@ issue_number = 15
 ```
 
 Manual resync is convergent: it adds the Issue if missing, reapplies configured metadata and aligns `Status` with the Issue state (`Backlog` when open, `Done` when closed).
-The manual job obtains a short-lived OAuth token from the deployed AppFactory broker. It was validated against the existing personal Project without a PAT; automatic events keep their existing credential until a genuine non-owner event can be checked.
+The manual job obtains a short-lived OAuth token from the deployed AppFactory broker. Its pinned reusable workflow names this transport `github-app-user`; the broker itself uses the OAuth App provider. Automatic events keep their existing credential until a genuine non-owner event can be checked.
 
 ## Security model
 
