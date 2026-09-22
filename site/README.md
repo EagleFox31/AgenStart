@@ -21,6 +21,8 @@ The primary CTA resolves the latest published GitHub release at runtime and pref
 
 ## Deployment
 
-The workflow `.github/workflows/landing-pages.yml` validates the site automatically on pull requests and pushes. GitHub Pages uses **Settings → Pages → Source: GitHub Actions**.
+The primary production deployment is **Vercel**, with `https://agenstart.trigenys.com/` as the canonical public URL.
 
-Once Pages is enabled, every `main` push that changes `site/**`, the canonical `AppLogos` assets, or the landing workflow deploys the current `site/` directory automatically. The workflow can also be started manually with `workflow_dispatch` when a redeploy is needed without changing files.
+The repository-level `vercel.json` prepares the canonical landing assets with `node site/build-assets.mjs` and publishes the `site/` directory as a static site. Connect the GitHub repository to Vercel so pushes to `main` deploy automatically.
+
+The existing `.github/workflows/landing-pages.yml` workflow can remain as a GitHub Pages mirror/fallback, but all canonical metadata points to the Trigenys domain.
