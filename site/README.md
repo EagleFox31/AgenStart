@@ -18,4 +18,8 @@ The primary CTA resolves the latest published GitHub release at runtime and choo
 
 ## Deployment
 
-GitHub Pages deploys this directory through `.github/workflows/landing-pages.yml`.
+The workflow `.github/workflows/landing-pages.yml` validates the site automatically on pull requests and pushes.
+
+GitHub Pages must be enabled once in the repository with **Settings → Pages → Source: GitHub Actions**. After that one-time repository setting, run **Actions → AgenStart landing page → Run workflow** to publish the current `site/` directory.
+
+Deployment is intentionally manual until Pages has been enabled so ordinary pushes do not fail because of repository-level Pages configuration.
