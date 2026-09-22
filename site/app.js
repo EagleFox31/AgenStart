@@ -5,6 +5,7 @@ const header = document.querySelector("[data-header]");
 const releaseLinks = [...document.querySelectorAll("[data-download-link]")];
 const releaseVersionLabels = [...document.querySelectorAll("[data-release-version]")];
 const releaseNote = document.querySelector("[data-release-note]");
+const isFrench = document.documentElement.lang === "fr";
 
 const setHeaderState = () => {
   header?.classList.toggle("is-scrolled", window.scrollY > 18);
@@ -47,11 +48,16 @@ async function resolveLatestRelease() {
     );
 
     const targetUrl = asset?.browser_download_url || release.html_url || RELEASES_FALLBACK;
-    const version = release.tag_name || "Latest stable";
+    const version = release.tag_name || (isFrench ? "Dernière version stable" : "Latest stable");
 
     releaseLinks.forEach((link) => {
       link.href = targetUrl;
-      link.setAttribute("aria-label", `Download AgenStart ${version} for Windows`);
+      link.setAttribute(
+        "aria-label",
+        isFrench
+          ? `Télécharger AgenStart ${version} pour Windows`
+          : `Download AgenStart ${version} for Windows`,
+      );
     });
     releaseVersionLabels.forEach((label) => { label.textContent = version; });
 
