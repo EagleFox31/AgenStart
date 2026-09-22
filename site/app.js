@@ -250,7 +250,7 @@ function renderRelease() {
 
   if (releaseNote) {
     if (latestRelease) {
-      releaseNote.textContent = ["Windows 10/11 x64", latestRelease.version, latestRelease.size]
+      releaseNote.textContent = ["Windows 10/11 x64", latestRelease.version, latestRelease.format, latestRelease.size]
         .filter(Boolean)
         .join(" · ");
     } else {
@@ -325,14 +325,19 @@ async function resolveLatestRelease() {
     if (!response.ok) throw new Error(`GitHub API returned ${response.status}`);
 
     const release = await response.json();
-    const asset = release.assets?.find((candidate) =>
+    const executableAsset = release.assets?.find((candidate) =>
+      /AgenStart-.*-win-x64\.exe$/i.test(candidate.name),
+    );
+    const zipAsset = release.assets?.find((candidate) =>
       /AgenStart-.*-win-x64\.zip$/i.test(candidate.name),
     );
+    const asset = executableAsset || zipAsset;
 
     latestRelease = {
       targetUrl: asset?.browser_download_url || release.html_url || RELEASES_FALLBACK,
       version: release.tag_name || (currentLanguage === "fr" ? "Dernière version stable" : "Latest stable"),
       size: asset?.size ? `${Math.round(asset.size / 1024 / 1024)} MB` : null,
+      format: executableAsset ? "EXE" : zipAsset ? "ZIP" : null,
     };
 
     renderRelease();
