@@ -1,6 +1,7 @@
 using System.Text.Json;
 using Avalonia;
 using AgenStart.Desktop.Icons;
+using AgenStart.Desktop.LocalData;
 
 namespace AgenStart.Desktop;
 
@@ -29,13 +30,8 @@ internal static class Program
         {
             BuildAvaloniaApp().SetupWithoutStarting();
 
-            var cataloguePath = Path.Combine(AppContext.BaseDirectory, "Data", "catalogue.json");
-            if (!File.Exists(cataloguePath))
-            {
-                return 3;
-            }
-
-            using var document = JsonDocument.Parse(File.ReadAllText(cataloguePath));
+            using var catalogueStream = PackagedCatalogue.OpenRead();
+            using var document = JsonDocument.Parse(catalogueStream);
             if (!document.RootElement.TryGetProperty("applications", out var applications) ||
                 applications.ValueKind != JsonValueKind.Array ||
                 applications.GetArrayLength() == 0)

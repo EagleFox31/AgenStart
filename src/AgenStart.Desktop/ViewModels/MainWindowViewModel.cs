@@ -7,6 +7,7 @@ using AgenStart.Application.Installation;
 using AgenStart.Catalogue;
 using AgenStart.Core.Catalogue;
 using AgenStart.Core.Machine;
+using AgenStart.Desktop.LocalData;
 using AgenStart.PackageManagement;
 using AgenStart.Platform.Windows.Inventory;
 using AgenStart.Platform.Windows.SoftwareInventory;
@@ -343,8 +344,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged, IDisposable
 
         try
         {
-            var cataloguePath = Path.Combine(AppContext.BaseDirectory, "Data", "catalogue.json");
-            using var catalogueStream = File.OpenRead(cataloguePath);
+            using var catalogueStream = PackagedCatalogue.OpenRead();
             var catalogue = _catalogueLoader.Load(catalogueStream);
 
             var installedSoftware = await _softwareInventory

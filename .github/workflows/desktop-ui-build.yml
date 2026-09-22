@@ -83,6 +83,27 @@ jobs:
           Write-Host "AgenStart remained alive for 8 seconds after packaged launch."
           Stop-Process -Id $process.Id -Force
 
+      - name: Publish standalone smoke executable
+        shell: pwsh
+        run: |
+          dotnet publish src/AgenStart.Desktop/AgenStart.Desktop.csproj `
+            --configuration Release `
+            --runtime win-x64 `
+            --self-contained true `
+            --output artifacts/standalone-smoke `
+            -p:PublishSingleFile=true `
+            -p:IncludeNativeLibrariesForSelfExtract=true `
+            -p:EnableCompressionInSingleFile=true
+
+      - name: Validate standalone catalogue and icons
+        shell: pwsh
+        run: |
+          $exe = Resolve-Path "artifacts/standalone-smoke/AgenStart.Desktop.exe"
+          $process = Start-Process -FilePath $exe -ArgumentList "--icon-smoke" -PassThru -Wait
+          if ($process.ExitCode -ne 0) {
+            throw "Standalone application catalogue/icon smoke failed with code $($process.ExitCode)."
+          }
+
       - name: Upload validated Windows package
         uses: actions/upload-artifact@v4
         with:
