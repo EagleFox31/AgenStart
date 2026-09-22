@@ -1,5 +1,28 @@
 # Changelog
 
+## [0.4.0](https://github.com/EagleFox31/AgenStart/compare/v0.3.0...v0.4.0) (2026-09-22)
+
+
+### Features
+
+* add EN FR toggle to AgenStart landing ([03bc885](https://github.com/EagleFox31/AgenStart/commit/03bc885525d9b4356f23efc4afa820059a0e44f6))
+* add visual capability icons to landing ([0bdb183](https://github.com/EagleFox31/AgenStart/commit/0bdb183042a06ddfad3c23e6e3b81cb8bd47ddf3))
+* enable continuous governance reconciliation ([8f37524](https://github.com/EagleFox31/AgenStart/commit/8f37524d322468d98dddd0d4bfc036baf9711933))
+* enable continuous governance reconciliation ([b72eb5b](https://github.com/EagleFox31/AgenStart/commit/b72eb5b6c85e9407b858a7ebc10d611c7d831560))
+* launch AgenStart public landing page ([43e92bc](https://github.com/EagleFox31/AgenStart/commit/43e92bcf394df8c587cc43d26cdc8bd9b9becb33))
+* polish hero, favicon and direct EXE download ([1d69f46](https://github.com/EagleFox31/AgenStart/commit/1d69f46c5dc2d14e257f8666d0cfa1ac435b659e))
+* **projects:** use OAuth broker for manual synchronization ([#76](https://github.com/EagleFox31/AgenStart/issues/76)) ([4872ba2](https://github.com/EagleFox31/AgenStart/commit/4872ba2332f2c54b44eed47c43172b1640f76c23))
+* reuse canonical application logos on landing ([002c06b](https://github.com/EagleFox31/AgenStart/commit/002c06b3a7711d50b2fc37d1a0c2fad055deacbb))
+
+
+### Bug Fixes
+
+* enable automatic AgenStart landing deployment ([0126de6](https://github.com/EagleFox31/AgenStart/commit/0126de683f83bde9fc9757b6654911ac19ad73e2))
+* gate landing deploy until Pages is enabled ([21b7d25](https://github.com/EagleFox31/AgenStart/commit/21b7d25c8006e97569121a2c38c23f927aa4e6ed))
+* **governance:** pin corrected AppFactory candidate ([d0c8ab4](https://github.com/EagleFox31/AgenStart/commit/d0c8ab47666d5b076fa35dc9479ac4b39fc4dbe3))
+* **governance:** pin corrected AppFactory candidate ([eff0ee8](https://github.com/EagleFox31/AgenStart/commit/eff0ee87fb1c4e58aa4fa2603c69cd81178b7edd))
+* **projects:** use accepted broker transport alias ([#77](https://github.com/EagleFox31/AgenStart/issues/77)) ([7347b67](https://github.com/EagleFox31/AgenStart/commit/7347b67177b59bb6e97fcde20908b33f34fc1f56))
+
 ## [0.3.0](https://github.com/EagleFox31/AgenStart/compare/v0.2.1...v0.3.0) (2026-09-16)
 
 
