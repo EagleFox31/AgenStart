@@ -63,7 +63,7 @@ jobs:
           PY
 
   deploy:
-    if: github.event_name == 'workflow_dispatch'
+    if: github.event_name != 'pull_request'
     needs: validate
     permissions:
       contents: read
