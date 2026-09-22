@@ -256,9 +256,13 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .manifesto-copy { padding-top:12px; }
 .manifesto-copy p { margin:0 0 25px; font-size:17px; line-height:1.72; color:var(--muted); }
 .proof-strip { margin-top: clamp(70px,9vw,130px); display:grid; grid-template-columns:repeat(4,1fr); border-top:1px solid var(--line); border-bottom:1px solid var(--line); }
-.proof-strip div { padding:26px 26px 26px 0; border-right:1px solid var(--line); }
-.proof-strip div:not(:first-child) { padding-left:26px; }.proof-strip div:last-child { border-right:0; }
-.proof-strip strong { display:block; font-size:13px; }.proof-strip span { display:block; margin-top:8px; color:var(--muted); font-size:12px; line-height:1.5; }
+.proof-card { position:relative; min-height:170px; padding:30px 28px 30px 0; border-right:1px solid var(--line); display:flex; flex-direction:column; align-items:flex-start; justify-content:flex-start; }
+.proof-card:not(:first-child) { padding-left:28px; }
+.proof-card:last-child { border-right:0; }
+.proof-icon { width:46px; height:46px; margin:0 0 24px; display:grid; place-items:center; border-radius:14px; color:var(--teal); background:rgba(23,109,100,.08); border:1px solid rgba(23,109,100,.12); }
+.proof-icon svg { width:25px; height:25px; display:block; stroke:currentColor; stroke-width:1.65; stroke-linecap:round; stroke-linejoin:round; }
+.proof-card strong { display:block; font-size:13px; }
+.proof-card > span:last-child { display:block; margin-top:8px; color:var(--muted); font-size:12px; line-height:1.5; }
 
 .flow { background:#e9eee9; }
 .flow-layout { display:grid; grid-template-columns:minmax(280px,.38fr) minmax(0,.62fr); gap:clamp(60px,9vw,150px); align-items:start; }
@@ -313,7 +317,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
   .hero { grid-template-columns:1fr; padding-top:132px; min-height:auto; }
   .hero-copy { max-width:860px; }.hero h1{font-size:clamp(64px,9.6vw,100px)}
   .hero-stage { max-width:900px; margin:24px auto 20px; width:100%; }.app-window{margin:0 auto;transform:none}.note-a{right:-4px}.note-b{left:-6px}.scroll-hint{display:none}
-  .manifesto-grid,.trust-grid { grid-template-columns:1fr; }.manifesto-copy{max-width:740px}.proof-strip{grid-template-columns:repeat(2,1fr)}.proof-strip div:nth-child(2){border-right:0}.proof-strip div:nth-child(3),.proof-strip div:nth-child(4){border-top:1px solid var(--line)}
+  .manifesto-grid,.trust-grid { grid-template-columns:1fr; }.manifesto-copy{max-width:740px}.proof-strip{grid-template-columns:repeat(2,1fr)}.proof-card:nth-child(2){border-right:0}.proof-card:nth-child(3),.proof-card:nth-child(4){border-top:1px solid var(--line)}
   .flow-layout { grid-template-columns:1fr; }.flow-intro{position:static;max-width:800px}.flow-step{grid-template-columns:54px minmax(200px,.8fr) minmax(260px,1.2fr)}
 }
 
@@ -322,7 +326,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
   .site-header { height:70px; }.brand-by,.nav a:not(.nav-cta){display:none}.nav{gap:0}
   .hero { padding-top:112px; padding-bottom:72px; }.hero h1{font-size:clamp(54px,14vw,76px)}.hero-lead{font-size:17px}.hero-proof{gap:8px 16px}
   .app-window{min-height:510px;border-radius:18px}.window-body{grid-template-columns:1fr;min-height:452px}.mock-sidebar{display:none}.mock-content{padding:20px}.machine-grid{grid-template-columns:1fr 1fr}.machine-card:last-child{display:none}.recommendation-head{align-items:flex-start;flex-direction:column}.note-a,.note-b{display:none}
-  .section{padding-top:88px;padding-bottom:88px}.manifesto-grid{gap:38px}.display-copy{font-size:clamp(44px,12vw,68px)}.proof-strip{grid-template-columns:1fr}.proof-strip div,.proof-strip div:not(:first-child){padding:20px 0;border-right:0;border-top:1px solid var(--line)}.proof-strip div:first-child{border-top:0}
+  .section{padding-top:88px;padding-bottom:88px}.manifesto-grid{gap:38px}.display-copy{font-size:clamp(44px,12vw,68px)}.proof-strip{grid-template-columns:1fr}.proof-card,.proof-card:not(:first-child){min-height:0;padding:24px 0;border-right:0;border-top:1px solid var(--line)}.proof-card:first-child{border-top:0}.proof-icon{margin-bottom:18px}
   .flow-step{grid-template-columns:38px 1fr;padding:22px}.step-visual{grid-column:2;min-height:170px}.step-copy{grid-column:2}.flow-steps{gap:12px}
   .catalogue-head{align-items:start;flex-direction:column;gap:20px}.catalogue-head h2{font-size:clamp(42px,11vw,64px)}.marquee{margin-top:54px}
   .trust-grid{gap:52px}.trust-copy h2{font-size:clamp(42px,11vw,64px)}
