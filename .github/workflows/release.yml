@@ -25,6 +25,5 @@ jobs:
       configuration: Release
       self-contained: true
       standalone-executable: true
-      release-as: 0.4.1
     secrets:
       release_token: ${{ secrets.AGENSTART_RELEASE_TOKEN }}
