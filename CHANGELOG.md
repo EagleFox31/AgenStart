@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.4.1](https://github.com/EagleFox31/AgenStart/compare/v0.4.0...v0.4.1) (2026-09-22)
+
+### Bug Fixes
+
+* **desktop:** embed the recommendation catalogue in the standalone executable so profile recommendations work in the direct EXE download ([c39977e](https://github.com/EagleFox31/AgenStart/commit/c39977ec5e6531253c8c50598e3b887235d143c7))
+* **site:** add and repair first-party social preview metadata for link unfurls ([4ef7ec7](https://github.com/EagleFox31/AgenStart/commit/4ef7ec72843665538ae7e1bc77b22b18c422addd))
+* **site:** keep the primary download CTA visible above the fold on common laptop displays ([0fdc057](https://github.com/EagleFox31/AgenStart/commit/0fdc057ba364dd18c8d027c5e4f34b220450f911))
+* **seo:** publish the canonical sitemap and advertise it through robots.txt ([2328916](https://github.com/EagleFox31/AgenStart/commit/23289165ec0d3e956ff43acf071692a117df450c))
+
 ## [0.4.0](https://github.com/EagleFox31/AgenStart/compare/v0.3.0...v0.4.0) (2026-09-22)
 
 
