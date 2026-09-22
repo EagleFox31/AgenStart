@@ -6,7 +6,7 @@
 
 <p align="center">
   <strong>A local-first Windows setup assistant that turns a fresh PC into a ready-to-work machine.</strong><br/>
-  <a href="https://eaglefox31.github.io/AgenStart/">Website</a> · <a href="https://github.com/EagleFox31/AgenStart/releases/latest">Download for Windows · v0.4.0</a>
+  <a href="https://agenstart.trigenys.com/">Website</a> · <a href="https://github.com/EagleFox31/AgenStart/releases/latest">Download for Windows · v0.4.0</a>
 </p>
 
 > **An AgenStudio project by [EagleFox31](https://github.com/EagleFox31)** · *Think sharp. Build what matters.*
@@ -140,7 +140,7 @@ The initial catalogue is expected to contain roughly **40–60 carefully selecte
 
 ## Public site and Windows distribution
 
-AgenStart now has a public bilingual landing page at **https://eaglefox31.github.io/AgenStart/**.
+AgenStart has a public bilingual landing page at **https://agenstart.trigenys.com/**, deployed on Vercel.
 
 The site is intentionally lightweight and dependency-free. It:
 
@@ -148,7 +148,7 @@ The site is intentionally lightweight and dependency-free. It:
 - reuses the canonical AgenStart icon and bundled application logos instead of maintaining duplicate brand assets;
 - resolves the latest published GitHub release at runtime;
 - prefers the standalone **win-x64 EXE** artifact, falls back to the ZIP package, then to the stable GitHub release page;
-- is validated and deployed automatically to **GitHub Pages** from main.
+- is deployed on **Vercel** from the repository, with `agenstart.trigenys.com` as its canonical production domain.
 
 The current stable release is **v0.4.0**, published on **2026-09-22**, with a standalone Windows executable and SHA-256 checksum artifacts.
 
@@ -291,7 +291,7 @@ The current application already includes:
 - explainable, merged recommendations with visible pipeline progress and compatibility checks;
 - trusted WinGet package preparation and sequential installation;
 - setup profile import/export, local history, settings and installation reports;
-- a bilingual public landing page with direct latest-release resolution and automated GitHub Pages deployment;
+- a bilingual public landing page with direct latest-release resolution and Vercel deployment under `agenstart.trigenys.com`;
 - continuous GitHub project-governance reconciliation, including GitHub App / OAuth-broker based synchronization;
 - automated tests covering the application, catalogue, recommendation and Windows platform layers.
 
