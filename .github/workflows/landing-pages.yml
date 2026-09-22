@@ -6,11 +6,13 @@ on:
     branches: [main]
     paths:
       - "site/**"
+      - "src/AgenStart.Desktop/Assets/AppLogos/**"
       - ".github/workflows/landing-pages.yml"
   push:
     branches: [main]
     paths:
       - "site/**"
+      - "src/AgenStart.Desktop/Assets/AppLogos/**"
       - ".github/workflows/landing-pages.yml"
 
 permissions:
@@ -33,7 +35,10 @@ jobs:
           node-version: 22
 
       - name: Check landing JavaScript
-        run: node --check site/app.js
+        run: node --check site/app.js && node --check site/build-assets.mjs
+
+      - name: Prepare canonical logo assets
+        run: node site/build-assets.mjs
 
       - name: Parse landing HTML
         run: |
@@ -76,6 +81,14 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Prepare canonical logo assets
+        run: node site/build-assets.mjs
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
