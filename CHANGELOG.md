@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.1](https://github.com/EagleFox31/AgenStart/compare/v0.4.0...v0.4.1) (2026-09-22)
+
+
+### Bug Fixes
+
+* **site:** add social preview metadata for link unfurls ([73ee4bc](https://github.com/EagleFox31/AgenStart/commit/73ee4bcf03a7e3f2c1d09ab5131966260916bd2e))
+
 ## [0.4.0](https://github.com/EagleFox31/AgenStart/compare/v0.3.0...v0.4.0) (2026-09-22)
 
 
