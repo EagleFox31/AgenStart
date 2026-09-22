@@ -6,7 +6,7 @@
 
 <p align="center">
   <strong>A local-first Windows setup assistant that turns a fresh PC into a ready-to-work machine.</strong><br/>
-  <a href="https://github.com/EagleFox31/AgenStart/releases/tag/v0.2.1">Download the latest Windows release · v0.2.1</a>
+  <a href="https://eaglefox31.github.io/AgenStart/">Website</a> · <a href="https://github.com/EagleFox31/AgenStart/releases/latest">Download for Windows · v0.4.0</a>
 </p>
 
 > **An AgenStudio project by [EagleFox31](https://github.com/EagleFox31)** · *Think sharp. Build what matters.*
@@ -114,8 +114,11 @@ Installers fail. Networks disappear. Packages change. AgenStart should surface f
 - Personal
 - Development
 - Business
-- Creation
-- Training / Education
+- Creative
+- Learning
+- Gaming
+
+Profiles are **multi-select**: AgenStart merges recommendations across the selected workloads instead of forcing a machine into one rigid category.
 
 ### MVP capabilities
 - local hardware and OS inventory;
@@ -132,6 +135,22 @@ Installers fail. Networks disappear. Packages change. AgenStart should surface f
 - structured logs for diagnostics.
 
 The initial catalogue is expected to contain roughly **40–60 carefully selected applications** rather than hundreds of poorly maintained entries.
+
+---
+
+## Public site and Windows distribution
+
+AgenStart now has a public bilingual landing page at **https://eaglefox31.github.io/AgenStart/**.
+
+The site is intentionally lightweight and dependency-free. It:
+
+- supports **English and French** through an in-page language toggle;
+- reuses the canonical AgenStart icon and bundled application logos instead of maintaining duplicate brand assets;
+- resolves the latest published GitHub release at runtime;
+- prefers the standalone **win-x64 EXE** artifact, falls back to the ZIP package, then to the stable GitHub release page;
+- is validated and deployed automatically to **GitHub Pages** from main.
+
+The current stable release is **v0.4.0**, published on **2026-09-22**, with a standalone Windows executable and SHA-256 checksum artifacts.
 
 ---
 
@@ -261,25 +280,28 @@ Product · Feature · Engineering · UX · Security · Quality · Documentation 
 
 ## Current status
 
-**Stage: Functional prototype · v0.2.1**
+**Stage: Functional prototype · v0.4.0 · released 2026-09-22**
 
 The current application already includes:
 
 - Windows machine and operating-system inventory;
 - installed-software detection through WinGet and the Windows Registry;
-- a curated software catalogue and profile-driven recommendations;
-- explainable recommendation progress and compatibility checks;
+- a curated catalogue with bundled local artwork for supported applications;
+- **six multi-select usage profiles** — Personal, Development, Business, Creative, Learning and Gaming;
+- explainable, merged recommendations with visible pipeline progress and compatibility checks;
 - trusted WinGet package preparation and sequential installation;
 - setup profile import/export, local history, settings and installation reports;
+- a bilingual public landing page with direct latest-release resolution and automated GitHub Pages deployment;
+- continuous GitHub project-governance reconciliation, including GitHub App / OAuth-broker based synchronization;
 - automated tests covering the application, catalogue, recommendation and Windows platform layers.
 
 Next priorities:
 
-1. harden packaging and distribution for Windows;
-2. sign release artifacts and define the upgrade strategy;
-3. expand and maintain the curated software catalogue;
-4. strengthen installation recovery, cancellation and retry behaviour;
-5. keep the README, roadmap and release documentation aligned with shipped capabilities.
+1. sign Windows release artifacts and define the in-app upgrade strategy;
+2. harden installation recovery, cancellation, retry and post-install verification;
+3. expand and maintain the curated catalogue and provider metadata;
+4. broaden release diagnostics and Windows compatibility testing;
+5. keep the desktop app, landing page, README, roadmap and Project Registry aligned with each shipped release.
 
 ---
 
