@@ -229,8 +229,8 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .app-row { display:grid; grid-template-columns: 34px 1fr auto; align-items:center; gap:10px; padding:11px 4px; border-bottom:1px solid #edf0ef; }
 .app-row:last-child { border-bottom: 0; }
 .app-row.faded { opacity: .5; }
-.app-icon { width: 30px; height: 30px; display:grid; place-items:center; border-radius:8px; color:white; font-size:11px; font-weight:800; }
-.app-icon.git { background:#e66b44; }.app-icon.vscode { background:#2875bf; }.app-icon.docker { background:#2496ed; }.app-icon.terminal { background:#27353b; }
+.app-icon { width: 30px; height: 30px; display:grid; place-items:center; }
+.app-icon img { width:28px; height:28px; display:block; object-fit:contain; }
 .app-row strong { display:block; font-size:11px; }.app-row small { display:block; margin-top:3px; color:var(--muted); font-size:8.5px; }
 .installed, .ready, .gem { font-size:8px; font-weight:800; padding:5px 7px; border-radius:999px; }
 .installed { color:var(--success); background:#e7f3ec; }.ready { color:var(--teal); background:#e7f1ee; }.gem { color:#6a5310; background:#f7eedb; }
@@ -286,7 +286,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .marquee { margin:80px calc(var(--pad) * -1) 0; overflow:hidden; border-top:1px solid var(--line); border-bottom:1px solid var(--line); }
 .marquee-track { width:max-content; display:flex; gap:48px; padding:25px 0; animation:marquee 30s linear infinite; }
 .marquee span { display:inline-flex; align-items:center; gap:11px; font-size:14px; font-weight:650; white-space:nowrap; }
-.logo-dot { width:28px;height:28px;border-radius:9px;display:inline-block;background:var(--teal); }.logo-dot.git{background:#e66b44}.logo-dot.docker{background:#2496ed}.logo-dot.browser{background:#ef8734}.logo-dot.utility{background:#6c63ff}.logo-dot.terminal{background:#27353b}.logo-dot.database{background:#3b6e9c}.logo-dot.node{background:#5b9b4b}.logo-dot.vscode{background:#2875bf}
+.app-logo { width:32px; height:32px; display:block; object-fit:contain; flex:0 0 auto; }
 @keyframes marquee { to { transform:translateX(-50%); } }
 
 .trust { background:var(--nav); color:#fff; }
