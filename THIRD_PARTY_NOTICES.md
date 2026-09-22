@@ -4,7 +4,7 @@ AgenStart includes or references third-party software and visual assets. Those m
 
 ## Application logos and identification artwork
 
-AgenStart bundles local application artwork solely to identify software in the recommendation, review, installation, history, and reporting experiences. The artwork is packaged locally so these screens remain usable offline.
+AgenStart bundles local application artwork solely to identify software in the recommendation, review, installation, history, reporting, and public product-preview experiences. The artwork is packaged locally so desktop screens remain usable offline and the public site can reuse the same canonical assets at build time.
 
 Product names, logos, trademarks, and registered trademarks remain the property of their respective owners. A source collection's software/content license does **not** waive or transfer trademark rights in the brands represented by its assets.
 
@@ -44,11 +44,13 @@ The current curated catalogue has packaged identification artwork for every appl
 - `krita.svg` — Krita — `ln-dev7/logos-apps/logos/krita.svg`;
 - `libreoffice.svg` — LibreOffice — `ln-dev7/logos-apps/logos/libreoffice.svg`;
 - `localsend.svg` — LocalSend — `ln-dev7/logos-apps/logos/localsend.svg`;
+- `nodejs.svg` — Node.js — `simple-icons/simple-icons/icons/nodedotjs.svg`, color-normalized locally for identification;
 - `microsoft-powertoys.svg` — Microsoft PowerToys — `ln-dev7/logos-apps/logos/microsoft-powertoys.svg`;
 - `obs-studio.svg` — OBS Studio / OBS Project — `ln-dev7/logos-apps/logos/obs-studio.svg`;
 - `obsidian.svg` — Obsidian — `ln-dev7/logos-apps/logos/obsidian.svg`;
 - `playnite.svg` — Playnite — official public Playnite repository, `JosefNemec/Playnite/media/playnite-logo-fullscreen.svg`;
 - `postman.svg` — Postman — `ln-dev7/logos-apps/logos/postman.svg`;
+- `postgresql.svg` — PostgreSQL — `simple-icons/simple-icons/icons/postgresql.svg`, color-normalized locally for identification;
 - `powershell.svg` — PowerShell — `ln-dev7/logos-apps/logos/powershell.svg`;
 - `quicklook.svg` — QuickLook — `ln-dev7/logos-apps/logos/quicklook.svg`;
 - `sharex.svg` — ShareX — `ln-dev7/logos-apps/logos/sharex.svg`;
