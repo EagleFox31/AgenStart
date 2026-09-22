@@ -32,5 +32,7 @@
     <Content Include="..\..\docs\product\catalogue.fixtures.json"
              Link="Data\catalogue.json"
              CopyToOutputDirectory="PreserveNewest" />
+    <EmbeddedResource Include="..\..\docs\product\catalogue.fixtures.json"
+                      LogicalName="AgenStart.Data.catalogue.json" />
   </ItemGroup>
 </Project>
