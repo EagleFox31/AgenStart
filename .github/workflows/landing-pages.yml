@@ -1,0 +1,90 @@
+name: AgenStart landing page
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [main]
+    paths:
+      - "site/**"
+      - ".github/workflows/landing-pages.yml"
+  push:
+    branches: [main]
+    paths:
+      - "site/**"
+      - ".github/workflows/landing-pages.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: agenstart-landing-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Check landing JavaScript
+        run: node --check site/app.js
+
+      - name: Parse landing HTML
+        run: |
+          python - <<'PY'
+          from html.parser import HTMLParser
+          from pathlib import Path
+
+          class Parser(HTMLParser):
+              pass
+
+          source = Path("site/index.html").read_text(encoding="utf-8")
+          Parser().feed(source)
+
+          required = [
+              'data-download-link',
+              'id="product"',
+              'id="flow"',
+              'id="trust"',
+              'href="./styles.css"',
+              'src="./app.js"',
+          ]
+          missing = [marker for marker in required if marker not in source]
+          if missing:
+              raise SystemExit(f"Missing landing markers: {missing}")
+
+          print("Landing HTML parsed successfully.")
+          PY
+
+  deploy:
+    if: github.event_name != 'pull_request'
+    needs: validate
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload site artifact
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: site
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
