@@ -1,0 +1,9 @@
+{
+  "name": "agenstart-web",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@vercel/og": "^1.0.2",
+    "react": "^19.1.1"
+  }
+}
