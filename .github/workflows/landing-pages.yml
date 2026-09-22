@@ -7,12 +7,14 @@ on:
     paths:
       - "site/**"
       - "src/AgenStart.Desktop/Assets/AppLogos/**"
+      - "src/AgenStart.Desktop/Assets/agenstart-app-icon.*"
       - ".github/workflows/landing-pages.yml"
   push:
     branches: [main]
     paths:
       - "site/**"
       - "src/AgenStart.Desktop/Assets/AppLogos/**"
+      - "src/AgenStart.Desktop/Assets/agenstart-app-icon.*"
       - ".github/workflows/landing-pages.yml"
 
 permissions:
