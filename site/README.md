@@ -13,11 +13,11 @@ python -m http.server 4173 --directory site
 
 Then open `http://localhost:4173`.
 
-`site/assets/generated-logos/` is build output. The source of truth remains `src/AgenStart.Desktop/Assets/AppLogos/`; the landing does not maintain a second logo library.
+`site/assets/generated-logos/` and `site/assets/generated-brand/` are build output. Application artwork stays sourced from `src/AgenStart.Desktop/Assets/AppLogos/`, while the favicon reuses the canonical desktop app icon from `src/AgenStart.Desktop/Assets/agenstart-app-icon.*`; the landing does not maintain duplicate brand assets.
 
 ## Release download
 
-The primary CTA resolves the latest published GitHub release at runtime and chooses the `win-x64.zip` asset when one is present. If GitHub's API is unavailable, the CTA falls back to the stable `/releases/latest` page.
+The primary CTA resolves the latest published GitHub release at runtime and prefers the standalone `win-x64.exe` asset. It falls back to the ZIP asset, then to the stable `/releases/latest` page if release metadata is unavailable.
 
 ## Deployment
 
