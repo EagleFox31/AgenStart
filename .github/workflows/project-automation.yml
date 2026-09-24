@@ -25,11 +25,11 @@ jobs:
       issues: read
       pull-requests: read
       id-token: write
-    uses: EagleFox31/appfactory-project-automation/.github/workflows/reusable-project-automation.yml@v1
+    uses: EagleFox31/appfactory-project-automation/.github/workflows/reusable-project-automation.yml@7ff298087308d7ddcc8e507d8eb9adb56c2e2158
     with:
       authentication: broker-user
       broker_url: ${{ vars.APPFACTORY_PROJECT_BROKER_URL }}
       broker_audience: appfactory-project-automation
-      appfactory_ref: v1
+      appfactory_ref: 7ff298087308d7ddcc8e507d8eb9adb56c2e2158
       config_path: .github/project-config.json
       issue_number: ${{ inputs.issue_number }}
