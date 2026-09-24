@@ -1,17 +1,8 @@
-name: Project automation
+name: Project broker delegated validation
 
 on:
   issues:
-    types: [opened, reopened, edited, closed]
-  pull_request_target:
-    types: [opened, reopened, ready_for_review, closed]
-  workflow_dispatch:
-    inputs:
-      issue_number:
-        description: "Optional issue number to resync; leave blank to bootstrap/reconcile the Project"
-        required: false
-        default: ""
-        type: string
+    types: [opened]
 
 permissions:
   contents: read
@@ -19,8 +10,8 @@ permissions:
   pull-requests: read
 
 jobs:
-  sync-project:
-    if: ${{ github.event_name != 'issues' || github.actor == 'EagleFox31' || startsWith(github.event.issue.title, '[broker-test]') == false }}
+  validate-broker:
+    if: ${{ github.actor != 'EagleFox31' && startsWith(github.event.issue.title, '[broker-test]') }}
     permissions:
       contents: read
       issues: read
@@ -33,4 +24,4 @@ jobs:
       broker_audience: appfactory-project-automation
       appfactory_ref: 7ff298087308d7ddcc8e507d8eb9adb56c2e2158
       config_path: .github/project-config.json
-      issue_number: ${{ inputs.issue_number }}
+      issue_number: ${{ format('{0}', github.event.issue.number) }}
