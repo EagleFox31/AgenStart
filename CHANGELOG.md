@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.4.2](https://github.com/EagleFox31/AgenStart/compare/v0.4.1...v0.4.2) (2026-09-24)
+
+
+### Bug Fixes
+
+* **projects:** pin broker-authorized AppFactory runtime ([86e24ac](https://github.com/EagleFox31/AgenStart/commit/86e24acc395c434bbbb99b31b05f770193e2f87b))
+* **projects:** use broker auth name supported by pinned runtime ([94c612a](https://github.com/EagleFox31/AgenStart/commit/94c612a1f0fc895ed7195b7934fa06b2c59f4ed9))
+
 ## [0.4.1](https://github.com/EagleFox31/AgenStart/compare/v0.4.1...v0.4.1) (2026-09-22)
 
 
