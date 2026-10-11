@@ -4,6 +4,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.LogicalTree;
+using Avalonia.Media;
 using Avalonia.Platform.Storage;
 using AgenStart.Application.Installation;
 using AgenStart.Application.Profiles;
@@ -58,13 +59,17 @@ public sealed partial class MainWindow : Window
         Closed += OnClosed;
     }
 
-    private void OverviewButton_OnClick(object? sender, RoutedEventArgs e) => ShowOverview();
-    private void YourPcButton_OnClick(object? sender, RoutedEventArgs e) => ShowYourPc();
-    private void UsageProfileButton_OnClick(object? sender, RoutedEventArgs e) => ShowUsageProfile();
-    private void RecommendationsButton_OnClick(object? sender, RoutedEventArgs e) => ShowRecommendations();
-    private void ReviewButton_OnClick(object? sender, RoutedEventArgs e) => ShowReview();
-    private void InstallationButton_OnClick(object? sender, RoutedEventArgs e) => ShowInstallation();
-    private void ReportButton_OnClick(object? sender, RoutedEventArgs e) => ShowReport();
+    // Resolves a theme brush defined in Styles/AgenStartTheme.axaml. Shared by
+    // the view-polish partials so hex colours do not get duplicated in C#.
+    internal IBrush ThemeBrush(string key) => (IBrush)this.FindResource(key)!;
+
+    private void NavButton_OnClick(object? sender, RoutedEventArgs e)
+    {
+        if (sender is Button { Tag: string tag } && Enum.TryParse<AppStep>(tag, ignoreCase: false, out var step))
+        {
+            _viewModel.ShowStep(step);
+        }
+    }
 
     private async void OnOpened(object? sender, EventArgs e)
     {
@@ -91,7 +96,7 @@ public sealed partial class MainWindow : Window
         if (_viewModel.HasSnapshot)
         {
             EnablePostAnalysisNavigation();
-            ShowYourPc();
+            _viewModel.ShowStep(AppStep.YourPc);
         }
     }
 
@@ -111,8 +116,8 @@ public sealed partial class MainWindow : Window
         RecommendationsButton.IsEnabled = false;
     }
 
-    private void ContinueToProfile_OnClick(object? sender, RoutedEventArgs e) => ShowUsageProfile();
-    private void ProfileBackButton_OnClick(object? sender, RoutedEventArgs e) => ShowYourPc();
+    private void ContinueToProfile_OnClick(object? sender, RoutedEventArgs e) => _viewModel.ShowStep(AppStep.UsageProfile);
+    private void ProfileBackButton_OnClick(object? sender, RoutedEventArgs e) => _viewModel.ShowStep(AppStep.YourPc);
 
     private void PersonalProfile_OnChecked(object? sender, RoutedEventArgs e) => SelectProfile(UserProfile.Personal);
     private void DevelopmentProfile_OnChecked(object? sender, RoutedEventArgs e) => SelectProfile(UserProfile.Development);
@@ -132,7 +137,7 @@ public sealed partial class MainWindow : Window
         if (_viewModel.HasRecommendations)
         {
             RecommendationsButton.IsEnabled = true;
-            ShowRecommendations();
+            _viewModel.ShowStep(AppStep.Recommendations);
         }
     }
 
@@ -143,11 +148,11 @@ public sealed partial class MainWindow : Window
     {
         if (_viewModel.PrepareReview())
         {
-            ShowReview();
+            _viewModel.ShowStep(AppStep.Review);
         }
     }
 
-    private void ReviewBackButton_OnClick(object? sender, RoutedEventArgs e) => ShowRecommendations();
+    private void ReviewBackButton_OnClick(object? sender, RoutedEventArgs e) => _viewModel.ShowStep(AppStep.Recommendations);
 
     private void RemoveReviewItem_OnClick(object? sender, RoutedEventArgs e)
     {
@@ -159,7 +164,7 @@ public sealed partial class MainWindow : Window
         _viewModel.RemoveFromReview(row.ApplicationId);
         if (!_viewModel.HasReview)
         {
-            ShowRecommendations();
+            _viewModel.ShowStep(AppStep.Recommendations);
         }
     }
 
@@ -172,7 +177,7 @@ public sealed partial class MainWindow : Window
 
         _currentHistoryEntryId = Guid.NewGuid();
         InstallationButton.IsEnabled = true;
-        ShowInstallation();
+        _viewModel.ShowStep(AppStep.Installation);
         await _viewModel.StartInstallationAsync(_lifetimeCancellation.Token);
 
         if (_viewModel.HasReport)
@@ -181,7 +186,7 @@ public sealed partial class MainWindow : Window
             ReportButton.IsEnabled = true;
             if (_viewModel.InstallationFailedCount == 0)
             {
-                ShowReport();
+                _viewModel.ShowStep(AppStep.Report);
             }
         }
     }
@@ -204,7 +209,7 @@ public sealed partial class MainWindow : Window
             ReportButton.IsEnabled = true;
             if (_viewModel.InstallationFailedCount == 0)
             {
-                ShowReport();
+                _viewModel.ShowStep(AppStep.Report);
             }
         }
     }
@@ -250,8 +255,8 @@ public sealed partial class MainWindow : Window
         }
     }
 
-    private void ViewReportButton_OnClick(object? sender, RoutedEventArgs e) => ShowReport();
-    private void FinishButton_OnClick(object? sender, RoutedEventArgs e) => ShowOverview();
+    private void ViewReportButton_OnClick(object? sender, RoutedEventArgs e) => _viewModel.ShowStep(AppStep.Report);
+    private void FinishButton_OnClick(object? sender, RoutedEventArgs e) => _viewModel.ShowStep(AppStep.Overview);
 
     private void InstallUtilityViews()
     {
@@ -331,21 +336,8 @@ public sealed partial class MainWindow : Window
             .OfType<Button>()
             .FirstOrDefault(button => string.Equals(button.Content as string, content, StringComparison.Ordinal));
 
-    private void HistoryButton_OnClick(object? sender, RoutedEventArgs e)
-    {
-        if (_historyView is not null && _historyButton is not null)
-        {
-            ShowUtilityPage(_historyView, _historyButton);
-        }
-    }
-
-    private void SettingsButton_OnClick(object? sender, RoutedEventArgs e)
-    {
-        if (_settingsView is not null && _settingsButton is not null)
-        {
-            ShowUtilityPage(_settingsView, _settingsButton);
-        }
-    }
+    private void HistoryButton_OnClick(object? sender, RoutedEventArgs e) => _viewModel.ShowStep(AppStep.History);
+    private void SettingsButton_OnClick(object? sender, RoutedEventArgs e) => _viewModel.ShowStep(AppStep.Settings);
 
     private async void ImportSetupButton_OnClick(object? sender, RoutedEventArgs e)
     {
@@ -501,7 +493,7 @@ public sealed partial class MainWindow : Window
 
         SetImportStatus($"Imported {profileDocument.Applications.Count} application(s). Review the exact changes before installation.");
         ReviewButton.IsEnabled = true;
-        ShowReview();
+        _viewModel.ShowStep(AppStep.Review);
     }
 
     private async void ExportCurrentSetupButton_OnClick(object? sender, RoutedEventArgs e)
@@ -633,114 +625,6 @@ public sealed partial class MainWindow : Window
         _importStatusText.IsVisible = true;
     }
 
-    private void ShowOverview() => ShowPage(OverviewPanel, OverviewButton, OverviewStripe);
-
-    private void ShowYourPc()
-    {
-        if (YourPcButton.IsEnabled)
-        {
-            ShowPage(YourPcPanel, YourPcButton, YourPcStripe);
-        }
-    }
-
-    private void ShowUsageProfile()
-    {
-        if (UsageProfileButton.IsEnabled)
-        {
-            ShowPage(UsageProfilePanel, UsageProfileButton, UsageProfileStripe);
-        }
-    }
-
-    private void ShowRecommendations()
-    {
-        if (RecommendationsButton.IsEnabled)
-        {
-            ShowPage(RecommendationsPanel, RecommendationsButton, RecommendationsStripe);
-        }
-    }
-
-    private void ShowReview()
-    {
-        if (_viewModel.HasReview)
-        {
-            ShowPage(ReviewPanel, ReviewButton, ReviewStripe);
-        }
-    }
-
-    private void ShowInstallation()
-    {
-        if (InstallationButton.IsEnabled)
-        {
-            ShowPage(InstallationPanel, InstallationButton, InstallationStripe);
-        }
-    }
-
-    private void ShowReport()
-    {
-        if (_viewModel.HasReport)
-        {
-            ShowPage(ReportPanel, ReportButton, ReportStripe);
-        }
-    }
-
-    private void ShowPage(Control panel, Button activeButton, Border activeStripe)
-    {
-        HideAllPages();
-        panel.IsVisible = true;
-        activeStripe.IsVisible = true;
-        SetActive(activeButton, true);
-    }
-
-    private void ShowUtilityPage(Control panel, Button activeButton)
-    {
-        HideAllPages();
-        panel.IsVisible = true;
-        SetActive(activeButton, true);
-    }
-
-    private void HideAllPages()
-    {
-        OverviewPanel.IsVisible = false;
-        YourPcPanel.IsVisible = false;
-        UsageProfilePanel.IsVisible = false;
-        RecommendationsPanel.IsVisible = false;
-        ReviewPanel.IsVisible = false;
-        InstallationPanel.IsVisible = false;
-        ReportPanel.IsVisible = false;
-        if (_historyView is not null)
-        {
-            _historyView.IsVisible = false;
-        }
-        if (_settingsView is not null)
-        {
-            _settingsView.IsVisible = false;
-        }
-
-        OverviewStripe.IsVisible = false;
-        YourPcStripe.IsVisible = false;
-        UsageProfileStripe.IsVisible = false;
-        RecommendationsStripe.IsVisible = false;
-        ReviewStripe.IsVisible = false;
-        InstallationStripe.IsVisible = false;
-        ReportStripe.IsVisible = false;
-
-        SetActive(OverviewButton, false);
-        SetActive(YourPcButton, false);
-        SetActive(UsageProfileButton, false);
-        SetActive(RecommendationsButton, false);
-        SetActive(ReviewButton, false);
-        SetActive(InstallationButton, false);
-        SetActive(ReportButton, false);
-        if (_historyButton is not null)
-        {
-            SetActive(_historyButton, false);
-        }
-        if (_settingsButton is not null)
-        {
-            SetActive(_settingsButton, false);
-        }
-    }
-
     private void ViewModel_OnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         if (e.PropertyName == nameof(MainWindowViewModel.HasReview))
@@ -761,9 +645,29 @@ public sealed partial class MainWindow : Window
                 _exportCurrentSetupButton.IsEnabled = _viewModel.HasReport && StorageProvider.CanSave;
             }
         }
+
+        if (e.PropertyName == nameof(MainWindowViewModel.CurrentStep))
+        {
+            if (_historyView is not null)
+            {
+                _historyView.IsVisible = _viewModel.IsHistory;
+            }
+            if (_settingsView is not null)
+            {
+                _settingsView.IsVisible = _viewModel.IsSettings;
+            }
+            if (_historyButton is not null)
+            {
+                SetActiveClass(_historyButton, _viewModel.IsHistory);
+            }
+            if (_settingsButton is not null)
+            {
+                SetActiveClass(_settingsButton, _viewModel.IsSettings);
+            }
+        }
     }
 
-    private static void SetActive(Button button, bool isActive)
+    private static void SetActiveClass(Button button, bool isActive)
     {
         const string activeClass = "active";
         if (isActive)

@@ -1,6 +1,7 @@
 using Avalonia.Threading;
 using AgenStart.Core.Catalogue;
 using AgenStart.Core.Recommendations;
+using AgenStart.Desktop.ViewModels;
 
 namespace AgenStart.Desktop.Views;
 
@@ -46,7 +47,7 @@ public sealed partial class MainWindow
             {
                 view.CompleteRecommendationBuild();
                 RecommendationsButton.IsEnabled = true;
-                ShowRecommendations();
+                _viewModel.ShowStep(AppStep.Recommendations);
                 RefreshRecommendationListExperience();
             }
             else
@@ -55,7 +56,7 @@ public sealed partial class MainWindow
             }
         };
 
-        view.BackRequested += (_, _) => ShowYourPc();
+        view.BackRequested += (_, _) => _viewModel.ShowStep(AppStep.YourPc);
 
         _multiProfileProgressSubscription = RecommendationPipelineDiagnostics.Subscribe(stage =>
             Dispatcher.UIThread.Post(() =>

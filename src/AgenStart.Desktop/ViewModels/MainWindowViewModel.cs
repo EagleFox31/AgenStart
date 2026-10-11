@@ -17,6 +17,19 @@ using AgenStart.SoftwareInventory;
 
 namespace AgenStart.Desktop.ViewModels;
 
+public enum AppStep
+{
+    Overview,
+    YourPc,
+    UsageProfile,
+    Recommendations,
+    Review,
+    Installation,
+    Report,
+    History,
+    Settings
+}
+
 public sealed class MainWindowViewModel : INotifyPropertyChanged, IDisposable
 {
     private readonly IMachineInventoryProvider _machineInventory;
@@ -40,6 +53,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged, IDisposable
     private bool _hasReport;
     private bool _agreementsAccepted;
     private UserProfile _selectedProfile = UserProfile.Development;
+    private AppStep _currentStep = AppStep.Overview;
 
     private string _recommendationStatus = "Choose a usage profile to build recommendations.";
     private string _installationStatus = "Ready to install the approved setup.";
@@ -79,6 +93,38 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged, IDisposable
     public ObservableCollection<ReviewRowViewModel> ReviewItems { get; } = [];
     public ObservableCollection<InstallationRowViewModel> InstallationItems { get; } = [];
     public ObservableCollection<ReportRowViewModel> ReportItems { get; } = [];
+
+    public AppStep CurrentStep
+    {
+        get => _currentStep;
+        private set
+        {
+            if (SetField(ref _currentStep, value))
+            {
+                OnPropertyChanged(nameof(IsOverview));
+                OnPropertyChanged(nameof(IsYourPc));
+                OnPropertyChanged(nameof(IsUsageProfile));
+                OnPropertyChanged(nameof(IsRecommendations));
+                OnPropertyChanged(nameof(IsReview));
+                OnPropertyChanged(nameof(IsInstallationStep));
+                OnPropertyChanged(nameof(IsReport));
+                OnPropertyChanged(nameof(IsHistory));
+                OnPropertyChanged(nameof(IsSettings));
+            }
+        }
+    }
+
+    public bool IsOverview => _currentStep == AppStep.Overview;
+    public bool IsYourPc => _currentStep == AppStep.YourPc;
+    public bool IsUsageProfile => _currentStep == AppStep.UsageProfile;
+    public bool IsRecommendations => _currentStep == AppStep.Recommendations;
+    public bool IsReview => _currentStep == AppStep.Review;
+    public bool IsInstallationStep => _currentStep == AppStep.Installation;
+    public bool IsReport => _currentStep == AppStep.Report;
+    public bool IsHistory => _currentStep == AppStep.History;
+    public bool IsSettings => _currentStep == AppStep.Settings;
+
+    public void ShowStep(AppStep step) => CurrentStep = step;
 
     public bool IsBusy
     {

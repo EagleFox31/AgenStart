@@ -11,8 +11,11 @@ namespace AgenStart.Desktop.Views;
 
 public sealed partial class MainWindow
 {
-    private static readonly IBrush RecommendationStickyBackground =
-        new SolidColorBrush(Color.Parse("#F7F5EF"));
+    private IBrush RecommendationStickyBackground => ThemeBrush("AgenRecommendationStickyBrush");
+    private IBrush RecommendationStickyMutedBrush => ThemeBrush("AgenMutedBrush");
+    private IBrush RecommendationStickyTextBrush => ThemeBrush("AgenTextBrush");
+    private IBrush RecommendationStickyAccentBrush => ThemeBrush("AgenTealBrush");
+    private IBrush RecommendationStickyBorderBrush => ThemeBrush("AgenDividerBrush");
 
     private bool _recommendationListExperienceInstalled;
     private ScrollViewer? _recommendationsScrollViewer;
@@ -104,14 +107,14 @@ public sealed partial class MainWindow
     {
         _recommendationStickyCount = new TextBlock
         {
-            Foreground = GuidanceMutedBrush,
+            Foreground = RecommendationStickyMutedBrush,
             FontSize = 12,
             VerticalAlignment = VerticalAlignment.Center
         };
 
         _recommendationStickySelected = new TextBlock
         {
-            Foreground = TealBrush,
+            Foreground = RecommendationStickyAccentBrush,
             FontSize = 12,
             FontWeight = FontWeight.SemiBold,
             VerticalAlignment = VerticalAlignment.Center
@@ -136,7 +139,7 @@ public sealed partial class MainWindow
             Text = "Recommended for this PC",
             FontSize = 20,
             FontWeight = FontWeight.SemiBold,
-            Foreground = GuidanceTextBrush,
+            Foreground = RecommendationStickyTextBrush,
             VerticalAlignment = VerticalAlignment.Center
         });
         Grid.SetColumn(summary, 1);
@@ -146,7 +149,7 @@ public sealed partial class MainWindow
         {
             IsVisible = false,
             Background = RecommendationStickyBackground,
-            BorderBrush = ProfileDefaultBorderBrush,
+            BorderBrush = RecommendationStickyBorderBrush,
             BorderThickness = new Thickness(0, 0, 0, 1),
             Padding = new Thickness(0, 13),
             Margin = new Thickness(72, 0, 72, 0),
@@ -216,7 +219,7 @@ public sealed partial class MainWindow
                     Width = 20,
                     FontSize = 11,
                     FontWeight = FontWeight.SemiBold,
-                    Foreground = GuidanceMutedBrush,
+                    Foreground = RecommendationStickyMutedBrush,
                     HorizontalAlignment = HorizontalAlignment.Left,
                     VerticalAlignment = VerticalAlignment.Center,
                     TextAlignment = TextAlignment.Left

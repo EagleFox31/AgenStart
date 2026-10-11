@@ -7,7 +7,7 @@ using Avalonia.Media;
 
 namespace AgenStart.Desktop.ViewModels;
 
-public sealed class ReviewRowViewModel
+public sealed class ReviewRowViewModel : IAppRowLogo
 {
     public ReviewRowViewModel(
         string applicationId,
@@ -41,7 +41,7 @@ public sealed class ReviewRowViewModel
     public string Status => AlreadyInstalled ? "Already installed" : "Will install";
 }
 
-public sealed class InstallationRowViewModel : INotifyPropertyChanged
+public sealed class InstallationRowViewModel : INotifyPropertyChanged, IAppRowLogo
 {
     private InstallationQueueItemState _state;
     private InstallationItemActivity _activity;
@@ -245,7 +245,7 @@ public sealed class InstallationRowViewModel : INotifyPropertyChanged
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 }
 
-public sealed class ReportRowViewModel
+public sealed class ReportRowViewModel : IAppRowLogo
 {
     public ReportRowViewModel(
         string applicationId,
