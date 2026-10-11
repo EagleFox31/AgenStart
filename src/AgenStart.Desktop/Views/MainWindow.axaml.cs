@@ -33,7 +33,6 @@ public sealed partial class MainWindow : Window
     private Button? _historyButton;
     private Button? _settingsButton;
     private Button? _importSetupButton;
-    private Button? _exportCurrentSetupButton;
     private TextBlock? _importStatusText;
     private Guid? _currentHistoryEntryId;
 
@@ -53,6 +52,17 @@ public sealed partial class MainWindow : Window
 
         InstallUtilityViews();
         InstallSetupProfileActions();
+
+        ReportControl.FinishRequested += ReportView_OnFinishRequested;
+        ReportControl.ExportSetupRequested += ReportView_OnExportSetupRequested;
+
+        InstallationControl.CancelRequested += InstallationView_OnCancelRequested;
+        InstallationControl.ViewReportRequested += InstallationView_OnViewReportRequested;
+        InstallationControl.RetryRequested += InstallationView_OnRetryRequested;
+
+        ReviewControl.StartInstallationRequested += ReviewView_OnStartInstallationRequested;
+        ReviewControl.BackRequested += ReviewView_OnBackRequested;
+        ReviewControl.RemoveRequested += ReviewView_OnRemoveRequested;
 
         _viewModel.PropertyChanged += ViewModel_OnPropertyChanged;
         Opened += OnOpened;
@@ -129,15 +139,11 @@ public sealed partial class MainWindow : Window
         }
     }
 
-    private void ReviewBackButton_OnClick(object? sender, RoutedEventArgs e) => _viewModel.ShowStep(AppStep.Recommendations);
+    private void ReviewView_OnBackRequested(object? sender, EventArgs e) =>
+        _viewModel.ShowStep(AppStep.Recommendations);
 
-    private void RemoveReviewItem_OnClick(object? sender, RoutedEventArgs e)
+    private void ReviewView_OnRemoveRequested(object? sender, ReviewRowViewModel row)
     {
-        if (sender is not Button { DataContext: ReviewRowViewModel row })
-        {
-            return;
-        }
-
         _viewModel.RemoveFromReview(row.ApplicationId);
         if (!_viewModel.HasReview)
         {
@@ -145,7 +151,7 @@ public sealed partial class MainWindow : Window
         }
     }
 
-    private async void StartInstallationButton_OnClick(object? sender, RoutedEventArgs e)
+    private async void ReviewView_OnStartInstallationRequested(object? sender, EventArgs e)
     {
         if (!_viewModel.CanStartInstallation)
         {
@@ -168,16 +174,14 @@ public sealed partial class MainWindow : Window
         }
     }
 
-    private void CancelInstallationButton_OnClick(object? sender, RoutedEventArgs e) =>
+    private void InstallationView_OnCancelRequested(object? sender, EventArgs e) =>
         _viewModel.CancelInstallation();
 
-    private async void RetryInstallationItem_OnClick(object? sender, RoutedEventArgs e)
-    {
-        if (sender is not Button { DataContext: InstallationRowViewModel row })
-        {
-            return;
-        }
+    private void InstallationView_OnViewReportRequested(object? sender, EventArgs e) =>
+        _viewModel.ShowStep(AppStep.Report);
 
+    private async void InstallationView_OnRetryRequested(object? sender, InstallationRowViewModel row)
+    {
         await _viewModel.RetryInstallationAsync(row.ApplicationId, _lifetimeCancellation.Token);
         if (_viewModel.HasReport)
         {
@@ -232,8 +236,23 @@ public sealed partial class MainWindow : Window
         }
     }
 
-    private void ViewReportButton_OnClick(object? sender, RoutedEventArgs e) => _viewModel.ShowStep(AppStep.Report);
-    private void FinishButton_OnClick(object? sender, RoutedEventArgs e) => _viewModel.ShowStep(AppStep.Overview);
+    private void ReportView_OnFinishRequested(object? sender, EventArgs e) =>
+        _viewModel.ShowStep(AppStep.Overview);
+
+    private async void ReportView_OnExportSetupRequested(object? sender, EventArgs e)
+    {
+        if (!_viewModel.HasReport || _viewModel.ReviewItems.Count == 0)
+        {
+            return;
+        }
+
+        var applications = _viewModel.ReviewItems.Select(row =>
+            new SetupProfileApplication(row.ApplicationId, row.Reason));
+        await SaveSetupProfileAsync(
+            ToProfileId(_viewModel.SelectedProfile),
+            applications,
+            $"{_viewModel.SelectedProfileName} setup");
+    }
 
     private void InstallUtilityViews()
     {
@@ -293,12 +312,6 @@ public sealed partial class MainWindow : Window
             }
         }
 
-        _exportCurrentSetupButton = FindButtonByContent("Export this setup");
-        if (_exportCurrentSetupButton is not null)
-        {
-            _exportCurrentSetupButton.IsEnabled = false;
-            _exportCurrentSetupButton.Click += ExportCurrentSetupButton_OnClick;
-        }
     }
 
     private Button? FindNavigationButton(string label) =>
@@ -473,21 +486,6 @@ public sealed partial class MainWindow : Window
         _viewModel.ShowStep(AppStep.Review);
     }
 
-    private async void ExportCurrentSetupButton_OnClick(object? sender, RoutedEventArgs e)
-    {
-        if (!_viewModel.HasReport || _viewModel.ReviewItems.Count == 0)
-        {
-            return;
-        }
-
-        var applications = _viewModel.ReviewItems.Select(row =>
-            new SetupProfileApplication(row.ApplicationId, row.Reason));
-        await SaveSetupProfileAsync(
-            ToProfileId(_viewModel.SelectedProfile),
-            applications,
-            $"{_viewModel.SelectedProfileName} setup");
-    }
-
     private async void HistoryView_OnExportSetupRequested(object? sender, EventArgs e)
     {
         var selected = _localExperience.SelectedHistory?.Entry;
@@ -617,10 +615,7 @@ public sealed partial class MainWindow : Window
         if (e.PropertyName == nameof(MainWindowViewModel.HasReport))
         {
             ReportButton.IsEnabled = _viewModel.HasReport;
-            if (_exportCurrentSetupButton is not null)
-            {
-                _exportCurrentSetupButton.IsEnabled = _viewModel.HasReport && StorageProvider.CanSave;
-            }
+            ReportControl.SetExportEnabled(_viewModel.HasReport && StorageProvider.CanSave);
         }
 
         if (e.PropertyName == nameof(MainWindowViewModel.CurrentStep))
@@ -679,10 +674,14 @@ public sealed partial class MainWindow : Window
         {
             _importSetupButton.Click -= ImportSetupButton_OnClick;
         }
-        if (_exportCurrentSetupButton is not null)
-        {
-            _exportCurrentSetupButton.Click -= ExportCurrentSetupButton_OnClick;
-        }
+        ReportControl.FinishRequested -= ReportView_OnFinishRequested;
+        ReportControl.ExportSetupRequested -= ReportView_OnExportSetupRequested;
+        InstallationControl.CancelRequested -= InstallationView_OnCancelRequested;
+        InstallationControl.ViewReportRequested -= InstallationView_OnViewReportRequested;
+        InstallationControl.RetryRequested -= InstallationView_OnRetryRequested;
+        ReviewControl.StartInstallationRequested -= ReviewView_OnStartInstallationRequested;
+        ReviewControl.BackRequested -= ReviewView_OnBackRequested;
+        ReviewControl.RemoveRequested -= ReviewView_OnRemoveRequested;
         Opened -= OnOpened;
         _lifetimeCancellation.Cancel();
         _viewModel.Dispose();

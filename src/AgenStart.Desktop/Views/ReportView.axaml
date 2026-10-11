@@ -1,0 +1,66 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:AgenStart.Desktop.ViewModels"
+             xmlns:views="using:AgenStart.Desktop.Views"
+             x:Class="AgenStart.Desktop.Views.ReportView"
+             x:DataType="vm:MainWindowViewModel">
+  <StackPanel>
+    <TextBlock Classes="eyebrow" Text="REPORT" Margin="0,0,0,20" />
+    <TextBlock Classes="pageTitle" Text="Your PC is ready" />
+    <TextBlock Classes="subtitle" Text="{Binding ReportStatus}" Margin="0,12,0,0" TextWrapping="Wrap" />
+    <Border Height="1" Background="{StaticResource AgenDividerBrush}" Margin="0,28,0,24" />
+    <Grid ColumnDefinitions="90,*,*,*,*" ColumnSpacing="18">
+      <Border Width="64" Height="64" CornerRadius="32" BorderBrush="{StaticResource AgenTealBrush}" BorderThickness="2">
+        <TextBlock Text="✓" Foreground="{StaticResource AgenTealBrush}" FontSize="30" HorizontalAlignment="Center" VerticalAlignment="Center" />
+      </Border>
+      <StackPanel Grid.Column="1">
+        <TextBlock Text="{Binding ReportProcessedCount}" Foreground="{StaticResource AgenTealBrush}" FontSize="22" FontWeight="SemiBold" />
+        <TextBlock Text="applications processed" Foreground="{StaticResource AgenMutedBrush}" />
+      </StackPanel>
+      <StackPanel Grid.Column="2">
+        <TextBlock Text="{Binding ReportInstalledCount}" Foreground="{StaticResource AgenTealBrush}" FontSize="22" FontWeight="SemiBold" />
+        <TextBlock Text="installed" Foreground="{StaticResource AgenMutedBrush}" />
+      </StackPanel>
+      <StackPanel Grid.Column="3">
+        <TextBlock Text="{Binding ReportAlreadyInstalledCount}" Foreground="{StaticResource AgenTealBrush}" FontSize="22" FontWeight="SemiBold" />
+        <TextBlock Text="already installed" Foreground="{StaticResource AgenMutedBrush}" />
+      </StackPanel>
+      <StackPanel Grid.Column="4">
+        <TextBlock Text="{Binding ReportFailedCount}" FontSize="22" FontWeight="SemiBold" />
+        <TextBlock Text="failed" Foreground="{StaticResource AgenMutedBrush}" />
+      </StackPanel>
+    </Grid>
+    <TextBlock Text="Installation results" FontSize="20" FontWeight="SemiBold" Margin="0,32,0,10" />
+    <ItemsControl ItemsSource="{Binding ReportItems}">
+      <ItemsControl.ItemTemplate>
+        <DataTemplate x:DataType="vm:ReportRowViewModel">
+          <Border BorderBrush="{StaticResource AgenDividerBrush}" BorderThickness="0,0,0,1" Padding="10,13">
+            <Grid ColumnDefinitions="54,*,190,160" ColumnSpacing="14">
+              <views:AppRowLogoView Width="36" Height="36" />
+              <TextBlock Grid.Column="1" Text="{Binding Name}" FontSize="16" FontWeight="SemiBold" VerticalAlignment="Center" />
+              <TextBlock Grid.Column="2" Text="{Binding Result}" VerticalAlignment="Center" />
+              <TextBlock Grid.Column="3" Text="{Binding InstalledVersion}" Foreground="{StaticResource AgenMutedBrush}" VerticalAlignment="Center" />
+            </Grid>
+          </Border>
+        </DataTemplate>
+      </ItemsControl.ItemTemplate>
+    </ItemsControl>
+    <Border IsVisible="{Binding ReportRequiresReboot}" BorderBrush="#AAB2B2" BorderThickness="1" CornerRadius="8" Padding="16" Margin="0,20,0,0">
+      <StackPanel>
+        <TextBlock Text="Restart recommended" FontWeight="SemiBold" />
+        <TextBlock Text="One or more installed applications require Windows to restart before all features become available." Foreground="{StaticResource AgenMutedBrush}" FontSize="13" Margin="0,4,0,0" />
+      </StackPanel>
+    </Border>
+    <Grid ColumnDefinitions="*,Auto" Margin="0,22,0,0">
+      <StackPanel Orientation="Horizontal" Spacing="14">
+        <Button Classes="primary" Content="Finish" Click="FinishButton_OnClick" />
+        <Button x:Name="ExportSetupButton" Classes="secondary" Content="Export this setup" IsEnabled="False" Click="ExportSetupButton_OnClick" />
+      </StackPanel>
+      <StackPanel Grid.Column="1">
+        <TextBlock Text="Completed at" Foreground="{StaticResource AgenMutedBrush}" FontSize="12" />
+        <TextBlock Text="{Binding ReportCompletedAt}" FontWeight="SemiBold" />
+      </StackPanel>
+    </Grid>
+    <TextBlock Text="Setup export will be enabled by the reproducible profiles milestone." Foreground="{StaticResource AgenMutedBrush}" FontSize="13" Margin="0,20,0,0" />
+  </StackPanel>
+</UserControl>
