@@ -46,6 +46,12 @@ jobs:
       - name: Prepare canonical logo assets
         run: node site/build-assets.mjs
 
+      - name: Confirm profile generation is idempotent
+        run: |
+          cp site/index.html /tmp/agenstart-index.after-first.html
+          node site/build-assets.mjs
+          diff -u /tmp/agenstart-index.after-first.html site/index.html
+
       - name: Parse landing HTML
         run: |
           python - <<'PY'
@@ -62,13 +68,22 @@ jobs:
               'data-download-link',
               'id="product"',
               'id="flow"',
+              'id="profiles"',
               'id="trust"',
               'href="./styles.css"',
               'src="./app.js"',
+              'data-profile-id="it-student"',
+              'data-profile-id="entertainment"',
+              'data-profile-id="family"',
+              'generated:flow-profile-chips',
           ]
           missing = [marker for marker in required if marker not in source]
           if missing:
               raise SystemExit(f"Missing landing markers: {missing}")
+
+          stale = [name for name in ("Creation", "Training") if f">{name}<" in source]
+          if stale:
+              raise SystemExit(f"Landing still uses retired profile names: {stale}")
 
           print("Landing HTML parsed successfully.")
           PY

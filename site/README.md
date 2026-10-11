@@ -15,6 +15,8 @@ Then open `http://localhost:4173`.
 
 `site/assets/generated-logos/` and `site/assets/generated-brand/` are build output. Application artwork stays sourced from `src/AgenStart.Desktop/Assets/AppLogos/`, while the favicon reuses the canonical desktop app icon from `src/AgenStart.Desktop/Assets/agenstart-app-icon.*`; the landing does not maintain duplicate brand assets.
 
+The `#profiles` cards and the flow-step profile chips are generated from `docs/product/profiles.json` into marked regions in `site/index.html`. Rerunning `node site/build-assets.mjs` must not change the file when the registry is unchanged.
+
 ## Release download
 
 The primary CTA resolves the latest published GitHub release at runtime and prefers the standalone `win-x64.exe` asset. It falls back to the ZIP asset, then to the stable `/releases/latest` page if release metadata is unavailable.

@@ -78,7 +78,7 @@ const FRENCH = new Map([
   ["Machine-aware", "Adapté à la machine"],
   ["Recommendations match the hardware.", "Les recommandations tiennent compte du matériel."],
   ["Profile-aware", "Adapté au profil"],
-  ["Development ≠ Creation ≠ Business.", "Développement ≠ Création ≠ Usage professionnel."],
+  ["Development ≠ Creative ≠ Business.", "Développement ≠ Créatif ≠ Usage professionnel."],
   ["Local-first", "Local-first"],
   ["Your inventory stays on your machine.", "L’inventaire reste sur votre machine."],
   ["Explainable", "Explicable"],
@@ -91,11 +91,6 @@ const FRENCH = new Map([
   ["See the machine before suggesting software.", "Comprendre la machine avant de proposer des logiciels."],
   ["OS, architecture, memory, graphics capability and installed apps become useful context — not a fingerprint.", "Le système, l’architecture, la mémoire, les capacités graphiques et les apps installées servent de contexte utile — pas d’empreinte numérique."],
   ["UNDERSTAND THE GOAL", "COMPRENDRE L’USAGE"],
-  ["Development", "Développement"],
-  ["Business", "Professionnel"],
-  ["Creation", "Création"],
-  ["Training", "Formation"],
-  ["Personal", "Personnel"],
   ["Tell AgenStart what this machine is for.", "Dites à AgenStart à quoi servira cette machine."],
   ["The intended use shapes the setup. A development machine needs a different stack from a classroom PC or a creator workstation.", "L’usage prévu façonne la configuration. Un poste de développement n’a pas besoin du même environnement qu’un PC de formation ou une station de création."],
   ["BUILD THE STACK", "CONSTRUIRE L’ENVIRONNEMENT"],
@@ -121,29 +116,10 @@ const FRENCH = new Map([
   ["more than one job.", "plus d’un usage."],
   ["Mix profiles and AgenStart merges recommendations, removes duplicates and keeps only what makes sense for your machine.", "Combinez plusieurs profils : AgenStart fusionne les recommandations, supprime les doublons et ne conserve que ce qui est pertinent pour votre machine."],
   ["Available now", "Disponible"],
-  ["Six profiles already shape real recommendations in AgenStart.", "Six profils orientent déjà les recommandations réelles d’AgenStart."],
-  ["Personal / Everyday", "Personnel / Quotidien"],
-  ["Browsing, media, files, passwords and useful everyday utilities.", "Navigation, médias, fichiers, mots de passe et utilitaires du quotidien."],
-  ["Business / Work", "Professionnel / Travail"],
-  ["Documents, meetings, communication, cloud files and productivity.", "Documents, réunions, communication, fichiers cloud et productivité."],
-  ["Study / Learning", "Études / Apprentissage"],
-  ["Notes, research, flashcards, PDFs, courses and study tools.", "Notes, recherche, fiches de révision, PDF, cours et outils d’apprentissage."],
-  ["Code editors, Git, terminals, API tools, databases and containers.", "Éditeurs de code, Git, terminaux, outils API, bases de données et conteneurs."],
-  ["Creative", "Création"],
-  ["Recording, image work, audio, video, design and 3D tools.", "Enregistrement, image, audio, vidéo, design et outils 3D."],
-  ["Game launchers, voice chat, monitoring, streaming and gaming utilities.", "Launchers de jeux, chat vocal, monitoring, streaming et utilitaires gaming."],
   ["Coming next", "Prochainement"],
   ["The catalogue grows by workflow, not by noise.", "Le catalogue grandit par usage, pas pour faire du volume."],
   ["These profiles are planned, but stay intentionally inactive until their recommendation rules and catalogue coverage are ready.", "Ces profils sont prévus, mais restent volontairement inactifs tant que leurs règles de recommandation et leur couverture catalogue ne sont pas prêtes."],
   ["Coming soon", "À venir"],
-  ["Cybersecurity", "Cybersécurité"],
-  ["Security tooling, labs, network analysis and defensive workflows.", "Outils de sécurité, labs, analyse réseau et workflows défensifs."],
-  ["Data & AI", "Data & IA"],
-  ["Notebooks, runtimes, data tooling, local AI and model workflows.", "Notebooks, runtimes, outils data, IA locale et workflows de modèles."],
-  ["Cloud / DevOps", "Cloud / DevOps"],
-  ["Cloud CLIs, infrastructure tooling, containers and delivery workflows.", "CLI cloud, outils d’infrastructure, conteneurs et workflows de déploiement."],
-  ["IT / System Administration", "IT / Administration système"],
-  ["Remote access, diagnostics, system utilities and fleet operations.", "Accès distant, diagnostic, utilitaires système et opérations de parc."],
   ["Missing your profile? Suggest one", "Votre profil manque ? Proposez-le"],
   ["05 / TRUST IS PART OF THE PRODUCT", "05 / LA CONFIANCE FAIT PARTIE DU PRODUIT"],
   ["It should be easier to install software — not easier to lose control of your machine.", "Installer des logiciels doit devenir plus simple — pas perdre le contrôle de sa machine."],
@@ -202,7 +178,7 @@ function translateTextNodes(language) {
 
   while (node) {
     const parent = node.parentElement;
-    if (!parent || parent.matches("script, style, [data-language-toggle], [data-release-version], [data-release-note]")) {
+    if (!parent || parent.matches("script, style, [data-language-toggle], [data-release-version], [data-release-note], [data-en][data-fr]")) {
       node = walker.nextNode();
       continue;
     }
@@ -297,9 +273,19 @@ function updateUrl(language) {
   window.history.replaceState({}, "", url);
 }
 
+function applyGeneratedCopy(language) {
+  document.querySelectorAll("[data-en][data-fr]").forEach((element) => {
+    const value = language === "fr" ? element.dataset.fr : element.dataset.en;
+    if (value) {
+      element.textContent = value;
+    }
+  });
+}
+
 function applyLanguage(language, { updateHistory = true } = {}) {
   currentLanguage = language;
   translateTextNodes(language);
+  applyGeneratedCopy(language);
   updateMetadata(language);
   updateAccessibility(language);
   renderRelease();
