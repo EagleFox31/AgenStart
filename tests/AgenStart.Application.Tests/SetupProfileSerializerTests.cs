@@ -131,6 +131,51 @@ public sealed class SetupProfileSerializerTests
         Assert.Contains(result.Errors, error => error.Code == "profile.document.invalid_json");
     }
 
+    [Theory]
+    [InlineData("personal")]
+    [InlineData("development")]
+    [InlineData("business")]
+    [InlineData("creative")]
+    [InlineData("learning")]
+    [InlineData("gaming")]
+    [InlineData("creation")]
+    [InlineData("training")]
+    [InlineData("study")]
+    public void Deserialize_AcceptsEveryKnownV1ProfileIdIncludingLegacyAliases(string profileId)
+    {
+        var json = $$"""
+        {
+          "kind": "agenstart.setup",
+          "schemaVersion": 1,
+          "createdAtUtc": "2026-09-04T12:00:00+00:00",
+          "profileId": "{{profileId}}",
+          "applications": [
+            { "applicationId": "7zip" }
+          ]
+        }
+        """;
+
+        var result = _serializer.Deserialize(json);
+
+        Assert.True(result.IsValid);
+        Assert.Equal(profileId, result.Profile?.ProfileId);
+    }
+
+    [Fact]
+    public void Serialize_RejectsFlagsEnumTextProducedByMultiProfileSelection()
+    {
+        var profile = new SetupProfileDocument(
+            SetupProfileDocument.CurrentKind,
+            SetupProfileDocument.CurrentSchemaVersion,
+            DateTimeOffset.UtcNow,
+            "personal, development",
+            [new SetupProfileApplication("7zip")]);
+
+        var exception = Assert.Throws<SetupProfileValidationException>(() => _serializer.Serialize(profile));
+
+        Assert.Contains(exception.Errors, error => error.Code == "profile.profile_id.invalid");
+    }
+
     [Fact]
     public void Serialize_RejectsEmptyApplicationSelection()
     {
