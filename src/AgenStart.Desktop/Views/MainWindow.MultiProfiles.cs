@@ -12,7 +12,6 @@ public sealed partial class MainWindow
     protected override void OnOpened(EventArgs e)
     {
         InstallMultiProfileExperience();
-        InstallRecommendationListExperience();
         base.OnOpened(e);
     }
 
@@ -42,7 +41,7 @@ public sealed partial class MainWindow
                 UsageProfilesControl.CompleteRecommendationBuild();
                 RecommendationsButton.IsEnabled = true;
                 _viewModel.ShowStep(AppStep.Recommendations);
-                RefreshRecommendationListExperience();
+                UpdateRecommendationStickyHeader();
             }
             else
             {

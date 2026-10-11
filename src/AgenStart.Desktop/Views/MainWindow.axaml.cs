@@ -68,14 +68,15 @@ public sealed partial class MainWindow : Window
         YourPcControl.ContinueToProfileRequested += YourPcView_OnContinueToProfileRequested;
         YourPcControl.RefreshRequested += YourPcView_OnRefreshRequested;
 
+        RecommendationsControl.ReviewRequested += RecommendationsView_OnReviewRequested;
+        RecommendationsControl.SelectEssentialsRequested += RecommendationsView_OnSelectEssentialsRequested;
+
+        MainScrollViewer.ScrollChanged += (_, _) => UpdateRecommendationStickyHeader();
+
         _viewModel.PropertyChanged += ViewModel_OnPropertyChanged;
         Opened += OnOpened;
         Closed += OnClosed;
     }
-
-    // Resolves a theme brush defined in Styles/AgenStartTheme.axaml. Shared by
-    // the view-polish partials so hex colours do not get duplicated in C#.
-    internal IBrush ThemeBrush(string key) => (IBrush)this.FindResource(key)!;
 
     private void NavButton_OnClick(object? sender, RoutedEventArgs e)
     {
@@ -133,15 +134,23 @@ public sealed partial class MainWindow : Window
     private void YourPcView_OnContinueToProfileRequested(object? sender, EventArgs e) =>
         _viewModel.ShowStep(AppStep.UsageProfile);
 
-    private void SelectEssentialsButton_OnClick(object? sender, RoutedEventArgs e) =>
+    private void RecommendationsView_OnSelectEssentialsRequested(object? sender, EventArgs e) =>
         _viewModel.SelectEssentialsOnly();
 
-    private void ReviewSetupButton_OnClick(object? sender, RoutedEventArgs e)
+    private void RecommendationsView_OnReviewRequested(object? sender, EventArgs e)
     {
         if (_viewModel.PrepareReview())
         {
             _viewModel.ShowStep(AppStep.Review);
         }
+    }
+
+    internal void UpdateRecommendationStickyHeader()
+    {
+        RecommendationStickyHeader.IsVisible =
+            RecommendationsControl.IsVisible &&
+            _viewModel.HasRecommendations &&
+            MainScrollViewer.Offset.Y >= 118;
     }
 
     private void ReviewView_OnBackRequested(object? sender, EventArgs e) =>
@@ -302,11 +311,6 @@ public sealed partial class MainWindow : Window
             .FirstOrDefault(button => button.GetLogicalDescendants()
                 .OfType<TextBlock>()
                 .Any(text => string.Equals(text.Text, label, StringComparison.Ordinal)));
-
-    private Button? FindButtonByContent(string content) =>
-        this.GetLogicalDescendants()
-            .OfType<Button>()
-            .FirstOrDefault(button => string.Equals(button.Content as string, content, StringComparison.Ordinal));
 
     private void HistoryButton_OnClick(object? sender, RoutedEventArgs e) => _viewModel.ShowStep(AppStep.History);
     private void SettingsButton_OnClick(object? sender, RoutedEventArgs e) => _viewModel.ShowStep(AppStep.Settings);
@@ -591,6 +595,12 @@ public sealed partial class MainWindow : Window
             ReportControl.SetExportEnabled(_viewModel.HasReport && StorageProvider.CanSave);
         }
 
+        if (e.PropertyName is nameof(MainWindowViewModel.HasRecommendations)
+            or nameof(MainWindowViewModel.CurrentStep))
+        {
+            UpdateRecommendationStickyHeader();
+        }
+
         if (e.PropertyName == nameof(MainWindowViewModel.CurrentStep))
         {
             if (_historyView is not null)
@@ -655,6 +665,8 @@ public sealed partial class MainWindow : Window
         ReviewControl.RemoveRequested -= ReviewView_OnRemoveRequested;
         YourPcControl.ContinueToProfileRequested -= YourPcView_OnContinueToProfileRequested;
         YourPcControl.RefreshRequested -= YourPcView_OnRefreshRequested;
+        RecommendationsControl.ReviewRequested -= RecommendationsView_OnReviewRequested;
+        RecommendationsControl.SelectEssentialsRequested -= RecommendationsView_OnSelectEssentialsRequested;
         Opened -= OnOpened;
         _lifetimeCancellation.Cancel();
         _viewModel.Dispose();
