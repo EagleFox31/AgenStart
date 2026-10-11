@@ -49,14 +49,11 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged, IDisposable
     private bool _hasSnapshot;
     private bool _hasRecommendations;
     private bool _hasReview;
-    private bool _isInstalling;
     private bool _agreementsAccepted;
     private UserProfile _selectedProfile = UserProfile.Development;
     private AppStep _currentStep = AppStep.Overview;
 
     private string _recommendationStatus = "Choose a usage profile to build recommendations.";
-    private string _installationStatus = "Ready to install the approved setup.";
-    private string _currentInstallationName = "Waiting to start";
     private string _statusTitle = "Ready for analysis";
     private string _statusMessage = "AgenStart can inspect the essential capabilities of this PC locally.";
     private string _operatingSystem = "Not analysed";
@@ -85,13 +82,18 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged, IDisposable
         Recommendations.CollectionChanged += (_, _) => RelabelRecommendationOrder();
 
         Report = new ReportViewModel();
-        Report.PropertyChanged += Report_OnPropertyChanged;
+        Report.PropertyChanged += RelayChildPropertyChanged;
         Report.ReportItems.CollectionChanged += (_, _) => OnPropertyChanged(nameof(ReportItems));
+
+        Installation = new InstallationViewModel();
+        Installation.PropertyChanged += RelayChildPropertyChanged;
+        Installation.InstallationItems.CollectionChanged += (_, _) => OnPropertyChanged(nameof(InstallationItems));
     }
 
     public ReportViewModel Report { get; }
+    public InstallationViewModel Installation { get; }
 
-    private void Report_OnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    private void RelayChildPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         if (e.PropertyName is null)
         {
@@ -99,6 +101,10 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged, IDisposable
         }
 
         OnPropertyChanged(e.PropertyName);
+        if (e.PropertyName == nameof(InstallationViewModel.IsInstalling))
+        {
+            OnPropertyChanged(nameof(CanStartInstallation));
+        }
     }
 
     private void RelabelRecommendationOrder()
@@ -113,7 +119,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged, IDisposable
 
     public ObservableCollection<RecommendationRowViewModel> Recommendations { get; } = [];
     public ObservableCollection<ReviewRowViewModel> ReviewItems { get; } = [];
-    public ObservableCollection<InstallationRowViewModel> InstallationItems { get; } = [];
+    public ObservableCollection<InstallationRowViewModel> InstallationItems => Installation.InstallationItems;
     public ObservableCollection<ReportRowViewModel> ReportItems => Report.ReportItems;
 
     public AppStep CurrentStep
@@ -172,17 +178,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged, IDisposable
         private set => SetField(ref _hasReview, value);
     }
 
-    public bool IsInstalling
-    {
-        get => _isInstalling;
-        private set
-        {
-            if (SetField(ref _isInstalling, value))
-            {
-                OnPropertyChanged(nameof(CanStartInstallation));
-            }
-        }
-    }
+    public bool IsInstalling => Installation.IsInstalling;
 
     public bool HasReport => Report.HasReport;
 
@@ -233,14 +229,14 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged, IDisposable
 
     public string InstallationStatus
     {
-        get => _installationStatus;
-        private set => SetField(ref _installationStatus, value);
+        get => Installation.InstallationStatus;
+        private set => Installation.SetStatus(value);
     }
 
     public string CurrentInstallationName
     {
-        get => _currentInstallationName;
-        private set => SetField(ref _currentInstallationName, value);
+        get => Installation.CurrentInstallationName;
+        private set => Installation.SetCurrentName(value);
     }
 
     public string ReportStatus => Report.ReportStatus;
@@ -258,10 +254,10 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged, IDisposable
     public int ReviewTotalCount => ReviewItems.Count;
     public bool CanStartInstallation => HasReview && ReviewInstallCount > 0 && AgreementsAccepted && !IsInstalling;
 
-    public int InstallationCompletedCount => InstallationItems.Count(row => row.State == InstallationQueueItemState.Succeeded);
-    public int InstallationFailedCount => InstallationItems.Count(row => row.State == InstallationQueueItemState.Failed);
-    public int InstallationRemainingCount => InstallationItems.Count(row => row.State is InstallationQueueItemState.Queued or InstallationQueueItemState.Running);
-    public int InstallationTotalCount => InstallationItems.Count;
+    public int InstallationCompletedCount => Installation.InstallationCompletedCount;
+    public int InstallationFailedCount => Installation.InstallationFailedCount;
+    public int InstallationRemainingCount => Installation.InstallationRemainingCount;
+    public int InstallationTotalCount => Installation.InstallationTotalCount;
 
     public int ReportProcessedCount => Report.ReportProcessedCount;
     public int ReportInstalledCount => Report.ReportInstalledCount;
@@ -566,10 +562,10 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged, IDisposable
             InstallationItems.Add(row);
         }
 
-        IsInstalling = true;
+        Installation.SetIsInstalling(true);
         InstallationStatus = "AgenStart is installing only the applications you approved.";
         CurrentInstallationName = "Preparing installation queue";
-        RaiseInstallationSummary();
+        Installation.RaiseSummary();
 
         try
         {
@@ -590,8 +586,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged, IDisposable
         }
         finally
         {
-            IsInstalling = false;
-            RaiseInstallationSummary();
+            Installation.SetIsInstalling(false);
+            Installation.RaiseSummary();
         }
     }
 
@@ -622,7 +618,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged, IDisposable
             return false;
         }
 
-        IsInstalling = true;
+        Installation.SetIsInstalling(true);
         InstallationStatus = $"Retrying {row.Name}.";
         CurrentInstallationName = row.Name;
 
@@ -636,8 +632,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged, IDisposable
         }
         finally
         {
-            IsInstalling = false;
-            RaiseInstallationSummary();
+            Installation.SetIsInstalling(false);
+            Installation.RaiseSummary();
         }
     }
 
@@ -676,7 +672,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged, IDisposable
             "session.cancellation-requested" => "Cancellation requested. Waiting for the provider operation to stop safely.",
             _ => progress.Message
         };
-        RaiseInstallationSummary();
+        Installation.RaiseSummary();
     }
 
     private void ApplyInstallationReport(InstallationReport report)
@@ -701,7 +697,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged, IDisposable
                 ? "Installation completed with issues. Failed items can be retried when available."
                 : "Installation completed successfully.";
         CurrentInstallationName = "Queue complete";
-        RaiseInstallationSummary();
+        Installation.RaiseSummary();
     }
 
     private void ClearRecommendations()
@@ -744,7 +740,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged, IDisposable
         Report.Reset();
         InstallationStatus = "Ready to install the approved setup.";
         CurrentInstallationName = "Waiting to start";
-        RaiseInstallationSummary();
+        Installation.RaiseSummary();
     }
 
     private void DisposeInstallationSession()
@@ -775,14 +771,6 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged, IDisposable
         OnPropertyChanged(nameof(ReviewAlreadyInstalledCount));
         OnPropertyChanged(nameof(ReviewTotalCount));
         OnPropertyChanged(nameof(CanStartInstallation));
-    }
-
-    private void RaiseInstallationSummary()
-    {
-        OnPropertyChanged(nameof(InstallationCompletedCount));
-        OnPropertyChanged(nameof(InstallationFailedCount));
-        OnPropertyChanged(nameof(InstallationRemainingCount));
-        OnPropertyChanged(nameof(InstallationTotalCount));
     }
 
     private void ApplySnapshot(MachineSnapshot snapshot)
