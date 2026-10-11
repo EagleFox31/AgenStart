@@ -85,6 +85,15 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged, IDisposable
         _softwareStateResolver = softwareStateResolver ?? new SoftwareStateResolver();
         _recommendationEngine = recommendationEngine ?? new RecommendationEngine();
         _catalogueLoader = catalogueLoader ?? new SoftwareCatalogueLoader();
+        Recommendations.CollectionChanged += (_, _) => RelabelRecommendationOrder();
+    }
+
+    private void RelabelRecommendationOrder()
+    {
+        for (var i = 0; i < Recommendations.Count; i++)
+        {
+            Recommendations[i].OrderLabel = $"{i + 1:00}";
+        }
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;

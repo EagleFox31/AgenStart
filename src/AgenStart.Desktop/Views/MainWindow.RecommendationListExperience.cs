@@ -25,8 +25,6 @@ public sealed partial class MainWindow
 
     private void InstallRecommendationListExperience()
     {
-        ApplyConfirmTerminology();
-
         if (_recommendationListExperienceInstalled)
         {
             return;
@@ -72,35 +70,6 @@ public sealed partial class MainWindow
         };
 
         RefreshRecommendationListExperience();
-    }
-
-    private void ApplyConfirmTerminology()
-    {
-        var navigationLabel = ReviewButton.GetLogicalDescendants()
-            .OfType<TextBlock>()
-            .FirstOrDefault(text => string.Equals(text.Text, "Review", StringComparison.Ordinal));
-        if (navigationLabel is not null)
-        {
-            navigationLabel.Text = "Confirm";
-        }
-
-        var confirmButton = FindButtonByContent("Review setup");
-        if (confirmButton is not null)
-        {
-            confirmButton.Content = "Confirm";
-        }
-
-        foreach (var text in ReviewPanel.GetLogicalDescendants().OfType<TextBlock>())
-        {
-            if (string.Equals(text.Text, "REVIEW", StringComparison.Ordinal))
-            {
-                text.Text = "CONFIRM";
-            }
-            else if (string.Equals(text.Text, "Review your setup", StringComparison.Ordinal))
-            {
-                text.Text = "Confirm your setup";
-            }
-        }
     }
 
     private Border BuildRecommendationStickyHeader()
@@ -180,67 +149,8 @@ public sealed partial class MainWindow
 
     private void RefreshRecommendationListExperience()
     {
-        DecorateRecommendationRowsWithOrder();
         RefreshRecommendationStickySummary();
         UpdateRecommendationStickyHeader();
-    }
-
-    private void DecorateRecommendationRowsWithOrder()
-    {
-        var rows = RecommendationsPanel.GetLogicalDescendants()
-            .OfType<Border>()
-            .Where(border =>
-                border.DataContext is RecommendationRowViewModel &&
-                border.Child is Grid grid &&
-                grid.ColumnDefinitions.Count == 4)
-            .ToArray();
-
-        foreach (var card in rows)
-        {
-            if (card.DataContext is not RecommendationRowViewModel row || card.Child is not Grid grid)
-            {
-                continue;
-            }
-
-            var position = _viewModel.Recommendations.IndexOf(row);
-            if (position < 0)
-            {
-                continue;
-            }
-
-            var orderLabel = grid.Children
-                .OfType<TextBlock>()
-                .FirstOrDefault(text => text.Classes.Contains("recommendationOrder"));
-
-            if (orderLabel is null)
-            {
-                orderLabel = new TextBlock
-                {
-                    Width = 20,
-                    FontSize = 11,
-                    FontWeight = FontWeight.SemiBold,
-                    Foreground = RecommendationStickyMutedBrush,
-                    HorizontalAlignment = HorizontalAlignment.Left,
-                    VerticalAlignment = VerticalAlignment.Center,
-                    TextAlignment = TextAlignment.Left
-                };
-                orderLabel.Classes.Add("recommendationOrder");
-                Grid.SetColumn(orderLabel, 0);
-                grid.Children.Add(orderLabel);
-
-                var logoTile = grid.Children
-                    .OfType<Border>()
-                    .FirstOrDefault(border => Grid.GetColumn(border) == 0);
-                if (logoTile is not null)
-                {
-                    logoTile.Width = 40;
-                    logoTile.Height = 40;
-                    logoTile.HorizontalAlignment = HorizontalAlignment.Right;
-                }
-            }
-
-            orderLabel.Text = $"{position + 1:00}";
-        }
     }
 
     private void RefreshRecommendationStickySummary()

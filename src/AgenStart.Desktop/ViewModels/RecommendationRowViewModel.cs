@@ -22,6 +22,7 @@ public sealed class RecommendationRowViewModel : INotifyPropertyChanged
     private static readonly IBrush TransparentBrush = new SolidColorBrush(Colors.Transparent);
 
     private bool _isSelected;
+    private string _orderLabel = string.Empty;
 
     public RecommendationRowViewModel(
         RecommendationDecision decision,
@@ -71,6 +72,21 @@ public sealed class RecommendationRowViewModel : INotifyPropertyChanged
     public string? StatusDetail { get; }
     public IBrush StatusBrush { get; }
     public IBrush StatusBackgroundBrush { get; }
+
+    public string OrderLabel
+    {
+        get => _orderLabel;
+        set
+        {
+            if (_orderLabel == value)
+            {
+                return;
+            }
+
+            _orderLabel = value;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(OrderLabel)));
+        }
+    }
 
     public bool IsSelected
     {
