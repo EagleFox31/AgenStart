@@ -47,11 +47,9 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged, IDisposable
 
     private bool _isBusy;
     private bool _hasSnapshot;
-    private bool _hasRecommendations;
     private UserProfile _selectedProfile = UserProfile.Development;
     private AppStep _currentStep = AppStep.Overview;
 
-    private string _recommendationStatus = "Choose a usage profile to build recommendations.";
     private string _statusTitle = "Ready for analysis";
     private string _statusMessage = "AgenStart can inspect the essential capabilities of this PC locally.";
     private string _operatingSystem = "Not analysed";
@@ -77,7 +75,6 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged, IDisposable
         _softwareStateResolver = softwareStateResolver ?? new SoftwareStateResolver();
         _recommendationEngine = recommendationEngine ?? new RecommendationEngine();
         _catalogueLoader = catalogueLoader ?? new SoftwareCatalogueLoader();
-        Recommendations.CollectionChanged += (_, _) => RelabelRecommendationOrder();
 
         Report = new ReportViewModel();
         Report.PropertyChanged += RelayChildPropertyChanged;
@@ -90,11 +87,16 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged, IDisposable
         Review = new ReviewViewModel();
         Review.PropertyChanged += RelayChildPropertyChanged;
         Review.ReviewItems.CollectionChanged += (_, _) => OnPropertyChanged(nameof(ReviewItems));
+
+        RecommendationsStep = new RecommendationsViewModel();
+        RecommendationsStep.PropertyChanged += RelayChildPropertyChanged;
+        RecommendationsStep.Recommendations.CollectionChanged += (_, _) => OnPropertyChanged(nameof(Recommendations));
     }
 
     public ReportViewModel Report { get; }
     public InstallationViewModel Installation { get; }
     public ReviewViewModel Review { get; }
+    public RecommendationsViewModel RecommendationsStep { get; }
 
     private void RelayChildPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
@@ -112,23 +114,17 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged, IDisposable
             OnPropertyChanged(nameof(CanStartInstallation));
         }
 
-        if (e.PropertyName == nameof(InstallationViewModel.IsInstalling))
+        if (e.PropertyName is nameof(InstallationViewModel.IsInstalling)
+            or nameof(RecommendationsViewModel.HasRecommendations)
+            or nameof(RecommendationsViewModel.SelectedCount))
         {
             OnPropertyChanged(nameof(CanReview));
         }
     }
 
-    private void RelabelRecommendationOrder()
-    {
-        for (var i = 0; i < Recommendations.Count; i++)
-        {
-            Recommendations[i].OrderLabel = $"{i + 1:00}";
-        }
-    }
-
     public event PropertyChangedEventHandler? PropertyChanged;
 
-    public ObservableCollection<RecommendationRowViewModel> Recommendations { get; } = [];
+    public ObservableCollection<RecommendationRowViewModel> Recommendations => RecommendationsStep.Recommendations;
     public ObservableCollection<ReviewRowViewModel> ReviewItems => Review.ReviewItems;
     public ObservableCollection<InstallationRowViewModel> InstallationItems => Installation.InstallationItems;
     public ObservableCollection<ReportRowViewModel> ReportItems => Report.ReportItems;
@@ -179,8 +175,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged, IDisposable
 
     public bool HasRecommendations
     {
-        get => _hasRecommendations;
-        private set => SetField(ref _hasRecommendations, value);
+        get => RecommendationsStep.HasRecommendations;
+        private set => RecommendationsStep.HasRecommendations = value;
     }
 
     public bool HasReview => Review.HasReview;
@@ -224,8 +220,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged, IDisposable
 
     public string RecommendationStatus
     {
-        get => _recommendationStatus;
-        private set => SetField(ref _recommendationStatus, value);
+        get => RecommendationsStep.RecommendationStatus;
+        private set => RecommendationsStep.RecommendationStatus = value;
     }
 
     public string InstallationStatus
@@ -244,10 +240,10 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged, IDisposable
 
     public string ReportCompletedAt => Report.ReportCompletedAt;
 
-    public int RecommendationCount => Recommendations.Count;
-    public int SelectedCount => Recommendations.Count(row => row.IsSelected);
-    public int AlreadyInstalledCount => Recommendations.Count(row => row.Disposition == RecommendationDisposition.AlreadyInstalled);
-    public int OptionalCount => Recommendations.Count(row => row.Level == RecommendationLevel.Optional && row.Disposition == RecommendationDisposition.Recommended);
+    public int RecommendationCount => RecommendationsStep.RecommendationCount;
+    public int SelectedCount => RecommendationsStep.SelectedCount;
+    public int AlreadyInstalledCount => RecommendationsStep.AlreadyInstalledCount;
+    public int OptionalCount => RecommendationsStep.OptionalCount;
     public bool CanReview => HasRecommendations && SelectedCount > 0 && !IsInstalling;
 
     public int ReviewInstallCount => Review.ReviewInstallCount;
@@ -757,10 +753,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged, IDisposable
 
     private void RaiseRecommendationSummary()
     {
-        OnPropertyChanged(nameof(RecommendationCount));
-        OnPropertyChanged(nameof(SelectedCount));
-        OnPropertyChanged(nameof(AlreadyInstalledCount));
-        OnPropertyChanged(nameof(OptionalCount));
+        RecommendationsStep.RaiseSummary();
         OnPropertyChanged(nameof(CanReview));
     }
 
