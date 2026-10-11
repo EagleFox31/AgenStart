@@ -32,8 +32,6 @@ public sealed partial class MainWindow : Window
     private SettingsView? _settingsView;
     private Button? _historyButton;
     private Button? _settingsButton;
-    private Button? _importSetupButton;
-    private TextBlock? _importStatusText;
     private Guid? _currentHistoryEntryId;
 
     public MainWindow()
@@ -51,7 +49,10 @@ public sealed partial class MainWindow : Window
         ReportButton.IsEnabled = false;
 
         InstallUtilityViews();
-        InstallSetupProfileActions();
+
+        OverviewControl.SetImportSetupEnabled(StorageProvider.CanOpen);
+        OverviewControl.AnalyzeRequested += OverviewView_OnAnalyzeRequested;
+        OverviewControl.ImportSetupRequested += OverviewView_OnImportSetupRequested;
 
         ReportControl.FinishRequested += ReportView_OnFinishRequested;
         ReportControl.ExportSetupRequested += ReportView_OnExportSetupRequested;
@@ -103,7 +104,7 @@ public sealed partial class MainWindow : Window
         }
     }
 
-    private async void AnalyzeButton_OnClick(object? sender, RoutedEventArgs e)
+    private async void OverviewView_OnAnalyzeRequested(object? sender, EventArgs e)
     {
         await _viewModel.AnalyzeAsync(_lifetimeCancellation.Token);
         if (_viewModel.HasSnapshot)
@@ -260,7 +261,7 @@ public sealed partial class MainWindow : Window
 
     private void InstallUtilityViews()
     {
-        if (OverviewPanel.Parent is not Grid pageHost)
+        if (OverviewControl.Parent is not Grid pageHost)
         {
             return;
         }
@@ -295,29 +296,6 @@ public sealed partial class MainWindow : Window
         }
     }
 
-    private void InstallSetupProfileActions()
-    {
-        _importSetupButton = FindButtonByContent("Import a setup");
-        if (_importSetupButton is not null)
-        {
-            _importSetupButton.IsEnabled = StorageProvider.CanOpen;
-            _importSetupButton.Click += ImportSetupButton_OnClick;
-
-            if (_importSetupButton.Parent?.Parent is StackPanel overviewColumn)
-            {
-                _importStatusText = new TextBlock
-                {
-                    IsVisible = false,
-                    FontSize = 13,
-                    Margin = new Thickness(0, 10, 0, 0)
-                };
-                _importStatusText.Classes.Add("subtitle");
-                overviewColumn.Children.Add(_importStatusText);
-            }
-        }
-
-    }
-
     private Button? FindNavigationButton(string label) =>
         this.GetLogicalDescendants()
             .OfType<Button>()
@@ -333,7 +311,7 @@ public sealed partial class MainWindow : Window
     private void HistoryButton_OnClick(object? sender, RoutedEventArgs e) => _viewModel.ShowStep(AppStep.History);
     private void SettingsButton_OnClick(object? sender, RoutedEventArgs e) => _viewModel.ShowStep(AppStep.Settings);
 
-    private async void ImportSetupButton_OnClick(object? sender, RoutedEventArgs e)
+    private async void OverviewView_OnImportSetupRequested(object? sender, EventArgs e)
     {
         try
         {
@@ -593,16 +571,7 @@ public sealed partial class MainWindow : Window
 
     private static string ToProfileId(UserProfile profile) => profile.ToString().ToLowerInvariant();
 
-    private void SetImportStatus(string message)
-    {
-        if (_importStatusText is null)
-        {
-            return;
-        }
-
-        _importStatusText.Text = message;
-        _importStatusText.IsVisible = true;
-    }
+    private void SetImportStatus(string message) => OverviewControl.SetImportStatus(message);
 
     private void ViewModel_OnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
@@ -674,10 +643,8 @@ public sealed partial class MainWindow : Window
         {
             _settingsButton.Click -= SettingsButton_OnClick;
         }
-        if (_importSetupButton is not null)
-        {
-            _importSetupButton.Click -= ImportSetupButton_OnClick;
-        }
+        OverviewControl.AnalyzeRequested -= OverviewView_OnAnalyzeRequested;
+        OverviewControl.ImportSetupRequested -= OverviewView_OnImportSetupRequested;
         ReportControl.FinishRequested -= ReportView_OnFinishRequested;
         ReportControl.ExportSetupRequested -= ReportView_OnExportSetupRequested;
         InstallationControl.CancelRequested -= InstallationView_OnCancelRequested;

@@ -62,31 +62,7 @@
     <Grid Grid.Column="1" Background="{StaticResource AgenSurfaceBrush}">
       <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
         <Grid Margin="72,62,72,54">
-          <Grid x:Name="OverviewPanel" IsVisible="{Binding IsOverview}">
-            <Grid ColumnDefinitions="1.05*,0.95*" ColumnSpacing="64" MaxWidth="1180" HorizontalAlignment="Left">
-              <StackPanel Grid.Column="0" VerticalAlignment="Center">
-                <TextBlock Classes="eyebrow" Text="OVERVIEW" Margin="0,0,0,28" />
-                <TextBlock Classes="pageTitle" Text="Let's prepare this PC." />
-                <TextBlock Classes="subtitle" Text="AgenStart will inspect this machine locally before recommending anything." TextWrapping="Wrap" Margin="0,20,0,0" MaxWidth="570" HorizontalAlignment="Left" />
-                <Border Height="1" Background="{StaticResource AgenDividerBrush}" Margin="0,38,0,38" />
-                <TextBlock Text="Start with a local machine analysis" FontSize="20" FontWeight="SemiBold" />
-                <TextBlock Classes="subtitle" Text="We'll detect Windows, CPU, memory, graphics, storage and WinGet without reading your personal files." TextWrapping="Wrap" Margin="0,9,0,26" />
-                <StackPanel Orientation="Horizontal" Spacing="14">
-                  <Button x:Name="AnalyzeButton" Classes="primary" Click="AnalyzeButton_OnClick" Content="Analyse this PC" />
-                  <Button Classes="secondary" Content="Import a setup" IsEnabled="False" />
-                </StackPanel>
-                <ProgressBar IsIndeterminate="True" IsVisible="{Binding IsBusy}" Height="3" Margin="0,18,80,0" />
-                <StackPanel Orientation="Horizontal" Spacing="10" Margin="0,40,0,0"><TextBlock Text="▱" Foreground="{StaticResource AgenTealBrush}" FontSize="21" /><TextBlock Text="Machine analysis stays on this device." Foreground="{StaticResource AgenMutedBrush}" FontSize="14" VerticalAlignment="Center" /></StackPanel>
-              </StackPanel>
-              <StackPanel Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="390" Spacing="12">
-                <Border Width="74" Height="74" CornerRadius="37" BorderThickness="2" BorderBrush="{StaticResource AgenTealBrush}" HorizontalAlignment="Center"><TextBlock Text="✓" FontSize="35" Foreground="{StaticResource AgenTealBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" /></Border>
-                <TextBlock Text="{Binding StatusTitle}" FontSize="26" FontWeight="SemiBold" TextAlignment="Center" Margin="0,9,0,0" />
-                <TextBlock Text="{Binding StatusMessage}" Classes="subtitle" TextAlignment="Center" TextWrapping="Wrap" />
-                <Border Height="1" Background="{StaticResource AgenDividerBrush}" Margin="0,16,0,12" />
-                <TextBlock Text="You stay in control of what gets installed." Foreground="{StaticResource AgenMutedBrush}" FontSize="14" TextAlignment="Center" />
-              </StackPanel>
-            </Grid>
-          </Grid>
+          <views:OverviewView x:Name="OverviewControl" IsVisible="{Binding IsOverview}" />
 
           <views:YourPcView x:Name="YourPcControl" IsVisible="{Binding IsYourPc}" MaxWidth="1120" HorizontalAlignment="Left" />
 
