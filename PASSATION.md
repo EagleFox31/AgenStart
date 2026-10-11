@@ -17,6 +17,9 @@ migrant leur contenu vers du XAML déclaratif. Plan complet :
   and Confirm label — `OrderLabel` sur `RecommendationRowViewModel` maintenu
   via `CollectionChanged`, terminologie "Confirm" en XAML, retrait de
   `DecorateRecommendationRowsWithOrder` + `ApplyConfirmTerminology`.
+- `d76ccb6` refactor(desktop): extract Report/Installation/Review panels
+  into UserControls — 3 UC avec events (Finish/Export, Cancel/ViewReport/Retry,
+  Start/Back/Remove), suppression du walk `FindButtonByContent("Export this setup")`.
 
 ## Fait côté étape 4b (3 passes surgicales)
 - Partiel `MainWindow.MultiProfiles.cs` : plus de `Children.Clear/Add`,
@@ -40,14 +43,18 @@ utilisateur :
   les fichiers explicitement touchés par la passe en cours.
 
 ## Reste à faire (ordre)
-1. **Validation visuelle** sticky-header + ordinal + "Confirm" après rebuild.
-2. **Étape 4 (vraie)** — Extraire 7 panels inline (`Overview`, `YourPc`,
-   `Recommendations`, `Review`, `Installation`, `Report` + `UsageProfiles` déjà fait)
-   en `UserControl` dédiés + `ContentControl` piloté par `CurrentStep`.
-   Supprimer la série de `*Button_OnClick` navigationnels + les `*Stripe` manuels.
-3. **Étape 4b suite** — Extraire la sticky-header de
-   `MainWindow.RecommendationListExperience.cs` dans le futur
-   `RecommendationsView` UserControl, puis supprimer le partiel.
+1. **Validation visuelle** sticky-header + ordinal + "Confirm" + Report/
+   Installation/Review après rebuild (3 UC fraîchement extraits).
+2. **Étape 4 (suite)** — Extraire les 3 panels restants :
+   - `OverviewView` : attention au walk `FindButtonByContent("Import a setup")`
+     et à l'injection du `_importStatusText` dans le StackPanel parent du
+     bouton Import. Remplacer par des événements `AnalyzeRequested`,
+     `ImportSetupRequested` + binding/méthode pour le status d'import.
+   - `YourPcView` : simple (ContinueToProfile + RefreshButton).
+   - `RecommendationsView` : fusion avec la sticky-header de
+     `MainWindow.RecommendationListExperience.cs` (étape 4b suite).
+3. **Étape 4b suite** — Déplacer la sticky-header dans `RecommendationsView`,
+   puis supprimer `MainWindow.RecommendationListExperience.cs`.
 4. **Étape 5** — Découper `MainWindowViewModel` (~988 l) en sous-VMs par étape.
 5. **Étape 6** — Sidebar en `ItemsControl` + `NavItemViewModel`.
 6. **Étape 7 (fin)** — Supprimer `MainWindow.MultiProfiles.cs` +
