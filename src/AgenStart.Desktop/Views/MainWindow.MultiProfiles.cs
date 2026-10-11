@@ -7,7 +7,6 @@ namespace AgenStart.Desktop.Views;
 
 public sealed partial class MainWindow
 {
-    private UsageProfilesView? _usageProfilesView;
     private IDisposable? _multiProfileProgressSubscription;
 
     protected override void OnOpened(EventArgs e)
@@ -19,14 +18,9 @@ public sealed partial class MainWindow
 
     private void InstallMultiProfileExperience()
     {
-        if (_usageProfilesView is not null)
-        {
-            return;
-        }
+        UsageProfilesControl.SetSelection(_viewModel.SelectedProfile);
 
-        var view = new UsageProfilesView();
-        view.SetSelection(_viewModel.SelectedProfile);
-        view.SelectionChanged += profiles =>
+        UsageProfilesControl.SelectionChanged += profiles =>
         {
             if (profiles == UserProfile.None)
             {
@@ -37,33 +31,33 @@ public sealed partial class MainWindow
             RecommendationsButton.IsEnabled = false;
         };
 
-        view.BuildRequested += async (_, _) =>
+        UsageProfilesControl.BuildRequested += async (_, _) =>
         {
-            view.BeginRecommendationBuild();
-            _viewModel.SelectProfile(view.SelectedProfiles);
+            UsageProfilesControl.BeginRecommendationBuild();
+            _viewModel.SelectProfile(UsageProfilesControl.SelectedProfiles);
 
             await _viewModel.BuildRecommendationsAsync(_lifetimeCancellation.Token);
             if (_viewModel.HasRecommendations)
             {
-                view.CompleteRecommendationBuild();
+                UsageProfilesControl.CompleteRecommendationBuild();
                 RecommendationsButton.IsEnabled = true;
                 _viewModel.ShowStep(AppStep.Recommendations);
                 RefreshRecommendationListExperience();
             }
             else
             {
-                view.FailRecommendationBuild(_viewModel.RecommendationStatus);
+                UsageProfilesControl.FailRecommendationBuild(_viewModel.RecommendationStatus);
             }
         };
 
-        view.BackRequested += (_, _) => _viewModel.ShowStep(AppStep.YourPc);
+        UsageProfilesControl.BackRequested += (_, _) => _viewModel.ShowStep(AppStep.YourPc);
 
         _multiProfileProgressSubscription = RecommendationPipelineDiagnostics.Subscribe(stage =>
             Dispatcher.UIThread.Post(() =>
             {
-                if (_viewModel.IsBusy && UsageProfilePanel.IsVisible)
+                if (_viewModel.IsBusy && UsageProfilesControl.IsVisible)
                 {
-                    view.UpdateRecommendationProgress(stage);
+                    UsageProfilesControl.UpdateRecommendationProgress(stage);
                 }
             }));
 
@@ -72,9 +66,5 @@ public sealed partial class MainWindow
             _multiProfileProgressSubscription?.Dispose();
             _multiProfileProgressSubscription = null;
         };
-
-        UsageProfilePanel.Children.Clear();
-        UsageProfilePanel.Children.Add(view);
-        _usageProfilesView = view;
     }
 }

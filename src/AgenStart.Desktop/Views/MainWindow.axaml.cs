@@ -117,29 +117,6 @@ public sealed partial class MainWindow : Window
     }
 
     private void ContinueToProfile_OnClick(object? sender, RoutedEventArgs e) => _viewModel.ShowStep(AppStep.UsageProfile);
-    private void ProfileBackButton_OnClick(object? sender, RoutedEventArgs e) => _viewModel.ShowStep(AppStep.YourPc);
-
-    private void PersonalProfile_OnChecked(object? sender, RoutedEventArgs e) => SelectProfile(UserProfile.Personal);
-    private void DevelopmentProfile_OnChecked(object? sender, RoutedEventArgs e) => SelectProfile(UserProfile.Development);
-    private void BusinessProfile_OnChecked(object? sender, RoutedEventArgs e) => SelectProfile(UserProfile.Business);
-    private void CreationProfile_OnChecked(object? sender, RoutedEventArgs e) => SelectProfile(UserProfile.Creation);
-    private void TrainingProfile_OnChecked(object? sender, RoutedEventArgs e) => SelectProfile(UserProfile.Training);
-
-    private void SelectProfile(UserProfile profile)
-    {
-        _viewModel.SelectProfile(profile);
-        RecommendationsButton.IsEnabled = false;
-    }
-
-    private async void BuildRecommendationsButton_OnClick(object? sender, RoutedEventArgs e)
-    {
-        await _viewModel.BuildRecommendationsAsync(_lifetimeCancellation.Token);
-        if (_viewModel.HasRecommendations)
-        {
-            RecommendationsButton.IsEnabled = true;
-            _viewModel.ShowStep(AppStep.Recommendations);
-        }
-    }
 
     private void SelectEssentialsButton_OnClick(object? sender, RoutedEventArgs e) =>
         _viewModel.SelectEssentialsOnly();
