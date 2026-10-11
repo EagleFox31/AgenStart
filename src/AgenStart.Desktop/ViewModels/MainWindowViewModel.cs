@@ -48,8 +48,6 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged, IDisposable
     private bool _isBusy;
     private bool _hasSnapshot;
     private bool _hasRecommendations;
-    private bool _hasReview;
-    private bool _agreementsAccepted;
     private UserProfile _selectedProfile = UserProfile.Development;
     private AppStep _currentStep = AppStep.Overview;
 
@@ -88,10 +86,15 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged, IDisposable
         Installation = new InstallationViewModel();
         Installation.PropertyChanged += RelayChildPropertyChanged;
         Installation.InstallationItems.CollectionChanged += (_, _) => OnPropertyChanged(nameof(InstallationItems));
+
+        Review = new ReviewViewModel();
+        Review.PropertyChanged += RelayChildPropertyChanged;
+        Review.ReviewItems.CollectionChanged += (_, _) => OnPropertyChanged(nameof(ReviewItems));
     }
 
     public ReportViewModel Report { get; }
     public InstallationViewModel Installation { get; }
+    public ReviewViewModel Review { get; }
 
     private void RelayChildPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
@@ -101,9 +104,17 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged, IDisposable
         }
 
         OnPropertyChanged(e.PropertyName);
-        if (e.PropertyName == nameof(InstallationViewModel.IsInstalling))
+        if (e.PropertyName is nameof(InstallationViewModel.IsInstalling)
+            or nameof(ReviewViewModel.HasReview)
+            or nameof(ReviewViewModel.AgreementsAccepted)
+            or nameof(ReviewViewModel.ReviewInstallCount))
         {
             OnPropertyChanged(nameof(CanStartInstallation));
+        }
+
+        if (e.PropertyName == nameof(InstallationViewModel.IsInstalling))
+        {
+            OnPropertyChanged(nameof(CanReview));
         }
     }
 
@@ -118,7 +129,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged, IDisposable
     public event PropertyChangedEventHandler? PropertyChanged;
 
     public ObservableCollection<RecommendationRowViewModel> Recommendations { get; } = [];
-    public ObservableCollection<ReviewRowViewModel> ReviewItems { get; } = [];
+    public ObservableCollection<ReviewRowViewModel> ReviewItems => Review.ReviewItems;
     public ObservableCollection<InstallationRowViewModel> InstallationItems => Installation.InstallationItems;
     public ObservableCollection<ReportRowViewModel> ReportItems => Report.ReportItems;
 
@@ -172,11 +183,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged, IDisposable
         private set => SetField(ref _hasRecommendations, value);
     }
 
-    public bool HasReview
-    {
-        get => _hasReview;
-        private set => SetField(ref _hasReview, value);
-    }
+    public bool HasReview => Review.HasReview;
 
     public bool IsInstalling => Installation.IsInstalling;
 
@@ -184,14 +191,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged, IDisposable
 
     public bool AgreementsAccepted
     {
-        get => _agreementsAccepted;
-        set
-        {
-            if (SetField(ref _agreementsAccepted, value))
-            {
-                OnPropertyChanged(nameof(CanStartInstallation));
-            }
-        }
+        get => Review.AgreementsAccepted;
+        set => Review.AgreementsAccepted = value;
     }
 
     public UserProfile SelectedProfile
@@ -249,9 +250,9 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged, IDisposable
     public int OptionalCount => Recommendations.Count(row => row.Level == RecommendationLevel.Optional && row.Disposition == RecommendationDisposition.Recommended);
     public bool CanReview => HasRecommendations && SelectedCount > 0 && !IsInstalling;
 
-    public int ReviewInstallCount => ReviewItems.Count(row => row.WillInstall);
-    public int ReviewAlreadyInstalledCount => ReviewItems.Count(row => row.AlreadyInstalled);
-    public int ReviewTotalCount => ReviewItems.Count;
+    public int ReviewInstallCount => Review.ReviewInstallCount;
+    public int ReviewAlreadyInstalledCount => Review.ReviewAlreadyInstalledCount;
+    public int ReviewTotalCount => Review.ReviewTotalCount;
     public bool CanStartInstallation => HasReview && ReviewInstallCount > 0 && AgreementsAccepted && !IsInstalling;
 
     public int InstallationCompletedCount => Installation.InstallationCompletedCount;
@@ -479,9 +480,9 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged, IDisposable
                 row.Disposition == RecommendationDisposition.AlreadyInstalled));
         }
 
-        HasReview = ReviewItems.Any(row => row.WillInstall);
+        Review.SetHasReview(ReviewItems.Any(row => row.WillInstall));
         AgreementsAccepted = false;
-        RaiseReviewSummary();
+        Review.RaiseSummary();
         return HasReview;
     }
 
@@ -721,10 +722,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged, IDisposable
             return;
         }
 
-        ReviewItems.Clear();
-        HasReview = false;
-        AgreementsAccepted = false;
-        RaiseReviewSummary();
+        Review.Reset();
+        Review.RaiseSummary();
     }
 
     private void ResetInstallationFlow()
@@ -765,15 +764,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged, IDisposable
         OnPropertyChanged(nameof(CanReview));
     }
 
-    private void RaiseReviewSummary()
-    {
-        OnPropertyChanged(nameof(ReviewInstallCount));
-        OnPropertyChanged(nameof(ReviewAlreadyInstalledCount));
-        OnPropertyChanged(nameof(ReviewTotalCount));
-        OnPropertyChanged(nameof(CanStartInstallation));
-    }
-
-    private void ApplySnapshot(MachineSnapshot snapshot)
+private void ApplySnapshot(MachineSnapshot snapshot)
     {
         _machineSnapshot = snapshot;
         HasSnapshot = snapshot.Platform.Kind == PlatformKind.Windows;
