@@ -64,6 +64,9 @@ public sealed partial class MainWindow : Window
         ReviewControl.BackRequested += ReviewView_OnBackRequested;
         ReviewControl.RemoveRequested += ReviewView_OnRemoveRequested;
 
+        YourPcControl.ContinueToProfileRequested += YourPcView_OnContinueToProfileRequested;
+        YourPcControl.RefreshRequested += YourPcView_OnRefreshRequested;
+
         _viewModel.PropertyChanged += ViewModel_OnPropertyChanged;
         Opened += OnOpened;
         Closed += OnClosed;
@@ -110,7 +113,7 @@ public sealed partial class MainWindow : Window
         }
     }
 
-    private async void RefreshButton_OnClick(object? sender, RoutedEventArgs e)
+    private async void YourPcView_OnRefreshRequested(object? sender, EventArgs e)
     {
         await _viewModel.AnalyzeAsync(_lifetimeCancellation.Token);
         if (_viewModel.HasSnapshot)
@@ -126,7 +129,8 @@ public sealed partial class MainWindow : Window
         RecommendationsButton.IsEnabled = false;
     }
 
-    private void ContinueToProfile_OnClick(object? sender, RoutedEventArgs e) => _viewModel.ShowStep(AppStep.UsageProfile);
+    private void YourPcView_OnContinueToProfileRequested(object? sender, EventArgs e) =>
+        _viewModel.ShowStep(AppStep.UsageProfile);
 
     private void SelectEssentialsButton_OnClick(object? sender, RoutedEventArgs e) =>
         _viewModel.SelectEssentialsOnly();
@@ -682,6 +686,8 @@ public sealed partial class MainWindow : Window
         ReviewControl.StartInstallationRequested -= ReviewView_OnStartInstallationRequested;
         ReviewControl.BackRequested -= ReviewView_OnBackRequested;
         ReviewControl.RemoveRequested -= ReviewView_OnRemoveRequested;
+        YourPcControl.ContinueToProfileRequested -= YourPcView_OnContinueToProfileRequested;
+        YourPcControl.RefreshRequested -= YourPcView_OnRefreshRequested;
         Opened -= OnOpened;
         _lifetimeCancellation.Cancel();
         _viewModel.Dispose();
