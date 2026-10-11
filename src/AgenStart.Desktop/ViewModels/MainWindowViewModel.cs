@@ -8,6 +8,7 @@ using AgenStart.Catalogue;
 using AgenStart.Core.Catalogue;
 using AgenStart.Core.Machine;
 using AgenStart.Desktop.LocalData;
+using AgenStart.Desktop.ViewModels.Steps;
 using AgenStart.PackageManagement;
 using AgenStart.Platform.Windows.Inventory;
 using AgenStart.Platform.Windows.SoftwareInventory;
@@ -42,7 +43,6 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged, IDisposable
     private SoftwareCatalogue? _catalogue;
     private InstallationOrchestrator? _installationOrchestrator;
     private InstallationSession? _installationSession;
-    private InstallationReport? _installationReport;
     private bool _disposed;
 
     private bool _isBusy;
@@ -50,7 +50,6 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged, IDisposable
     private bool _hasRecommendations;
     private bool _hasReview;
     private bool _isInstalling;
-    private bool _hasReport;
     private bool _agreementsAccepted;
     private UserProfile _selectedProfile = UserProfile.Development;
     private AppStep _currentStep = AppStep.Overview;
@@ -58,8 +57,6 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged, IDisposable
     private string _recommendationStatus = "Choose a usage profile to build recommendations.";
     private string _installationStatus = "Ready to install the approved setup.";
     private string _currentInstallationName = "Waiting to start";
-    private string _reportStatus = "No installation report yet.";
-    private string _reportCompletedAt = "—";
     private string _statusTitle = "Ready for analysis";
     private string _statusMessage = "AgenStart can inspect the essential capabilities of this PC locally.";
     private string _operatingSystem = "Not analysed";
@@ -86,6 +83,22 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged, IDisposable
         _recommendationEngine = recommendationEngine ?? new RecommendationEngine();
         _catalogueLoader = catalogueLoader ?? new SoftwareCatalogueLoader();
         Recommendations.CollectionChanged += (_, _) => RelabelRecommendationOrder();
+
+        Report = new ReportViewModel();
+        Report.PropertyChanged += Report_OnPropertyChanged;
+        Report.ReportItems.CollectionChanged += (_, _) => OnPropertyChanged(nameof(ReportItems));
+    }
+
+    public ReportViewModel Report { get; }
+
+    private void Report_OnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName is null)
+        {
+            return;
+        }
+
+        OnPropertyChanged(e.PropertyName);
     }
 
     private void RelabelRecommendationOrder()
@@ -101,7 +114,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged, IDisposable
     public ObservableCollection<RecommendationRowViewModel> Recommendations { get; } = [];
     public ObservableCollection<ReviewRowViewModel> ReviewItems { get; } = [];
     public ObservableCollection<InstallationRowViewModel> InstallationItems { get; } = [];
-    public ObservableCollection<ReportRowViewModel> ReportItems { get; } = [];
+    public ObservableCollection<ReportRowViewModel> ReportItems => Report.ReportItems;
 
     public AppStep CurrentStep
     {
@@ -171,11 +184,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged, IDisposable
         }
     }
 
-    public bool HasReport
-    {
-        get => _hasReport;
-        private set => SetField(ref _hasReport, value);
-    }
+    public bool HasReport => Report.HasReport;
 
     public bool AgreementsAccepted
     {
@@ -234,17 +243,9 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged, IDisposable
         private set => SetField(ref _currentInstallationName, value);
     }
 
-    public string ReportStatus
-    {
-        get => _reportStatus;
-        private set => SetField(ref _reportStatus, value);
-    }
+    public string ReportStatus => Report.ReportStatus;
 
-    public string ReportCompletedAt
-    {
-        get => _reportCompletedAt;
-        private set => SetField(ref _reportCompletedAt, value);
-    }
+    public string ReportCompletedAt => Report.ReportCompletedAt;
 
     public int RecommendationCount => Recommendations.Count;
     public int SelectedCount => Recommendations.Count(row => row.IsSelected);
@@ -262,13 +263,11 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged, IDisposable
     public int InstallationRemainingCount => InstallationItems.Count(row => row.State is InstallationQueueItemState.Queued or InstallationQueueItemState.Running);
     public int InstallationTotalCount => InstallationItems.Count;
 
-    public int ReportProcessedCount => ReportItems.Count;
-    public int ReportInstalledCount => _installationReport?.Items.Count(item =>
-        item.State == InstallationQueueItemState.Succeeded &&
-        item.LastOperationStatus != PackageOperationStatus.AlreadyInstalled) ?? 0;
-    public int ReportAlreadyInstalledCount => ReportItems.Count(row => row.Result == "Already installed");
-    public int ReportFailedCount => _installationReport?.FailedCount ?? 0;
-    public bool ReportRequiresReboot => _installationReport?.Items.Any(item => item.RequiresReboot) == true;
+    public int ReportProcessedCount => Report.ReportProcessedCount;
+    public int ReportInstalledCount => Report.ReportInstalledCount;
+    public int ReportAlreadyInstalledCount => Report.ReportAlreadyInstalledCount;
+    public int ReportFailedCount => Report.ReportFailedCount;
+    public bool ReportRequiresReboot => Report.ReportRequiresReboot;
 
     public string StatusTitle
     {
@@ -544,9 +543,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged, IDisposable
 
         DisposeInstallationSession();
         InstallationItems.Clear();
-        ReportItems.Clear();
-        _installationReport = null;
-        HasReport = false;
+        Report.Reset();
 
         var verifier = new SoftwareInventoryInstallationVerifier(
             _softwareInventory,
@@ -684,8 +681,6 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged, IDisposable
 
     private void ApplyInstallationReport(InstallationReport report)
     {
-        _installationReport = report;
-
         foreach (var snapshot in report.Items)
         {
             var row = InstallationItems.FirstOrDefault(item =>
@@ -693,76 +688,20 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged, IDisposable
             row?.Apply(snapshot);
         }
 
-        BuildReportRows(report);
-        HasReport = true;
+        if (_catalogue is not null)
+        {
+            Report.Apply(
+                report,
+                _catalogue,
+                Recommendations.Where(row => row.Disposition == RecommendationDisposition.AlreadyInstalled));
+        }
         InstallationStatus = report.State == InstallationSessionState.Cancelled
             ? "Installation cancelled. Review the final state below."
             : report.FailedCount > 0
                 ? "Installation completed with issues. Failed items can be retried when available."
                 : "Installation completed successfully.";
         CurrentInstallationName = "Queue complete";
-        ReportStatus = report.State == InstallationSessionState.Cancelled
-            ? "The approved setup was cancelled before every item completed."
-            : report.FailedCount > 0
-                ? "AgenStart finished the approved setup with issues."
-                : "AgenStart finished the approved setup.";
-        ReportCompletedAt = report.CompletedAtUtc?.ToLocalTime().ToString("g", CultureInfo.CurrentCulture) ?? "—";
         RaiseInstallationSummary();
-        RaiseReportSummary();
-    }
-
-    private void BuildReportRows(InstallationReport report)
-    {
-        ReportItems.Clear();
-        if (_catalogue is null)
-        {
-            return;
-        }
-
-        var catalogueById = _catalogue.Applications.ToDictionary(
-            application => application.Id,
-            StringComparer.OrdinalIgnoreCase);
-        var included = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-
-        foreach (var item in report.Items.OrderBy(item => item.Sequence))
-        {
-            if (!catalogueById.TryGetValue(item.ApplicationId, out var application))
-            {
-                continue;
-            }
-
-            var result = item.State switch
-            {
-                InstallationQueueItemState.Succeeded when item.LastOperationStatus == PackageOperationStatus.AlreadyInstalled => "Already installed",
-                InstallationQueueItemState.Succeeded => "Installed",
-                InstallationQueueItemState.Failed => "Failed",
-                InstallationQueueItemState.Skipped => "Skipped",
-                InstallationQueueItemState.Cancelled => "Cancelled",
-                _ => item.State.ToString()
-            };
-
-            ReportItems.Add(new ReportRowViewModel(
-                item.ApplicationId,
-                application.Name,
-                BuildInitials(application.Name),
-                result,
-                item.InstalledVersion,
-                item.RequiresReboot));
-            included.Add(item.ApplicationId);
-        }
-
-        foreach (var recommendation in Recommendations.Where(row =>
-                     row.Disposition == RecommendationDisposition.AlreadyInstalled &&
-                     !included.Contains(row.ApplicationId)))
-        {
-            ReportItems.Add(new ReportRowViewModel(
-                recommendation.ApplicationId,
-                recommendation.Name,
-                recommendation.Initials,
-                "Already installed",
-                null,
-                requiresReboot: false));
-        }
     }
 
     private void ClearRecommendations()
@@ -802,15 +741,10 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged, IDisposable
         ResetReviewOnly();
         DisposeInstallationSession();
         InstallationItems.Clear();
-        ReportItems.Clear();
-        _installationReport = null;
-        HasReport = false;
+        Report.Reset();
         InstallationStatus = "Ready to install the approved setup.";
         CurrentInstallationName = "Waiting to start";
-        ReportStatus = "No installation report yet.";
-        ReportCompletedAt = "—";
         RaiseInstallationSummary();
-        RaiseReportSummary();
     }
 
     private void DisposeInstallationSession()
@@ -849,15 +783,6 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged, IDisposable
         OnPropertyChanged(nameof(InstallationFailedCount));
         OnPropertyChanged(nameof(InstallationRemainingCount));
         OnPropertyChanged(nameof(InstallationTotalCount));
-    }
-
-    private void RaiseReportSummary()
-    {
-        OnPropertyChanged(nameof(ReportProcessedCount));
-        OnPropertyChanged(nameof(ReportInstalledCount));
-        OnPropertyChanged(nameof(ReportAlreadyInstalledCount));
-        OnPropertyChanged(nameof(ReportFailedCount));
-        OnPropertyChanged(nameof(ReportRequiresReboot));
     }
 
     private void ApplySnapshot(MachineSnapshot snapshot)
