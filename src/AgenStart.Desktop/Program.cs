@@ -1,5 +1,6 @@
 using System.Text.Json;
 using Avalonia;
+using AgenStart.Catalogue;
 using AgenStart.Desktop.Icons;
 using AgenStart.Desktop.LocalData;
 
@@ -29,6 +30,11 @@ internal static class Program
         try
         {
             BuildAvaloniaApp().SetupWithoutStarting();
+
+            using (var loaderStream = PackagedCatalogue.OpenRead())
+            {
+                new SoftwareCatalogueLoader().Load(loaderStream);
+            }
 
             using var catalogueStream = PackagedCatalogue.OpenRead();
             using var document = JsonDocument.Parse(catalogueStream);

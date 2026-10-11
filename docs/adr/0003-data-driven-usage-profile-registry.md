@@ -127,7 +127,7 @@ Aligned with the Windows 11 Device-usage intents, the registry adds two profiles
 | id | Initial status | Scope |
 |---|---|---|
 | `family` | `planned` | shared or children's PCs: parental controls, safe browsing, learning-friendly defaults |
-| `entertainment` | `planned` | music, video and media-center use |
+| `entertainment` | `active` (2026-10-11) | music, video and media-center use |
 
 `personal` is **kept** as the everyday baseline (archives, media playback, browser, password manager, PDF). Windows intents are additive personalization on top of a working system, and AgenStart still needs a baseline that applies to every machine. Entertainment-type entries currently under `personal` (e.g. Discord) are re-evaluated when `entertainment` becomes active; until then current `personal` recommendations stay unchanged so the golden test remains valid.
 

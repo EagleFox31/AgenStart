@@ -1,7 +1,9 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using AgenStart.Core.Catalogue;
+using AgenStart.Core.Profiles;
 using AgenStart.Core.Recommendations;
+using AgenStart.Desktop.ViewModels;
 
 namespace AgenStart.Desktop.Views;
 
@@ -10,14 +12,27 @@ public sealed partial class UsageProfilesView : UserControl
     private bool _updating;
 
     public UsageProfilesView()
+        : this(ProfileRegistry.Default)
     {
+    }
+
+    public UsageProfilesView(ProfileRegistry profiles)
+    {
+        ArgumentNullException.ThrowIfNull(profiles);
+        Options = profiles.Active
+            .Select(profile => new ProfileOptionViewModel(profile, profiles.ToUserProfile(profile.Id)))
+            .ToArray();
+
         InitializeComponent();
+        DataContext = this;
         SetSelection(UserProfile.Development);
     }
 
     public event Action<UserProfile>? SelectionChanged;
     public event EventHandler? BuildRequested;
     public event EventHandler? BackRequested;
+
+    public IReadOnlyList<ProfileOptionViewModel> Options { get; }
 
     public UserProfile SelectedProfiles => BuildSelection();
 
@@ -26,16 +41,16 @@ public sealed partial class UsageProfilesView : UserControl
         _updating = true;
         try
         {
-            PersonalCheckBox.IsChecked = profiles.HasFlag(UserProfile.Personal);
-            BusinessCheckBox.IsChecked = profiles.HasFlag(UserProfile.Business);
-            LearningCheckBox.IsChecked = profiles.HasFlag(UserProfile.Learning);
-            DevelopmentCheckBox.IsChecked = profiles.HasFlag(UserProfile.Development);
-            CreativeCheckBox.IsChecked = profiles.HasFlag(UserProfile.Creative);
-            GamingCheckBox.IsChecked = profiles.HasFlag(UserProfile.Gaming);
+            foreach (var option in Options)
+            {
+                option.IsSelected = profiles.HasFlag(option.Flag);
+            }
 
             if (BuildSelection() == UserProfile.None)
             {
-                DevelopmentCheckBox.IsChecked = true;
+                var fallback = Options.FirstOrDefault(option => option.Flag == UserProfile.Development)
+                    ?? Options[0];
+                fallback.IsSelected = true;
             }
 
             RefreshSummary();
@@ -105,9 +120,13 @@ public sealed partial class UsageProfilesView : UserControl
             _updating = true;
             try
             {
-                if (sender is CheckBox checkBox)
+                if (sender is CheckBox { DataContext: ProfileOptionViewModel option })
                 {
-                    checkBox.IsChecked = true;
+                    option.IsSelected = true;
+                }
+                else if (Options.Count > 0)
+                {
+                    Options[0].IsSelected = true;
                 }
             }
             finally
@@ -131,26 +150,19 @@ public sealed partial class UsageProfilesView : UserControl
     private UserProfile BuildSelection()
     {
         var result = UserProfile.None;
-        if (PersonalCheckBox.IsChecked == true) result |= UserProfile.Personal;
-        if (BusinessCheckBox.IsChecked == true) result |= UserProfile.Business;
-        if (LearningCheckBox.IsChecked == true) result |= UserProfile.Learning;
-        if (DevelopmentCheckBox.IsChecked == true) result |= UserProfile.Development;
-        if (CreativeCheckBox.IsChecked == true) result |= UserProfile.Creative;
-        if (GamingCheckBox.IsChecked == true) result |= UserProfile.Gaming;
+        foreach (var option in Options.Where(option => option.IsSelected))
+        {
+            result |= option.Flag;
+        }
+
         return result;
     }
 
     private void RefreshSummary()
     {
-        var selected = new List<string>();
-        if (PersonalCheckBox.IsChecked == true) selected.Add("Personal");
-        if (BusinessCheckBox.IsChecked == true) selected.Add("Work");
-        if (LearningCheckBox.IsChecked == true) selected.Add("Learning");
-        if (DevelopmentCheckBox.IsChecked == true) selected.Add("Development");
-        if (CreativeCheckBox.IsChecked == true) selected.Add("Creative");
-        if (GamingCheckBox.IsChecked == true) selected.Add("Gaming");
-
-        SelectedProfilesText.Text = string.Join(" + ", selected);
+        SelectedProfilesText.Text = string.Join(
+            " + ",
+            Options.Where(option => option.IsSelected).Select(option => option.Label));
     }
 
     private void SetRecommendationProgress(double value, string label)

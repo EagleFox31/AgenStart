@@ -23,7 +23,7 @@ Entry format: context, symptom, root cause, fix, prevention, generalized lesson.
   - The CI workflows use the positional form with `--no-restore`; the last observed CI runs (2026-09-16) reported `total: 7` for Catalogue tests. Behaviour on the current hosted-runner SDK is not verified.
 - **Root cause:** not established. The positional form is not the documented invocation for Microsoft.Testing.Platform mode in .NET 10 (`--project` is); the build-inside-test case needs further diagnosis.
 - **Fix / workaround:** build first, then `dotnet test --project <csproj> --no-build`.
-- **Prevention:** exit code 5 is non-zero, so CI fails loudly rather than passing falsely. `installation-tests.yml` and `recommendation-tests.yml` now build explicitly and run `dotnet test --project … --no-build` (2026-10-11); `catalogue-tests.yml` and `package-management-tests.yml` still use the positional form and should follow when next touched.
+- **Prevention:** exit code 5 is non-zero, so CI fails loudly rather than passing falsely. `catalogue-tests.yml`, `installation-tests.yml` and `recommendation-tests.yml` now build explicitly and run `dotnet test --project … --no-build` (2026-10-11); `package-management-tests.yml` still uses the positional form and should follow when next touched.
 - **Generalized lesson:** a green test step must assert that tests were discovered; treat "zero tests" as a failure, never as success.
 
 ## LL-002 — No `.gitignore`: build output exposed to commits
@@ -44,7 +44,7 @@ Entry format: context, symptom, root cause, fix, prevention, generalized lesson.
   - Multi-profile selections export as `personal, development`, which fails `SetupProfileValidator` before the file is written.
 - **Root cause:** a presentation API (`Enum.ToString()` on a `[Flags]` enum with aliases) used as a persisted contract, plus a hand-written parse table that drifted from the enum when Gaming and multi-select were added. Setup profile v1 stores one `profileId`, which cannot represent multi-select.
 - **Fix:** not applied yet. Defined in ADR-0003 (registry-based ids, setup profile v2 with `profileIds[]`, v1 read compatibility).
-- **Prevention:** export → import round-trip tests for every active profile and for multi-profile selections; v1 fixtures must keep importing. In place since 2026-10-11 at serializer level (`SetupProfileSerializerTests`): every known v1 id, including `creation` / `training` / `study`, must deserialize, and the multi-select `ToString()` output is shown to be rejected. The Desktop mapping itself has no test project yet; covered when ADR-0003 step 4 moves it out of `MainWindow.axaml.cs`.
+- **Prevention:** export → import round-trip tests for every active profile and for multi-profile selections; v1 fixtures must keep importing. Application serializer now writes schema v2 `profileIds`, accepts v1, and normalizes aliases via `ProfileRegistry`. Desktop `ToProfileId` / `TryParseProfileId` in `MainWindow.axaml.cs` is still the remaining hole (ADR-0003 step 4).
 - **Generalized lesson:** never persist `ToString()` of an enum; persisted identifiers need an explicit, tested mapping. Any new profile, flag or option must come with a round-trip test.
 - **Ownership note:** the affected file is under the frontend refactor in progress (`PASSATION.md`); the fix is sequenced after that refactor (ADR-0003, rollout step 4).
 

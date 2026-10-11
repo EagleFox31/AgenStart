@@ -42,7 +42,8 @@
       "properties": {
         "profile": {
           "type": "string",
-          "enum": ["personal", "business", "learning", "development", "creative", "gaming", "training", "creation", "study"]
+          "description": "Active profile id from profiles.json (ADR-0003); validated by the catalogue loader.",
+          "pattern": "^[a-z][a-z0-9-]{1,39}$"
         },
         "level": {
           "type": "string",

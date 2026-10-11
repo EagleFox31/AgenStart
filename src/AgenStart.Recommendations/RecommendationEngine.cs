@@ -1,5 +1,6 @@
 using AgenStart.Core.Catalogue;
 using AgenStart.Core.Machine;
+using AgenStart.Core.Profiles;
 using AgenStart.SoftwareInventory;
 
 namespace AgenStart.Recommendations;
@@ -7,6 +8,13 @@ namespace AgenStart.Recommendations;
 public sealed class RecommendationEngine
 {
     private const long BytesPerMiB = 1024L * 1024L;
+
+    private readonly ProfileRegistry _profiles;
+
+    public RecommendationEngine(ProfileRegistry? profiles = null)
+    {
+        _profiles = profiles ?? ProfileRegistry.Default;
+    }
 
     public RecommendationPlan Build(RecommendationRequest request)
     {
@@ -50,19 +58,11 @@ public sealed class RecommendationEngine
                 .ToArray());
     }
 
-    private static IReadOnlyList<UserProfile> ExpandProfiles(UserProfile profiles)
+    private IReadOnlyList<UserProfile> ExpandProfiles(UserProfile profiles)
     {
-        var supported = new[]
-        {
-            UserProfile.Personal,
-            UserProfile.Development,
-            UserProfile.Business,
-            UserProfile.Creative,
-            UserProfile.Learning,
-            UserProfile.Gaming
-        };
-
-        var result = supported.Where(profile => profiles.HasFlag(profile)).ToArray();
+        var result = _profiles.Expand(profiles)
+            .Select(profile => _profiles.ToUserProfile(profile.Id))
+            .ToArray();
         if (result.Length == 0)
         {
             throw new InvalidOperationException("At least one usage profile must be selected.");
@@ -197,7 +197,7 @@ public sealed class RecommendationEngine
             matches.ToArray());
     }
 
-    private static RecommendationDecision Evaluate(
+    private RecommendationDecision Evaluate(
         ApplicationDefinition application,
         ResolvedProfileRule resolvedProfile,
         UserProfile selectedProfiles,
@@ -678,7 +678,7 @@ public sealed class RecommendationEngine
             _ => throw new ArgumentOutOfRangeException(nameof(application))
         };
 
-    private static string ProfileMessage(
+    private string ProfileMessage(
         string applicationName,
         UserProfile profile,
         RecommendationLevel level) =>
@@ -695,16 +695,8 @@ public sealed class RecommendationEngine
             _ => throw new ArgumentOutOfRangeException(nameof(level))
         };
 
-    private static string ProfileLabel(UserProfile profile) => profile switch
-    {
-        UserProfile.Personal => "everyday use",
-        UserProfile.Development => "development",
-        UserProfile.Business => "work and business",
-        UserProfile.Creative => "creative work",
-        UserProfile.Learning => "study and learning",
-        UserProfile.Gaming => "gaming",
-        _ => profile.ToString()
-    };
+    private string ProfileLabel(UserProfile profile) =>
+        _profiles.Get(profile).ReasonLabel!.En;
 
     private static IReadOnlyList<RecommendationReason> AppendReason(
         IReadOnlyList<RecommendationReason> existing,

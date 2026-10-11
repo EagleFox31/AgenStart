@@ -3,6 +3,7 @@ using System.Text;
 using AgenStart.Catalogue;
 using AgenStart.Core.Catalogue;
 using AgenStart.Core.Machine;
+using AgenStart.Core.Profiles;
 using AgenStart.SoftwareInventory;
 using Xunit;
 
@@ -70,7 +71,7 @@ public sealed class RecommendationGoldenTests
         var software = new SoftwareDetectionResult(
             applications.Select(application => stateFor(application.Id)).ToArray(),
             0);
-        var engine = new RecommendationEngine();
+        var engine = new RecommendationEngine(LoadFrozenRegistry());
 
         var builder = new StringBuilder();
         foreach (var selection in Selections)
@@ -132,7 +133,13 @@ public sealed class RecommendationGoldenTests
     private static SoftwareCatalogue LoadFrozenCatalogue()
     {
         using var stream = File.OpenRead(Path.Combine(GoldenDirectory(), "catalogue-0.2.0.frozen.json"));
-        return new SoftwareCatalogueLoader().Load(stream);
+        return new SoftwareCatalogueLoader(LoadFrozenRegistry()).Load(stream);
+    }
+
+    private static ProfileRegistry LoadFrozenRegistry()
+    {
+        using var stream = File.OpenRead(Path.Combine(GoldenDirectory(), "profiles-0.2.0.frozen.json"));
+        return ProfileRegistry.Load(stream);
     }
 
     private static string GoldenDirectory([CallerFilePath] string sourcePath = "") =>

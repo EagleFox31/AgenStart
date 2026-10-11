@@ -6,6 +6,8 @@ on:
     branches: [main]
     paths:
       - "site/**"
+      - "docs/product/profiles.json"
+      - "docs/product/profiles.schema.json"
       - "src/AgenStart.Desktop/Assets/AppLogos/**"
       - "src/AgenStart.Desktop/Assets/agenstart-app-icon.*"
       - ".github/workflows/landing-pages.yml"
@@ -13,6 +15,8 @@ on:
     branches: [main]
     paths:
       - "site/**"
+      - "docs/product/profiles.json"
+      - "docs/product/profiles.schema.json"
       - "src/AgenStart.Desktop/Assets/AppLogos/**"
       - "src/AgenStart.Desktop/Assets/agenstart-app-icon.*"
       - ".github/workflows/landing-pages.yml"

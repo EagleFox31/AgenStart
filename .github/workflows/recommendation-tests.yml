@@ -9,6 +9,8 @@ on:
       - "src/AgenStart.SoftwareInventory/**"
       - "tests/AgenStart.Recommendations.Tests/**"
       - "docs/architecture/recommendation-engine.md"
+      - "docs/product/profiles.json"
+      - "docs/product/profiles.schema.json"
       - ".github/workflows/recommendation-tests.yml"
       - "global.json"
   workflow_dispatch:

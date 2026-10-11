@@ -9,6 +9,8 @@ on:
       - "src/AgenStart.SoftwareInventory/**"
       - "tests/AgenStart.Catalogue.Tests/**"
       - "docs/product/catalogue.fixtures.json"
+      - "docs/product/profiles.json"
+      - "docs/product/profiles.schema.json"
       - ".github/workflows/catalogue-tests.yml"
       - "global.json"
   pull_request:
@@ -19,6 +21,8 @@ on:
       - "src/AgenStart.SoftwareInventory/**"
       - "tests/AgenStart.Catalogue.Tests/**"
       - "docs/product/catalogue.fixtures.json"
+      - "docs/product/profiles.json"
+      - "docs/product/profiles.schema.json"
       - ".github/workflows/catalogue-tests.yml"
       - "global.json"
   workflow_dispatch:
@@ -42,5 +46,8 @@ jobs:
       - name: Restore
         run: dotnet restore tests/AgenStart.Catalogue.Tests/AgenStart.Catalogue.Tests.csproj
 
+      - name: Build
+        run: dotnet build tests/AgenStart.Catalogue.Tests/AgenStart.Catalogue.Tests.csproj --configuration Release --no-restore
+
       - name: Test
-        run: dotnet test tests/AgenStart.Catalogue.Tests/AgenStart.Catalogue.Tests.csproj --configuration Release --no-restore --verbosity normal
+        run: dotnet test --project tests/AgenStart.Catalogue.Tests/AgenStart.Catalogue.Tests.csproj --configuration Release --no-build

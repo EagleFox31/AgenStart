@@ -1,0 +1,164 @@
+{
+  "schemaVersion": "1.0.0",
+  "profiles": [
+    {
+      "id": "personal",
+      "status": "active",
+      "order": 10,
+      "icon": "home",
+      "aliases": [],
+      "label": { "en": "Personal", "fr": "Personnel" },
+      "description": {
+        "en": "Everyday apps, browsing, communication and media.",
+        "fr": "Applications du quotidien, navigation, communication et médias."
+      },
+      "reasonLabel": { "en": "everyday use", "fr": "l'usage quotidien" }
+    },
+    {
+      "id": "development",
+      "status": "active",
+      "order": 20,
+      "icon": "code",
+      "aliases": [],
+      "label": { "en": "Development", "fr": "Développement" },
+      "description": {
+        "en": "Code, databases, terminals and developer tools.",
+        "fr": "Code, bases de données, terminaux et outils de développement."
+      },
+      "reasonLabel": { "en": "development", "fr": "le développement" }
+    },
+    {
+      "id": "business",
+      "status": "active",
+      "order": 30,
+      "icon": "briefcase",
+      "aliases": [],
+      "label": { "en": "Business", "fr": "Business" },
+      "description": {
+        "en": "Office, communication, productivity and collaboration.",
+        "fr": "Bureautique, communication, productivité et collaboration."
+      },
+      "reasonLabel": { "en": "work and business", "fr": "le travail et les affaires" }
+    },
+    {
+      "id": "creative",
+      "status": "active",
+      "order": 40,
+      "icon": "palette",
+      "aliases": ["creation"],
+      "label": { "en": "Creative", "fr": "Créatif" },
+      "description": {
+        "en": "Design, media, content and creative workflows.",
+        "fr": "Design, médias, contenu et workflows créatifs."
+      },
+      "reasonLabel": { "en": "creative work", "fr": "le travail créatif" }
+    },
+    {
+      "id": "learning",
+      "status": "active",
+      "order": 50,
+      "icon": "graduation-cap",
+      "aliases": ["training", "study"],
+      "label": { "en": "Learning", "fr": "Apprentissage" },
+      "description": {
+        "en": "Study tools, documents, notes and online classes.",
+        "fr": "Outils d'étude, documents, notes et cours en ligne."
+      },
+      "reasonLabel": { "en": "study and learning", "fr": "les études et l'apprentissage" }
+    },
+    {
+      "id": "it-student",
+      "status": "active",
+      "order": 55,
+      "icon": "laptop",
+      "aliases": ["etudiant-it", "student-it"],
+      "label": { "en": "IT Student", "fr": "Étudiant IT" },
+      "description": {
+        "en": "Coursework plus a lighter developer stack: editor, Git, runtimes, notes and study tools.",
+        "fr": "Cours plus une stack développeur légère : éditeur, Git, runtimes, notes et outils d'étude."
+      },
+      "reasonLabel": { "en": "IT studies", "fr": "les études IT" }
+    },
+    {
+      "id": "gaming",
+      "status": "active",
+      "order": 60,
+      "icon": "gamepad",
+      "aliases": [],
+      "label": { "en": "Gaming", "fr": "Gaming" },
+      "description": {
+        "en": "Game launchers, voice chat, monitoring, streaming and gaming utilities.",
+        "fr": "Lanceurs de jeux, chat vocal, monitoring, streaming et utilitaires de jeu."
+      },
+      "reasonLabel": { "en": "gaming", "fr": "le jeu" }
+    },
+    {
+      "id": "family",
+      "status": "planned",
+      "order": 70,
+      "aliases": [],
+      "label": { "en": "Family", "fr": "Famille" },
+      "description": {
+        "en": "Shared or children's PCs: parental controls, safe browsing and learning-friendly defaults.",
+        "fr": "PC partagés ou pour enfants : contrôle parental, navigation sûre et réglages adaptés."
+      }
+    },
+    {
+      "id": "entertainment",
+      "status": "active",
+      "order": 80,
+      "icon": "clapperboard",
+      "aliases": [],
+      "label": { "en": "Entertainment", "fr": "Divertissement" },
+      "description": {
+        "en": "Music, video, streaming and media-center use.",
+        "fr": "Musique, vidéo, streaming et usage média."
+      },
+      "reasonLabel": { "en": "entertainment", "fr": "le divertissement" }
+    },
+    {
+      "id": "data-ai",
+      "status": "planned",
+      "order": 90,
+      "aliases": [],
+      "label": { "en": "Data & AI", "fr": "Data & IA" },
+      "description": {
+        "en": "Notebooks, runtimes, data tooling, local AI and model workflows.",
+        "fr": "Notebooks, runtimes, outils data, IA locale et workflows de modèles."
+      }
+    },
+    {
+      "id": "it-admin",
+      "status": "planned",
+      "order": 100,
+      "aliases": [],
+      "label": { "en": "IT / System Administration", "fr": "IT / Administration système" },
+      "description": {
+        "en": "Remote access, diagnostics, system utilities and fleet operations.",
+        "fr": "Accès à distance, diagnostics, utilitaires système et gestion de parc."
+      }
+    },
+    {
+      "id": "cloud-devops",
+      "status": "planned",
+      "order": 110,
+      "aliases": [],
+      "label": { "en": "Cloud / DevOps", "fr": "Cloud / DevOps" },
+      "description": {
+        "en": "Cloud CLIs, infrastructure tooling, containers and delivery workflows.",
+        "fr": "CLI cloud, outils d'infrastructure, conteneurs et workflows de livraison."
+      }
+    },
+    {
+      "id": "cybersecurity",
+      "status": "planned",
+      "order": 120,
+      "aliases": [],
+      "label": { "en": "Cybersecurity", "fr": "Cybersécurité" },
+      "description": {
+        "en": "Security tooling, labs, network analysis and defensive workflows.",
+        "fr": "Outils de sécurité, labs, analyse réseau et workflows défensifs."
+      }
+    }
+  ]
+}

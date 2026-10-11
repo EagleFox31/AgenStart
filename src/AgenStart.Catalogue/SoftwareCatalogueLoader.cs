@@ -1,6 +1,7 @@
 using System.Text.Json;
 using AgenStart.Core.Catalogue;
 using AgenStart.Core.Machine;
+using AgenStart.Core.Profiles;
 using AgenStart.PackageManagement;
 
 namespace AgenStart.Catalogue;
@@ -13,6 +14,13 @@ public sealed class SoftwareCatalogueLoader
     {
         PropertyNameCaseInsensitive = true
     };
+
+    private readonly ProfileRegistry _profiles;
+
+    public SoftwareCatalogueLoader(ProfileRegistry? profiles = null)
+    {
+        _profiles = profiles ?? ProfileRegistry.Default;
+    }
 
     public SoftwareCatalogue Load(Stream stream)
     {
@@ -31,7 +39,7 @@ public sealed class SoftwareCatalogueLoader
         return Load(stream);
     }
 
-    private static SoftwareCatalogue Map(CatalogueDocumentDto document)
+    private SoftwareCatalogue Map(CatalogueDocumentDto document)
     {
         var schemaVersion = RequireText(document.SchemaVersion, "schemaVersion");
         if (!string.Equals(schemaVersion, SupportedSchemaVersion, StringComparison.Ordinal))
@@ -60,10 +68,23 @@ public sealed class SoftwareCatalogueLoader
             applications.Add(application);
         }
 
+        var coveredProfiles = applications
+            .SelectMany(application => application.Definition.Recommendations)
+            .Select(rule => rule.Profile)
+            .ToHashSet();
+        foreach (var profile in _profiles.Active)
+        {
+            if (!coveredProfiles.Contains(_profiles.ToUserProfile(profile.Id)))
+            {
+                throw new InvalidDataException(
+                    $"Active profile '{profile.Id}' has no application recommendation in the catalogue.");
+            }
+        }
+
         return new SoftwareCatalogue(schemaVersion, catalogueVersion, applications);
     }
 
-    private static CatalogueApplication MapApplication(ApplicationDto dto)
+    private CatalogueApplication MapApplication(ApplicationDto dto)
     {
         var id = RequireText(dto.Id, "application.id");
         var name = RequireText(dto.Name, $"application[{id}].name");
@@ -236,18 +257,29 @@ public sealed class SoftwareCatalogueLoader
         }).Distinct().ToArray();
     }
 
-    private static UserProfile ParseProfile(string? value, string applicationId) =>
-        value?.Trim().ToLowerInvariant() switch
+    private UserProfile ParseProfile(string? value, string applicationId)
+    {
+        var text = value?.Trim().ToLowerInvariant();
+        if (!_profiles.TryResolve(text, out var profile))
         {
-            "personal" => UserProfile.Personal,
-            "development" => UserProfile.Development,
-            "business" => UserProfile.Business,
-            "creative" or "creation" => UserProfile.Creative,
-            "learning" or "training" or "study" => UserProfile.Learning,
-            "gaming" => UserProfile.Gaming,
-            _ => throw new InvalidDataException(
-                $"Unsupported profile '{value}' for application '{applicationId}'.")
-        };
+            throw new InvalidDataException(
+                $"Unsupported profile '{value}' for application '{applicationId}'.");
+        }
+
+        if (!string.Equals(profile.Id.Value, text, StringComparison.Ordinal))
+        {
+            throw new InvalidDataException(
+                $"Profile '{value}' for application '{applicationId}' is a legacy alias; use '{profile.Id}'.");
+        }
+
+        if (!profile.IsActive)
+        {
+            throw new InvalidDataException(
+                $"Profile '{value}' for application '{applicationId}' is {profile.Status.ToString().ToLowerInvariant()}, not active.");
+        }
+
+        return _profiles.ToUserProfile(profile.Id);
+    }
 
     private static RecommendationLevel ParseRecommendationLevel(string? value, string applicationId) =>
         value?.Trim().ToLowerInvariant() switch
