@@ -5,57 +5,58 @@ Supprimer les partiels sédimentaires `MainWindow.*.cs` du projet Avalonia en
 migrant leur contenu vers du XAML déclaratif. Plan complet :
 [docs/engineering/frontend-audit-2026-10.md](docs/engineering/frontend-audit-2026-10.md).
 
-## Fait (build .NET vert, non commité)
-- **Étape 1 — Couleurs** : brushes thème ajoutés
-  ([AgenStartTheme.axaml:18-65](src/AgenStart.Desktop/Styles/AgenStartTheme.axaml#L18-L65)) + helper
-  `ThemeBrush(key)` ([MainWindow.axaml.cs:64](src/AgenStart.Desktop/Views/MainWindow.axaml.cs#L64)).
-- **Étape 2 — Styles cosmétiques** : classes `Button.nav`, `Border.dataRow`,
-  `Border.statusBadge.success|warning|danger` ([AgenStartTheme.axaml:82-320](src/AgenStart.Desktop/Styles/AgenStartTheme.axaml)).
-- **Étape 3 — AppRowLogoView** : [IAppRowLogo.cs](src/AgenStart.Desktop/ViewModels/IAppRowLogo.cs)
-  + UserControl [AppRowLogoView.axaml](src/AgenStart.Desktop/Views/AppRowLogoView.axaml) consommés par Review/Installation/Report.
-- **Étape 4a — Navigation état-dirigée** : enum `AppStep` + `CurrentStep` +
-  9 bool helpers sur [MainWindowViewModel.cs:20-110](src/AgenStart.Desktop/ViewModels/MainWindowViewModel.cs#L20-L110).
-  7 nav buttons + 7 panels + 7 stripes liés via `Classes.active` / `IsVisible`,
-  dispatch unique `NavButton_OnClick` via `Tag`.
-- **Fix OS** : [WindowsMachineInventoryProvider.cs:97-103](src/AgenStart.Platform.Windows/Inventory/WindowsMachineInventoryProvider.cs#L97-L103)
-  substitue "Windows 11" sur `build >= 22000` (quirk registre Microsoft).
-- **Fix hover `dataRow`** : `Background="Transparent"` + style `:pointerover`
-  ([AgenStartTheme.axaml:230-250](src/AgenStart.Desktop/Styles/AgenStartTheme.axaml#L230-L250)) → ligne entière hit-testable.
-- **Fix nav désactivé** : règle `Button.nav:disabled /template/ ContentPresenter`
-  manquante → Fluent appliquait son `ButtonBackgroundDisabled` autour du texte
-  ([AgenStartTheme.axaml:121-125](src/AgenStart.Desktop/Styles/AgenStartTheme.axaml#L121-L125)).
-- **Nav full-width style VS Code** ([AgenStartTheme.axaml:82-93](src/AgenStart.Desktop/Styles/AgenStartTheme.axaml#L82-L93)) :
-  `Margin=0`, `CornerRadius=0`, `Padding=30,0`, `HorizontalAlignment=Stretch` ;
-  `AgenNavHoverColor` passé de `#12313C` → `#1A3F4B` (contraste visible).
-- **Étape 7 (partielle) — 3 partiels morts supprimés** : `Branding.cs` (-93),
-  `UiPolish.cs` (-283), `RecommendationProgress.cs` (-283). Jamais appelés depuis
-  commit `dca043c`. Brushes `Guidance*`/`TealBrush`/`ProfileDefaultBorderBrush`
-  consommés par `RecommendationListExperience` inlinés en getters locaux
-  ([MainWindow.RecommendationListExperience.cs:14-18](src/AgenStart.Desktop/Views/MainWindow.RecommendationListExperience.cs#L14-L18)). **-650 lignes net.**
+## Commits sur `main` (local, non pushé)
+- `c89a5aa` refactor(desktop): migrate MainWindow partials to declarative XAML
+  — thème, états `AppStep`, nav full-width, 3 partiels morts supprimés (-650 l).
+- `ceac935` fix(windows): report Windows 11 for builds >= 22000.
+- `900fe0f` chore: docs, golden tests, CI build/test split, .gitignore.
+- `b20c762` refactor(desktop): inline UsageProfilesView in MainWindow XAML
+  — `<views:UsageProfilesView>` directement dans le XAML, 5 handlers de
+  profils + `BuildRecommendationsButton_OnClick` retirés.
+- `6844031` refactor(desktop): drop MainWindow visual-tree walks for order
+  and Confirm label — `OrderLabel` sur `RecommendationRowViewModel` maintenu
+  via `CollectionChanged`, terminologie "Confirm" en XAML, retrait de
+  `DecorateRecommendationRowsWithOrder` + `ApplyConfirmTerminology`.
 
-## Décisions prises
-- **Pas de redesign visuel** : seules divergences thème↔code préservées.
-- **Pas d'`AppRowView` complet** : status/actions trop divergents entre vues.
-- **Panels inline dans MainWindow.axaml** pour l'instant (étape 4b en attente).
-- **Nav sans marge horizontale** : alignement VS Code demandé par l'utilisateur.
-- **Pas de commit automatique** — attendre validation visuelle.
+## Fait côté étape 4b (3 passes surgicales)
+- Partiel `MainWindow.MultiProfiles.cs` : plus de `Children.Clear/Add`,
+  juste du wiring d'événements sur `UsageProfilesControl`.
+- Partiel `MainWindow.RecommendationListExperience.cs` : réduit à ~180 l,
+  ne contient plus que la sticky-header pilotée par le scroll offset.
+
+## WIP parallèle (non commité, à moi de ne pas écraser)
+Chantier ADR 0003 "data-driven usage profile registry" en cours côté
+utilisateur :
+- Nouveaux : `src/AgenStart.Core/Profiles/ProfileDefinition.cs` +
+  `ProfileRegistry.cs`, `docs/product/profiles.json` + schema,
+  `src/AgenStart.Desktop/ViewModels/ProfileOptionViewModel.cs`,
+  `tests/AgenStart.Catalogue.Tests/ProfileRegistryTests.cs`.
+- Modifs : `AgenStart.Core.csproj`, `SoftwareCatalogueLoader.cs`,
+  `RecommendationEngine.cs`, `software-catalogue.schema.json`,
+  `UsageProfilesView.axaml[.cs]`, `Program.cs`, workflows CI,
+  `lessons-learned.md`, `tests/AgenStart.Catalogue.Tests/SoftwareCatalogueLoaderTests.cs`.
+- **Règle** : ne pas inclure ces fichiers dans un commit "refonte frontend".
+  Toujours `git status --short` avant chaque `git add` et stager uniquement
+  les fichiers explicitement touchés par la passe en cours.
 
 ## Reste à faire (ordre)
-1. **Validation visuelle** : nav full-width + hover visible + rows `dataRow` hoverables.
-2. Étape 4b — Extraire chaque panel inline en `UserControl` + `ContentControl`
-   lié à `CurrentStep`. Migrer en même temps les visual-tree walks des 2 partiels restants.
-3. Étape 5 — Découper `MainWindowViewModel` (~976 lignes) en sous-VMs par étape.
-4. Étape 6 — Sidebar en `ItemsControl` + `NavItemViewModel`.
-5. Étape 7 (fin) — Supprimer `MultiProfiles.cs` + `RecommendationListExperience.cs`.
+1. **Validation visuelle** sticky-header + ordinal + "Confirm" après rebuild.
+2. **Étape 4 (vraie)** — Extraire 7 panels inline (`Overview`, `YourPc`,
+   `Recommendations`, `Review`, `Installation`, `Report` + `UsageProfiles` déjà fait)
+   en `UserControl` dédiés + `ContentControl` piloté par `CurrentStep`.
+   Supprimer la série de `*Button_OnClick` navigationnels + les `*Stripe` manuels.
+3. **Étape 4b suite** — Extraire la sticky-header de
+   `MainWindow.RecommendationListExperience.cs` dans le futur
+   `RecommendationsView` UserControl, puis supprimer le partiel.
+4. **Étape 5** — Découper `MainWindowViewModel` (~988 l) en sous-VMs par étape.
+5. **Étape 6** — Sidebar en `ItemsControl` + `NavItemViewModel`.
+6. **Étape 7 (fin)** — Supprimer `MainWindow.MultiProfiles.cs` +
+   `MainWindow.RecommendationListExperience.cs`.
 
-## Pièges / contexte
-- Build : `dotnet build src/AgenStart.Desktop/AgenStart.Desktop.csproj -v q` (~2s).
-  Fermer l'app avant rebuild (lock DLL).
-- Run : `dotnet run --project src/AgenStart.Desktop` (pas de tests UI).
-- `dotnet test` → exit 5 "zéro tests" (préexistant, ignorer).
-- Partiels restants : `MultiProfiles.cs` (remplace `UsageProfilePanel` par
-  `UsageProfilesView` + subscribe `RecommendationPipelineDiagnostics`),
-  `RecommendationListExperience.cs` (sticky header + numérotation rows +
-  renommage "Review"→"Confirm"). Les deux walkent le visual tree, à migrer.
-- Convention : commits & PR sans mention assistant (règle globale).
-- Pas de .sln à la racine.
+## Conventions / pièges
+- Build : `dotnet build src/AgenStart.Desktop/AgenStart.Desktop.csproj -v q`.
+  Fermer l'app avant rebuild (lock DLL). Pas de .sln à la racine.
+- Commits et PR **sans attribution** (règle globale ; pas de
+  `Co-Authored-By`, pas de mention Claude/IA/assistant).
+- `dotnet test` → exit 5 "zéro tests" sur Desktop (préexistant, ignorer).
+- Git identity locale au repo : `EagleFox31 / lawrynnjennifer@gmail.com`.
