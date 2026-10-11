@@ -20,12 +20,24 @@ migrant leur contenu vers du XAML déclaratif. Plan complet :
 - `d76ccb6` refactor(desktop): extract Report/Installation/Review panels
   into UserControls — 3 UC avec events (Finish/Export, Cancel/ViewReport/Retry,
   Start/Back/Remove), suppression du walk `FindButtonByContent("Export this setup")`.
+- `26c2720` refactor(desktop): extract YourPcView UserControl —
+  ContinueToProfile + Refresh events, panneau 100% déclaratif.
+- `ded6d89` refactor(desktop): extract OverviewView UserControl —
+  Analyse/Import events, status d'import en `TextBlock` nommé dans l'UC ;
+  retire la recherche `FindButtonByContent("Import a setup")` et
+  l'injection dynamique de `_importStatusText`.
+- `5d2b68b` refactor(desktop): extract RecommendationsView and inline
+  sticky-header — events Review/SelectEssentials ; sticky-header déclaratif
+  bindé sur `RecommendationCount`/`SelectedCount`, visibilité pilotée par
+  `MainScrollViewer.Offset.Y`. Supprime `MainWindow.RecommendationListExperience.cs`
+  (walks de l'arbre visuel, construction dynamique de la sticky, FindButtonByContent)
+  et le helper `ThemeBrush`.
 
-## Fait côté étape 4b (3 passes surgicales)
+## Fait côté étape 4b
 - Partiel `MainWindow.MultiProfiles.cs` : plus de `Children.Clear/Add`,
-  juste du wiring d'événements sur `UsageProfilesControl`.
-- Partiel `MainWindow.RecommendationListExperience.cs` : réduit à ~180 l,
-  ne contient plus que la sticky-header pilotée par le scroll offset.
+  juste du wiring d'événements sur `UsageProfilesControl` ; appelle
+  `UpdateRecommendationStickyHeader()` après build.
+- Partiel `MainWindow.RecommendationListExperience.cs` : supprimé.
 
 ## WIP parallèle (non commité, à moi de ne pas écraser)
 Chantier ADR 0003 "data-driven usage profile registry" en cours côté
@@ -43,22 +55,13 @@ utilisateur :
   les fichiers explicitement touchés par la passe en cours.
 
 ## Reste à faire (ordre)
-1. **Validation visuelle** sticky-header + ordinal + "Confirm" + Report/
-   Installation/Review après rebuild (3 UC fraîchement extraits).
-2. **Étape 4 (suite)** — Extraire les 3 panels restants :
-   - `OverviewView` : attention au walk `FindButtonByContent("Import a setup")`
-     et à l'injection du `_importStatusText` dans le StackPanel parent du
-     bouton Import. Remplacer par des événements `AnalyzeRequested`,
-     `ImportSetupRequested` + binding/méthode pour le status d'import.
-   - `YourPcView` : simple (ContinueToProfile + RefreshButton).
-   - `RecommendationsView` : fusion avec la sticky-header de
-     `MainWindow.RecommendationListExperience.cs` (étape 4b suite).
-3. **Étape 4b suite** — Déplacer la sticky-header dans `RecommendationsView`,
-   puis supprimer `MainWindow.RecommendationListExperience.cs`.
-4. **Étape 5** — Découper `MainWindowViewModel` (~988 l) en sous-VMs par étape.
-5. **Étape 6** — Sidebar en `ItemsControl` + `NavItemViewModel`.
-6. **Étape 7 (fin)** — Supprimer `MainWindow.MultiProfiles.cs` +
-   `MainWindow.RecommendationListExperience.cs`.
+1. **Validation visuelle** après rebuild : Overview (Analyse / Import +
+   status text), YourPc (Choose profile / Refresh), Recommendations (sticky
+   header, Confirm, Select essentials), ordinal + Report/Installation/Review.
+2. **Étape 5** — Découper `MainWindowViewModel` (~988 l) en sous-VMs par étape.
+3. **Étape 6** — Sidebar en `ItemsControl` + `NavItemViewModel`.
+4. **Étape 7 (fin)** — Supprimer `MainWindow.MultiProfiles.cs` (dernier
+   partiel restant).
 
 ## Conventions / pièges
 - Build : `dotnet build src/AgenStart.Desktop/AgenStart.Desktop.csproj -v q`.
