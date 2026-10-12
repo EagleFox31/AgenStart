@@ -6,10 +6,12 @@ using Avalonia.Interactivity;
 using Avalonia.LogicalTree;
 using Avalonia.Media;
 using Avalonia.Platform.Storage;
+using Avalonia.Threading;
 using AgenStart.Application.Installation;
 using AgenStart.Application.Profiles;
 using AgenStart.Catalogue;
 using AgenStart.Core.Catalogue;
+using AgenStart.Core.Recommendations;
 using AgenStart.Desktop.LocalData;
 using AgenStart.Desktop.ViewModels;
 using AgenStart.Recommendations;
@@ -33,6 +35,7 @@ public sealed partial class MainWindow : Window
     private Button? _historyButton;
     private Button? _settingsButton;
     private Guid? _currentHistoryEntryId;
+    private IDisposable? _multiProfileProgressSubscription;
 
     public MainWindow()
     {
@@ -88,6 +91,8 @@ public sealed partial class MainWindow : Window
 
     private async void OnOpened(object? sender, EventArgs e)
     {
+        InstallMultiProfileExperience();
+
         try
         {
             await _localExperience.InitializeAsync(_lifetimeCancellation.Token);
@@ -103,6 +108,52 @@ public sealed partial class MainWindow : Window
         catch (OperationCanceledException) when (_lifetimeCancellation.IsCancellationRequested)
         {
         }
+    }
+
+    private void InstallMultiProfileExperience()
+    {
+        UsageProfilesControl.SetSelection(_viewModel.SelectedProfile);
+
+        UsageProfilesControl.SelectionChanged += profiles =>
+        {
+            if (profiles == UserProfile.None)
+            {
+                return;
+            }
+
+            _viewModel.SelectProfile(profiles);
+            RecommendationsButton.IsEnabled = false;
+        };
+
+        UsageProfilesControl.BuildRequested += async (_, _) =>
+        {
+            UsageProfilesControl.BeginRecommendationBuild();
+            _viewModel.SelectProfile(UsageProfilesControl.SelectedProfiles);
+
+            await _viewModel.BuildRecommendationsAsync(_lifetimeCancellation.Token);
+            if (_viewModel.HasRecommendations)
+            {
+                UsageProfilesControl.CompleteRecommendationBuild();
+                RecommendationsButton.IsEnabled = true;
+                _viewModel.ShowStep(AppStep.Recommendations);
+                UpdateRecommendationStickyHeader();
+            }
+            else
+            {
+                UsageProfilesControl.FailRecommendationBuild(_viewModel.RecommendationStatus);
+            }
+        };
+
+        UsageProfilesControl.BackRequested += (_, _) => _viewModel.ShowStep(AppStep.YourPc);
+
+        _multiProfileProgressSubscription = RecommendationPipelineDiagnostics.Subscribe(stage =>
+            Dispatcher.UIThread.Post(() =>
+            {
+                if (_viewModel.IsBusy && UsageProfilesControl.IsVisible)
+                {
+                    UsageProfilesControl.UpdateRecommendationProgress(stage);
+                }
+            }));
     }
 
     private async void OverviewView_OnAnalyzeRequested(object? sender, EventArgs e)
@@ -668,6 +719,8 @@ public sealed partial class MainWindow : Window
         RecommendationsControl.ReviewRequested -= RecommendationsView_OnReviewRequested;
         RecommendationsControl.SelectEssentialsRequested -= RecommendationsView_OnSelectEssentialsRequested;
         Opened -= OnOpened;
+        _multiProfileProgressSubscription?.Dispose();
+        _multiProfileProgressSubscription = null;
         _lifetimeCancellation.Cancel();
         _viewModel.Dispose();
         _lifetimeCancellation.Dispose();

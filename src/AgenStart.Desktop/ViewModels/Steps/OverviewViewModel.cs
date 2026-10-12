@@ -1,12 +1,17 @@
 using System.Globalization;
 using AgenStart.Core.Machine;
+using AgenStart.Desktop.Services;
 
 namespace AgenStart.Desktop.ViewModels.Steps;
 
 public sealed class OverviewViewModel : StepViewModelBase
 {
+    private readonly IMachineInventoryProvider _machineInventory;
+    private readonly ISessionState _session;
+
     private MachineSnapshot? _snapshot;
     private bool _hasSnapshot;
+    private bool _isBusy;
     private string _statusTitle = "Ready for analysis";
     private string _statusMessage = "AgenStart can inspect the essential capabilities of this PC locally.";
     private string _operatingSystem = "Not analysed";
@@ -20,12 +25,24 @@ public sealed class OverviewViewModel : StepViewModelBase
     private string _winGetVersion = "Not analysed";
     private string _analysisDiagnostic = "No personal files or account information are inspected.";
 
+    public OverviewViewModel(IMachineInventoryProvider machineInventory, ISessionState session)
+    {
+        _machineInventory = machineInventory;
+        _session = session;
+    }
+
     public MachineSnapshot? Snapshot => _snapshot;
 
     public bool HasSnapshot
     {
         get => _hasSnapshot;
         private set => SetField(ref _hasSnapshot, value);
+    }
+
+    public bool IsBusy
+    {
+        get => _isBusy;
+        private set => SetField(ref _isBusy, value);
     }
 
     public string StatusTitle
@@ -98,6 +115,40 @@ public sealed class OverviewViewModel : StepViewModelBase
     {
         get => _analysisDiagnostic;
         set => SetField(ref _analysisDiagnostic, value);
+    }
+
+    public async Task AnalyzeAsync(CancellationToken cancellationToken = default)
+    {
+        if (IsBusy || _session.IsInstalling)
+        {
+            return;
+        }
+
+        IsBusy = true;
+        StatusTitle = "Analysing this PC";
+        StatusMessage = "Reading essential system capabilities locally…";
+
+        try
+        {
+            var snapshot = await _machineInventory.CaptureAsync(cancellationToken).ConfigureAwait(true);
+            ApplySnapshot(snapshot);
+            _session.SetSnapshot(snapshot);
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            StatusTitle = "Analysis cancelled";
+            StatusMessage = "No changes were made to this PC.";
+        }
+        catch (Exception)
+        {
+            StatusTitle = "Analysis unavailable";
+            StatusMessage = "AgenStart could not complete the local machine analysis.";
+            AnalysisDiagnostic = "Try the analysis again. No machine changes were made.";
+        }
+        finally
+        {
+            IsBusy = false;
+        }
     }
 
     public void ApplySnapshot(MachineSnapshot snapshot)
