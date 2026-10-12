@@ -39,28 +39,13 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged, IDisposable
     private readonly RecommendationEngine _recommendationEngine;
     private readonly SoftwareCatalogueLoader _catalogueLoader;
 
-    private MachineSnapshot? _machineSnapshot;
     private SoftwareCatalogue? _catalogue;
     private InstallationOrchestrator? _installationOrchestrator;
     private InstallationSession? _installationSession;
     private bool _disposed;
 
     private bool _isBusy;
-    private bool _hasSnapshot;
     private AppStep _currentStep = AppStep.Overview;
-
-    private string _statusTitle = "Ready for analysis";
-    private string _statusMessage = "AgenStart can inspect the essential capabilities of this PC locally.";
-    private string _operatingSystem = "Not analysed";
-    private string _cpu = "Not analysed";
-    private string _memory = "Not analysed";
-    private string _gpu = "Not analysed";
-    private string _systemDrive = "Not analysed";
-    private string _freeSpace = "Not analysed";
-    private string _architecture = "Not analysed";
-    private string _winGet = "Not analysed";
-    private string _winGetVersion = "Not analysed";
-    private string _analysisDiagnostic = "No personal files or account information are inspected.";
 
     public MainWindowViewModel(
         IMachineInventoryProvider? machineInventory = null,
@@ -93,6 +78,9 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged, IDisposable
 
         UsageProfile = new UsageProfileViewModel();
         UsageProfile.PropertyChanged += RelayChildPropertyChanged;
+
+        Overview = new OverviewViewModel();
+        Overview.PropertyChanged += RelayChildPropertyChanged;
     }
 
     public ReportViewModel Report { get; }
@@ -100,6 +88,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged, IDisposable
     public ReviewViewModel Review { get; }
     public RecommendationsViewModel RecommendationsStep { get; }
     public UsageProfileViewModel UsageProfile { get; }
+    public OverviewViewModel Overview { get; }
 
     private void RelayChildPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
@@ -170,11 +159,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged, IDisposable
         private set => SetField(ref _isBusy, value);
     }
 
-    public bool HasSnapshot
-    {
-        get => _hasSnapshot;
-        private set => SetField(ref _hasSnapshot, value);
-    }
+    public bool HasSnapshot => Overview.HasSnapshot;
 
     public bool HasRecommendations
     {
@@ -246,74 +231,29 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged, IDisposable
 
     public string StatusTitle
     {
-        get => _statusTitle;
-        private set => SetField(ref _statusTitle, value);
+        get => Overview.StatusTitle;
+        private set => Overview.StatusTitle = value;
     }
 
     public string StatusMessage
     {
-        get => _statusMessage;
-        private set => SetField(ref _statusMessage, value);
+        get => Overview.StatusMessage;
+        private set => Overview.StatusMessage = value;
     }
 
-    public string OperatingSystem
-    {
-        get => _operatingSystem;
-        private set => SetField(ref _operatingSystem, value);
-    }
-
-    public string Cpu
-    {
-        get => _cpu;
-        private set => SetField(ref _cpu, value);
-    }
-
-    public string Memory
-    {
-        get => _memory;
-        private set => SetField(ref _memory, value);
-    }
-
-    public string Gpu
-    {
-        get => _gpu;
-        private set => SetField(ref _gpu, value);
-    }
-
-    public string SystemDrive
-    {
-        get => _systemDrive;
-        private set => SetField(ref _systemDrive, value);
-    }
-
-    public string FreeSpace
-    {
-        get => _freeSpace;
-        private set => SetField(ref _freeSpace, value);
-    }
-
-    public string Architecture
-    {
-        get => _architecture;
-        private set => SetField(ref _architecture, value);
-    }
-
-    public string WinGet
-    {
-        get => _winGet;
-        private set => SetField(ref _winGet, value);
-    }
-
-    public string WinGetVersion
-    {
-        get => _winGetVersion;
-        private set => SetField(ref _winGetVersion, value);
-    }
-
+    public string OperatingSystem => Overview.OperatingSystem;
+    public string Cpu => Overview.Cpu;
+    public string Memory => Overview.Memory;
+    public string Gpu => Overview.Gpu;
+    public string SystemDrive => Overview.SystemDrive;
+    public string FreeSpace => Overview.FreeSpace;
+    public string Architecture => Overview.Architecture;
+    public string WinGet => Overview.WinGet;
+    public string WinGetVersion => Overview.WinGetVersion;
     public string AnalysisDiagnostic
     {
-        get => _analysisDiagnostic;
-        private set => SetField(ref _analysisDiagnostic, value);
+        get => Overview.AnalysisDiagnostic;
+        private set => Overview.AnalysisDiagnostic = value;
     }
 
     public void SelectProfile(UserProfile profile)
@@ -362,7 +302,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged, IDisposable
 
     public async Task BuildRecommendationsAsync(CancellationToken cancellationToken = default)
     {
-        if (IsBusy || IsInstalling || _machineSnapshot is null)
+        if (IsBusy || IsInstalling || Overview.Snapshot is null)
         {
             return;
         }
@@ -381,7 +321,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged, IDisposable
             var softwareState = _softwareStateResolver.Resolve(catalogue.DetectionTargets, installedSoftware);
             var plan = _recommendationEngine.Build(new RecommendationRequest(
                 SelectedProfile,
-                _machineSnapshot,
+                Overview.Snapshot,
                 softwareState,
                 catalogue.Definitions));
 
@@ -738,81 +678,15 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged, IDisposable
         OnPropertyChanged(nameof(CanReview));
     }
 
-private void ApplySnapshot(MachineSnapshot snapshot)
+    private void ApplySnapshot(MachineSnapshot snapshot)
     {
-        _machineSnapshot = snapshot;
-        HasSnapshot = snapshot.Platform.Kind == PlatformKind.Windows;
+        Overview.ApplySnapshot(snapshot);
         ClearRecommendations();
-
-        OperatingSystem = snapshot.Platform.Edition
-            ?? (snapshot.Platform.Kind == PlatformKind.Windows ? "Windows" : "Unsupported platform");
-        Cpu = snapshot.Cpu.Model ?? "CPU detected";
-        Memory = FormatBytes(snapshot.Memory.TotalPhysicalBytes);
-        Gpu = snapshot.Gpus.FirstOrDefault()?.Name ?? "Unknown";
-
-        var systemDrive = snapshot.SystemDrive;
-        SystemDrive = systemDrive is null
-            ? "Unknown"
-            : $"{FormatBytes(systemDrive.TotalBytes)} system drive";
-        FreeSpace = systemDrive is null
-            ? "Unknown"
-            : $"{FormatBytes(systemDrive.AvailableBytes)} free";
-
-        Architecture = FormatArchitecture(snapshot.Platform.Architecture);
-        WinGet = snapshot.PackageManager.State == CapabilityState.Available
-            ? "Available"
-            : snapshot.PackageManager.State.ToString();
-        WinGetVersion = snapshot.PackageManager.Version?.ToString() ?? "Unknown";
 
         if (snapshot.Platform.Kind == PlatformKind.Windows)
         {
-            StatusTitle = "PC ready";
-            StatusMessage = "Essential capabilities detected locally.";
             RecommendationStatus = "Choose a usage profile to build recommendations.";
         }
-        else
-        {
-            StatusTitle = "Unsupported platform";
-            StatusMessage = "The current AgenStart MVP supports Windows 10 and 11.";
-        }
-
-        AnalysisDiagnostic = snapshot.Diagnostics.Count == 0
-            ? "No personal files or account information are inspected."
-            : $"Analysis completed with {snapshot.Diagnostics.Count.ToString(CultureInfo.InvariantCulture)} diagnostic note(s). No personal files were inspected.";
-    }
-
-    private static string FormatArchitecture(MachineArchitecture architecture) => architecture switch
-    {
-        MachineArchitecture.X64 => "x64 architecture",
-        MachineArchitecture.X86 => "x86 architecture",
-        MachineArchitecture.Arm64 => "ARM64 architecture",
-        _ => "Unknown architecture"
-    };
-
-    private static string FormatBytes(ulong? bytes)
-    {
-        if (bytes is null)
-        {
-            return "Unknown";
-        }
-
-        return FormatBytes((double)bytes.Value);
-    }
-
-    private static string FormatBytes(long? bytes)
-    {
-        if (bytes is null || bytes < 0)
-        {
-            return "Unknown";
-        }
-
-        return FormatBytes((double)bytes.Value);
-    }
-
-    private static string FormatBytes(double bytes)
-    {
-        const double gib = 1024d * 1024d * 1024d;
-        return $"{Math.Round(bytes / gib):0} GB";
     }
 
     private static string BuildInitials(string name)
