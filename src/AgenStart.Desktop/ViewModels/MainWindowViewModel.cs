@@ -47,7 +47,6 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged, IDisposable
 
     private bool _isBusy;
     private bool _hasSnapshot;
-    private UserProfile _selectedProfile = UserProfile.Development;
     private AppStep _currentStep = AppStep.Overview;
 
     private string _statusTitle = "Ready for analysis";
@@ -91,12 +90,16 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged, IDisposable
         RecommendationsStep = new RecommendationsViewModel();
         RecommendationsStep.PropertyChanged += RelayChildPropertyChanged;
         RecommendationsStep.Recommendations.CollectionChanged += (_, _) => OnPropertyChanged(nameof(Recommendations));
+
+        UsageProfile = new UsageProfileViewModel();
+        UsageProfile.PropertyChanged += RelayChildPropertyChanged;
     }
 
     public ReportViewModel Report { get; }
     public InstallationViewModel Installation { get; }
     public ReviewViewModel Review { get; }
     public RecommendationsViewModel RecommendationsStep { get; }
+    public UsageProfileViewModel UsageProfile { get; }
 
     private void RelayChildPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
@@ -191,32 +194,11 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged, IDisposable
         set => Review.AgreementsAccepted = value;
     }
 
-    public UserProfile SelectedProfile
-    {
-        get => _selectedProfile;
-        private set
-        {
-            if (!SetField(ref _selectedProfile, value))
-            {
-                return;
-            }
+    public UserProfile SelectedProfile => UsageProfile.SelectedProfile;
 
-            OnPropertyChanged(nameof(SelectedProfileName));
-            OnPropertyChanged(nameof(SelectedProfileDescription));
-        }
-    }
+    public string SelectedProfileName => UsageProfile.SelectedProfileName;
 
-    public string SelectedProfileName => SelectedProfile.ToString();
-
-    public string SelectedProfileDescription => SelectedProfile switch
-    {
-        UserProfile.Personal => "Everyday apps, browsing, communication and media.",
-        UserProfile.Development => "Code, databases, terminals and developer tools.",
-        UserProfile.Business => "Office, communication, productivity and collaboration.",
-        UserProfile.Creation => "Design, media, content and creative workflows.",
-        UserProfile.Training => "Learning, course tools and guided study setups.",
-        _ => string.Empty
-    };
+    public string SelectedProfileDescription => UsageProfile.SelectedProfileDescription;
 
     public string RecommendationStatus
     {
@@ -336,12 +318,11 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged, IDisposable
 
     public void SelectProfile(UserProfile profile)
     {
-        if (SelectedProfile == profile || IsInstalling)
+        if (IsInstalling || !UsageProfile.TrySelect(profile))
         {
             return;
         }
 
-        SelectedProfile = profile;
         ClearRecommendations();
         RecommendationStatus = "Profile changed. Build recommendations when you're ready.";
     }
