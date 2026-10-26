@@ -1,0 +1,113 @@
+{
+  "schemaVersion": 1,
+  "name": "AgenStart",
+  "stage": "beta",
+  "tagline": "A local-first Windows desktop setup assistant that inspects the device, recommends appropriate apps and routes reviewed choices through trusted providers.",
+  "problem": "New PCs require repetitive checks and installer choices, while automated scripts can silently install untrusted packages without explaining risks or failure modes.",
+  "scenario": "A Windows user reviews local machine capabilities, selects use cases, chooses from explained software recommendations and explicitly approves a WinGet-backed installation.",
+  "differentiation": "The user controls every installation, with an inventory- and profile-aware recommendation model and auditable status instead of a cloud-required silent provisioning script.",
+  "architecture": "Windows inventory and installed software -> profiles/recommendations -> explicit user review -> WinGet/provider adapters -> local progress, diagnostics and setup report.",
+  "limitations": "An installer cannot universally be rolled back, and not every Windows provider has identical retry guarantees. The README's roadmap is not equivalent to every feature being released.",
+  "capabilities": [
+    {
+      "name": "Local machine and desktop implementation",
+      "description": "Read the linked repository source or contract for local machine and desktop implementation and its bounded implementation.",
+      "status": "shipped",
+      "evidence": "src/AgenStart.Desktop/"
+    },
+    {
+      "name": "Reproducible setup roadmap",
+      "description": "Read the linked repository source or contract for reproducible setup roadmap and its bounded implementation.",
+      "status": "shipped",
+      "evidence": "docs/ROADMAP.md"
+    },
+    {
+      "name": "Project methodology",
+      "description": "Read the linked repository source or contract for project methodology and its bounded implementation.",
+      "status": "shipped",
+      "evidence": "docs/APPFACTORY.md"
+    }
+  ],
+  "roadmap": [
+    {
+      "name": "Windows smoke checks",
+      "exitCriteria": "Validate complete approval, queue and error reporting on supported Windows versions."
+    },
+    {
+      "name": "Installer recovery",
+      "exitCriteria": "Record per-provider failure and rollback behavior and avoid a universal undo guarantee."
+    }
+  ],
+  "references": [
+    {
+      "name": "AppFactory README contract",
+      "url": "https://github.com/Trigenys/appfactory/blob/main/docs/product-readme-contract.md",
+      "relevance": "Shared evidence-based documentation validation."
+    }
+  ],
+  "requiredHeadings": [
+    "What it does",
+    "Current boundaries"
+  ],
+  "requiredTerms": [
+    "Windows",
+    "WinGet",
+    "local",
+    "installation",
+    "AgenStart"
+  ],
+  "requiredFiles": [
+    "src/AgenStart.Desktop/Assets/agenstart-app-icon.png",
+    "docs/ROADMAP.md",
+    "docs/APPFACTORY.md"
+  ],
+  "presentation": {
+    "variant": "centered",
+    "headline": "Your Windows setup, reviewed before installation.",
+    "summary": "A local-first Windows desktop setup assistant that inspects the device, recommends appropriate apps and routes reviewed choices through trusted providers.",
+    "badges": [
+      {
+        "label": "Stage",
+        "value": "beta",
+        "color": "0969da",
+        "href": "#current-boundaries"
+      },
+      {
+        "label": "Engineering",
+        "value": "Evidence first",
+        "color": "263238",
+        "href": "#current-boundaries"
+      }
+    ],
+    "navigation": [
+      {
+        "label": "Purpose",
+        "href": "#what-it-does"
+      },
+      {
+        "label": "Status",
+        "href": "#current-boundaries"
+      },
+      {
+        "label": "Why",
+        "href": "#why-agenstart"
+      },
+      {
+        "label": "Stack",
+        "href": "#architecture-direction"
+      },
+      {
+        "label": "Setup",
+        "href": "#setup-safety-boundary"
+      },
+      {
+        "label": "Roadmap",
+        "href": "#roadmap"
+      },
+      {
+        "label": "Public site",
+        "href": "#public-site-and-windows-distribution"
+      }
+    ]
+  }
+}

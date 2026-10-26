@@ -1,4 +1,42 @@
+<!-- appfactory:hero:start -->
+<div align="center">
+
 # AgenStart
+
+### Your Windows setup, reviewed before installation.
+
+**A local-first Windows desktop setup assistant that inspects the device, recommends appropriate apps and routes reviewed choices through trusted providers.**
+
+[![Stage: beta](https://img.shields.io/badge/Stage-beta-0969da)](#current-boundaries)
+[![Engineering: Evidence first](https://img.shields.io/badge/Engineering-Evidence%20first-263238)](#current-boundaries)
+
+[**Purpose**](#what-it-does) · [**Status**](#current-boundaries) · [**Why**](#why-agenstart) · [**Stack**](#architecture-direction) · [**Setup**](#setup-safety-boundary) · [**Roadmap**](#roadmap) · [**Public site**](#public-site-and-windows-distribution)
+
+</div>
+
+---
+<!-- appfactory:hero:end -->
+
+## What it does
+
+A Windows user reviews local machine capabilities, selects use cases, chooses from explained software recommendations and explicitly approves a WinGet-backed installation.
+
+## Current boundaries
+
+**beta.** An installer cannot universally be rolled back, and not every Windows provider has identical retry guarantees. The README's roadmap is not equivalent to every feature being released.
+
+**Implementation evidence:** [Local machine and desktop implementation](src/AgenStart.Desktop/) · [Reproducible setup roadmap](docs/ROADMAP.md) · [Project methodology](docs/APPFACTORY.md).
+
+## Setup safety boundary
+
+```text
+Local device assessment → explainable software suggestions
+→ explicit user approval → trusted provider → status and report
+```
+
+**No silent installs** are authorized by recommendation alone. Every change to the Windows machine requires an explicit reviewed choice, and failed/cancelled tasks must be reported honestly. This README retains the original AgenStart icon and technical walkthrough. [Desktop sources](src/AgenStart.Desktop/) · [Engineering roadmap](docs/ROADMAP.md).
+
+
 
 <p align="center">
   <img src="src/AgenStart.Desktop/Assets/agenstart-app-icon.png" alt="AgenStart icon" width="120" />
