@@ -6,12 +6,15 @@
              x:DataType="vm:MainWindowViewModel">
   <StackPanel>
     <TextBlock Classes="eyebrow" Text="REPORT" Margin="0,0,0,20" />
-    <TextBlock Classes="pageTitle" Text="Your PC is ready" />
+    <TextBlock Classes="pageTitle" Text="{Binding ReportTitle}" />
     <TextBlock Classes="subtitle" Text="{Binding ReportStatus}" Margin="0,12,0,0" TextWrapping="Wrap" />
     <Border Height="1" Background="{StaticResource AgenDividerBrush}" Margin="0,28,0,24" />
     <Grid ColumnDefinitions="90,*,*,*,*" ColumnSpacing="18">
-      <Border Width="64" Height="64" CornerRadius="32" BorderBrush="{StaticResource AgenTealBrush}" BorderThickness="2">
+      <Border Width="64" Height="64" CornerRadius="32" BorderBrush="{StaticResource AgenTealBrush}" BorderThickness="2" IsVisible="{Binding !ReportFailedCount}">
         <TextBlock Text="✓" Foreground="{StaticResource AgenTealBrush}" FontSize="30" HorizontalAlignment="Center" VerticalAlignment="Center" />
+      </Border>
+      <Border Width="64" Height="64" CornerRadius="32" BorderBrush="{StaticResource AgenWarningBrush}" BorderThickness="2" IsVisible="{Binding !!ReportFailedCount}">
+        <TextBlock Text="!" Foreground="{StaticResource AgenWarningBrush}" FontSize="30" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" />
       </Border>
       <StackPanel Grid.Column="1">
         <TextBlock Text="{Binding ReportProcessedCount}" Foreground="{StaticResource AgenTealBrush}" FontSize="22" FontWeight="SemiBold" />
@@ -26,7 +29,7 @@
         <TextBlock Text="already installed" Foreground="{StaticResource AgenMutedBrush}" />
       </StackPanel>
       <StackPanel Grid.Column="4">
-        <TextBlock Text="{Binding ReportFailedCount}" FontSize="22" FontWeight="SemiBold" />
+        <TextBlock Classes="failedMetric" Classes.hasFailures="{Binding !!ReportFailedCount}" Text="{Binding ReportFailedCount}" FontSize="22" FontWeight="SemiBold" />
         <TextBlock Text="failed" Foreground="{StaticResource AgenMutedBrush}" />
       </StackPanel>
     </Grid>
@@ -45,7 +48,7 @@
         </DataTemplate>
       </ItemsControl.ItemTemplate>
     </ItemsControl>
-    <Border IsVisible="{Binding ReportRequiresReboot}" BorderBrush="#AAB2B2" BorderThickness="1" CornerRadius="8" Padding="16" Margin="0,20,0,0">
+    <Border Classes="notice" IsVisible="{Binding ReportRequiresReboot}" Margin="0,20,0,0">
       <StackPanel>
         <TextBlock Text="Restart recommended" FontWeight="SemiBold" />
         <TextBlock Text="One or more installed applications require Windows to restart before all features become available." Foreground="{StaticResource AgenMutedBrush}" FontSize="13" Margin="0,4,0,0" />
@@ -61,6 +64,5 @@
         <TextBlock Text="{Binding ReportCompletedAt}" FontWeight="SemiBold" />
       </StackPanel>
     </Grid>
-    <TextBlock Text="Setup export will be enabled by the reproducible profiles milestone." Foreground="{StaticResource AgenMutedBrush}" FontSize="13" Margin="0,20,0,0" />
   </StackPanel>
 </UserControl>

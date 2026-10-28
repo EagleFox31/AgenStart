@@ -14,15 +14,15 @@
       <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="30" VerticalAlignment="Bottom" Margin="0,0,0,5">
         <StackPanel>
           <TextBlock Text="{Binding ReviewTotalCount}" Foreground="{StaticResource AgenTealBrush}" FontSize="20" FontWeight="SemiBold" TextAlignment="Center" />
-          <TextBlock Text="in plan" Foreground="{StaticResource AgenMutedBrush}" FontSize="12" />
+          <TextBlock Text="in plan" Foreground="{StaticResource AgenMutedBrush}" FontSize="12" TextAlignment="Center" />
         </StackPanel>
         <StackPanel>
           <TextBlock Text="{Binding ReviewAlreadyInstalledCount}" Foreground="{StaticResource AgenTealBrush}" FontSize="20" FontWeight="SemiBold" TextAlignment="Center" />
-          <TextBlock Text="already installed" Foreground="{StaticResource AgenMutedBrush}" FontSize="12" />
+          <TextBlock Text="already installed" Foreground="{StaticResource AgenMutedBrush}" FontSize="12" TextAlignment="Center" />
         </StackPanel>
         <StackPanel>
           <TextBlock Text="{Binding ReviewInstallCount}" Foreground="{StaticResource AgenTealBrush}" FontSize="20" FontWeight="SemiBold" TextAlignment="Center" />
-          <TextBlock Text="to install" Foreground="{StaticResource AgenMutedBrush}" FontSize="12" />
+          <TextBlock Text="to install" Foreground="{StaticResource AgenMutedBrush}" FontSize="12" TextAlignment="Center" />
         </StackPanel>
       </StackPanel>
     </Grid>
@@ -37,7 +37,7 @@
                 <TextBlock Text="{Binding Name}" FontSize="16" FontWeight="SemiBold" />
                 <TextBlock Text="{Binding Reason}" Foreground="{StaticResource AgenMutedBrush}" FontSize="13" TextTrimming="CharacterEllipsis" />
               </StackPanel>
-              <TextBlock Grid.Column="2" Text="{Binding Status}" VerticalAlignment="Center" />
+              <TextBlock Grid.Column="2" Classes="planStatus" Classes.willInstall="{Binding !AlreadyInstalled}" Text="{Binding Status}" VerticalAlignment="Center" />
               <Button Grid.Column="3" Content="Remove" Background="Transparent" BorderThickness="0" Foreground="{StaticResource AgenTealBrush}" IsVisible="{Binding CanRemove}" Click="RemoveButton_OnClick" />
             </Grid>
           </Border>

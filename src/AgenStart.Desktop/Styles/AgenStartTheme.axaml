@@ -278,6 +278,29 @@
     <Setter Property="VerticalAlignment" Value="Center" />
   </Style>
 
+  <!-- Failure counters turn red only when something actually failed. -->
+  <Style Selector="TextBlock.failedMetric.hasFailures">
+    <Setter Property="Foreground" Value="{StaticResource AgenDangerBrush}" />
+  </Style>
+
+  <!-- Confirm step: apps to install stand out from those already present. -->
+  <Style Selector="TextBlock.planStatus">
+    <Setter Property="Foreground" Value="{StaticResource AgenMutedBrush}" />
+  </Style>
+
+  <Style Selector="TextBlock.planStatus.willInstall">
+    <Setter Property="Foreground" Value="{StaticResource AgenTealBrush}" />
+    <Setter Property="FontWeight" Value="SemiBold" />
+  </Style>
+
+  <Style Selector="Border.notice">
+    <Setter Property="Background" Value="{StaticResource AgenBadgeSoftWarningBrush}" />
+    <Setter Property="BorderBrush" Value="{StaticResource AgenBadgeWarningBorderBrush}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="8" />
+    <Setter Property="Padding" Value="16" />
+  </Style>
+
   <Style Selector="Border.statusBadge">
     <Setter Property="BorderThickness" Value="1" />
     <Setter Property="CornerRadius" Value="13" />

@@ -654,6 +654,8 @@ public sealed partial class MainWindow : Window
 
         if (e.PropertyName == nameof(MainWindowViewModel.CurrentStep))
         {
+            // Each step opens at its top, not at the previous step's scroll position.
+            MainScrollViewer.Offset = default;
             if (_historyView is not null)
             {
                 _historyView.IsVisible = _viewModel.IsHistory;

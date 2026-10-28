@@ -181,6 +181,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged, IDisposable
     public string InstallationStatus => Installation.InstallationStatus;
     public string CurrentInstallationName => Installation.CurrentInstallationName;
     public string ReportStatus => Report.ReportStatus;
+    public string ReportTitle => Report.ReportTitle;
     public string ReportCompletedAt => Report.ReportCompletedAt;
 
     public int RecommendationCount => RecommendationsStep.RecommendationCount;

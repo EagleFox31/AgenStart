@@ -44,7 +44,7 @@
             <TextBlock Text="remaining" Foreground="{StaticResource AgenMutedBrush}" />
           </StackPanel>
           <StackPanel Grid.Column="2">
-            <TextBlock Text="{Binding InstallationFailedCount}" FontSize="22" FontWeight="SemiBold" />
+            <TextBlock Classes="failedMetric" Classes.hasFailures="{Binding !!InstallationFailedCount}" Text="{Binding InstallationFailedCount}" FontSize="22" FontWeight="SemiBold" />
             <TextBlock Text="failed" Foreground="{StaticResource AgenMutedBrush}" />
           </StackPanel>
         </Grid>

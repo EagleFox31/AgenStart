@@ -40,6 +40,12 @@ public sealed class ReportViewModel : StepViewModelBase
     public int ReportAlreadyInstalledCount => ReportItems.Count(row => row.Result == "Already installed");
     public int ReportFailedCount => _report?.FailedCount ?? 0;
     public bool ReportRequiresReboot => _report?.Items.Any(item => item.RequiresReboot) == true;
+    public string ReportTitle => _report switch
+    {
+        { State: InstallationSessionState.Cancelled } => "Setup cancelled",
+        { FailedCount: > 0 } => "Setup finished with issues",
+        _ => "Your PC is ready"
+    };
 
     public void Reset()
     {
@@ -127,6 +133,7 @@ public sealed class ReportViewModel : StepViewModelBase
         OnPropertyChanged(nameof(ReportAlreadyInstalledCount));
         OnPropertyChanged(nameof(ReportFailedCount));
         OnPropertyChanged(nameof(ReportRequiresReboot));
+        OnPropertyChanged(nameof(ReportTitle));
     }
 
     private static string BuildInitials(string name)
