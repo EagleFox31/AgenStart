@@ -56,3 +56,12 @@ Entry format: context, symptom, root cause, fix, prevention, generalized lesson.
 - **Fix:** built `HEAD` in a temporary `git worktree`: 0 errors, 0 warnings. The errors belonged to work in progress.
 - **Prevention:** before attributing a failure to the codebase, check `git status`; verify committed state in an isolated worktree when the tree is dirty.
 - **Generalized lesson:** in multi-agent repositories, distinguish "committed state" from "working tree" in every verification report.
+
+## LL-005 — UserControl `DataContext = this` broke the host's `IsVisible` binding
+
+- **Context:** `UsageProfilesView` set `DataContext = this` in its constructor; `MainWindow` hosts it with `IsVisible="{Binding IsUsageProfile}"`.
+- **Symptom:** the Usage profile step stayed visible on every step, drawn over Overview at startup.
+- **Root cause:** a binding on the host element resolves against that element's own `DataContext`. Once the control replaced it with itself, `IsUsageProfile` no longer resolved and `IsVisible` kept its default (`true`). Compiled bindings did not flag it because the binding lives in `MainWindow.axaml`, typed on `MainWindowViewModel`.
+- **Fix:** scope the self-context to the control's root element (`RootGrid.DataContext = this`).
+- **Prevention:** never assign `DataContext` on a UserControl itself; assign it on an inner root. Check every step at startup with a window capture after any view extraction.
+- **Generalized lesson:** a control's own `DataContext` belongs to its parent; a view that needs a private context sets it one level down.

@@ -24,7 +24,8 @@ public sealed partial class UsageProfilesView : UserControl
             .ToArray();
 
         InitializeComponent();
-        DataContext = this;
+        // Scoped to the root grid so the host's IsVisible binding keeps the window view model.
+        RootGrid.DataContext = this;
         SetSelection(UserProfile.Development);
     }
 
