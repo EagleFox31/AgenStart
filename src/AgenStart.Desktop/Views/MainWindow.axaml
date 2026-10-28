@@ -23,38 +23,38 @@
         <StackPanel Grid.Row="1" Spacing="1">
           <Grid>
             <Border Classes="navStripe" IsVisible="{Binding IsOverview}" />
-            <Button x:Name="OverviewButton" Classes="nav" Classes.active="{Binding IsOverview}" Tag="Overview" Click="NavButton_OnClick"><StackPanel Orientation="Horizontal" Spacing="0"><TextBlock Classes="navIcon" Text="⌂" /><TextBlock Classes="navLabel" Text="Overview" /></StackPanel></Button>
+            <Button x:Name="OverviewButton" Classes="nav" AutomationProperties.Name="Overview" Classes.active="{Binding IsOverview}" Tag="Overview" Click="NavButton_OnClick"><StackPanel Orientation="Horizontal" Spacing="0"><TextBlock Classes="navIcon" Text="⌂" /><TextBlock Classes="navLabel" Text="Overview" /></StackPanel></Button>
           </Grid>
           <Grid>
             <Border Classes="navStripe" IsVisible="{Binding IsYourPc}" />
-            <Button x:Name="YourPcButton" Classes="nav" Classes.active="{Binding IsYourPc}" Tag="YourPc" Click="NavButton_OnClick"><StackPanel Orientation="Horizontal" Spacing="0"><TextBlock Classes="navIcon" Text="▣" /><TextBlock Classes="navLabel" Text="Your PC" /></StackPanel></Button>
+            <Button x:Name="YourPcButton" Classes="nav" AutomationProperties.Name="Your PC" Classes.active="{Binding IsYourPc}" Tag="YourPc" Click="NavButton_OnClick"><StackPanel Orientation="Horizontal" Spacing="0"><TextBlock Classes="navIcon" Text="▣" /><TextBlock Classes="navLabel" Text="Your PC" /></StackPanel></Button>
           </Grid>
           <Grid>
             <Border Classes="navStripe" IsVisible="{Binding IsUsageProfile}" />
-            <Button x:Name="UsageProfileButton" Classes="nav" Classes.active="{Binding IsUsageProfile}" Tag="UsageProfile" Click="NavButton_OnClick"><StackPanel Orientation="Horizontal" Spacing="0"><TextBlock Classes="navIcon" Text="○" /><TextBlock Classes="navLabel" Text="Usage profile" /></StackPanel></Button>
+            <Button x:Name="UsageProfileButton" Classes="nav" AutomationProperties.Name="Usage profile" Classes.active="{Binding IsUsageProfile}" Tag="UsageProfile" Click="NavButton_OnClick"><StackPanel Orientation="Horizontal" Spacing="0"><TextBlock Classes="navIcon" Text="○" /><TextBlock Classes="navLabel" Text="Usage profile" /></StackPanel></Button>
           </Grid>
           <Grid>
             <Border Classes="navStripe" IsVisible="{Binding IsRecommendations}" />
-            <Button x:Name="RecommendationsButton" Classes="nav" Classes.active="{Binding IsRecommendations}" Tag="Recommendations" Click="NavButton_OnClick"><StackPanel Orientation="Horizontal" Spacing="0"><TextBlock Classes="navIcon" Text="✦" /><TextBlock Classes="navLabel" Text="Recommendations" /></StackPanel></Button>
+            <Button x:Name="RecommendationsButton" Classes="nav" AutomationProperties.Name="Recommendations" Classes.active="{Binding IsRecommendations}" Tag="Recommendations" Click="NavButton_OnClick"><StackPanel Orientation="Horizontal" Spacing="0"><TextBlock Classes="navIcon" Text="✦" /><TextBlock Classes="navLabel" Text="Recommendations" /></StackPanel></Button>
           </Grid>
           <Grid>
             <Border Classes="navStripe" IsVisible="{Binding IsReview}" />
-            <Button x:Name="ReviewButton" Classes="nav" Classes.active="{Binding IsReview}" Tag="Review" Click="NavButton_OnClick"><StackPanel Orientation="Horizontal" Spacing="0"><TextBlock Classes="navIcon" Text="✓" /><TextBlock Classes="navLabel" Text="Confirm" /></StackPanel></Button>
+            <Button x:Name="ReviewButton" Classes="nav" AutomationProperties.Name="Confirm" Classes.active="{Binding IsReview}" Tag="Review" Click="NavButton_OnClick"><StackPanel Orientation="Horizontal" Spacing="0"><TextBlock Classes="navIcon" Text="✓" /><TextBlock Classes="navLabel" Text="Confirm" /></StackPanel></Button>
           </Grid>
           <Grid>
             <Border Classes="navStripe" IsVisible="{Binding IsInstallationStep}" />
-            <Button x:Name="InstallationButton" Classes="nav" Classes.active="{Binding IsInstallationStep}" Tag="Installation" Click="NavButton_OnClick"><StackPanel Orientation="Horizontal" Spacing="0"><TextBlock Classes="navIcon" Text="↓" /><TextBlock Classes="navLabel" Text="Installation" /></StackPanel></Button>
+            <Button x:Name="InstallationButton" Classes="nav" AutomationProperties.Name="Installation" Classes.active="{Binding IsInstallationStep}" Tag="Installation" Click="NavButton_OnClick"><StackPanel Orientation="Horizontal" Spacing="0"><TextBlock Classes="navIcon" Text="↓" /><TextBlock Classes="navLabel" Text="Installation" /></StackPanel></Button>
           </Grid>
           <Grid>
             <Border Classes="navStripe" IsVisible="{Binding IsReport}" />
-            <Button x:Name="ReportButton" Classes="nav" Classes.active="{Binding IsReport}" Tag="Report" Click="NavButton_OnClick"><StackPanel Orientation="Horizontal" Spacing="0"><TextBlock Classes="navIcon" Text="▤" /><TextBlock Classes="navLabel" Text="Report" /></StackPanel></Button>
+            <Button x:Name="ReportButton" Classes="nav" AutomationProperties.Name="Report" Classes.active="{Binding IsReport}" Tag="Report" Click="NavButton_OnClick"><StackPanel Orientation="Horizontal" Spacing="0"><TextBlock Classes="navIcon" Text="▤" /><TextBlock Classes="navLabel" Text="Report" /></StackPanel></Button>
           </Grid>
         </StackPanel>
 
         <StackPanel Grid.Row="2" Spacing="1">
           <Border Height="1" Background="#35505A" Margin="20,0,20,14" />
-          <Button Classes="nav" IsEnabled="False"><StackPanel Orientation="Horizontal" Spacing="0"><TextBlock Classes="navIcon" Text="↶" /><TextBlock Classes="navLabel" Text="History" /></StackPanel></Button>
-          <Button Classes="nav" IsEnabled="False"><StackPanel Orientation="Horizontal" Spacing="0"><TextBlock Classes="navIcon" Text="⚙" /><TextBlock Classes="navLabel" Text="Settings" /></StackPanel></Button>
+          <Button Classes="nav" AutomationProperties.Name="History" IsEnabled="False"><StackPanel Orientation="Horizontal" Spacing="0"><TextBlock Classes="navIcon" Text="↶" /><TextBlock Classes="navLabel" Text="History" /></StackPanel></Button>
+          <Button Classes="nav" AutomationProperties.Name="Settings" IsEnabled="False"><StackPanel Orientation="Horizontal" Spacing="0"><TextBlock Classes="navIcon" Text="⚙" /><TextBlock Classes="navLabel" Text="Settings" /></StackPanel></Button>
         </StackPanel>
       </Grid>
     </Border>

@@ -243,7 +243,7 @@
   </Style>
 
   <Style Selector="Border.dataRow:pointerover">
-    <Setter Property="Background" Value="{StaticResource AgenNavHoverBrush}" />
+    <Setter Property="Background" Value="{StaticResource AgenProfileHoverBrush}" />
   </Style>
 
   <Style Selector="Border.dataRow TextBlock">

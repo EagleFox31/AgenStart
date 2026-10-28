@@ -4,10 +4,14 @@
              xmlns:views="using:AgenStart.Desktop.Views"
              x:Class="AgenStart.Desktop.Views.UsageProfilesView"
              x:DataType="views:UsageProfilesView">
-  <Grid ColumnDefinitions="1.45*,0.55*" ColumnSpacing="50">
-    <StackPanel Grid.Column="0" Spacing="10">
-      <TextBlock Text="Choose how you use this PC" FontSize="19" FontWeight="SemiBold" Margin="0,0,0,4" />
-      <TextBlock Text="Select one or more uses. AgenStart merges them, removes duplicates, and only preselects the strongest matches." Foreground="{StaticResource AgenMutedBrush}" FontSize="13" TextWrapping="Wrap" Margin="0,0,0,10" />
+  <Grid x:Name="RootGrid" RowDefinitions="Auto,*" ColumnDefinitions="1.45*,0.55*" ColumnSpacing="50">
+    <StackPanel Grid.ColumnSpan="2">
+      <TextBlock Classes="eyebrow" Text="USAGE PROFILE" Margin="0,0,0,22" />
+      <TextBlock Classes="pageTitle" Text="How do you use this PC?" />
+      <TextBlock Classes="subtitle" Text="Select one or more uses. AgenStart merges them, removes duplicates, and only preselects the strongest matches." TextWrapping="Wrap" Margin="0,13,0,0" />
+      <Border Height="1" Background="{StaticResource AgenDividerBrush}" Margin="0,30,0,26" />
+    </StackPanel>
+    <StackPanel Grid.Row="1" Grid.Column="0" Spacing="10">
 
       <ItemsControl ItemsSource="{Binding Options}">
         <ItemsControl.ItemTemplate>
@@ -47,7 +51,7 @@
       </Border>
     </StackPanel>
 
-    <StackPanel Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="310" Spacing="12">
+    <StackPanel Grid.Row="1" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="310" Spacing="12">
       <Border Width="70" Height="70" CornerRadius="35" BorderThickness="2" BorderBrush="{StaticResource AgenTealBrush}" HorizontalAlignment="Center"><TextBlock Text="✦" Foreground="{StaticResource AgenTealBrush}" FontSize="25" HorizontalAlignment="Center" VerticalAlignment="Center" /></Border>
       <TextBlock Text="Selected uses" Foreground="{StaticResource AgenMutedBrush}" TextAlignment="Center" Margin="0,8,0,0" />
       <TextBlock x:Name="SelectedProfilesText" FontSize="22" FontWeight="SemiBold" TextAlignment="Center" TextWrapping="Wrap" />

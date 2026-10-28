@@ -19,6 +19,8 @@ public sealed class RecommendationRowViewModel : INotifyPropertyChanged
     private static readonly IBrush SoftInstalledBrush = new SolidColorBrush(Color.Parse("#E6F4EA"));
     private static readonly IBrush SoftGemBrush = new SolidColorBrush(Color.Parse("#F0E8FA"));
     private static readonly IBrush SoftAttentionBrush = new SolidColorBrush(Color.Parse("#FDECEA"));
+    private static readonly IBrush ReviewBrush = new SolidColorBrush(Color.Parse("#9A6700"));
+    private static readonly IBrush SoftReviewBrush = new SolidColorBrush(Color.Parse("#FFF4D6"));
     private static readonly IBrush TransparentBrush = new SolidColorBrush(Colors.Transparent);
 
     private bool _isSelected;
@@ -110,6 +112,11 @@ public sealed class RecommendationRowViewModel : INotifyPropertyChanged
             return "Installed";
         }
 
+        if (IsUnverifiedState(decision.Disposition))
+        {
+            return "Needs review";
+        }
+
         if (IsAttentionState(decision.Disposition))
         {
             return "Attention";
@@ -164,6 +171,11 @@ public sealed class RecommendationRowViewModel : INotifyPropertyChanged
             return (InstalledBrush, SoftInstalledBrush);
         }
 
+        if (IsUnverifiedState(decision.Disposition))
+        {
+            return (ReviewBrush, SoftReviewBrush);
+        }
+
         if (IsAttentionState(decision.Disposition))
         {
             return (AttentionBrush, SoftAttentionBrush);
@@ -180,6 +192,11 @@ public sealed class RecommendationRowViewModel : INotifyPropertyChanged
             _ => (TransparentBrush, TransparentBrush)
         };
     }
+
+    // Unknown states are not failures: AgenStart only lacks proof, so they read as a softer warning.
+    private static bool IsUnverifiedState(RecommendationDisposition disposition) =>
+        disposition is RecommendationDisposition.CompatibilityUnknown
+            or RecommendationDisposition.InventoryUnknown;
 
     private static bool IsAttentionState(RecommendationDisposition disposition) =>
         disposition is RecommendationDisposition.Incompatible
