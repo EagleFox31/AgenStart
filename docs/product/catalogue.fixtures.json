@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "catalogueVersion": "0.2.0",
+      "catalogueVersion": "0.3.0",
   "applications": [
     {
       "id": "7zip",
@@ -15,6 +15,7 @@
         {"profile": "business", "level": "recommended", "reasonKey": "business.archives"},
         {"profile": "learning", "level": "recommended", "reasonKey": "learning.archives"},
         {"profile": "development", "level": "recommended", "reasonKey": "development.archives"},
+        {"profile": "it-student", "level": "recommended", "reasonKey": "it-student.archives"},
         {"profile": "gaming", "level": "optional", "reasonKey": "gaming.archives"}
       ],
       "requirements": {
@@ -36,6 +37,7 @@
       "recommendations": [
         {"profile": "personal", "level": "recommended", "reasonKey": "personal.browser"},
         {"profile": "learning", "level": "recommended", "reasonKey": "learning.browser"},
+        {"profile": "it-student", "level": "recommended", "reasonKey": "it-student.browser"},
         {"profile": "development", "level": "optional", "reasonKey": "development.browser-testing"}
       ],
       "requirements": {
@@ -47,6 +49,42 @@
       "dependencies": [], "conflicts": []
     },
     {
+      "id": "google-chrome",
+      "name": "Google Chrome",
+      "publisher": "Google",
+      "description": "A Chromium browser for everyday sites, extensions and Google services when that ecosystem is needed.",
+      "categories": ["browser"], "tags": ["browser", "chromium"],
+      "lifecycle": {"status": "active"},
+      "recommendations": [
+        {"profile": "personal", "level": "recommended", "reasonKey": "personal.browser-chromium"},
+        {"profile": "learning", "level": "optional", "reasonKey": "learning.browser-chromium"},
+        {"profile": "development", "level": "optional", "reasonKey": "development.browser-testing"}
+      ],
+      "requirements": {
+        "minimum": {"minRamMiB": 2048, "minFreeStorageMiB": 500, "gpuRequired": false, "architectures": ["x64", "arm64"]},
+        "recommended": {"minRamMiB": 4096, "minFreeStorageMiB": 1024, "gpuRequired": false, "architectures": ["x64", "arm64"]}
+      },
+      "platformSupport": [{"platform": "windows", "status": "supported", "architectures": ["x64", "arm64"]}],
+      "providers": [{"platform": "windows", "type": "winget", "packageId": "Google.Chrome", "source": "winget", "scopePreference": "any"}],
+      "dependencies": [], "conflicts": []
+    },
+    {
+      "id": "brave",
+      "name": "Brave",
+      "publisher": "Brave Software",
+      "description": "A Chromium-based browser with built-in tracker blocking for everyday browsing with stronger privacy defaults.",
+      "categories": ["browser"], "tags": ["browser", "privacy", "chromium"],
+      "lifecycle": {"status": "active"},
+      "recommendations": [{"profile": "personal", "level": "optional", "reasonKey": "personal.browser-privacy"}],
+      "requirements": {
+        "minimum": {"minRamMiB": 2048, "minFreeStorageMiB": 500, "gpuRequired": false, "architectures": ["x64", "arm64"]},
+        "recommended": {"minRamMiB": 4096, "minFreeStorageMiB": 1024, "gpuRequired": false, "architectures": ["x64", "arm64"]}
+      },
+      "platformSupport": [{"platform": "windows", "status": "supported", "architectures": ["x64", "arm64"]}],
+      "providers": [{"platform": "windows", "type": "winget", "packageId": "Brave.Brave", "source": "winget", "scopePreference": "any"}],
+      "dependencies": [], "conflicts": []
+    },
+    {
       "id": "vlc",
       "name": "VLC media player",
       "publisher": "VideoLAN",
@@ -55,7 +93,9 @@
       "lifecycle": {"status": "active"},
       "recommendations": [
         {"profile": "personal", "level": "essential", "reasonKey": "personal.media"},
+        {"profile": "entertainment", "level": "essential", "reasonKey": "entertainment.media-player"},
         {"profile": "learning", "level": "recommended", "reasonKey": "learning.course-media"},
+        {"profile": "it-student", "level": "optional", "reasonKey": "it-student.course-media"},
         {"profile": "creative", "level": "recommended", "reasonKey": "creative.preview-media"}
       ],
       "requirements": {
@@ -64,6 +104,89 @@
       },
       "platformSupport": [{"platform": "windows", "status": "supported", "architectures": ["x64", "arm64"]}],
       "providers": [{"platform": "windows", "type": "winget", "packageId": "VideoLAN.VLC", "source": "winget", "scopePreference": "any"}],
+      "dependencies": [], "conflicts": []
+    },
+    {
+      "id": "spotify",
+      "name": "Spotify",
+      "publisher": "Spotify",
+      "description": "Streams music, podcasts and playlists from a large library onto this PC.",
+      "categories": ["media"], "tags": ["music", "streaming"],
+      "lifecycle": {"status": "active"},
+      "recommendations": [
+        {"profile": "personal", "level": "optional", "reasonKey": "personal.music"},
+        {"profile": "entertainment", "level": "recommended", "reasonKey": "entertainment.music"}
+      ],
+      "requirements": {
+        "minimum": {"minRamMiB": 1024, "minFreeStorageMiB": 500, "gpuRequired": false, "architectures": ["x64"]},
+        "recommended": {"minRamMiB": 2048, "minFreeStorageMiB": 1000, "gpuRequired": false, "architectures": ["x64"]}
+      },
+      "platformSupport": [{"platform": "windows", "status": "supported", "architectures": ["x64"]}],
+      "providers": [{"platform": "windows", "type": "winget", "packageId": "Spotify.Spotify", "source": "winget", "scopePreference": "user"}],
+      "dependencies": [], "conflicts": []
+    },
+    {
+      "id": "kodi",
+      "name": "Kodi",
+      "publisher": "XBMC Foundation",
+      "description": "A local media center for playing movies, TV shows and music from disks, folders or a home library.",
+      "categories": ["media"], "tags": ["media-center", "video"],
+      "lifecycle": {"status": "active"},
+      "recommendations": [{"profile": "entertainment", "level": "recommended", "reasonKey": "entertainment.media-center"}],
+      "requirements": {
+        "minimum": {"minRamMiB": 2048, "minFreeStorageMiB": 500, "gpuRequired": false, "architectures": ["x64"]},
+        "recommended": {"minRamMiB": 4096, "minFreeStorageMiB": 2000, "gpuRequired": true, "architectures": ["x64"]}
+      },
+      "platformSupport": [{"platform": "windows", "status": "supported", "architectures": ["x64"]}],
+      "providers": [{"platform": "windows", "type": "winget", "packageId": "XBMCFoundation.Kodi", "source": "winget", "scopePreference": "any"}],
+      "dependencies": [], "conflicts": []
+    },
+    {
+      "id": "plex",
+      "name": "Plex",
+      "publisher": "Plex",
+      "description": "Plays movies, shows and music from a Plex library on this PC or another device on the network.",
+      "categories": ["media"], "tags": ["streaming", "media-center"],
+      "lifecycle": {"status": "active"},
+      "recommendations": [{"profile": "entertainment", "level": "recommended", "reasonKey": "entertainment.plex"}],
+      "requirements": {
+        "minimum": {"minRamMiB": 2048, "minFreeStorageMiB": 500, "gpuRequired": false, "architectures": ["x64"]},
+        "recommended": {"minRamMiB": 4096, "minFreeStorageMiB": 2000, "gpuRequired": false, "architectures": ["x64"]}
+      },
+      "platformSupport": [{"platform": "windows", "status": "supported", "architectures": ["x64"]}],
+      "providers": [{"platform": "windows", "type": "winget", "packageId": "Plex.Plex", "source": "winget", "scopePreference": "user"}],
+      "dependencies": [], "conflicts": []
+    },
+    {
+      "id": "plexamp",
+      "name": "Plexamp",
+      "publisher": "Plex",
+      "description": "A focused Plex music player for albums, playlists and local or server libraries.",
+      "categories": ["media"], "tags": ["music", "streaming"],
+      "lifecycle": {"status": "active"},
+      "recommendations": [{"profile": "entertainment", "level": "gem", "reasonKey": "entertainment.plex-music"}],
+      "requirements": {
+        "minimum": {"minRamMiB": 1024, "minFreeStorageMiB": 250, "gpuRequired": false, "architectures": ["x64"]},
+        "recommended": {"minRamMiB": 2048, "minFreeStorageMiB": 500, "gpuRequired": false, "architectures": ["x64"]}
+      },
+      "platformSupport": [{"platform": "windows", "status": "supported", "architectures": ["x64"]}],
+      "providers": [{"platform": "windows", "type": "winget", "packageId": "Plex.Plexamp", "source": "winget", "scopePreference": "user"}],
+      "dependencies": [], "conflicts": []
+    },
+    {
+      "id": "stremio",
+      "name": "Stremio",
+      "publisher": "Smart Code",
+      "description": "A media hub that gathers streaming add-ons and local video into one desktop player.",
+      "categories": ["media"], "tags": ["streaming", "video"],
+      "lifecycle": {"status": "active"},
+      "recommendations": [{"profile": "entertainment", "level": "optional", "reasonKey": "entertainment.streaming-hub"}],
+      "requirements": {
+        "minimum": {"minRamMiB": 2048, "minFreeStorageMiB": 500, "gpuRequired": false, "architectures": ["x64"]},
+        "recommended": {"minRamMiB": 4096, "minFreeStorageMiB": 1500, "gpuRequired": false, "architectures": ["x64"]}
+      },
+      "platformSupport": [{"platform": "windows", "status": "supported", "architectures": ["x64"]}],
+      "providers": [{"platform": "windows", "type": "winget", "packageId": "Stremio.Stremio", "source": "winget", "scopePreference": "user"}],
       "dependencies": [], "conflicts": []
     },
     {
@@ -136,7 +259,8 @@
       "lifecycle": {"status": "active"},
       "recommendations": [
         {"profile": "personal", "level": "recommended", "reasonKey": "personal.password-manager"},
-        {"profile": "business", "level": "recommended", "reasonKey": "business.password-manager"}
+        {"profile": "business", "level": "recommended", "reasonKey": "business.password-manager"},
+        {"profile": "it-student", "level": "recommended", "reasonKey": "it-student.password-manager"}
       ],
       "requirements": {
         "minimum": {"minRamMiB": 1024, "minFreeStorageMiB": 500, "gpuRequired": false, "architectures": ["x64", "arm64"]},
@@ -246,6 +370,26 @@
       "dependencies": [], "conflicts": []
     },
     {
+      "id": "notepad-plus-plus",
+      "name": "Notepad++",
+      "publisher": "Don Ho",
+      "description": "A lightweight text and code editor for notes, config files and quick edits without opening a full IDE.",
+      "categories": ["utilities", "development"], "tags": ["editor", "text", "gem"],
+      "lifecycle": {"status": "active"},
+      "recommendations": [
+        {"profile": "personal", "level": "gem", "reasonKey": "personal.text-editor"},
+        {"profile": "it-student", "level": "gem", "reasonKey": "it-student.lightweight-editor"},
+        {"profile": "development", "level": "optional", "reasonKey": "development.lightweight-editor"}
+      ],
+      "requirements": {
+        "minimum": {"minRamMiB": 256, "minFreeStorageMiB": 100, "gpuRequired": false, "architectures": ["x64"]},
+        "recommended": {"minRamMiB": 1024, "minFreeStorageMiB": 250, "gpuRequired": false, "architectures": ["x64"]}
+      },
+      "platformSupport": [{"platform": "windows", "status": "supported", "architectures": ["x64"]}],
+      "providers": [{"platform": "windows", "type": "winget", "packageId": "Notepad++.Notepad++", "source": "winget", "scopePreference": "any"}],
+      "dependencies": [], "conflicts": []
+    },
+    {
       "id": "sumatrapdf",
       "name": "SumatraPDF",
       "publisher": "Krzysztof Kowalczyk",
@@ -255,7 +399,8 @@
       "recommendations": [
         {"profile": "personal", "level": "recommended", "reasonKey": "personal.pdf-reader"},
         {"profile": "business", "level": "recommended", "reasonKey": "business.pdf-reader"},
-        {"profile": "learning", "level": "essential", "reasonKey": "learning.pdf-reader"}
+        {"profile": "learning", "level": "essential", "reasonKey": "learning.pdf-reader"},
+        {"profile": "it-student", "level": "recommended", "reasonKey": "it-student.pdf-reader"}
       ],
       "requirements": {
         "minimum": {"minRamMiB": 256, "minFreeStorageMiB": 200, "gpuRequired": false, "architectures": ["x64", "arm64", "x86"]},
@@ -263,6 +408,25 @@
       },
       "platformSupport": [{"platform": "windows", "status": "supported", "architectures": ["x64", "arm64", "x86"]}],
       "providers": [{"platform": "windows", "type": "winget", "packageId": "SumatraPDF.SumatraPDF", "source": "winget", "scopePreference": "any"}],
+      "dependencies": [], "conflicts": []
+    },
+    {
+      "id": "adobe-acrobat-reader",
+      "name": "Adobe Acrobat Reader",
+      "publisher": "Adobe",
+      "description": "Opens, fills and prints everyday PDFs when a workplace or form expects Adobe Reader.",
+      "categories": ["documents"], "tags": ["pdf", "reader"],
+      "lifecycle": {"status": "active"},
+      "recommendations": [
+        {"profile": "business", "level": "recommended", "reasonKey": "business.adobe-pdf"},
+        {"profile": "personal", "level": "optional", "reasonKey": "personal.adobe-pdf"}
+      ],
+      "requirements": {
+        "minimum": {"minRamMiB": 1024, "minFreeStorageMiB": 500, "gpuRequired": false, "architectures": ["x64"]},
+        "recommended": {"minRamMiB": 2048, "minFreeStorageMiB": 1000, "gpuRequired": false, "architectures": ["x64"]}
+      },
+      "platformSupport": [{"platform": "windows", "status": "supported", "architectures": ["x64"]}],
+      "providers": [{"platform": "windows", "type": "winget", "packageId": "Adobe.Acrobat.Reader.64-bit", "source": "winget", "scopePreference": "any"}],
       "dependencies": [], "conflicts": []
     },
     {
@@ -275,6 +439,7 @@
       "recommendations": [
         {"profile": "business", "level": "recommended", "reasonKey": "business.office-suite"},
         {"profile": "learning", "level": "essential", "reasonKey": "learning.office-suite"},
+        {"profile": "it-student", "level": "recommended", "reasonKey": "it-student.office-suite"},
         {"profile": "personal", "level": "optional", "reasonKey": "personal.office-suite"}
       ],
       "requirements": {
@@ -324,6 +489,73 @@
       "dependencies": [], "conflicts": []
     },
     {
+      "id": "microsoft-teams",
+      "name": "Microsoft Teams",
+      "publisher": "Microsoft",
+      "description": "Joins Microsoft 365 meetings, chats and calls used by many workplaces and classes.",
+      "categories": ["communication"], "tags": ["meetings", "chat"],
+      "lifecycle": {"status": "active"},
+      "recommendations": [
+        {"profile": "business", "level": "recommended", "reasonKey": "business.teams"},
+        {"profile": "learning", "level": "optional", "reasonKey": "learning.teams"}
+      ],
+      "requirements": {
+        "minimum": {"minRamMiB": 2048, "minFreeStorageMiB": 1000, "gpuRequired": false, "architectures": ["x64"]},
+        "recommended": {"minRamMiB": 4096, "minFreeStorageMiB": 2000, "gpuRequired": false, "architectures": ["x64"]}
+      },
+      "platformSupport": [{"platform": "windows", "status": "supported", "architectures": ["x64"]}],
+      "providers": [{"platform": "windows", "type": "winget", "packageId": "Microsoft.Teams", "source": "winget", "scopePreference": "user"}],
+      "dependencies": [], "conflicts": []
+    },
+    {
+      "id": "slack",
+      "name": "Slack",
+      "publisher": "Slack Technologies",
+      "description": "Keeps work channels, direct messages and file sharing in one desktop workspace.",
+      "categories": ["communication"], "tags": ["chat", "workspace"],
+      "lifecycle": {"status": "active"},
+      "recommendations": [{"profile": "business", "level": "recommended", "reasonKey": "business.slack"}],
+      "requirements": {
+        "minimum": {"minRamMiB": 2048, "minFreeStorageMiB": 1000, "gpuRequired": false, "architectures": ["x64"]},
+        "recommended": {"minRamMiB": 4096, "minFreeStorageMiB": 2000, "gpuRequired": false, "architectures": ["x64"]}
+      },
+      "platformSupport": [{"platform": "windows", "status": "supported", "architectures": ["x64"]}],
+      "providers": [{"platform": "windows", "type": "winget", "packageId": "SlackTechnologies.Slack", "source": "winget", "scopePreference": "user"}],
+      "dependencies": [], "conflicts": []
+    },
+    {
+      "id": "signal",
+      "name": "Signal",
+      "publisher": "Signal Messenger LLC",
+      "description": "A private messenger for encrypted chats, calls and media with friends and family.",
+      "categories": ["communication"], "tags": ["chat", "privacy"],
+      "lifecycle": {"status": "active"},
+      "recommendations": [{"profile": "personal", "level": "recommended", "reasonKey": "personal.private-messenger"}],
+      "requirements": {
+        "minimum": {"minRamMiB": 1024, "minFreeStorageMiB": 500, "gpuRequired": false, "architectures": ["x64"]},
+        "recommended": {"minRamMiB": 2048, "minFreeStorageMiB": 1000, "gpuRequired": false, "architectures": ["x64"]}
+      },
+      "platformSupport": [{"platform": "windows", "status": "supported", "architectures": ["x64"]}],
+      "providers": [{"platform": "windows", "type": "winget", "packageId": "OpenWhisperSystems.Signal", "source": "winget", "scopePreference": "user"}],
+      "dependencies": [], "conflicts": []
+    },
+    {
+      "id": "telegram",
+      "name": "Telegram",
+      "publisher": "Telegram FZ-LLC",
+      "description": "A fast messenger for chats, channels and file sharing across phones and the desktop.",
+      "categories": ["communication"], "tags": ["chat", "messaging"],
+      "lifecycle": {"status": "active"},
+      "recommendations": [{"profile": "personal", "level": "optional", "reasonKey": "personal.messenger"}],
+      "requirements": {
+        "minimum": {"minRamMiB": 1024, "minFreeStorageMiB": 500, "gpuRequired": false, "architectures": ["x64"]},
+        "recommended": {"minRamMiB": 2048, "minFreeStorageMiB": 1000, "gpuRequired": false, "architectures": ["x64"]}
+      },
+      "platformSupport": [{"platform": "windows", "status": "supported", "architectures": ["x64"]}],
+      "providers": [{"platform": "windows", "type": "winget", "packageId": "Telegram.TelegramDesktop", "source": "winget", "scopePreference": "user"}],
+      "dependencies": [], "conflicts": []
+    },
+    {
       "id": "obsidian",
       "name": "Obsidian",
       "publisher": "Obsidian",
@@ -332,6 +564,7 @@
       "lifecycle": {"status": "active"},
       "recommendations": [
         {"profile": "learning", "level": "recommended", "reasonKey": "learning.notes"},
+        {"profile": "it-student", "level": "recommended", "reasonKey": "it-student.notes"},
         {"profile": "development", "level": "gem", "reasonKey": "development.notes"},
         {"profile": "business", "level": "gem", "reasonKey": "business.notes"}
       ],
@@ -350,7 +583,10 @@
       "description": "Uses spaced-repetition flashcards to bring back what you need to review before you forget it.",
       "categories": ["learning"], "tags": ["flashcards", "study"],
       "lifecycle": {"status": "active"},
-      "recommendations": [{"profile": "learning", "level": "recommended", "reasonKey": "learning.flashcards"}],
+      "recommendations": [
+        {"profile": "learning", "level": "recommended", "reasonKey": "learning.flashcards"},
+        {"profile": "it-student", "level": "recommended", "reasonKey": "it-student.flashcards"}
+      ],
       "requirements": {
         "minimum": {"minRamMiB": 1024, "minFreeStorageMiB": 1000, "gpuRequired": false, "architectures": ["x64"]},
         "recommended": {"minRamMiB": 2048, "minFreeStorageMiB": 2000, "gpuRequired": false, "architectures": ["x64"]}
@@ -366,7 +602,10 @@
       "description": "Collects research sources, keeps PDFs organized and builds citations and bibliographies for reports or theses.",
       "categories": ["learning"], "tags": ["research", "citations", "gem"],
       "lifecycle": {"status": "active"},
-      "recommendations": [{"profile": "learning", "level": "gem", "reasonKey": "learning.research-library"}],
+      "recommendations": [
+        {"profile": "learning", "level": "gem", "reasonKey": "learning.research-library"},
+        {"profile": "it-student", "level": "gem", "reasonKey": "it-student.research-library"}
+      ],
       "requirements": {
         "minimum": {"minRamMiB": 2048, "minFreeStorageMiB": 1000, "gpuRequired": false, "architectures": ["x64"]},
         "recommended": {"minRamMiB": 4096, "minFreeStorageMiB": 3000, "gpuRequired": false, "architectures": ["x64"]}
@@ -382,7 +621,10 @@
       "description": "Lets you handwrite notes and draw directly on PDFs, especially useful with a pen or graphics tablet.",
       "categories": ["learning"], "tags": ["pdf", "handwriting", "notes", "gem"],
       "lifecycle": {"status": "active"},
-      "recommendations": [{"profile": "learning", "level": "gem", "reasonKey": "learning.pdf-annotation"}],
+      "recommendations": [
+        {"profile": "learning", "level": "gem", "reasonKey": "learning.pdf-annotation"},
+        {"profile": "it-student", "level": "gem", "reasonKey": "it-student.pdf-annotation"}
+      ],
       "requirements": {
         "minimum": {"minRamMiB": 1024, "minFreeStorageMiB": 500, "gpuRequired": false, "architectures": ["x64"]},
         "recommended": {"minRamMiB": 2048, "minFreeStorageMiB": 1000, "gpuRequired": false, "architectures": ["x64"]}
@@ -398,7 +640,10 @@
       "description": "Tracks changes in your code and lets you work safely with GitHub, GitLab and other source-control services.",
       "categories": ["development"], "tags": ["source-control", "cli"],
       "lifecycle": {"status": "active"},
-      "recommendations": [{"profile": "development", "level": "essential", "reasonKey": "development.source-control"}],
+      "recommendations": [
+        {"profile": "development", "level": "essential", "reasonKey": "development.source-control"},
+        {"profile": "it-student", "level": "essential", "reasonKey": "it-student.source-control"}
+      ],
       "requirements": {
         "minimum": {"minRamMiB": 512, "minFreeStorageMiB": 500, "gpuRequired": false, "architectures": ["x64", "arm64", "x86"]},
         "recommended": {"minRamMiB": 2048, "minFreeStorageMiB": 1000, "gpuRequired": false, "architectures": ["x64", "arm64", "x86"]}
@@ -414,7 +659,10 @@
       "description": "A flexible code editor for Python, JavaScript, web work and many other languages through extensions.",
       "categories": ["development"], "tags": ["editor", "ide"],
       "lifecycle": {"status": "active"},
-      "recommendations": [{"profile": "development", "level": "essential", "reasonKey": "development.code-editor"}],
+      "recommendations": [
+        {"profile": "development", "level": "essential", "reasonKey": "development.code-editor"},
+        {"profile": "it-student", "level": "essential", "reasonKey": "it-student.code-editor"}
+      ],
       "requirements": {
         "minimum": {"minRamMiB": 2048, "minFreeStorageMiB": 1000, "gpuRequired": false, "architectures": ["x64", "arm64"]},
         "recommended": {"minRamMiB": 4096, "minFreeStorageMiB": 2000, "gpuRequired": false, "architectures": ["x64", "arm64"]}
@@ -430,7 +678,10 @@
       "description": "Puts PowerShell, Command Prompt and WSL shells into one modern tabbed terminal window.",
       "categories": ["development"], "tags": ["terminal", "cli"],
       "lifecycle": {"status": "active"},
-      "recommendations": [{"profile": "development", "level": "recommended", "reasonKey": "development.terminal"}],
+      "recommendations": [
+        {"profile": "development", "level": "recommended", "reasonKey": "development.terminal"},
+        {"profile": "it-student", "level": "recommended", "reasonKey": "it-student.terminal"}
+      ],
       "requirements": {
         "minimum": {"minRamMiB": 1024, "minFreeStorageMiB": 500, "gpuRequired": false, "architectures": ["x64", "arm64"]},
         "recommended": {"minRamMiB": 2048, "minFreeStorageMiB": 750, "gpuRequired": false, "architectures": ["x64", "arm64"]}
@@ -446,7 +697,10 @@
       "description": "A modern command shell and scripting tool for automating Windows tasks, APIs, files and developer workflows.",
       "categories": ["development"], "tags": ["shell", "automation"],
       "lifecycle": {"status": "active"},
-      "recommendations": [{"profile": "development", "level": "recommended", "reasonKey": "development.shell"}],
+      "recommendations": [
+        {"profile": "development", "level": "recommended", "reasonKey": "development.shell"},
+        {"profile": "it-student", "level": "optional", "reasonKey": "it-student.shell"}
+      ],
       "requirements": {
         "minimum": {"minRamMiB": 512, "minFreeStorageMiB": 500, "gpuRequired": false, "architectures": ["x64", "arm64"]},
         "recommended": {"minRamMiB": 2048, "minFreeStorageMiB": 750, "gpuRequired": false, "architectures": ["x64", "arm64"]}
@@ -462,7 +716,10 @@
       "description": "Lets you work with GitHub pull requests, issues and repositories directly from the terminal beside your code.",
       "categories": ["development"], "tags": ["github", "cli", "gem"],
       "lifecycle": {"status": "active"},
-      "recommendations": [{"profile": "development", "level": "gem", "reasonKey": "development.github-cli"}],
+      "recommendations": [
+        {"profile": "development", "level": "gem", "reasonKey": "development.github-cli"},
+        {"profile": "it-student", "level": "optional", "reasonKey": "it-student.github-cli"}
+      ],
       "requirements": {
         "minimum": {"minRamMiB": 256, "minFreeStorageMiB": 250, "gpuRequired": false, "architectures": ["x64", "arm64"]},
         "recommended": {"minRamMiB": 1024, "minFreeStorageMiB": 500, "gpuRequired": false, "architectures": ["x64", "arm64"]}
@@ -478,7 +735,10 @@
       "description": "One desktop app for browsing and managing PostgreSQL, MySQL, SQLite, SQL Server and many other databases.",
       "categories": ["development"], "tags": ["database", "sql", "gem"],
       "lifecycle": {"status": "active"},
-      "recommendations": [{"profile": "development", "level": "gem", "reasonKey": "development.database-client"}],
+      "recommendations": [
+        {"profile": "development", "level": "gem", "reasonKey": "development.database-client"},
+        {"profile": "it-student", "level": "optional", "reasonKey": "it-student.database-client"}
+      ],
       "requirements": {
         "minimum": {"minRamMiB": 2048, "minFreeStorageMiB": 1000, "gpuRequired": false, "architectures": ["x64"]},
         "recommended": {"minRamMiB": 4096, "minFreeStorageMiB": 2000, "gpuRequired": false, "architectures": ["x64"]}
@@ -494,7 +754,10 @@
       "description": "Sends requests to APIs so you can test endpoints, inspect responses and debug backend work without writing a temporary client.",
       "categories": ["development"], "tags": ["api", "testing"],
       "lifecycle": {"status": "active"},
-      "recommendations": [{"profile": "development", "level": "optional", "reasonKey": "development.api-client"}],
+      "recommendations": [
+        {"profile": "development", "level": "optional", "reasonKey": "development.api-client"},
+        {"profile": "it-student", "level": "optional", "reasonKey": "it-student.api-client"}
+      ],
       "requirements": {
         "minimum": {"minRamMiB": 4096, "minFreeStorageMiB": 1500, "gpuRequired": false, "architectures": ["x64"]},
         "recommended": {"minRamMiB": 8192, "minFreeStorageMiB": 2500, "gpuRequired": false, "architectures": ["x64"]}
@@ -510,13 +773,73 @@
       "description": "Runs apps and databases inside isolated containers so development dependencies do not have to be installed directly on Windows.",
       "categories": ["development"], "tags": ["containers", "docker"],
       "lifecycle": {"status": "active"},
-      "recommendations": [{"profile": "development", "level": "optional", "reasonKey": "development.containers"}],
+      "recommendations": [
+        {"profile": "development", "level": "optional", "reasonKey": "development.containers"},
+        {"profile": "it-student", "level": "optional", "reasonKey": "it-student.containers"}
+      ],
       "requirements": {
         "minimum": {"minRamMiB": 8192, "minFreeStorageMiB": 8192, "gpuRequired": false, "architectures": ["x64", "arm64"]},
         "recommended": {"minRamMiB": 16384, "minFreeStorageMiB": 16384, "gpuRequired": false, "architectures": ["x64", "arm64"]}
       },
       "platformSupport": [{"platform": "windows", "status": "supported", "architectures": ["x64", "arm64"]}],
       "providers": [{"platform": "windows", "type": "winget", "packageId": "Docker.DockerDesktop", "source": "winget", "scopePreference": "any"}],
+      "dependencies": [], "conflicts": []
+    },
+    {
+      "id": "nodejs",
+      "name": "Node.js LTS",
+      "publisher": "OpenJS Foundation",
+      "description": "The long-term support JavaScript runtime for local servers, CLIs and front-end toolchains.",
+      "categories": ["development"], "tags": ["javascript", "runtime"],
+      "lifecycle": {"status": "active"},
+      "recommendations": [
+        {"profile": "development", "level": "recommended", "reasonKey": "development.javascript-runtime"},
+        {"profile": "it-student", "level": "recommended", "reasonKey": "it-student.javascript-runtime"}
+      ],
+      "requirements": {
+        "minimum": {"minRamMiB": 512, "minFreeStorageMiB": 500, "gpuRequired": false, "architectures": ["x64", "arm64"]},
+        "recommended": {"minRamMiB": 2048, "minFreeStorageMiB": 1000, "gpuRequired": false, "architectures": ["x64", "arm64"]}
+      },
+      "platformSupport": [{"platform": "windows", "status": "supported", "architectures": ["x64", "arm64"]}],
+      "providers": [{"platform": "windows", "type": "winget", "packageId": "OpenJS.NodeJS.LTS", "source": "winget", "scopePreference": "any"}],
+      "dependencies": [], "conflicts": []
+    },
+    {
+      "id": "postgresql",
+      "name": "PostgreSQL",
+      "publisher": "PostgreSQL Global Development Group",
+      "description": "A local PostgreSQL 17 server for developing and testing apps that need a relational database.",
+      "categories": ["development"], "tags": ["database", "sql"],
+      "lifecycle": {"status": "active"},
+      "recommendations": [
+        {"profile": "development", "level": "optional", "reasonKey": "development.local-database"},
+        {"profile": "it-student", "level": "optional", "reasonKey": "it-student.local-database"}
+      ],
+      "requirements": {
+        "minimum": {"minRamMiB": 1024, "minFreeStorageMiB": 1024, "gpuRequired": false, "architectures": ["x64"]},
+        "recommended": {"minRamMiB": 4096, "minFreeStorageMiB": 4096, "gpuRequired": false, "architectures": ["x64"]}
+      },
+      "platformSupport": [{"platform": "windows", "status": "supported", "architectures": ["x64"]}],
+      "providers": [{"platform": "windows", "type": "winget", "packageId": "PostgreSQL.PostgreSQL.17", "source": "winget", "scopePreference": "any"}],
+      "dependencies": [], "conflicts": []
+    },
+    {
+      "id": "python",
+      "name": "Python 3.13",
+      "publisher": "Python Software Foundation",
+      "description": "The Python 3.13 runtime for scripts, local tools and development environments.",
+      "categories": ["development"], "tags": ["python", "runtime"],
+      "lifecycle": {"status": "active"},
+      "recommendations": [
+        {"profile": "development", "level": "recommended", "reasonKey": "development.python-runtime"},
+        {"profile": "it-student", "level": "recommended", "reasonKey": "it-student.python-runtime"}
+      ],
+      "requirements": {
+        "minimum": {"minRamMiB": 512, "minFreeStorageMiB": 500, "gpuRequired": false, "architectures": ["x64", "arm64"]},
+        "recommended": {"minRamMiB": 2048, "minFreeStorageMiB": 1000, "gpuRequired": false, "architectures": ["x64", "arm64"]}
+      },
+      "platformSupport": [{"platform": "windows", "status": "supported", "architectures": ["x64", "arm64"]}],
+      "providers": [{"platform": "windows", "type": "winget", "packageId": "Python.Python.3.13", "source": "winget", "scopePreference": "any"}],
       "dependencies": [], "conflicts": []
     },
     {
@@ -553,6 +876,22 @@
       },
       "platformSupport": [{"platform": "windows", "status": "supported", "architectures": ["x64"]}],
       "providers": [{"platform": "windows", "type": "winget", "packageId": "KDE.Krita", "source": "winget", "scopePreference": "user"}],
+      "dependencies": [], "conflicts": []
+    },
+    {
+      "id": "gimp",
+      "name": "GIMP",
+      "publisher": "The GIMP Team",
+      "description": "A free image editor for retouching photos, composing graphics and exporting common image formats.",
+      "categories": ["creative"], "tags": ["photo", "graphics"],
+      "lifecycle": {"status": "active"},
+      "recommendations": [{"profile": "creative", "level": "recommended", "reasonKey": "creative.photo-editing"}],
+      "requirements": {
+        "minimum": {"minRamMiB": 2048, "minFreeStorageMiB": 1500, "gpuRequired": false, "architectures": ["x64"]},
+        "recommended": {"minRamMiB": 4096, "minFreeStorageMiB": 3000, "gpuRequired": false, "architectures": ["x64"]}
+      },
+      "platformSupport": [{"platform": "windows", "status": "supported", "architectures": ["x64"]}],
+      "providers": [{"platform": "windows", "type": "winget", "packageId": "GIMP.GIMP.3", "source": "winget", "scopePreference": "any"}],
       "dependencies": [], "conflicts": []
     },
     {
@@ -649,6 +988,86 @@
       },
       "platformSupport": [{"platform": "windows", "status": "supported", "architectures": ["x64"]}],
       "providers": [{"platform": "windows", "type": "winget", "packageId": "Valve.Steam", "source": "winget", "scopePreference": "any"}],
+      "dependencies": [], "conflicts": []
+    },
+    {
+      "id": "epic-games",
+      "name": "Epic Games Launcher",
+      "publisher": "Epic Games",
+      "description": "Installs and launches Epic Games Store titles, including free weekly games.",
+      "categories": ["gaming"], "tags": ["games", "launcher"],
+      "lifecycle": {"status": "active"},
+      "recommendations": [{"profile": "gaming", "level": "recommended", "reasonKey": "gaming.epic-store"}],
+      "requirements": {
+        "minimum": {"minRamMiB": 2048, "minFreeStorageMiB": 2000, "gpuRequired": false, "architectures": ["x64"]},
+        "recommended": {"minRamMiB": 4096, "minFreeStorageMiB": 4000, "gpuRequired": false, "architectures": ["x64"]}
+      },
+      "platformSupport": [{"platform": "windows", "status": "supported", "architectures": ["x64"]}],
+      "providers": [{"platform": "windows", "type": "winget", "packageId": "EpicGames.EpicGamesLauncher", "source": "winget", "scopePreference": "any"}],
+      "dependencies": [], "conflicts": []
+    },
+    {
+      "id": "gog-galaxy",
+      "name": "GOG Galaxy",
+      "publisher": "GOG",
+      "description": "Installs DRM-free GOG games and keeps that library updated in one desktop launcher.",
+      "categories": ["gaming"], "tags": ["games", "launcher"],
+      "lifecycle": {"status": "active"},
+      "recommendations": [{"profile": "gaming", "level": "optional", "reasonKey": "gaming.gog-store"}],
+      "requirements": {
+        "minimum": {"minRamMiB": 2048, "minFreeStorageMiB": 1500, "gpuRequired": false, "architectures": ["x64"]},
+        "recommended": {"minRamMiB": 4096, "minFreeStorageMiB": 3000, "gpuRequired": false, "architectures": ["x64"]}
+      },
+      "platformSupport": [{"platform": "windows", "status": "supported", "architectures": ["x64"]}],
+      "providers": [{"platform": "windows", "type": "winget", "packageId": "GOG.Galaxy", "source": "winget", "scopePreference": "any"}],
+      "dependencies": [], "conflicts": []
+    },
+    {
+      "id": "ea-app",
+      "name": "EA app",
+      "publisher": "Electronic Arts",
+      "description": "Installs and updates EA games such as sports and Battlefield titles from one launcher.",
+      "categories": ["gaming"], "tags": ["games", "launcher"],
+      "lifecycle": {"status": "active"},
+      "recommendations": [{"profile": "gaming", "level": "optional", "reasonKey": "gaming.ea-store"}],
+      "requirements": {
+        "minimum": {"minRamMiB": 2048, "minFreeStorageMiB": 1500, "gpuRequired": false, "architectures": ["x64"]},
+        "recommended": {"minRamMiB": 4096, "minFreeStorageMiB": 3000, "gpuRequired": false, "architectures": ["x64"]}
+      },
+      "platformSupport": [{"platform": "windows", "status": "supported", "architectures": ["x64"]}],
+      "providers": [{"platform": "windows", "type": "winget", "packageId": "ElectronicArts.EADesktop", "source": "winget", "scopePreference": "any"}],
+      "dependencies": [], "conflicts": []
+    },
+    {
+      "id": "ubisoft-connect",
+      "name": "Ubisoft Connect",
+      "publisher": "Ubisoft",
+      "description": "Installs and updates Ubisoft games from one launcher instead of opening each title separately.",
+      "categories": ["gaming"], "tags": ["games", "launcher"],
+      "lifecycle": {"status": "active"},
+      "recommendations": [{"profile": "gaming", "level": "optional", "reasonKey": "gaming.ubisoft-store"}],
+      "requirements": {
+        "minimum": {"minRamMiB": 2048, "minFreeStorageMiB": 1500, "gpuRequired": false, "architectures": ["x64"]},
+        "recommended": {"minRamMiB": 4096, "minFreeStorageMiB": 3000, "gpuRequired": false, "architectures": ["x64"]}
+      },
+      "platformSupport": [{"platform": "windows", "status": "supported", "architectures": ["x64"]}],
+      "providers": [{"platform": "windows", "type": "winget", "packageId": "Ubisoft.Connect", "source": "winget", "scopePreference": "any"}],
+      "dependencies": [], "conflicts": []
+    },
+    {
+      "id": "battle-net",
+      "name": "Battle.net",
+      "publisher": "Blizzard Entertainment",
+      "description": "Installs and updates Blizzard and some Activision games from the Battle.net desktop app.",
+      "categories": ["gaming"], "tags": ["games", "launcher"],
+      "lifecycle": {"status": "active"},
+      "recommendations": [{"profile": "gaming", "level": "optional", "reasonKey": "gaming.battle-net"}],
+      "requirements": {
+        "minimum": {"minRamMiB": 2048, "minFreeStorageMiB": 2000, "gpuRequired": false, "architectures": ["x64"]},
+        "recommended": {"minRamMiB": 4096, "minFreeStorageMiB": 4000, "gpuRequired": false, "architectures": ["x64"]}
+      },
+      "platformSupport": [{"platform": "windows", "status": "supported", "architectures": ["x64"]}],
+      "providers": [{"platform": "windows", "type": "winget", "packageId": "Blizzard.BattleNet", "source": "winget", "scopePreference": "any"}],
       "dependencies": [], "conflicts": []
     },
     {

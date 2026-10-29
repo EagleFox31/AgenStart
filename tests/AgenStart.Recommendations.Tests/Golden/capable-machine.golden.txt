@@ -1,0 +1,450 @@
+## profiles: personal
+decisions: 16 | default selection: vlc, bitwarden, firefox, sumatrapdf
+- 7zip | 7-Zip | Essential | AlreadyInstalled | selected=no | key=personal.archives | matched=personal
+    profile.personal.archives: 7-Zip is essential for everyday use.
+    software.already-installed: 7-Zip is already installed (version 24.09).
+- vlc | VLC media player | Essential | Recommended | selected=yes | key=personal.media | matched=personal
+    profile.personal.media: VLC media player is essential for everyday use.
+- bitwarden | Bitwarden | Recommended | Recommended | selected=yes | key=personal.password-manager | matched=personal
+    profile.personal.password-manager: Bitwarden is a strong match for everyday use.
+- firefox | Mozilla Firefox | Recommended | Recommended | selected=yes | key=personal.browser | matched=personal
+    profile.personal.browser: Mozilla Firefox is a strong match for everyday use.
+- sumatrapdf | SumatraPDF | Recommended | Recommended | selected=yes | key=personal.pdf-reader | matched=personal
+    profile.personal.pdf-reader: SumatraPDF is a strong match for everyday use.
+- copyq | CopyQ | Gem | Recommended | selected=no | key=personal.clipboard-history | matched=personal
+    profile.personal.clipboard-history: CopyQ is a useful hidden gem for everyday use.
+- everything | Everything | Gem | Recommended | selected=no | key=personal.fast-file-search | matched=personal
+    profile.personal.fast-file-search: Everything is a useful hidden gem for everyday use.
+- flow-launcher | Flow Launcher | Gem | Recommended | selected=no | key=personal.keyboard-launcher | matched=personal
+    profile.personal.keyboard-launcher: Flow Launcher is a useful hidden gem for everyday use.
+- localsend | LocalSend | Gem | Recommended | selected=no | key=personal.local-file-transfer | matched=personal
+    profile.personal.local-file-transfer: LocalSend is a useful hidden gem for everyday use.
+- powertoys | Microsoft PowerToys | Gem | Recommended | selected=no | key=personal.windows-tools | matched=personal
+    profile.personal.windows-tools: Microsoft PowerToys is a useful hidden gem for everyday use.
+- quicklook | QuickLook | Gem | Recommended | selected=no | key=personal.file-preview | matched=personal
+    profile.personal.file-preview: QuickLook is a useful hidden gem for everyday use.
+- sharex | ShareX | Gem | Recommended | selected=no | key=personal.capture-tools | matched=personal
+    profile.personal.capture-tools: ShareX is a useful hidden gem for everyday use.
+- wiztree | WizTree | Gem | Recommended | selected=no | key=personal.disk-space | matched=personal
+    profile.personal.disk-space: WizTree is a useful hidden gem for everyday use.
+- discord | Discord | Optional | Recommended | selected=no | key=personal.community-chat | matched=personal
+    profile.personal.community-chat: Discord is an optional suggestion for everyday use.
+- libreoffice | LibreOffice | Optional | Recommended | selected=no | key=personal.office-suite | matched=personal
+    profile.personal.office-suite: LibreOffice is an optional suggestion for everyday use.
+- thunderbird | Mozilla Thunderbird | Optional | Recommended | selected=no | key=personal.email-client | matched=personal
+    profile.personal.email-client: Mozilla Thunderbird is an optional suggestion for everyday use.
+
+## profiles: development
+decisions: 18 | default selection: visual-studio-code, powertoys, powershell, termius, windows-terminal
+- git | Git | Essential | AlreadyInstalled | selected=no | key=development.source-control | matched=development
+    profile.development.source-control: Git is essential for development.
+    software.already-installed: Git is already installed (version 2.51.0).
+- visual-studio-code | Visual Studio Code | Essential | Recommended | selected=yes | key=development.code-editor | matched=development
+    profile.development.code-editor: Visual Studio Code is essential for development.
+- 7zip | 7-Zip | Recommended | AlreadyInstalled | selected=no | key=development.archives | matched=development
+    profile.development.archives: 7-Zip is a strong match for development.
+    software.already-installed: 7-Zip is already installed (version 24.09).
+- powertoys | Microsoft PowerToys | Recommended | Recommended | selected=yes | key=development.windows-tools | matched=development
+    profile.development.windows-tools: Microsoft PowerToys is a strong match for development.
+- powershell | PowerShell 7 | Recommended | Recommended | selected=yes | key=development.shell | matched=development
+    profile.development.shell: PowerShell 7 is a strong match for development.
+- termius | Termius | Recommended | Recommended | selected=yes | key=development.remote-infrastructure | matched=development
+    profile.development.remote-infrastructure: Termius is a strong match for development.
+- windows-terminal | Windows Terminal | Recommended | Recommended | selected=yes | key=development.terminal | matched=development
+    profile.development.terminal: Windows Terminal is a strong match for development.
+- copyq | CopyQ | Gem | Recommended | selected=no | key=development.clipboard-history | matched=development
+    profile.development.clipboard-history: CopyQ is a useful hidden gem for development.
+- dbeaver | DBeaver | Gem | Recommended | selected=no | key=development.database-client | matched=development
+    profile.development.database-client: DBeaver is a useful hidden gem for development.
+- everything | Everything | Gem | Recommended | selected=no | key=development.fast-file-search | matched=development
+    profile.development.fast-file-search: Everything is a useful hidden gem for development.
+- flow-launcher | Flow Launcher | Gem | Recommended | selected=no | key=development.keyboard-launcher | matched=development
+    profile.development.keyboard-launcher: Flow Launcher is a useful hidden gem for development.
+- github-cli | GitHub CLI | Gem | Recommended | selected=no | key=development.github-cli | matched=development
+    profile.development.github-cli: GitHub CLI is a useful hidden gem for development.
+- obsidian | Obsidian | Gem | Recommended | selected=no | key=development.notes | matched=development
+    profile.development.notes: Obsidian is a useful hidden gem for development.
+- sharex | ShareX | Gem | Recommended | selected=no | key=development.capture-tools | matched=development
+    profile.development.capture-tools: ShareX is a useful hidden gem for development.
+- wiztree | WizTree | Gem | Recommended | selected=no | key=development.disk-space | matched=development
+    profile.development.disk-space: WizTree is a useful hidden gem for development.
+- docker-desktop | Docker Desktop | Optional | InventoryUnknown | selected=no | key=development.containers | matched=development
+    profile.development.containers: Docker Desktop is an optional suggestion for development.
+    software.presence-unknown: AgenStart cannot safely confirm whether Docker Desktop is already installed, so it will not preselect another installation.
+- firefox | Mozilla Firefox | Optional | Recommended | selected=no | key=development.browser-testing | matched=development
+    profile.development.browser-testing: Mozilla Firefox is an optional suggestion for development.
+- postman | Postman | Optional | Recommended | selected=no | key=development.api-client | matched=development
+    profile.development.api-client: Postman is an optional suggestion for development.
+
+## profiles: business
+decisions: 13 | default selection: bitwarden, libreoffice, powertoys, thunderbird, sumatrapdf, zoom
+- 7zip | 7-Zip | Recommended | AlreadyInstalled | selected=no | key=business.archives | matched=business
+    profile.business.archives: 7-Zip is a strong match for work and business.
+    software.already-installed: 7-Zip is already installed (version 24.09).
+- bitwarden | Bitwarden | Recommended | Recommended | selected=yes | key=business.password-manager | matched=business
+    profile.business.password-manager: Bitwarden is a strong match for work and business.
+- libreoffice | LibreOffice | Recommended | Recommended | selected=yes | key=business.office-suite | matched=business
+    profile.business.office-suite: LibreOffice is a strong match for work and business.
+- powertoys | Microsoft PowerToys | Recommended | Recommended | selected=yes | key=business.windows-tools | matched=business
+    profile.business.windows-tools: Microsoft PowerToys is a strong match for work and business.
+- thunderbird | Mozilla Thunderbird | Recommended | Recommended | selected=yes | key=business.email-client | matched=business
+    profile.business.email-client: Mozilla Thunderbird is a strong match for work and business.
+- sumatrapdf | SumatraPDF | Recommended | Recommended | selected=yes | key=business.pdf-reader | matched=business
+    profile.business.pdf-reader: SumatraPDF is a strong match for work and business.
+- zoom | Zoom | Recommended | Recommended | selected=yes | key=business.meetings | matched=business
+    profile.business.meetings: Zoom is a strong match for work and business.
+- copyq | CopyQ | Gem | Recommended | selected=no | key=business.clipboard-history | matched=business
+    profile.business.clipboard-history: CopyQ is a useful hidden gem for work and business.
+- everything | Everything | Gem | Recommended | selected=no | key=business.fast-file-search | matched=business
+    profile.business.fast-file-search: Everything is a useful hidden gem for work and business.
+- flow-launcher | Flow Launcher | Gem | Recommended | selected=no | key=business.keyboard-launcher | matched=business
+    profile.business.keyboard-launcher: Flow Launcher is a useful hidden gem for work and business.
+- localsend | LocalSend | Gem | Recommended | selected=no | key=business.local-file-transfer | matched=business
+    profile.business.local-file-transfer: LocalSend is a useful hidden gem for work and business.
+- obsidian | Obsidian | Gem | Recommended | selected=no | key=business.notes | matched=business
+    profile.business.notes: Obsidian is a useful hidden gem for work and business.
+- sharex | ShareX | Gem | Recommended | selected=no | key=business.capture-tools | matched=business
+    profile.business.capture-tools: ShareX is a useful hidden gem for work and business.
+
+## profiles: creative
+decisions: 11 | default selection: audacity, krita, obs-studio, sharex, vlc
+- audacity | Audacity | Recommended | Recommended | selected=yes | key=creative.audio-editing | matched=creative
+    profile.creative.audio-editing: Audacity is a strong match for creative work.
+- krita | Krita | Recommended | Recommended | selected=yes | key=creative.digital-art | matched=creative
+    profile.creative.digital-art: Krita is a strong match for creative work.
+- obs-studio | OBS Studio | Recommended | Recommended | selected=yes | key=creative.screen-recording | matched=creative
+    profile.creative.screen-recording: OBS Studio is a strong match for creative work.
+- sharex | ShareX | Recommended | Recommended | selected=yes | key=creative.capture-tools | matched=creative
+    profile.creative.capture-tools: ShareX is a strong match for creative work.
+- vlc | VLC media player | Recommended | Recommended | selected=yes | key=creative.preview-media | matched=creative
+    profile.creative.preview-media: VLC media player is a strong match for creative work.
+- handbrake | HandBrake | Gem | Recommended | selected=no | key=creative.video-conversion | matched=creative
+    profile.creative.video-conversion: HandBrake is a useful hidden gem for creative work.
+- inkscape | Inkscape | Gem | Recommended | selected=no | key=creative.vector-design | matched=creative
+    profile.creative.vector-design: Inkscape is a useful hidden gem for creative work.
+- powertoys | Microsoft PowerToys | Gem | Recommended | selected=no | key=creative.windows-tools | matched=creative
+    profile.creative.windows-tools: Microsoft PowerToys is a useful hidden gem for creative work.
+- quicklook | QuickLook | Gem | Recommended | selected=no | key=creative.file-preview | matched=creative
+    profile.creative.file-preview: QuickLook is a useful hidden gem for creative work.
+- blender | Blender | Optional | Recommended | selected=no | key=creative.3d | matched=creative
+    profile.creative.3d: Blender is an optional suggestion for creative work.
+- kdenlive | Kdenlive | Optional | Recommended | selected=no | key=creative.video-editing | matched=creative
+    profile.creative.video-editing: Kdenlive is an optional suggestion for creative work.
+
+## profiles: learning
+decisions: 12 | default selection: libreoffice, sumatrapdf, anki, firefox, obsidian, vlc, zoom
+- libreoffice | LibreOffice | Essential | Recommended | selected=yes | key=learning.office-suite | matched=learning
+    profile.learning.office-suite: LibreOffice is essential for study and learning.
+- sumatrapdf | SumatraPDF | Essential | Recommended | selected=yes | key=learning.pdf-reader | matched=learning
+    profile.learning.pdf-reader: SumatraPDF is essential for study and learning.
+- 7zip | 7-Zip | Recommended | AlreadyInstalled | selected=no | key=learning.archives | matched=learning
+    profile.learning.archives: 7-Zip is a strong match for study and learning.
+    software.already-installed: 7-Zip is already installed (version 24.09).
+- anki | Anki | Recommended | Recommended | selected=yes | key=learning.flashcards | matched=learning
+    profile.learning.flashcards: Anki is a strong match for study and learning.
+- firefox | Mozilla Firefox | Recommended | Recommended | selected=yes | key=learning.browser | matched=learning
+    profile.learning.browser: Mozilla Firefox is a strong match for study and learning.
+- obsidian | Obsidian | Recommended | Recommended | selected=yes | key=learning.notes | matched=learning
+    profile.learning.notes: Obsidian is a strong match for study and learning.
+- vlc | VLC media player | Recommended | Recommended | selected=yes | key=learning.course-media | matched=learning
+    profile.learning.course-media: VLC media player is a strong match for study and learning.
+- zoom | Zoom | Recommended | Recommended | selected=yes | key=learning.classes | matched=learning
+    profile.learning.classes: Zoom is a strong match for study and learning.
+- localsend | LocalSend | Gem | Recommended | selected=no | key=learning.local-file-transfer | matched=learning
+    profile.learning.local-file-transfer: LocalSend is a useful hidden gem for study and learning.
+- xournalpp | Xournal++ | Gem | Recommended | selected=no | key=learning.pdf-annotation | matched=learning
+    profile.learning.pdf-annotation: Xournal++ is a useful hidden gem for study and learning.
+- zotero | Zotero | Gem | Recommended | selected=no | key=learning.research-library | matched=learning
+    profile.learning.research-library: Zotero is a useful hidden gem for study and learning.
+- obs-studio | OBS Studio | Optional | Recommended | selected=no | key=learning.screen-recording | matched=learning
+    profile.learning.screen-recording: OBS Studio is an optional suggestion for study and learning.
+
+## profiles: gaming
+decisions: 6 | default selection: steam, discord, obs-studio
+- steam | Steam | Essential | Recommended | selected=yes | key=gaming.main-launcher | matched=gaming
+    profile.gaming.main-launcher: Steam is essential for gaming.
+- discord | Discord | Recommended | Recommended | selected=yes | key=gaming.voice-chat | matched=gaming
+    profile.gaming.voice-chat: Discord is a strong match for gaming.
+- obs-studio | OBS Studio | Recommended | Recommended | selected=yes | key=gaming.streaming | matched=gaming
+    profile.gaming.streaming: OBS Studio is a strong match for gaming.
+- hwinfo | HWiNFO | Gem | Recommended | selected=no | key=gaming.hardware-monitoring | matched=gaming
+    profile.gaming.hardware-monitoring: HWiNFO is a useful hidden gem for gaming.
+- playnite | Playnite | Gem | Recommended | selected=no | key=gaming.unified-library | matched=gaming
+    profile.gaming.unified-library: Playnite is a useful hidden gem for gaming.
+- 7zip | 7-Zip | Optional | AlreadyInstalled | selected=no | key=gaming.archives | matched=gaming
+    profile.gaming.archives: 7-Zip is an optional suggestion for gaming.
+    software.already-installed: 7-Zip is already installed (version 24.09).
+
+## profiles: personal+development
+decisions: 26 | default selection: visual-studio-code, vlc, bitwarden, powertoys, firefox, powershell, sumatrapdf, termius, windows-terminal
+- 7zip | 7-Zip | Essential | AlreadyInstalled | selected=no | key=personal.archives | matched=personal+development
+    profile.personal.archives: 7-Zip is essential for everyday use.
+    profile.development.archives: 7-Zip is a strong match for development.
+    software.already-installed: 7-Zip is already installed (version 24.09).
+- git | Git | Essential | AlreadyInstalled | selected=no | key=development.source-control | matched=development
+    profile.development.source-control: Git is essential for development.
+    software.already-installed: Git is already installed (version 2.51.0).
+- visual-studio-code | Visual Studio Code | Essential | Recommended | selected=yes | key=development.code-editor | matched=development
+    profile.development.code-editor: Visual Studio Code is essential for development.
+- vlc | VLC media player | Essential | Recommended | selected=yes | key=personal.media | matched=personal
+    profile.personal.media: VLC media player is essential for everyday use.
+- bitwarden | Bitwarden | Recommended | Recommended | selected=yes | key=personal.password-manager | matched=personal
+    profile.personal.password-manager: Bitwarden is a strong match for everyday use.
+- powertoys | Microsoft PowerToys | Recommended | Recommended | selected=yes | key=development.windows-tools | matched=personal+development
+    profile.personal.windows-tools: Microsoft PowerToys is a useful hidden gem for everyday use.
+    profile.development.windows-tools: Microsoft PowerToys is a strong match for development.
+- firefox | Mozilla Firefox | Recommended | Recommended | selected=yes | key=personal.browser | matched=personal+development
+    profile.personal.browser: Mozilla Firefox is a strong match for everyday use.
+    profile.development.browser-testing: Mozilla Firefox is an optional suggestion for development.
+- powershell | PowerShell 7 | Recommended | Recommended | selected=yes | key=development.shell | matched=development
+    profile.development.shell: PowerShell 7 is a strong match for development.
+- sumatrapdf | SumatraPDF | Recommended | Recommended | selected=yes | key=personal.pdf-reader | matched=personal
+    profile.personal.pdf-reader: SumatraPDF is a strong match for everyday use.
+- termius | Termius | Recommended | Recommended | selected=yes | key=development.remote-infrastructure | matched=development
+    profile.development.remote-infrastructure: Termius is a strong match for development.
+- windows-terminal | Windows Terminal | Recommended | Recommended | selected=yes | key=development.terminal | matched=development
+    profile.development.terminal: Windows Terminal is a strong match for development.
+- copyq | CopyQ | Gem | Recommended | selected=no | key=personal.clipboard-history | matched=personal+development
+    profile.personal.clipboard-history: CopyQ is a useful hidden gem for everyday use.
+    profile.development.clipboard-history: CopyQ is a useful hidden gem for development.
+- dbeaver | DBeaver | Gem | Recommended | selected=no | key=development.database-client | matched=development
+    profile.development.database-client: DBeaver is a useful hidden gem for development.
+- everything | Everything | Gem | Recommended | selected=no | key=personal.fast-file-search | matched=personal+development
+    profile.personal.fast-file-search: Everything is a useful hidden gem for everyday use.
+    profile.development.fast-file-search: Everything is a useful hidden gem for development.
+- flow-launcher | Flow Launcher | Gem | Recommended | selected=no | key=personal.keyboard-launcher | matched=personal+development
+    profile.personal.keyboard-launcher: Flow Launcher is a useful hidden gem for everyday use.
+    profile.development.keyboard-launcher: Flow Launcher is a useful hidden gem for development.
+- github-cli | GitHub CLI | Gem | Recommended | selected=no | key=development.github-cli | matched=development
+    profile.development.github-cli: GitHub CLI is a useful hidden gem for development.
+- localsend | LocalSend | Gem | Recommended | selected=no | key=personal.local-file-transfer | matched=personal
+    profile.personal.local-file-transfer: LocalSend is a useful hidden gem for everyday use.
+- obsidian | Obsidian | Gem | Recommended | selected=no | key=development.notes | matched=development
+    profile.development.notes: Obsidian is a useful hidden gem for development.
+- quicklook | QuickLook | Gem | Recommended | selected=no | key=personal.file-preview | matched=personal
+    profile.personal.file-preview: QuickLook is a useful hidden gem for everyday use.
+- sharex | ShareX | Gem | Recommended | selected=no | key=personal.capture-tools | matched=personal+development
+    profile.personal.capture-tools: ShareX is a useful hidden gem for everyday use.
+    profile.development.capture-tools: ShareX is a useful hidden gem for development.
+- wiztree | WizTree | Gem | Recommended | selected=no | key=personal.disk-space | matched=personal+development
+    profile.personal.disk-space: WizTree is a useful hidden gem for everyday use.
+    profile.development.disk-space: WizTree is a useful hidden gem for development.
+- discord | Discord | Optional | Recommended | selected=no | key=personal.community-chat | matched=personal
+    profile.personal.community-chat: Discord is an optional suggestion for everyday use.
+- docker-desktop | Docker Desktop | Optional | InventoryUnknown | selected=no | key=development.containers | matched=development
+    profile.development.containers: Docker Desktop is an optional suggestion for development.
+    software.presence-unknown: AgenStart cannot safely confirm whether Docker Desktop is already installed, so it will not preselect another installation.
+- libreoffice | LibreOffice | Optional | Recommended | selected=no | key=personal.office-suite | matched=personal
+    profile.personal.office-suite: LibreOffice is an optional suggestion for everyday use.
+- thunderbird | Mozilla Thunderbird | Optional | Recommended | selected=no | key=personal.email-client | matched=personal
+    profile.personal.email-client: Mozilla Thunderbird is an optional suggestion for everyday use.
+- postman | Postman | Optional | Recommended | selected=no | key=development.api-client | matched=development
+    profile.development.api-client: Postman is an optional suggestion for development.
+
+## profiles: business+learning
+decisions: 19 | default selection: libreoffice, sumatrapdf, anki, bitwarden, powertoys, firefox, thunderbird, obsidian, vlc, zoom
+- libreoffice | LibreOffice | Essential | Recommended | selected=yes | key=learning.office-suite | matched=business+learning
+    profile.business.office-suite: LibreOffice is a strong match for work and business.
+    profile.learning.office-suite: LibreOffice is essential for study and learning.
+- sumatrapdf | SumatraPDF | Essential | Recommended | selected=yes | key=learning.pdf-reader | matched=business+learning
+    profile.business.pdf-reader: SumatraPDF is a strong match for work and business.
+    profile.learning.pdf-reader: SumatraPDF is essential for study and learning.
+- 7zip | 7-Zip | Recommended | AlreadyInstalled | selected=no | key=business.archives | matched=business+learning
+    profile.business.archives: 7-Zip is a strong match for work and business.
+    profile.learning.archives: 7-Zip is a strong match for study and learning.
+    software.already-installed: 7-Zip is already installed (version 24.09).
+- anki | Anki | Recommended | Recommended | selected=yes | key=learning.flashcards | matched=learning
+    profile.learning.flashcards: Anki is a strong match for study and learning.
+- bitwarden | Bitwarden | Recommended | Recommended | selected=yes | key=business.password-manager | matched=business
+    profile.business.password-manager: Bitwarden is a strong match for work and business.
+- powertoys | Microsoft PowerToys | Recommended | Recommended | selected=yes | key=business.windows-tools | matched=business
+    profile.business.windows-tools: Microsoft PowerToys is a strong match for work and business.
+- firefox | Mozilla Firefox | Recommended | Recommended | selected=yes | key=learning.browser | matched=learning
+    profile.learning.browser: Mozilla Firefox is a strong match for study and learning.
+- thunderbird | Mozilla Thunderbird | Recommended | Recommended | selected=yes | key=business.email-client | matched=business
+    profile.business.email-client: Mozilla Thunderbird is a strong match for work and business.
+- obsidian | Obsidian | Recommended | Recommended | selected=yes | key=learning.notes | matched=business+learning
+    profile.business.notes: Obsidian is a useful hidden gem for work and business.
+    profile.learning.notes: Obsidian is a strong match for study and learning.
+- vlc | VLC media player | Recommended | Recommended | selected=yes | key=learning.course-media | matched=learning
+    profile.learning.course-media: VLC media player is a strong match for study and learning.
+- zoom | Zoom | Recommended | Recommended | selected=yes | key=business.meetings | matched=business+learning
+    profile.business.meetings: Zoom is a strong match for work and business.
+    profile.learning.classes: Zoom is a strong match for study and learning.
+- copyq | CopyQ | Gem | Recommended | selected=no | key=business.clipboard-history | matched=business
+    profile.business.clipboard-history: CopyQ is a useful hidden gem for work and business.
+- everything | Everything | Gem | Recommended | selected=no | key=business.fast-file-search | matched=business
+    profile.business.fast-file-search: Everything is a useful hidden gem for work and business.
+- flow-launcher | Flow Launcher | Gem | Recommended | selected=no | key=business.keyboard-launcher | matched=business
+    profile.business.keyboard-launcher: Flow Launcher is a useful hidden gem for work and business.
+- localsend | LocalSend | Gem | Recommended | selected=no | key=business.local-file-transfer | matched=business+learning
+    profile.business.local-file-transfer: LocalSend is a useful hidden gem for work and business.
+    profile.learning.local-file-transfer: LocalSend is a useful hidden gem for study and learning.
+- sharex | ShareX | Gem | Recommended | selected=no | key=business.capture-tools | matched=business
+    profile.business.capture-tools: ShareX is a useful hidden gem for work and business.
+- xournalpp | Xournal++ | Gem | Recommended | selected=no | key=learning.pdf-annotation | matched=learning
+    profile.learning.pdf-annotation: Xournal++ is a useful hidden gem for study and learning.
+- zotero | Zotero | Gem | Recommended | selected=no | key=learning.research-library | matched=learning
+    profile.learning.research-library: Zotero is a useful hidden gem for study and learning.
+- obs-studio | OBS Studio | Optional | Recommended | selected=no | key=learning.screen-recording | matched=learning
+    profile.learning.screen-recording: OBS Studio is an optional suggestion for study and learning.
+
+## profiles: creative+gaming
+decisions: 16 | default selection: steam, audacity, discord, krita, obs-studio, sharex, vlc
+- steam | Steam | Essential | Recommended | selected=yes | key=gaming.main-launcher | matched=gaming
+    profile.gaming.main-launcher: Steam is essential for gaming.
+- audacity | Audacity | Recommended | Recommended | selected=yes | key=creative.audio-editing | matched=creative
+    profile.creative.audio-editing: Audacity is a strong match for creative work.
+- discord | Discord | Recommended | Recommended | selected=yes | key=gaming.voice-chat | matched=gaming
+    profile.gaming.voice-chat: Discord is a strong match for gaming.
+- krita | Krita | Recommended | Recommended | selected=yes | key=creative.digital-art | matched=creative
+    profile.creative.digital-art: Krita is a strong match for creative work.
+- obs-studio | OBS Studio | Recommended | Recommended | selected=yes | key=creative.screen-recording | matched=creative+gaming
+    profile.creative.screen-recording: OBS Studio is a strong match for creative work.
+    profile.gaming.streaming: OBS Studio is a strong match for gaming.
+- sharex | ShareX | Recommended | Recommended | selected=yes | key=creative.capture-tools | matched=creative
+    profile.creative.capture-tools: ShareX is a strong match for creative work.
+- vlc | VLC media player | Recommended | Recommended | selected=yes | key=creative.preview-media | matched=creative
+    profile.creative.preview-media: VLC media player is a strong match for creative work.
+- handbrake | HandBrake | Gem | Recommended | selected=no | key=creative.video-conversion | matched=creative
+    profile.creative.video-conversion: HandBrake is a useful hidden gem for creative work.
+- hwinfo | HWiNFO | Gem | Recommended | selected=no | key=gaming.hardware-monitoring | matched=gaming
+    profile.gaming.hardware-monitoring: HWiNFO is a useful hidden gem for gaming.
+- inkscape | Inkscape | Gem | Recommended | selected=no | key=creative.vector-design | matched=creative
+    profile.creative.vector-design: Inkscape is a useful hidden gem for creative work.
+- powertoys | Microsoft PowerToys | Gem | Recommended | selected=no | key=creative.windows-tools | matched=creative
+    profile.creative.windows-tools: Microsoft PowerToys is a useful hidden gem for creative work.
+- playnite | Playnite | Gem | Recommended | selected=no | key=gaming.unified-library | matched=gaming
+    profile.gaming.unified-library: Playnite is a useful hidden gem for gaming.
+- quicklook | QuickLook | Gem | Recommended | selected=no | key=creative.file-preview | matched=creative
+    profile.creative.file-preview: QuickLook is a useful hidden gem for creative work.
+- 7zip | 7-Zip | Optional | AlreadyInstalled | selected=no | key=gaming.archives | matched=gaming
+    profile.gaming.archives: 7-Zip is an optional suggestion for gaming.
+    software.already-installed: 7-Zip is already installed (version 24.09).
+- blender | Blender | Optional | Recommended | selected=no | key=creative.3d | matched=creative
+    profile.creative.3d: Blender is an optional suggestion for creative work.
+- kdenlive | Kdenlive | Optional | Recommended | selected=no | key=creative.video-editing | matched=creative
+    profile.creative.video-editing: Kdenlive is an optional suggestion for creative work.
+
+## profiles: personal+development+business+creative+learning+gaming
+decisions: 40 | default selection: libreoffice, steam, sumatrapdf, visual-studio-code, vlc, anki, audacity, bitwarden, discord, krita, powertoys, firefox, thunderbird, obs-studio, obsidian, powershell, sharex, termius, windows-terminal, zoom
+- 7zip | 7-Zip | Essential | AlreadyInstalled | selected=no | key=personal.archives | matched=personal+development+business+learning+gaming
+    profile.personal.archives: 7-Zip is essential for everyday use.
+    profile.development.archives: 7-Zip is a strong match for development.
+    profile.business.archives: 7-Zip is a strong match for work and business.
+    profile.learning.archives: 7-Zip is a strong match for study and learning.
+    profile.gaming.archives: 7-Zip is an optional suggestion for gaming.
+    software.already-installed: 7-Zip is already installed (version 24.09).
+- git | Git | Essential | AlreadyInstalled | selected=no | key=development.source-control | matched=development
+    profile.development.source-control: Git is essential for development.
+    software.already-installed: Git is already installed (version 2.51.0).
+- libreoffice | LibreOffice | Essential | Recommended | selected=yes | key=learning.office-suite | matched=personal+business+learning
+    profile.personal.office-suite: LibreOffice is an optional suggestion for everyday use.
+    profile.business.office-suite: LibreOffice is a strong match for work and business.
+    profile.learning.office-suite: LibreOffice is essential for study and learning.
+- steam | Steam | Essential | Recommended | selected=yes | key=gaming.main-launcher | matched=gaming
+    profile.gaming.main-launcher: Steam is essential for gaming.
+- sumatrapdf | SumatraPDF | Essential | Recommended | selected=yes | key=learning.pdf-reader | matched=personal+business+learning
+    profile.personal.pdf-reader: SumatraPDF is a strong match for everyday use.
+    profile.business.pdf-reader: SumatraPDF is a strong match for work and business.
+    profile.learning.pdf-reader: SumatraPDF is essential for study and learning.
+- visual-studio-code | Visual Studio Code | Essential | Recommended | selected=yes | key=development.code-editor | matched=development
+    profile.development.code-editor: Visual Studio Code is essential for development.
+- vlc | VLC media player | Essential | Recommended | selected=yes | key=personal.media | matched=personal+creative+learning
+    profile.personal.media: VLC media player is essential for everyday use.
+    profile.creative.preview-media: VLC media player is a strong match for creative work.
+    profile.learning.course-media: VLC media player is a strong match for study and learning.
+- anki | Anki | Recommended | Recommended | selected=yes | key=learning.flashcards | matched=learning
+    profile.learning.flashcards: Anki is a strong match for study and learning.
+- audacity | Audacity | Recommended | Recommended | selected=yes | key=creative.audio-editing | matched=creative
+    profile.creative.audio-editing: Audacity is a strong match for creative work.
+- bitwarden | Bitwarden | Recommended | Recommended | selected=yes | key=personal.password-manager | matched=personal+business
+    profile.personal.password-manager: Bitwarden is a strong match for everyday use.
+    profile.business.password-manager: Bitwarden is a strong match for work and business.
+- discord | Discord | Recommended | Recommended | selected=yes | key=gaming.voice-chat | matched=personal+gaming
+    profile.personal.community-chat: Discord is an optional suggestion for everyday use.
+    profile.gaming.voice-chat: Discord is a strong match for gaming.
+- krita | Krita | Recommended | Recommended | selected=yes | key=creative.digital-art | matched=creative
+    profile.creative.digital-art: Krita is a strong match for creative work.
+- powertoys | Microsoft PowerToys | Recommended | Recommended | selected=yes | key=development.windows-tools | matched=personal+development+business+creative
+    profile.personal.windows-tools: Microsoft PowerToys is a useful hidden gem for everyday use.
+    profile.development.windows-tools: Microsoft PowerToys is a strong match for development.
+    profile.business.windows-tools: Microsoft PowerToys is a strong match for work and business.
+    profile.creative.windows-tools: Microsoft PowerToys is a useful hidden gem for creative work.
+- firefox | Mozilla Firefox | Recommended | Recommended | selected=yes | key=personal.browser | matched=personal+development+learning
+    profile.personal.browser: Mozilla Firefox is a strong match for everyday use.
+    profile.development.browser-testing: Mozilla Firefox is an optional suggestion for development.
+    profile.learning.browser: Mozilla Firefox is a strong match for study and learning.
+- thunderbird | Mozilla Thunderbird | Recommended | Recommended | selected=yes | key=business.email-client | matched=personal+business
+    profile.personal.email-client: Mozilla Thunderbird is an optional suggestion for everyday use.
+    profile.business.email-client: Mozilla Thunderbird is a strong match for work and business.
+- obs-studio | OBS Studio | Recommended | Recommended | selected=yes | key=creative.screen-recording | matched=creative+learning+gaming
+    profile.creative.screen-recording: OBS Studio is a strong match for creative work.
+    profile.learning.screen-recording: OBS Studio is an optional suggestion for study and learning.
+    profile.gaming.streaming: OBS Studio is a strong match for gaming.
+- obsidian | Obsidian | Recommended | Recommended | selected=yes | key=learning.notes | matched=development+business+learning
+    profile.development.notes: Obsidian is a useful hidden gem for development.
+    profile.business.notes: Obsidian is a useful hidden gem for work and business.
+    profile.learning.notes: Obsidian is a strong match for study and learning.
+- powershell | PowerShell 7 | Recommended | Recommended | selected=yes | key=development.shell | matched=development
+    profile.development.shell: PowerShell 7 is a strong match for development.
+- sharex | ShareX | Recommended | Recommended | selected=yes | key=creative.capture-tools | matched=personal+development+business+creative
+    profile.personal.capture-tools: ShareX is a useful hidden gem for everyday use.
+    profile.development.capture-tools: ShareX is a useful hidden gem for development.
+    profile.business.capture-tools: ShareX is a useful hidden gem for work and business.
+    profile.creative.capture-tools: ShareX is a strong match for creative work.
+- termius | Termius | Recommended | Recommended | selected=yes | key=development.remote-infrastructure | matched=development
+    profile.development.remote-infrastructure: Termius is a strong match for development.
+- windows-terminal | Windows Terminal | Recommended | Recommended | selected=yes | key=development.terminal | matched=development
+    profile.development.terminal: Windows Terminal is a strong match for development.
+- zoom | Zoom | Recommended | Recommended | selected=yes | key=business.meetings | matched=business+learning
+    profile.business.meetings: Zoom is a strong match for work and business.
+    profile.learning.classes: Zoom is a strong match for study and learning.
+- copyq | CopyQ | Gem | Recommended | selected=no | key=personal.clipboard-history | matched=personal+development+business
+    profile.personal.clipboard-history: CopyQ is a useful hidden gem for everyday use.
+    profile.development.clipboard-history: CopyQ is a useful hidden gem for development.
+    profile.business.clipboard-history: CopyQ is a useful hidden gem for work and business.
+- dbeaver | DBeaver | Gem | Recommended | selected=no | key=development.database-client | matched=development
+    profile.development.database-client: DBeaver is a useful hidden gem for development.
+- everything | Everything | Gem | Recommended | selected=no | key=personal.fast-file-search | matched=personal+development+business
+    profile.personal.fast-file-search: Everything is a useful hidden gem for everyday use.
+    profile.development.fast-file-search: Everything is a useful hidden gem for development.
+    profile.business.fast-file-search: Everything is a useful hidden gem for work and business.
+- flow-launcher | Flow Launcher | Gem | Recommended | selected=no | key=personal.keyboard-launcher | matched=personal+development+business
+    profile.personal.keyboard-launcher: Flow Launcher is a useful hidden gem for everyday use.
+    profile.development.keyboard-launcher: Flow Launcher is a useful hidden gem for development.
+    profile.business.keyboard-launcher: Flow Launcher is a useful hidden gem for work and business.
+- github-cli | GitHub CLI | Gem | Recommended | selected=no | key=development.github-cli | matched=development
+    profile.development.github-cli: GitHub CLI is a useful hidden gem for development.
+- handbrake | HandBrake | Gem | Recommended | selected=no | key=creative.video-conversion | matched=creative
+    profile.creative.video-conversion: HandBrake is a useful hidden gem for creative work.
+- hwinfo | HWiNFO | Gem | Recommended | selected=no | key=gaming.hardware-monitoring | matched=gaming
+    profile.gaming.hardware-monitoring: HWiNFO is a useful hidden gem for gaming.
+- inkscape | Inkscape | Gem | Recommended | selected=no | key=creative.vector-design | matched=creative
+    profile.creative.vector-design: Inkscape is a useful hidden gem for creative work.
+- localsend | LocalSend | Gem | Recommended | selected=no | key=personal.local-file-transfer | matched=personal+business+learning
+    profile.personal.local-file-transfer: LocalSend is a useful hidden gem for everyday use.
+    profile.business.local-file-transfer: LocalSend is a useful hidden gem for work and business.
+    profile.learning.local-file-transfer: LocalSend is a useful hidden gem for study and learning.
+- playnite | Playnite | Gem | Recommended | selected=no | key=gaming.unified-library | matched=gaming
+    profile.gaming.unified-library: Playnite is a useful hidden gem for gaming.
+- quicklook | QuickLook | Gem | Recommended | selected=no | key=personal.file-preview | matched=personal+creative
+    profile.personal.file-preview: QuickLook is a useful hidden gem for everyday use.
+    profile.creative.file-preview: QuickLook is a useful hidden gem for creative work.
+- wiztree | WizTree | Gem | Recommended | selected=no | key=personal.disk-space | matched=personal+development
+    profile.personal.disk-space: WizTree is a useful hidden gem for everyday use.
+    profile.development.disk-space: WizTree is a useful hidden gem for development.
+- xournalpp | Xournal++ | Gem | Recommended | selected=no | key=learning.pdf-annotation | matched=learning
+    profile.learning.pdf-annotation: Xournal++ is a useful hidden gem for study and learning.
+- zotero | Zotero | Gem | Recommended | selected=no | key=learning.research-library | matched=learning
+    profile.learning.research-library: Zotero is a useful hidden gem for study and learning.
+- blender | Blender | Optional | Recommended | selected=no | key=creative.3d | matched=creative
+    profile.creative.3d: Blender is an optional suggestion for creative work.
+- docker-desktop | Docker Desktop | Optional | InventoryUnknown | selected=no | key=development.containers | matched=development
+    profile.development.containers: Docker Desktop is an optional suggestion for development.
+    software.presence-unknown: AgenStart cannot safely confirm whether Docker Desktop is already installed, so it will not preselect another installation.
+- kdenlive | Kdenlive | Optional | Recommended | selected=no | key=creative.video-editing | matched=creative
+    profile.creative.video-editing: Kdenlive is an optional suggestion for creative work.
+- postman | Postman | Optional | Recommended | selected=no | key=development.api-client | matched=development
+    profile.development.api-client: Postman is an optional suggestion for development.
+

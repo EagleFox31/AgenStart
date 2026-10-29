@@ -1,0 +1,13 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:AgenStart.Desktop.ViewModels"
+             x:Class="AgenStart.Desktop.Views.AppRowLogoView"
+             x:DataType="vm:IAppRowLogo"
+             Width="38" Height="38">
+  <Grid>
+    <Border IsVisible="{Binding ShowInitials}" CornerRadius="8" Background="#E7EFEC">
+      <TextBlock Text="{Binding Initials}" Foreground="{StaticResource AgenTealBrush}" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" />
+    </Border>
+    <Image IsVisible="{Binding HasLogo}" Source="{Binding IconSource}" Stretch="Uniform" Margin="2" />
+  </Grid>
+</UserControl>

@@ -1,0 +1,59 @@
+{
+  "schemaVersion": "1.0.0",
+  "profiles": [
+    {
+      "id": "personal",
+      "status": "active",
+      "order": 10,
+      "aliases": [],
+      "label": { "en": "Personal", "fr": "Personnel" },
+      "description": { "en": "Everyday apps.", "fr": "Applications du quotidien." },
+      "reasonLabel": { "en": "everyday use", "fr": "l'usage quotidien" }
+    },
+    {
+      "id": "development",
+      "status": "active",
+      "order": 20,
+      "aliases": [],
+      "label": { "en": "Development", "fr": "Développement" },
+      "description": { "en": "Developer tools.", "fr": "Outils de développement." },
+      "reasonLabel": { "en": "development", "fr": "le développement" }
+    },
+    {
+      "id": "business",
+      "status": "active",
+      "order": 30,
+      "aliases": [],
+      "label": { "en": "Business", "fr": "Business" },
+      "description": { "en": "Work tools.", "fr": "Outils de travail." },
+      "reasonLabel": { "en": "work and business", "fr": "le travail et les affaires" }
+    },
+    {
+      "id": "creative",
+      "status": "active",
+      "order": 40,
+      "aliases": ["creation"],
+      "label": { "en": "Creative", "fr": "Créatif" },
+      "description": { "en": "Creative tools.", "fr": "Outils créatifs." },
+      "reasonLabel": { "en": "creative work", "fr": "le travail créatif" }
+    },
+    {
+      "id": "learning",
+      "status": "active",
+      "order": 50,
+      "aliases": ["training", "study"],
+      "label": { "en": "Learning", "fr": "Apprentissage" },
+      "description": { "en": "Study tools.", "fr": "Outils d'étude." },
+      "reasonLabel": { "en": "study and learning", "fr": "les études et l'apprentissage" }
+    },
+    {
+      "id": "gaming",
+      "status": "active",
+      "order": 60,
+      "aliases": [],
+      "label": { "en": "Gaming", "fr": "Gaming" },
+      "description": { "en": "Gaming tools.", "fr": "Outils de jeu." },
+      "reasonLabel": { "en": "gaming", "fr": "le jeu" }
+    }
+  ]
+}

@@ -28,13 +28,14 @@ public sealed class SetupProfileSerializer
     public string Serialize(SetupProfileDocument profile)
     {
         ArgumentNullException.ThrowIfNull(profile);
-        var errors = _validator.Validate(profile);
+        var normalized = _validator.Normalize(profile);
+        var errors = _validator.Validate(normalized);
         if (errors.Count > 0)
         {
             throw new SetupProfileValidationException(errors);
         }
 
-        return JsonSerializer.Serialize(profile, _options);
+        return JsonSerializer.Serialize(normalized, _options);
     }
 
     public SetupProfileReadResult Deserialize(string? json)
@@ -73,7 +74,7 @@ public sealed class SetupProfileSerializer
 
         var errors = _validator.Validate(profile);
         return errors.Count == 0 && profile is not null
-            ? SetupProfileReadResult.Valid(profile)
+            ? SetupProfileReadResult.Valid(_validator.Normalize(profile))
             : SetupProfileReadResult.Invalid(errors);
     }
 }

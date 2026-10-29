@@ -14,10 +14,12 @@ public sealed record SetupProfileDocument(
     DateTimeOffset CreatedAtUtc,
     string ProfileId,
     IReadOnlyList<SetupProfileApplication> Applications,
-    SetupProfileMetadata? Metadata = null)
+    SetupProfileMetadata? Metadata = null,
+    IReadOnlyList<string>? ProfileIds = null)
 {
     public const string CurrentKind = "agenstart.setup";
-    public const int CurrentSchemaVersion = 1;
+    public const int CurrentSchemaVersion = 2;
+    public const int MinimumSupportedSchemaVersion = 1;
 }
 
 public sealed record SetupProfileValidationError(

@@ -3,7 +3,11 @@
              x:Class="AgenStart.Desktop.App"
              RequestedThemeVariant="Light">
   <Application.Styles>
-    <FluentTheme />
+    <FluentTheme>
+      <FluentTheme.Palettes>
+        <ColorPaletteResources x:Key="Light" Accent="#176D64" />
+      </FluentTheme.Palettes>
+    </FluentTheme>
     <StyleInclude Source="avares://AgenStart.Desktop/Styles/AgenStartTheme.axaml" />
   </Application.Styles>
 </Application>

@@ -12,14 +12,16 @@ The user should understand three things from every recommendation card without a
 
 ## Usage profiles
 
-A setup can select one or more of six usage profiles:
+A setup can select one or more of the active usage profiles from `docs/product/profiles.json`:
 
 - Personal / Everyday
 - Business / Work
 - Study / Learning
+- IT Student
 - Development
 - Creative
 - Gaming
+- Entertainment
 
 Profiles are additive. AgenStart merges matching catalogue rules, deduplicates applications by canonical AgenStart ID, and keeps the strongest recommendation level when an app matches multiple selected profiles.
 

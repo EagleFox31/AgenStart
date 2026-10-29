@@ -95,6 +95,12 @@ public sealed class WindowsMachineInventoryProvider : IMachineInventoryProvider
         }
 
         var osVersion = Environment.OSVersion.Version;
+        var effectiveBuild = int.TryParse(build, out var parsedBuild) ? parsedBuild : osVersion.Build;
+        if (effectiveBuild >= 22000 && edition is not null && edition.Contains("Windows 10", StringComparison.Ordinal))
+        {
+            edition = edition.Replace("Windows 10", "Windows 11", StringComparison.Ordinal);
+        }
+
         return new PlatformSnapshot(
             PlatformKind.Windows,
             edition,

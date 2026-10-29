@@ -17,6 +17,8 @@ public sealed class RecommendationEngineTests
     [InlineData(UserProfile.Development)]
     [InlineData(UserProfile.Creative)]
     [InlineData(UserProfile.Gaming)]
+    [InlineData(UserProfile.Entertainment)]
+    [InlineData(UserProfile.ItStudent)]
     public void Build_SupportsEveryCurrentProfileWithHumanReadableReason(UserProfile profile)
     {
         var application = Application(

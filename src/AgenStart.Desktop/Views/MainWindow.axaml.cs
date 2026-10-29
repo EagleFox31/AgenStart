@@ -4,11 +4,14 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.LogicalTree;
+using Avalonia.Media;
 using Avalonia.Platform.Storage;
+using Avalonia.Threading;
 using AgenStart.Application.Installation;
 using AgenStart.Application.Profiles;
 using AgenStart.Catalogue;
 using AgenStart.Core.Catalogue;
+using AgenStart.Core.Recommendations;
 using AgenStart.Desktop.LocalData;
 using AgenStart.Desktop.ViewModels;
 using AgenStart.Recommendations;
@@ -31,10 +34,8 @@ public sealed partial class MainWindow : Window
     private SettingsView? _settingsView;
     private Button? _historyButton;
     private Button? _settingsButton;
-    private Button? _importSetupButton;
-    private Button? _exportCurrentSetupButton;
-    private TextBlock? _importStatusText;
     private Guid? _currentHistoryEntryId;
+    private IDisposable? _multiProfileProgressSubscription;
 
     public MainWindow()
     {
@@ -51,23 +52,47 @@ public sealed partial class MainWindow : Window
         ReportButton.IsEnabled = false;
 
         InstallUtilityViews();
-        InstallSetupProfileActions();
+
+        OverviewControl.SetImportSetupEnabled(StorageProvider.CanOpen);
+        OverviewControl.AnalyzeRequested += OverviewView_OnAnalyzeRequested;
+        OverviewControl.ImportSetupRequested += OverviewView_OnImportSetupRequested;
+
+        ReportControl.FinishRequested += ReportView_OnFinishRequested;
+        ReportControl.ExportSetupRequested += ReportView_OnExportSetupRequested;
+
+        InstallationControl.CancelRequested += InstallationView_OnCancelRequested;
+        InstallationControl.ViewReportRequested += InstallationView_OnViewReportRequested;
+        InstallationControl.RetryRequested += InstallationView_OnRetryRequested;
+
+        ReviewControl.StartInstallationRequested += ReviewView_OnStartInstallationRequested;
+        ReviewControl.BackRequested += ReviewView_OnBackRequested;
+        ReviewControl.RemoveRequested += ReviewView_OnRemoveRequested;
+
+        YourPcControl.ContinueToProfileRequested += YourPcView_OnContinueToProfileRequested;
+        YourPcControl.RefreshRequested += YourPcView_OnRefreshRequested;
+
+        RecommendationsControl.ReviewRequested += RecommendationsView_OnReviewRequested;
+        RecommendationsControl.SelectEssentialsRequested += RecommendationsView_OnSelectEssentialsRequested;
+
+        MainScrollViewer.ScrollChanged += (_, _) => UpdateRecommendationStickyHeader();
 
         _viewModel.PropertyChanged += ViewModel_OnPropertyChanged;
         Opened += OnOpened;
         Closed += OnClosed;
     }
 
-    private void OverviewButton_OnClick(object? sender, RoutedEventArgs e) => ShowOverview();
-    private void YourPcButton_OnClick(object? sender, RoutedEventArgs e) => ShowYourPc();
-    private void UsageProfileButton_OnClick(object? sender, RoutedEventArgs e) => ShowUsageProfile();
-    private void RecommendationsButton_OnClick(object? sender, RoutedEventArgs e) => ShowRecommendations();
-    private void ReviewButton_OnClick(object? sender, RoutedEventArgs e) => ShowReview();
-    private void InstallationButton_OnClick(object? sender, RoutedEventArgs e) => ShowInstallation();
-    private void ReportButton_OnClick(object? sender, RoutedEventArgs e) => ShowReport();
+    private void NavButton_OnClick(object? sender, RoutedEventArgs e)
+    {
+        if (sender is Button { Tag: string tag } && Enum.TryParse<AppStep>(tag, ignoreCase: false, out var step))
+        {
+            _viewModel.ShowStep(step);
+        }
+    }
 
     private async void OnOpened(object? sender, EventArgs e)
     {
+        InstallMultiProfileExperience();
+
         try
         {
             await _localExperience.InitializeAsync(_lifetimeCancellation.Token);
@@ -85,17 +110,63 @@ public sealed partial class MainWindow : Window
         }
     }
 
-    private async void AnalyzeButton_OnClick(object? sender, RoutedEventArgs e)
+    private void InstallMultiProfileExperience()
+    {
+        UsageProfilesControl.SetSelection(_viewModel.SelectedProfile);
+
+        UsageProfilesControl.SelectionChanged += profiles =>
+        {
+            if (profiles == UserProfile.None)
+            {
+                return;
+            }
+
+            _viewModel.SelectProfile(profiles);
+            RecommendationsButton.IsEnabled = false;
+        };
+
+        UsageProfilesControl.BuildRequested += async (_, _) =>
+        {
+            UsageProfilesControl.BeginRecommendationBuild();
+            _viewModel.SelectProfile(UsageProfilesControl.SelectedProfiles);
+
+            await _viewModel.BuildRecommendationsAsync(_lifetimeCancellation.Token);
+            if (_viewModel.HasRecommendations)
+            {
+                UsageProfilesControl.CompleteRecommendationBuild();
+                RecommendationsButton.IsEnabled = true;
+                _viewModel.ShowStep(AppStep.Recommendations);
+                UpdateRecommendationStickyHeader();
+            }
+            else
+            {
+                UsageProfilesControl.FailRecommendationBuild(_viewModel.RecommendationStatus);
+            }
+        };
+
+        UsageProfilesControl.BackRequested += (_, _) => _viewModel.ShowStep(AppStep.YourPc);
+
+        _multiProfileProgressSubscription = RecommendationPipelineDiagnostics.Subscribe(stage =>
+            Dispatcher.UIThread.Post(() =>
+            {
+                if (_viewModel.IsBusy && UsageProfilesControl.IsVisible)
+                {
+                    UsageProfilesControl.UpdateRecommendationProgress(stage);
+                }
+            }));
+    }
+
+    private async void OverviewView_OnAnalyzeRequested(object? sender, EventArgs e)
     {
         await _viewModel.AnalyzeAsync(_lifetimeCancellation.Token);
         if (_viewModel.HasSnapshot)
         {
             EnablePostAnalysisNavigation();
-            ShowYourPc();
+            _viewModel.ShowStep(AppStep.YourPc);
         }
     }
 
-    private async void RefreshButton_OnClick(object? sender, RoutedEventArgs e)
+    private async void YourPcView_OnRefreshRequested(object? sender, EventArgs e)
     {
         await _viewModel.AnalyzeAsync(_lifetimeCancellation.Token);
         if (_viewModel.HasSnapshot)
@@ -111,59 +182,41 @@ public sealed partial class MainWindow : Window
         RecommendationsButton.IsEnabled = false;
     }
 
-    private void ContinueToProfile_OnClick(object? sender, RoutedEventArgs e) => ShowUsageProfile();
-    private void ProfileBackButton_OnClick(object? sender, RoutedEventArgs e) => ShowYourPc();
+    private void YourPcView_OnContinueToProfileRequested(object? sender, EventArgs e) =>
+        _viewModel.ShowStep(AppStep.UsageProfile);
 
-    private void PersonalProfile_OnChecked(object? sender, RoutedEventArgs e) => SelectProfile(UserProfile.Personal);
-    private void DevelopmentProfile_OnChecked(object? sender, RoutedEventArgs e) => SelectProfile(UserProfile.Development);
-    private void BusinessProfile_OnChecked(object? sender, RoutedEventArgs e) => SelectProfile(UserProfile.Business);
-    private void CreationProfile_OnChecked(object? sender, RoutedEventArgs e) => SelectProfile(UserProfile.Creation);
-    private void TrainingProfile_OnChecked(object? sender, RoutedEventArgs e) => SelectProfile(UserProfile.Training);
-
-    private void SelectProfile(UserProfile profile)
-    {
-        _viewModel.SelectProfile(profile);
-        RecommendationsButton.IsEnabled = false;
-    }
-
-    private async void BuildRecommendationsButton_OnClick(object? sender, RoutedEventArgs e)
-    {
-        await _viewModel.BuildRecommendationsAsync(_lifetimeCancellation.Token);
-        if (_viewModel.HasRecommendations)
-        {
-            RecommendationsButton.IsEnabled = true;
-            ShowRecommendations();
-        }
-    }
-
-    private void SelectEssentialsButton_OnClick(object? sender, RoutedEventArgs e) =>
+    private void RecommendationsView_OnSelectEssentialsRequested(object? sender, EventArgs e) =>
         _viewModel.SelectEssentialsOnly();
 
-    private void ReviewSetupButton_OnClick(object? sender, RoutedEventArgs e)
+    private void RecommendationsView_OnReviewRequested(object? sender, EventArgs e)
     {
         if (_viewModel.PrepareReview())
         {
-            ShowReview();
+            _viewModel.ShowStep(AppStep.Review);
         }
     }
 
-    private void ReviewBackButton_OnClick(object? sender, RoutedEventArgs e) => ShowRecommendations();
-
-    private void RemoveReviewItem_OnClick(object? sender, RoutedEventArgs e)
+    internal void UpdateRecommendationStickyHeader()
     {
-        if (sender is not Button { DataContext: ReviewRowViewModel row })
-        {
-            return;
-        }
+        RecommendationStickyHeader.IsVisible =
+            RecommendationsControl.IsVisible &&
+            _viewModel.HasRecommendations &&
+            MainScrollViewer.Offset.Y >= 118;
+    }
 
+    private void ReviewView_OnBackRequested(object? sender, EventArgs e) =>
+        _viewModel.ShowStep(AppStep.Recommendations);
+
+    private void ReviewView_OnRemoveRequested(object? sender, ReviewRowViewModel row)
+    {
         _viewModel.RemoveFromReview(row.ApplicationId);
         if (!_viewModel.HasReview)
         {
-            ShowRecommendations();
+            _viewModel.ShowStep(AppStep.Recommendations);
         }
     }
 
-    private async void StartInstallationButton_OnClick(object? sender, RoutedEventArgs e)
+    private async void ReviewView_OnStartInstallationRequested(object? sender, EventArgs e)
     {
         if (!_viewModel.CanStartInstallation)
         {
@@ -172,7 +225,7 @@ public sealed partial class MainWindow : Window
 
         _currentHistoryEntryId = Guid.NewGuid();
         InstallationButton.IsEnabled = true;
-        ShowInstallation();
+        _viewModel.ShowStep(AppStep.Installation);
         await _viewModel.StartInstallationAsync(_lifetimeCancellation.Token);
 
         if (_viewModel.HasReport)
@@ -181,21 +234,19 @@ public sealed partial class MainWindow : Window
             ReportButton.IsEnabled = true;
             if (_viewModel.InstallationFailedCount == 0)
             {
-                ShowReport();
+                _viewModel.ShowStep(AppStep.Report);
             }
         }
     }
 
-    private void CancelInstallationButton_OnClick(object? sender, RoutedEventArgs e) =>
+    private void InstallationView_OnCancelRequested(object? sender, EventArgs e) =>
         _viewModel.CancelInstallation();
 
-    private async void RetryInstallationItem_OnClick(object? sender, RoutedEventArgs e)
-    {
-        if (sender is not Button { DataContext: InstallationRowViewModel row })
-        {
-            return;
-        }
+    private void InstallationView_OnViewReportRequested(object? sender, EventArgs e) =>
+        _viewModel.ShowStep(AppStep.Report);
 
+    private async void InstallationView_OnRetryRequested(object? sender, InstallationRowViewModel row)
+    {
         await _viewModel.RetryInstallationAsync(row.ApplicationId, _lifetimeCancellation.Token);
         if (_viewModel.HasReport)
         {
@@ -204,7 +255,7 @@ public sealed partial class MainWindow : Window
             ReportButton.IsEnabled = true;
             if (_viewModel.InstallationFailedCount == 0)
             {
-                ShowReport();
+                _viewModel.ShowStep(AppStep.Report);
             }
         }
     }
@@ -250,12 +301,27 @@ public sealed partial class MainWindow : Window
         }
     }
 
-    private void ViewReportButton_OnClick(object? sender, RoutedEventArgs e) => ShowReport();
-    private void FinishButton_OnClick(object? sender, RoutedEventArgs e) => ShowOverview();
+    private void ReportView_OnFinishRequested(object? sender, EventArgs e) =>
+        _viewModel.ShowStep(AppStep.Overview);
+
+    private async void ReportView_OnExportSetupRequested(object? sender, EventArgs e)
+    {
+        if (!_viewModel.HasReport || _viewModel.ReviewItems.Count == 0)
+        {
+            return;
+        }
+
+        var applications = _viewModel.ReviewItems.Select(row =>
+            new SetupProfileApplication(row.ApplicationId, row.Reason));
+        await SaveSetupProfileAsync(
+            ToProfileId(_viewModel.SelectedProfile),
+            applications,
+            $"{_viewModel.SelectedProfileName} setup");
+    }
 
     private void InstallUtilityViews()
     {
-        if (OverviewPanel.Parent is not Grid pageHost)
+        if (OverviewControl.Parent is not Grid pageHost)
         {
             return;
         }
@@ -290,35 +356,6 @@ public sealed partial class MainWindow : Window
         }
     }
 
-    private void InstallSetupProfileActions()
-    {
-        _importSetupButton = FindButtonByContent("Import a setup");
-        if (_importSetupButton is not null)
-        {
-            _importSetupButton.IsEnabled = StorageProvider.CanOpen;
-            _importSetupButton.Click += ImportSetupButton_OnClick;
-
-            if (_importSetupButton.Parent?.Parent is StackPanel overviewColumn)
-            {
-                _importStatusText = new TextBlock
-                {
-                    IsVisible = false,
-                    FontSize = 13,
-                    Margin = new Thickness(0, 10, 0, 0)
-                };
-                _importStatusText.Classes.Add("subtitle");
-                overviewColumn.Children.Add(_importStatusText);
-            }
-        }
-
-        _exportCurrentSetupButton = FindButtonByContent("Export this setup");
-        if (_exportCurrentSetupButton is not null)
-        {
-            _exportCurrentSetupButton.IsEnabled = false;
-            _exportCurrentSetupButton.Click += ExportCurrentSetupButton_OnClick;
-        }
-    }
-
     private Button? FindNavigationButton(string label) =>
         this.GetLogicalDescendants()
             .OfType<Button>()
@@ -326,28 +363,10 @@ public sealed partial class MainWindow : Window
                 .OfType<TextBlock>()
                 .Any(text => string.Equals(text.Text, label, StringComparison.Ordinal)));
 
-    private Button? FindButtonByContent(string content) =>
-        this.GetLogicalDescendants()
-            .OfType<Button>()
-            .FirstOrDefault(button => string.Equals(button.Content as string, content, StringComparison.Ordinal));
+    private void HistoryButton_OnClick(object? sender, RoutedEventArgs e) => _viewModel.ShowStep(AppStep.History);
+    private void SettingsButton_OnClick(object? sender, RoutedEventArgs e) => _viewModel.ShowStep(AppStep.Settings);
 
-    private void HistoryButton_OnClick(object? sender, RoutedEventArgs e)
-    {
-        if (_historyView is not null && _historyButton is not null)
-        {
-            ShowUtilityPage(_historyView, _historyButton);
-        }
-    }
-
-    private void SettingsButton_OnClick(object? sender, RoutedEventArgs e)
-    {
-        if (_settingsView is not null && _settingsButton is not null)
-        {
-            ShowUtilityPage(_settingsView, _settingsButton);
-        }
-    }
-
-    private async void ImportSetupButton_OnClick(object? sender, RoutedEventArgs e)
+    private async void OverviewView_OnImportSetupRequested(object? sender, EventArgs e)
     {
         try
         {
@@ -501,22 +520,7 @@ public sealed partial class MainWindow : Window
 
         SetImportStatus($"Imported {profileDocument.Applications.Count} application(s). Review the exact changes before installation.");
         ReviewButton.IsEnabled = true;
-        ShowReview();
-    }
-
-    private async void ExportCurrentSetupButton_OnClick(object? sender, RoutedEventArgs e)
-    {
-        if (!_viewModel.HasReport || _viewModel.ReviewItems.Count == 0)
-        {
-            return;
-        }
-
-        var applications = _viewModel.ReviewItems.Select(row =>
-            new SetupProfileApplication(row.ApplicationId, row.Reason));
-        await SaveSetupProfileAsync(
-            ToProfileId(_viewModel.SelectedProfile),
-            applications,
-            $"{_viewModel.SelectedProfileName} setup");
+        _viewModel.ShowStep(AppStep.Review);
     }
 
     private async void HistoryView_OnExportSetupRequested(object? sender, EventArgs e)
@@ -622,124 +626,7 @@ public sealed partial class MainWindow : Window
 
     private static string ToProfileId(UserProfile profile) => profile.ToString().ToLowerInvariant();
 
-    private void SetImportStatus(string message)
-    {
-        if (_importStatusText is null)
-        {
-            return;
-        }
-
-        _importStatusText.Text = message;
-        _importStatusText.IsVisible = true;
-    }
-
-    private void ShowOverview() => ShowPage(OverviewPanel, OverviewButton, OverviewStripe);
-
-    private void ShowYourPc()
-    {
-        if (YourPcButton.IsEnabled)
-        {
-            ShowPage(YourPcPanel, YourPcButton, YourPcStripe);
-        }
-    }
-
-    private void ShowUsageProfile()
-    {
-        if (UsageProfileButton.IsEnabled)
-        {
-            ShowPage(UsageProfilePanel, UsageProfileButton, UsageProfileStripe);
-        }
-    }
-
-    private void ShowRecommendations()
-    {
-        if (RecommendationsButton.IsEnabled)
-        {
-            ShowPage(RecommendationsPanel, RecommendationsButton, RecommendationsStripe);
-        }
-    }
-
-    private void ShowReview()
-    {
-        if (_viewModel.HasReview)
-        {
-            ShowPage(ReviewPanel, ReviewButton, ReviewStripe);
-        }
-    }
-
-    private void ShowInstallation()
-    {
-        if (InstallationButton.IsEnabled)
-        {
-            ShowPage(InstallationPanel, InstallationButton, InstallationStripe);
-        }
-    }
-
-    private void ShowReport()
-    {
-        if (_viewModel.HasReport)
-        {
-            ShowPage(ReportPanel, ReportButton, ReportStripe);
-        }
-    }
-
-    private void ShowPage(Control panel, Button activeButton, Border activeStripe)
-    {
-        HideAllPages();
-        panel.IsVisible = true;
-        activeStripe.IsVisible = true;
-        SetActive(activeButton, true);
-    }
-
-    private void ShowUtilityPage(Control panel, Button activeButton)
-    {
-        HideAllPages();
-        panel.IsVisible = true;
-        SetActive(activeButton, true);
-    }
-
-    private void HideAllPages()
-    {
-        OverviewPanel.IsVisible = false;
-        YourPcPanel.IsVisible = false;
-        UsageProfilePanel.IsVisible = false;
-        RecommendationsPanel.IsVisible = false;
-        ReviewPanel.IsVisible = false;
-        InstallationPanel.IsVisible = false;
-        ReportPanel.IsVisible = false;
-        if (_historyView is not null)
-        {
-            _historyView.IsVisible = false;
-        }
-        if (_settingsView is not null)
-        {
-            _settingsView.IsVisible = false;
-        }
-
-        OverviewStripe.IsVisible = false;
-        YourPcStripe.IsVisible = false;
-        UsageProfileStripe.IsVisible = false;
-        RecommendationsStripe.IsVisible = false;
-        ReviewStripe.IsVisible = false;
-        InstallationStripe.IsVisible = false;
-        ReportStripe.IsVisible = false;
-
-        SetActive(OverviewButton, false);
-        SetActive(YourPcButton, false);
-        SetActive(UsageProfileButton, false);
-        SetActive(RecommendationsButton, false);
-        SetActive(ReviewButton, false);
-        SetActive(InstallationButton, false);
-        SetActive(ReportButton, false);
-        if (_historyButton is not null)
-        {
-            SetActive(_historyButton, false);
-        }
-        if (_settingsButton is not null)
-        {
-            SetActive(_settingsButton, false);
-        }
-    }
+    private void SetImportStatus(string message) => OverviewControl.SetImportStatus(message);
 
     private void ViewModel_OnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
@@ -756,14 +643,39 @@ public sealed partial class MainWindow : Window
         if (e.PropertyName == nameof(MainWindowViewModel.HasReport))
         {
             ReportButton.IsEnabled = _viewModel.HasReport;
-            if (_exportCurrentSetupButton is not null)
+            ReportControl.SetExportEnabled(_viewModel.HasReport && StorageProvider.CanSave);
+        }
+
+        if (e.PropertyName is nameof(MainWindowViewModel.HasRecommendations)
+            or nameof(MainWindowViewModel.CurrentStep))
+        {
+            UpdateRecommendationStickyHeader();
+        }
+
+        if (e.PropertyName == nameof(MainWindowViewModel.CurrentStep))
+        {
+            // Each step opens at its top, not at the previous step's scroll position.
+            MainScrollViewer.Offset = default;
+            if (_historyView is not null)
             {
-                _exportCurrentSetupButton.IsEnabled = _viewModel.HasReport && StorageProvider.CanSave;
+                _historyView.IsVisible = _viewModel.IsHistory;
+            }
+            if (_settingsView is not null)
+            {
+                _settingsView.IsVisible = _viewModel.IsSettings;
+            }
+            if (_historyButton is not null)
+            {
+                SetActiveClass(_historyButton, _viewModel.IsHistory);
+            }
+            if (_settingsButton is not null)
+            {
+                SetActiveClass(_settingsButton, _viewModel.IsSettings);
             }
         }
     }
 
-    private static void SetActive(Button button, bool isActive)
+    private static void SetActiveClass(Button button, bool isActive)
     {
         const string activeClass = "active";
         if (isActive)
@@ -794,15 +706,23 @@ public sealed partial class MainWindow : Window
         {
             _settingsButton.Click -= SettingsButton_OnClick;
         }
-        if (_importSetupButton is not null)
-        {
-            _importSetupButton.Click -= ImportSetupButton_OnClick;
-        }
-        if (_exportCurrentSetupButton is not null)
-        {
-            _exportCurrentSetupButton.Click -= ExportCurrentSetupButton_OnClick;
-        }
+        OverviewControl.AnalyzeRequested -= OverviewView_OnAnalyzeRequested;
+        OverviewControl.ImportSetupRequested -= OverviewView_OnImportSetupRequested;
+        ReportControl.FinishRequested -= ReportView_OnFinishRequested;
+        ReportControl.ExportSetupRequested -= ReportView_OnExportSetupRequested;
+        InstallationControl.CancelRequested -= InstallationView_OnCancelRequested;
+        InstallationControl.ViewReportRequested -= InstallationView_OnViewReportRequested;
+        InstallationControl.RetryRequested -= InstallationView_OnRetryRequested;
+        ReviewControl.StartInstallationRequested -= ReviewView_OnStartInstallationRequested;
+        ReviewControl.BackRequested -= ReviewView_OnBackRequested;
+        ReviewControl.RemoveRequested -= ReviewView_OnRemoveRequested;
+        YourPcControl.ContinueToProfileRequested -= YourPcView_OnContinueToProfileRequested;
+        YourPcControl.RefreshRequested -= YourPcView_OnRefreshRequested;
+        RecommendationsControl.ReviewRequested -= RecommendationsView_OnReviewRequested;
+        RecommendationsControl.SelectEssentialsRequested -= RecommendationsView_OnSelectEssentialsRequested;
         Opened -= OnOpened;
+        _multiProfileProgressSubscription?.Dispose();
+        _multiProfileProgressSubscription = null;
         _lifetimeCancellation.Cancel();
         _viewModel.Dispose();
         _lifetimeCancellation.Dispose();

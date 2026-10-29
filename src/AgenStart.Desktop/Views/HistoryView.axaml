@@ -40,12 +40,12 @@
             </ListBox.ItemTemplate>
           </ListBox>
 
-          <Border BorderBrush="{StaticResource AgenDividerBrush}" BorderThickness="1" CornerRadius="8" Padding="18" Margin="0,22,0,0">
+          <Border IsVisible="{Binding !HistoryEntries.Count}" BorderBrush="{StaticResource AgenDividerBrush}" BorderThickness="1" CornerRadius="8" Padding="18">
             <StackPanel Orientation="Horizontal" Spacing="12">
               <TextBlock Text="↶" Foreground="{StaticResource AgenTealBrush}" FontSize="20" />
               <StackPanel>
-                <TextBlock Text="No cloud history" FontWeight="SemiBold" />
-                <TextBlock Text="Session summaries stay in AgenStart's local application-data folder." Foreground="{StaticResource AgenMutedBrush}" FontSize="13" Margin="0,4,0,0" />
+                <TextBlock Text="No setups yet" FontWeight="SemiBold" />
+                <TextBlock Text="Completed installations will appear here. Summaries stay in AgenStart's local application-data folder." Foreground="{StaticResource AgenMutedBrush}" FontSize="13" TextWrapping="Wrap" Margin="0,4,0,0" />
               </StackPanel>
             </StackPanel>
           </Border>
@@ -53,7 +53,10 @@
 
         <StackPanel Grid.Column="1" Spacing="14">
           <TextBlock Text="Session details" FontSize="20" FontWeight="SemiBold" />
-          <Border BorderBrush="{StaticResource AgenDividerBrush}" BorderThickness="1" CornerRadius="8" Padding="20">
+          <Border IsVisible="{Binding SelectedHistory, Converter={x:Static ObjectConverters.IsNull}}" BorderBrush="{StaticResource AgenDividerBrush}" BorderThickness="1" CornerRadius="8" Padding="20">
+            <TextBlock Text="Select a session to see its applications and export it." Foreground="{StaticResource AgenMutedBrush}" FontSize="13" TextWrapping="Wrap" />
+          </Border>
+          <Border IsVisible="{Binding SelectedHistory, Converter={x:Static ObjectConverters.IsNotNull}}" BorderBrush="{StaticResource AgenDividerBrush}" BorderThickness="1" CornerRadius="8" Padding="20">
             <StackPanel Spacing="12">
               <TextBlock Text="{Binding SelectedHistory.Profile}" FontSize="24" FontWeight="SemiBold" />
               <TextBlock Text="{Binding SelectedHistory.CompletedAt}" Foreground="{StaticResource AgenMutedBrush}" />

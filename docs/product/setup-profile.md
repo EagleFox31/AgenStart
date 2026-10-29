@@ -2,7 +2,7 @@
 
 AgenStart setup profiles are portable, reviewable JSON documents that describe the **desired application set**, not a copy of a machine.
 
-The current format is `agenstart.setup` schema version `1`.
+The current write format is `agenstart.setup` schema version `2`. Readers still accept version `1`.
 
 ## Design goals
 
@@ -19,9 +19,10 @@ The current format is `agenstart.setup` schema version `1`.
 ```json
 {
   "kind": "agenstart.setup",
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "createdAtUtc": "2026-09-04T12:00:00+00:00",
   "profileId": "development",
+  "profileIds": ["development"],
   "applications": [
     {
       "applicationId": "git",
@@ -81,7 +82,9 @@ The imported file therefore never contains executable commands or arbitrary prov
 
 - maximum document size: 256 KB;
 - `kind` must be `agenstart.setup`;
-- only schema version `1` is accepted by the current implementation;
+- schema versions `1` and `2` are accepted; writers emit version `2`;
+- version `1` requires `profileId`; version `2` requires `profileIds` (one or more registry ids);
+- legacy aliases (`creation`, `training`, `study`) are accepted on read and normalized to canonical ids;
 - at least one and at most 200 applications;
 - canonical application IDs must be lowercase portable identifiers and unique case-insensitively;
 - unknown JSON fields are rejected rather than silently ignored;

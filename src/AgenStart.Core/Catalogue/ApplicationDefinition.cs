@@ -12,6 +12,8 @@ public enum UserProfile
     Creative = 1 << 3,
     Learning = 1 << 4,
     Gaming = 1 << 5,
+    Entertainment = 1 << 6,
+    ItStudent = 1 << 7,
 
     // Backward-compatible aliases for existing setup profiles/catalogue data.
     Creation = Creative,

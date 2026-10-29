@@ -40,5 +40,8 @@ jobs:
       - name: Restore
         run: dotnet restore tests/AgenStart.Application.Tests/AgenStart.Application.Tests.csproj
 
+      - name: Build
+        run: dotnet build tests/AgenStart.Application.Tests/AgenStart.Application.Tests.csproj --configuration Release --no-restore
+
       - name: Test
-        run: dotnet test tests/AgenStart.Application.Tests/AgenStart.Application.Tests.csproj --configuration Release --no-restore --verbosity normal
+        run: dotnet test --project tests/AgenStart.Application.Tests/AgenStart.Application.Tests.csproj --configuration Release --no-build

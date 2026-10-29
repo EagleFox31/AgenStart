@@ -5,6 +5,8 @@ on:
     paths:
       - "src/**"
       - "docs/product/catalogue.fixtures.json"
+      - "docs/product/profiles.json"
+      - "docs/product/profiles.schema.json"
       - ".github/workflows/desktop-ui-build.yml"
       - ".github/workflows/release.yml"
       - "version.txt"
@@ -13,6 +15,8 @@ on:
     paths:
       - "src/**"
       - "docs/product/catalogue.fixtures.json"
+      - "docs/product/profiles.json"
+      - "docs/product/profiles.schema.json"
       - ".github/workflows/desktop-ui-build.yml"
       - ".github/workflows/release.yml"
       - "version.txt"

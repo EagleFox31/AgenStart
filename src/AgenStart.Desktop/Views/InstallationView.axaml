@@ -1,0 +1,58 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:AgenStart.Desktop.ViewModels"
+             xmlns:views="using:AgenStart.Desktop.Views"
+             x:Class="AgenStart.Desktop.Views.InstallationView"
+             x:DataType="vm:MainWindowViewModel">
+  <StackPanel>
+    <TextBlock Classes="eyebrow" Text="INSTALLATION" Margin="0,0,0,20" />
+    <TextBlock Classes="pageTitle" Text="Setting up your PC" />
+    <TextBlock Classes="subtitle" Text="{Binding InstallationStatus}" Margin="0,12,0,0" TextWrapping="Wrap" />
+    <Border Height="1" Background="{StaticResource AgenDividerBrush}" Margin="0,30,0,28" />
+    <Grid ColumnDefinitions="1.15*,0.85*" ColumnSpacing="52">
+      <StackPanel Grid.Column="0">
+        <TextBlock Text="Installation queue" FontSize="20" FontWeight="SemiBold" Margin="0,0,0,10" />
+        <ItemsControl ItemsSource="{Binding InstallationItems}">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate x:DataType="vm:InstallationRowViewModel">
+              <Border BorderBrush="{StaticResource AgenDividerBrush}" BorderThickness="0,0,0,1" Padding="10,13">
+                <Grid ColumnDefinitions="54,*,170,90" ColumnSpacing="14">
+                  <views:AppRowLogoView Width="36" Height="36" />
+                  <StackPanel Grid.Column="1">
+                    <TextBlock Text="{Binding Name}" FontSize="16" FontWeight="SemiBold" />
+                    <TextBlock Text="{Binding Message}" Foreground="{StaticResource AgenMutedBrush}" FontSize="12" TextTrimming="CharacterEllipsis" />
+                  </StackPanel>
+                  <TextBlock Grid.Column="2" Text="{Binding Status}" VerticalAlignment="Center" />
+                  <Button Grid.Column="3" Content="Retry" Background="Transparent" BorderThickness="0" Foreground="{StaticResource AgenTealBrush}" IsVisible="{Binding CanRetry}" Click="RetryButton_OnClick" />
+                </Grid>
+              </Border>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+      </StackPanel>
+      <StackPanel Grid.Column="1" Spacing="16">
+        <TextBlock Text="Current task" FontSize="18" FontWeight="SemiBold" />
+        <TextBlock Text="{Binding CurrentInstallationName}" FontSize="26" FontWeight="SemiBold" />
+        <ProgressBar IsIndeterminate="True" IsVisible="{Binding IsInstalling}" Height="5" />
+        <Grid ColumnDefinitions="*,*,*" Margin="0,12,0,0">
+          <StackPanel>
+            <TextBlock Text="{Binding InstallationCompletedCount}" Foreground="{StaticResource AgenTealBrush}" FontSize="22" FontWeight="SemiBold" />
+            <TextBlock Text="completed" Foreground="{StaticResource AgenMutedBrush}" />
+          </StackPanel>
+          <StackPanel Grid.Column="1">
+            <TextBlock Text="{Binding InstallationRemainingCount}" FontSize="22" FontWeight="SemiBold" />
+            <TextBlock Text="remaining" Foreground="{StaticResource AgenMutedBrush}" />
+          </StackPanel>
+          <StackPanel Grid.Column="2">
+            <TextBlock Classes="failedMetric" Classes.hasFailures="{Binding !!InstallationFailedCount}" Text="{Binding InstallationFailedCount}" FontSize="22" FontWeight="SemiBold" />
+            <TextBlock Text="failed" Foreground="{StaticResource AgenMutedBrush}" />
+          </StackPanel>
+        </Grid>
+        <Button Classes="secondary" Content="Cancel installation" IsEnabled="{Binding IsInstalling}" Click="CancelButton_OnClick" Margin="0,10,0,0" />
+        <Button Classes="secondary" Content="View report" IsVisible="{Binding HasReport}" Click="ViewReportButton_OnClick" />
+        <Border Height="1" Background="{StaticResource AgenDividerBrush}" Margin="0,10,0,0" />
+        <TextBlock Text="Packages are resolved through exact trusted provider identities. AgenStart does not execute arbitrary shell commands." Foreground="{StaticResource AgenMutedBrush}" FontSize="13" TextWrapping="Wrap" />
+      </StackPanel>
+    </Grid>
+  </StackPanel>
+</UserControl>

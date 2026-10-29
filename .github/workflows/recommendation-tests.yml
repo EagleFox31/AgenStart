@@ -3,12 +3,16 @@ name: Recommendation tests
 on:
   pull_request:
     paths:
+      - "src/AgenStart.Catalogue/**"
       - "src/AgenStart.Core/**"
       - "src/AgenStart.Recommendations/**"
       - "src/AgenStart.SoftwareInventory/**"
       - "tests/AgenStart.Recommendations.Tests/**"
       - "docs/architecture/recommendation-engine.md"
+      - "docs/product/profiles.json"
+      - "docs/product/profiles.schema.json"
       - ".github/workflows/recommendation-tests.yml"
+      - "global.json"
   workflow_dispatch:
 
 permissions:
@@ -30,5 +34,8 @@ jobs:
       - name: Restore
         run: dotnet restore tests/AgenStart.Recommendations.Tests/AgenStart.Recommendations.Tests.csproj
 
+      - name: Build
+        run: dotnet build tests/AgenStart.Recommendations.Tests/AgenStart.Recommendations.Tests.csproj --configuration Release --no-restore
+
       - name: Test
-        run: dotnet test tests/AgenStart.Recommendations.Tests/AgenStart.Recommendations.Tests.csproj --configuration Release --no-restore --verbosity normal
+        run: dotnet test --project tests/AgenStart.Recommendations.Tests/AgenStart.Recommendations.Tests.csproj --configuration Release --no-build

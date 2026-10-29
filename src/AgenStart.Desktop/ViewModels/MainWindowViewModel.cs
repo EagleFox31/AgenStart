@@ -1,415 +1,246 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Globalization;
 using System.Runtime.CompilerServices;
-using Avalonia.Threading;
 using AgenStart.Application.Installation;
 using AgenStart.Catalogue;
 using AgenStart.Core.Catalogue;
 using AgenStart.Core.Machine;
-using AgenStart.Desktop.LocalData;
+using AgenStart.Desktop.Services;
+using AgenStart.Desktop.ViewModels.Steps;
 using AgenStart.PackageManagement;
 using AgenStart.Platform.Windows.Inventory;
 using AgenStart.Platform.Windows.SoftwareInventory;
-using AgenStart.Platform.Windows.WinGet;
 using AgenStart.Recommendations;
 using AgenStart.SoftwareInventory;
 
 namespace AgenStart.Desktop.ViewModels;
 
+public enum AppStep
+{
+    Overview,
+    YourPc,
+    UsageProfile,
+    Recommendations,
+    Review,
+    Installation,
+    Report,
+    History,
+    Settings
+}
+
 public sealed class MainWindowViewModel : INotifyPropertyChanged, IDisposable
 {
-    private readonly IMachineInventoryProvider _machineInventory;
-    private readonly IInstalledSoftwareInventoryProvider _softwareInventory;
-    private readonly SoftwareStateResolver _softwareStateResolver;
-    private readonly RecommendationEngine _recommendationEngine;
-    private readonly SoftwareCatalogueLoader _catalogueLoader;
-
-    private MachineSnapshot? _machineSnapshot;
-    private SoftwareCatalogue? _catalogue;
-    private InstallationOrchestrator? _installationOrchestrator;
-    private InstallationSession? _installationSession;
-    private InstallationReport? _installationReport;
+    private readonly ISessionState _session;
     private bool _disposed;
-
-    private bool _isBusy;
-    private bool _hasSnapshot;
-    private bool _hasRecommendations;
-    private bool _hasReview;
-    private bool _isInstalling;
-    private bool _hasReport;
-    private bool _agreementsAccepted;
-    private UserProfile _selectedProfile = UserProfile.Development;
-
-    private string _recommendationStatus = "Choose a usage profile to build recommendations.";
-    private string _installationStatus = "Ready to install the approved setup.";
-    private string _currentInstallationName = "Waiting to start";
-    private string _reportStatus = "No installation report yet.";
-    private string _reportCompletedAt = "—";
-    private string _statusTitle = "Ready for analysis";
-    private string _statusMessage = "AgenStart can inspect the essential capabilities of this PC locally.";
-    private string _operatingSystem = "Not analysed";
-    private string _cpu = "Not analysed";
-    private string _memory = "Not analysed";
-    private string _gpu = "Not analysed";
-    private string _systemDrive = "Not analysed";
-    private string _freeSpace = "Not analysed";
-    private string _architecture = "Not analysed";
-    private string _winGet = "Not analysed";
-    private string _winGetVersion = "Not analysed";
-    private string _analysisDiagnostic = "No personal files or account information are inspected.";
+    private AppStep _currentStep = AppStep.Overview;
 
     public MainWindowViewModel(
         IMachineInventoryProvider? machineInventory = null,
         IInstalledSoftwareInventoryProvider? softwareInventory = null,
         SoftwareStateResolver? softwareStateResolver = null,
         RecommendationEngine? recommendationEngine = null,
-        SoftwareCatalogueLoader? catalogueLoader = null)
+        SoftwareCatalogueLoader? catalogueLoader = null,
+        ISessionState? session = null,
+        IUiDispatcher? dispatcher = null)
     {
-        _machineInventory = machineInventory ?? new WindowsMachineInventoryProvider();
-        _softwareInventory = softwareInventory ?? new WindowsInstalledSoftwareInventoryProvider();
-        _softwareStateResolver = softwareStateResolver ?? new SoftwareStateResolver();
-        _recommendationEngine = recommendationEngine ?? new RecommendationEngine();
-        _catalogueLoader = catalogueLoader ?? new SoftwareCatalogueLoader();
+        var machine = machineInventory ?? new WindowsMachineInventoryProvider();
+        var software = softwareInventory ?? new WindowsInstalledSoftwareInventoryProvider();
+        var resolver = softwareStateResolver ?? new SoftwareStateResolver();
+        var engine = recommendationEngine ?? new RecommendationEngine();
+        var loader = catalogueLoader ?? new SoftwareCatalogueLoader();
+        _session = session ?? new SessionState();
+        var ui = dispatcher ?? AvaloniaUiDispatcher.Shared;
+
+        Report = new ReportViewModel();
+        Report.PropertyChanged += RelayChildPropertyChanged;
+        Report.ReportItems.CollectionChanged += (_, _) => OnPropertyChanged(nameof(ReportItems));
+
+        Installation = new InstallationViewModel(_session, ui, software, resolver);
+        Installation.PropertyChanged += RelayChildPropertyChanged;
+        Installation.InstallationItems.CollectionChanged += (_, _) => OnPropertyChanged(nameof(InstallationItems));
+        Installation.Starting += Installation_OnStarting;
+        Installation.Completed += Installation_OnCompleted;
+
+        Review = new ReviewViewModel();
+        Review.PropertyChanged += RelayChildPropertyChanged;
+        Review.ReviewItems.CollectionChanged += (_, _) => OnPropertyChanged(nameof(ReviewItems));
+
+        RecommendationsStep = new RecommendationsViewModel(software, resolver, engine, loader, _session);
+        RecommendationsStep.PropertyChanged += RelayChildPropertyChanged;
+        RecommendationsStep.Recommendations.CollectionChanged += (_, _) => OnPropertyChanged(nameof(Recommendations));
+        RecommendationsStep.SelectionChanged += (_, _) => ResetReviewOnly();
+
+        UsageProfile = new UsageProfileViewModel();
+        UsageProfile.PropertyChanged += RelayChildPropertyChanged;
+
+        Overview = new OverviewViewModel(machine, _session);
+        Overview.PropertyChanged += RelayChildPropertyChanged;
+    }
+
+    public ReportViewModel Report { get; }
+    public InstallationViewModel Installation { get; }
+    public ReviewViewModel Review { get; }
+    public RecommendationsViewModel RecommendationsStep { get; }
+    public UsageProfileViewModel UsageProfile { get; }
+    public OverviewViewModel Overview { get; }
+
+    private void RelayChildPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName is null)
+        {
+            return;
+        }
+
+        OnPropertyChanged(e.PropertyName);
+
+        if (e.PropertyName is nameof(OverviewViewModel.IsBusy)
+            or nameof(RecommendationsViewModel.IsBusy))
+        {
+            OnPropertyChanged(nameof(IsBusy));
+        }
+
+        if (e.PropertyName is nameof(InstallationViewModel.IsInstalling)
+            or nameof(ReviewViewModel.HasReview)
+            or nameof(ReviewViewModel.AgreementsAccepted)
+            or nameof(ReviewViewModel.ReviewInstallCount))
+        {
+            OnPropertyChanged(nameof(CanStartInstallation));
+        }
+
+        if (e.PropertyName is nameof(InstallationViewModel.IsInstalling)
+            or nameof(RecommendationsViewModel.HasRecommendations)
+            or nameof(RecommendationsViewModel.SelectedCount))
+        {
+            OnPropertyChanged(nameof(CanReview));
+        }
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
-    public ObservableCollection<RecommendationRowViewModel> Recommendations { get; } = [];
-    public ObservableCollection<ReviewRowViewModel> ReviewItems { get; } = [];
-    public ObservableCollection<InstallationRowViewModel> InstallationItems { get; } = [];
-    public ObservableCollection<ReportRowViewModel> ReportItems { get; } = [];
+    public ObservableCollection<RecommendationRowViewModel> Recommendations => RecommendationsStep.Recommendations;
+    public ObservableCollection<ReviewRowViewModel> ReviewItems => Review.ReviewItems;
+    public ObservableCollection<InstallationRowViewModel> InstallationItems => Installation.InstallationItems;
+    public ObservableCollection<ReportRowViewModel> ReportItems => Report.ReportItems;
 
-    public bool IsBusy
+    public AppStep CurrentStep
     {
-        get => _isBusy;
-        private set => SetField(ref _isBusy, value);
-    }
-
-    public bool HasSnapshot
-    {
-        get => _hasSnapshot;
-        private set => SetField(ref _hasSnapshot, value);
-    }
-
-    public bool HasRecommendations
-    {
-        get => _hasRecommendations;
-        private set => SetField(ref _hasRecommendations, value);
-    }
-
-    public bool HasReview
-    {
-        get => _hasReview;
-        private set => SetField(ref _hasReview, value);
-    }
-
-    public bool IsInstalling
-    {
-        get => _isInstalling;
+        get => _currentStep;
         private set
         {
-            if (SetField(ref _isInstalling, value))
+            if (SetField(ref _currentStep, value))
             {
-                OnPropertyChanged(nameof(CanStartInstallation));
+                OnPropertyChanged(nameof(IsOverview));
+                OnPropertyChanged(nameof(IsYourPc));
+                OnPropertyChanged(nameof(IsUsageProfile));
+                OnPropertyChanged(nameof(IsRecommendations));
+                OnPropertyChanged(nameof(IsReview));
+                OnPropertyChanged(nameof(IsInstallationStep));
+                OnPropertyChanged(nameof(IsReport));
+                OnPropertyChanged(nameof(IsHistory));
+                OnPropertyChanged(nameof(IsSettings));
             }
         }
     }
 
-    public bool HasReport
-    {
-        get => _hasReport;
-        private set => SetField(ref _hasReport, value);
-    }
+    public bool IsOverview => _currentStep == AppStep.Overview;
+    public bool IsYourPc => _currentStep == AppStep.YourPc;
+    public bool IsUsageProfile => _currentStep == AppStep.UsageProfile;
+    public bool IsRecommendations => _currentStep == AppStep.Recommendations;
+    public bool IsReview => _currentStep == AppStep.Review;
+    public bool IsInstallationStep => _currentStep == AppStep.Installation;
+    public bool IsReport => _currentStep == AppStep.Report;
+    public bool IsHistory => _currentStep == AppStep.History;
+    public bool IsSettings => _currentStep == AppStep.Settings;
+
+    public void ShowStep(AppStep step) => CurrentStep = step;
+
+    public bool IsBusy => Overview.IsBusy || RecommendationsStep.IsBusy;
+
+    public bool HasSnapshot => Overview.HasSnapshot;
+    public bool HasRecommendations => RecommendationsStep.HasRecommendations;
+    public bool HasReview => Review.HasReview;
+    public bool IsInstalling => Installation.IsInstalling;
+    public bool HasReport => Report.HasReport;
 
     public bool AgreementsAccepted
     {
-        get => _agreementsAccepted;
-        set
-        {
-            if (SetField(ref _agreementsAccepted, value))
-            {
-                OnPropertyChanged(nameof(CanStartInstallation));
-            }
-        }
+        get => Review.AgreementsAccepted;
+        set => Review.AgreementsAccepted = value;
     }
 
-    public UserProfile SelectedProfile
-    {
-        get => _selectedProfile;
-        private set
-        {
-            if (!SetField(ref _selectedProfile, value))
-            {
-                return;
-            }
-
-            OnPropertyChanged(nameof(SelectedProfileName));
-            OnPropertyChanged(nameof(SelectedProfileDescription));
-        }
-    }
-
-    public string SelectedProfileName => SelectedProfile.ToString();
-
-    public string SelectedProfileDescription => SelectedProfile switch
-    {
-        UserProfile.Personal => "Everyday apps, browsing, communication and media.",
-        UserProfile.Development => "Code, databases, terminals and developer tools.",
-        UserProfile.Business => "Office, communication, productivity and collaboration.",
-        UserProfile.Creation => "Design, media, content and creative workflows.",
-        UserProfile.Training => "Learning, course tools and guided study setups.",
-        _ => string.Empty
-    };
+    public UserProfile SelectedProfile => UsageProfile.SelectedProfile;
+    public string SelectedProfileName => UsageProfile.SelectedProfileName;
+    public string SelectedProfileDescription => UsageProfile.SelectedProfileDescription;
 
     public string RecommendationStatus
     {
-        get => _recommendationStatus;
-        private set => SetField(ref _recommendationStatus, value);
+        get => RecommendationsStep.RecommendationStatus;
+        private set => RecommendationsStep.RecommendationStatus = value;
     }
 
-    public string InstallationStatus
-    {
-        get => _installationStatus;
-        private set => SetField(ref _installationStatus, value);
-    }
+    public string InstallationStatus => Installation.InstallationStatus;
+    public string CurrentInstallationName => Installation.CurrentInstallationName;
+    public string ReportStatus => Report.ReportStatus;
+    public string ReportTitle => Report.ReportTitle;
+    public string ReportCompletedAt => Report.ReportCompletedAt;
 
-    public string CurrentInstallationName
-    {
-        get => _currentInstallationName;
-        private set => SetField(ref _currentInstallationName, value);
-    }
-
-    public string ReportStatus
-    {
-        get => _reportStatus;
-        private set => SetField(ref _reportStatus, value);
-    }
-
-    public string ReportCompletedAt
-    {
-        get => _reportCompletedAt;
-        private set => SetField(ref _reportCompletedAt, value);
-    }
-
-    public int RecommendationCount => Recommendations.Count;
-    public int SelectedCount => Recommendations.Count(row => row.IsSelected);
-    public int AlreadyInstalledCount => Recommendations.Count(row => row.Disposition == RecommendationDisposition.AlreadyInstalled);
-    public int OptionalCount => Recommendations.Count(row => row.Level == RecommendationLevel.Optional && row.Disposition == RecommendationDisposition.Recommended);
+    public int RecommendationCount => RecommendationsStep.RecommendationCount;
+    public int SelectedCount => RecommendationsStep.SelectedCount;
+    public int AlreadyInstalledCount => RecommendationsStep.AlreadyInstalledCount;
+    public int OptionalCount => RecommendationsStep.OptionalCount;
     public bool CanReview => HasRecommendations && SelectedCount > 0 && !IsInstalling;
 
-    public int ReviewInstallCount => ReviewItems.Count(row => row.WillInstall);
-    public int ReviewAlreadyInstalledCount => ReviewItems.Count(row => row.AlreadyInstalled);
-    public int ReviewTotalCount => ReviewItems.Count;
+    public int ReviewInstallCount => Review.ReviewInstallCount;
+    public int ReviewAlreadyInstalledCount => Review.ReviewAlreadyInstalledCount;
+    public int ReviewTotalCount => Review.ReviewTotalCount;
     public bool CanStartInstallation => HasReview && ReviewInstallCount > 0 && AgreementsAccepted && !IsInstalling;
 
-    public int InstallationCompletedCount => InstallationItems.Count(row => row.State == InstallationQueueItemState.Succeeded);
-    public int InstallationFailedCount => InstallationItems.Count(row => row.State == InstallationQueueItemState.Failed);
-    public int InstallationRemainingCount => InstallationItems.Count(row => row.State is InstallationQueueItemState.Queued or InstallationQueueItemState.Running);
-    public int InstallationTotalCount => InstallationItems.Count;
+    public int InstallationCompletedCount => Installation.InstallationCompletedCount;
+    public int InstallationFailedCount => Installation.InstallationFailedCount;
+    public int InstallationRemainingCount => Installation.InstallationRemainingCount;
+    public int InstallationTotalCount => Installation.InstallationTotalCount;
 
-    public int ReportProcessedCount => ReportItems.Count;
-    public int ReportInstalledCount => _installationReport?.Items.Count(item =>
-        item.State == InstallationQueueItemState.Succeeded &&
-        item.LastOperationStatus != PackageOperationStatus.AlreadyInstalled) ?? 0;
-    public int ReportAlreadyInstalledCount => ReportItems.Count(row => row.Result == "Already installed");
-    public int ReportFailedCount => _installationReport?.FailedCount ?? 0;
-    public bool ReportRequiresReboot => _installationReport?.Items.Any(item => item.RequiresReboot) == true;
+    public int ReportProcessedCount => Report.ReportProcessedCount;
+    public int ReportInstalledCount => Report.ReportInstalledCount;
+    public int ReportAlreadyInstalledCount => Report.ReportAlreadyInstalledCount;
+    public int ReportFailedCount => Report.ReportFailedCount;
+    public bool ReportRequiresReboot => Report.ReportRequiresReboot;
 
-    public string StatusTitle
-    {
-        get => _statusTitle;
-        private set => SetField(ref _statusTitle, value);
-    }
-
-    public string StatusMessage
-    {
-        get => _statusMessage;
-        private set => SetField(ref _statusMessage, value);
-    }
-
-    public string OperatingSystem
-    {
-        get => _operatingSystem;
-        private set => SetField(ref _operatingSystem, value);
-    }
-
-    public string Cpu
-    {
-        get => _cpu;
-        private set => SetField(ref _cpu, value);
-    }
-
-    public string Memory
-    {
-        get => _memory;
-        private set => SetField(ref _memory, value);
-    }
-
-    public string Gpu
-    {
-        get => _gpu;
-        private set => SetField(ref _gpu, value);
-    }
-
-    public string SystemDrive
-    {
-        get => _systemDrive;
-        private set => SetField(ref _systemDrive, value);
-    }
-
-    public string FreeSpace
-    {
-        get => _freeSpace;
-        private set => SetField(ref _freeSpace, value);
-    }
-
-    public string Architecture
-    {
-        get => _architecture;
-        private set => SetField(ref _architecture, value);
-    }
-
-    public string WinGet
-    {
-        get => _winGet;
-        private set => SetField(ref _winGet, value);
-    }
-
-    public string WinGetVersion
-    {
-        get => _winGetVersion;
-        private set => SetField(ref _winGetVersion, value);
-    }
-
-    public string AnalysisDiagnostic
-    {
-        get => _analysisDiagnostic;
-        private set => SetField(ref _analysisDiagnostic, value);
-    }
+    public string StatusTitle => Overview.StatusTitle;
+    public string StatusMessage => Overview.StatusMessage;
+    public string OperatingSystem => Overview.OperatingSystem;
+    public string Cpu => Overview.Cpu;
+    public string Memory => Overview.Memory;
+    public string Gpu => Overview.Gpu;
+    public string SystemDrive => Overview.SystemDrive;
+    public string FreeSpace => Overview.FreeSpace;
+    public string Architecture => Overview.Architecture;
+    public string WinGet => Overview.WinGet;
+    public string WinGetVersion => Overview.WinGetVersion;
+    public string AnalysisDiagnostic => Overview.AnalysisDiagnostic;
 
     public void SelectProfile(UserProfile profile)
     {
-        if (SelectedProfile == profile || IsInstalling)
+        if (IsInstalling || !UsageProfile.TrySelect(profile))
         {
             return;
         }
 
-        SelectedProfile = profile;
         ClearRecommendations();
         RecommendationStatus = "Profile changed. Build recommendations when you're ready.";
     }
 
-    public async Task AnalyzeAsync(CancellationToken cancellationToken = default)
-    {
-        if (IsBusy || IsInstalling)
-        {
-            return;
-        }
+    public Task AnalyzeAsync(CancellationToken cancellationToken = default) =>
+        Overview.AnalyzeAsync(cancellationToken);
 
-        IsBusy = true;
-        StatusTitle = "Analysing this PC";
-        StatusMessage = "Reading essential system capabilities locally…";
+    public Task BuildRecommendationsAsync(CancellationToken cancellationToken = default) =>
+        RecommendationsStep.BuildAsync(SelectedProfile, SelectedProfileName, cancellationToken);
 
-        try
-        {
-            var snapshot = await _machineInventory.CaptureAsync(cancellationToken).ConfigureAwait(true);
-            ApplySnapshot(snapshot);
-        }
-        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
-        {
-            StatusTitle = "Analysis cancelled";
-            StatusMessage = "No changes were made to this PC.";
-        }
-        catch (Exception)
-        {
-            StatusTitle = "Analysis unavailable";
-            StatusMessage = "AgenStart could not complete the local machine analysis.";
-            AnalysisDiagnostic = "Try the analysis again. No machine changes were made.";
-        }
-        finally
-        {
-            IsBusy = false;
-        }
-    }
-
-    public async Task BuildRecommendationsAsync(CancellationToken cancellationToken = default)
-    {
-        if (IsBusy || IsInstalling || _machineSnapshot is null)
-        {
-            return;
-        }
-
-        IsBusy = true;
-        RecommendationStatus = "Checking installed software and building recommendations…";
-
-        try
-        {
-            using var catalogueStream = PackagedCatalogue.OpenRead();
-            var catalogue = _catalogueLoader.Load(catalogueStream);
-
-            var installedSoftware = await _softwareInventory
-                .CaptureAsync(cancellationToken)
-                .ConfigureAwait(true);
-            var softwareState = _softwareStateResolver.Resolve(catalogue.DetectionTargets, installedSoftware);
-            var plan = _recommendationEngine.Build(new RecommendationRequest(
-                SelectedProfile,
-                _machineSnapshot,
-                softwareState,
-                catalogue.Definitions));
-
-            ClearRecommendations();
-            _catalogue = catalogue;
-            var metadata = catalogue.Applications.ToDictionary(
-                application => application.Id,
-                StringComparer.OrdinalIgnoreCase);
-
-            foreach (var decision in plan.Decisions)
-            {
-                var description = metadata.TryGetValue(decision.ApplicationId, out var application)
-                    ? application.Description
-                    : string.Empty;
-                var row = new RecommendationRowViewModel(decision, description);
-                row.PropertyChanged += RecommendationRow_OnPropertyChanged;
-                Recommendations.Add(row);
-            }
-
-            HasRecommendations = true;
-            RecommendationStatus = $"Based on your {SelectedProfileName} profile, machine capabilities and software already installed.";
-            RaiseRecommendationSummary();
-        }
-        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
-        {
-            RecommendationStatus = "Recommendation analysis cancelled.";
-        }
-        catch (Exception)
-        {
-            ClearRecommendations();
-            RecommendationStatus = "AgenStart could not build recommendations from the local catalogue and inventory.";
-        }
-        finally
-        {
-            IsBusy = false;
-        }
-    }
-
-    public void SelectEssentialsOnly()
-    {
-        if (IsInstalling)
-        {
-            return;
-        }
-
-        foreach (var row in Recommendations.Where(row => row.CanSelect))
-        {
-            row.IsSelected = row.Level == RecommendationLevel.Essential;
-        }
-
-        RaiseRecommendationSummary();
-    }
+    public void SelectEssentialsOnly() => RecommendationsStep.SelectEssentialsOnly();
 
     public bool PrepareReview()
     {
-        if (!CanReview || _catalogue is null)
+        if (!CanReview || _session.Catalogue is null)
         {
             return false;
         }
@@ -429,9 +260,9 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged, IDisposable
                 row.Disposition == RecommendationDisposition.AlreadyInstalled));
         }
 
-        HasReview = ReviewItems.Any(row => row.WillInstall);
+        Review.SetHasReview(ReviewItems.Any(row => row.WillInstall));
         AgreementsAccepted = false;
-        RaiseReviewSummary();
+        Review.RaiseSummary();
         return HasReview;
     }
 
@@ -454,13 +285,13 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged, IDisposable
 
     public async Task<bool> StartInstallationAsync(CancellationToken cancellationToken = default)
     {
-        if (!CanStartInstallation || _catalogue is null)
+        if (!CanStartInstallation || _session.Catalogue is null)
         {
             return false;
         }
 
         var selectedRows = Recommendations.Where(row => row.IsSelected).ToArray();
-        var catalogueById = _catalogue.Applications.ToDictionary(
+        var catalogueById = _session.Catalogue.Applications.ToDictionary(
             application => application.Id,
             StringComparer.OrdinalIgnoreCase);
         var selections = new List<InstallationSelection>(selectedRows.Length);
@@ -469,7 +300,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged, IDisposable
         {
             if (!catalogueById.TryGetValue(row.ApplicationId, out var application) || application.WindowsPackage is null)
             {
-                InstallationStatus = $"{row.Name} has no trusted Windows package mapping and cannot be installed.";
+                Installation.SetStatus($"{row.Name} has no trusted Windows package mapping and cannot be installed.");
                 return false;
             }
 
@@ -487,241 +318,36 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged, IDisposable
             return false;
         }
 
-        DisposeInstallationSession();
-        InstallationItems.Clear();
-        ReportItems.Clear();
-        _installationReport = null;
-        HasReport = false;
-
-        var verifier = new SoftwareInventoryInstallationVerifier(
-            _softwareInventory,
-            _catalogue.DetectionTargets,
-            _softwareStateResolver);
-        _installationOrchestrator = new InstallationOrchestrator(
-            [new WinGetProvider()],
-            verifier);
-        _installationSession = _installationOrchestrator.CreateSession(selections);
-        _installationSession.ProgressChanged += InstallationSession_OnProgressChanged;
-
-        foreach (var item in _installationSession.Items)
-        {
-            var application = catalogueById[item.ApplicationId];
-            var row = new InstallationRowViewModel(
-                item.ApplicationId,
-                application.Name,
-                BuildInitials(application.Name));
-            row.Apply(item);
-            InstallationItems.Add(row);
-        }
-
-        IsInstalling = true;
-        InstallationStatus = "AgenStart is installing only the applications you approved.";
-        CurrentInstallationName = "Preparing installation queue";
-        RaiseInstallationSummary();
-
-        try
-        {
-            var report = await _installationOrchestrator
-                .RunAsync(_installationSession, cancellationToken)
-                .ConfigureAwait(true);
-            ApplyInstallationReport(report);
-            return true;
-        }
-        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
-        {
-            InstallationStatus = "Installation cancelled.";
-            if (_installationSession is not null)
-            {
-                ApplyInstallationReport(_installationSession.CreateReport());
-            }
-            return false;
-        }
-        finally
-        {
-            IsInstalling = false;
-            RaiseInstallationSummary();
-        }
+        return await Installation.StartAsync(selections, catalogueById, cancellationToken).ConfigureAwait(true);
     }
 
-    public void CancelInstallation()
+    public void CancelInstallation() => Installation.Cancel();
+
+    public Task<bool> RetryInstallationAsync(string applicationId, CancellationToken cancellationToken = default) =>
+        Installation.RetryAsync(applicationId, cancellationToken);
+
+    private void Installation_OnStarting(object? sender, EventArgs e) => Report.Reset();
+
+    private void Installation_OnCompleted(object? sender, InstallationReport report)
     {
-        if (!IsInstalling)
+        if (_session.Catalogue is null)
         {
             return;
         }
 
-        InstallationStatus = "Cancelling safely after the current provider operation…";
-        _installationSession?.Cancel();
-    }
-
-    public async Task<bool> RetryInstallationAsync(
-        string applicationId,
-        CancellationToken cancellationToken = default)
-    {
-        if (IsInstalling || _installationOrchestrator is null || _installationSession is null)
-        {
-            return false;
-        }
-
-        var row = InstallationItems.FirstOrDefault(item =>
-            string.Equals(item.ApplicationId, applicationId, StringComparison.OrdinalIgnoreCase));
-        if (row is not { CanRetry: true })
-        {
-            return false;
-        }
-
-        IsInstalling = true;
-        InstallationStatus = $"Retrying {row.Name}.";
-        CurrentInstallationName = row.Name;
-
-        try
-        {
-            var report = await _installationOrchestrator
-                .RetryAsync(_installationSession, applicationId, cancellationToken)
-                .ConfigureAwait(true);
-            ApplyInstallationReport(report);
-            return true;
-        }
-        finally
-        {
-            IsInstalling = false;
-            RaiseInstallationSummary();
-        }
-    }
-
-    private void RecommendationRow_OnPropertyChanged(object? sender, PropertyChangedEventArgs e)
-    {
-        if (e.PropertyName == nameof(RecommendationRowViewModel.IsSelected))
-        {
-            RaiseRecommendationSummary();
-            ResetReviewOnly();
-        }
-    }
-
-    private void InstallationSession_OnProgressChanged(object? sender, InstallationProgressEvent e)
-    {
-        Dispatcher.UIThread.Post(() => ApplyInstallationProgress(e));
-    }
-
-    private void ApplyInstallationProgress(InstallationProgressEvent progress)
-    {
-        if (progress.Item is not null)
-        {
-            var row = InstallationItems.FirstOrDefault(item =>
-                string.Equals(item.ApplicationId, progress.Item.ApplicationId, StringComparison.OrdinalIgnoreCase));
-            row?.Apply(progress.Item);
-            if (progress.Item.State == InstallationQueueItemState.Running)
-            {
-                CurrentInstallationName = row?.Name ?? progress.Item.ApplicationId;
-            }
-        }
-
-        InstallationStatus = progress.Code switch
-        {
-            "session.started" => "Installation started. Packages are resolved through trusted provider identities.",
-            "session.completed" => "Installation queue completed.",
-            "session.cancelled" => "Installation queue cancelled.",
-            "session.cancellation-requested" => "Cancellation requested. Waiting for the provider operation to stop safely.",
-            _ => progress.Message
-        };
-        RaiseInstallationSummary();
-    }
-
-    private void ApplyInstallationReport(InstallationReport report)
-    {
-        _installationReport = report;
-
-        foreach (var snapshot in report.Items)
-        {
-            var row = InstallationItems.FirstOrDefault(item =>
-                string.Equals(item.ApplicationId, snapshot.ApplicationId, StringComparison.OrdinalIgnoreCase));
-            row?.Apply(snapshot);
-        }
-
-        BuildReportRows(report);
-        HasReport = true;
-        InstallationStatus = report.State == InstallationSessionState.Cancelled
-            ? "Installation cancelled. Review the final state below."
-            : report.FailedCount > 0
-                ? "Installation completed with issues. Failed items can be retried when available."
-                : "Installation completed successfully.";
-        CurrentInstallationName = "Queue complete";
-        ReportStatus = report.State == InstallationSessionState.Cancelled
-            ? "The approved setup was cancelled before every item completed."
-            : report.FailedCount > 0
-                ? "AgenStart finished the approved setup with issues."
-                : "AgenStart finished the approved setup.";
-        ReportCompletedAt = report.CompletedAtUtc?.ToLocalTime().ToString("g", CultureInfo.CurrentCulture) ?? "—";
-        RaiseInstallationSummary();
-        RaiseReportSummary();
-    }
-
-    private void BuildReportRows(InstallationReport report)
-    {
-        ReportItems.Clear();
-        if (_catalogue is null)
-        {
-            return;
-        }
-
-        var catalogueById = _catalogue.Applications.ToDictionary(
-            application => application.Id,
-            StringComparer.OrdinalIgnoreCase);
-        var included = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-
-        foreach (var item in report.Items.OrderBy(item => item.Sequence))
-        {
-            if (!catalogueById.TryGetValue(item.ApplicationId, out var application))
-            {
-                continue;
-            }
-
-            var result = item.State switch
-            {
-                InstallationQueueItemState.Succeeded when item.LastOperationStatus == PackageOperationStatus.AlreadyInstalled => "Already installed",
-                InstallationQueueItemState.Succeeded => "Installed",
-                InstallationQueueItemState.Failed => "Failed",
-                InstallationQueueItemState.Skipped => "Skipped",
-                InstallationQueueItemState.Cancelled => "Cancelled",
-                _ => item.State.ToString()
-            };
-
-            ReportItems.Add(new ReportRowViewModel(
-                item.ApplicationId,
-                application.Name,
-                BuildInitials(application.Name),
-                result,
-                item.InstalledVersion,
-                item.RequiresReboot));
-            included.Add(item.ApplicationId);
-        }
-
-        foreach (var recommendation in Recommendations.Where(row =>
-                     row.Disposition == RecommendationDisposition.AlreadyInstalled &&
-                     !included.Contains(row.ApplicationId)))
-        {
-            ReportItems.Add(new ReportRowViewModel(
-                recommendation.ApplicationId,
-                recommendation.Name,
-                recommendation.Initials,
-                "Already installed",
-                null,
-                requiresReboot: false));
-        }
+        Report.Apply(
+            report,
+            _session.Catalogue,
+            Recommendations.Where(row => row.Disposition == RecommendationDisposition.AlreadyInstalled));
     }
 
     private void ClearRecommendations()
     {
-        foreach (var row in Recommendations)
-        {
-            row.PropertyChanged -= RecommendationRow_OnPropertyChanged;
-        }
-
-        Recommendations.Clear();
-        _catalogue = null;
-        HasRecommendations = false;
+        RecommendationsStep.ClearRows();
+        _session.SetCatalogue(null);
         ResetInstallationFlow();
-        RaiseRecommendationSummary();
+        RecommendationsStep.RaiseSummary();
+        OnPropertyChanged(nameof(CanReview));
     }
 
     private void ResetReviewOnly()
@@ -731,10 +357,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged, IDisposable
             return;
         }
 
-        ReviewItems.Clear();
-        HasReview = false;
-        AgreementsAccepted = false;
-        RaiseReviewSummary();
+        Review.Reset();
+        Review.RaiseSummary();
     }
 
     private void ResetInstallationFlow()
@@ -745,156 +369,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged, IDisposable
         }
 
         ResetReviewOnly();
-        DisposeInstallationSession();
-        InstallationItems.Clear();
-        ReportItems.Clear();
-        _installationReport = null;
-        HasReport = false;
-        InstallationStatus = "Ready to install the approved setup.";
-        CurrentInstallationName = "Waiting to start";
-        ReportStatus = "No installation report yet.";
-        ReportCompletedAt = "—";
-        RaiseInstallationSummary();
-        RaiseReportSummary();
-    }
-
-    private void DisposeInstallationSession()
-    {
-        if (_installationSession is null)
-        {
-            return;
-        }
-
-        _installationSession.ProgressChanged -= InstallationSession_OnProgressChanged;
-        _installationSession.Dispose();
-        _installationSession = null;
-        _installationOrchestrator = null;
-    }
-
-    private void RaiseRecommendationSummary()
-    {
-        OnPropertyChanged(nameof(RecommendationCount));
-        OnPropertyChanged(nameof(SelectedCount));
-        OnPropertyChanged(nameof(AlreadyInstalledCount));
-        OnPropertyChanged(nameof(OptionalCount));
-        OnPropertyChanged(nameof(CanReview));
-    }
-
-    private void RaiseReviewSummary()
-    {
-        OnPropertyChanged(nameof(ReviewInstallCount));
-        OnPropertyChanged(nameof(ReviewAlreadyInstalledCount));
-        OnPropertyChanged(nameof(ReviewTotalCount));
-        OnPropertyChanged(nameof(CanStartInstallation));
-    }
-
-    private void RaiseInstallationSummary()
-    {
-        OnPropertyChanged(nameof(InstallationCompletedCount));
-        OnPropertyChanged(nameof(InstallationFailedCount));
-        OnPropertyChanged(nameof(InstallationRemainingCount));
-        OnPropertyChanged(nameof(InstallationTotalCount));
-    }
-
-    private void RaiseReportSummary()
-    {
-        OnPropertyChanged(nameof(ReportProcessedCount));
-        OnPropertyChanged(nameof(ReportInstalledCount));
-        OnPropertyChanged(nameof(ReportAlreadyInstalledCount));
-        OnPropertyChanged(nameof(ReportFailedCount));
-        OnPropertyChanged(nameof(ReportRequiresReboot));
-    }
-
-    private void ApplySnapshot(MachineSnapshot snapshot)
-    {
-        _machineSnapshot = snapshot;
-        HasSnapshot = snapshot.Platform.Kind == PlatformKind.Windows;
-        ClearRecommendations();
-
-        OperatingSystem = snapshot.Platform.Edition
-            ?? (snapshot.Platform.Kind == PlatformKind.Windows ? "Windows" : "Unsupported platform");
-        Cpu = snapshot.Cpu.Model ?? "CPU detected";
-        Memory = FormatBytes(snapshot.Memory.TotalPhysicalBytes);
-        Gpu = snapshot.Gpus.FirstOrDefault()?.Name ?? "Unknown";
-
-        var systemDrive = snapshot.SystemDrive;
-        SystemDrive = systemDrive is null
-            ? "Unknown"
-            : $"{FormatBytes(systemDrive.TotalBytes)} system drive";
-        FreeSpace = systemDrive is null
-            ? "Unknown"
-            : $"{FormatBytes(systemDrive.AvailableBytes)} free";
-
-        Architecture = FormatArchitecture(snapshot.Platform.Architecture);
-        WinGet = snapshot.PackageManager.State == CapabilityState.Available
-            ? "Available"
-            : snapshot.PackageManager.State.ToString();
-        WinGetVersion = snapshot.PackageManager.Version?.ToString() ?? "Unknown";
-
-        if (snapshot.Platform.Kind == PlatformKind.Windows)
-        {
-            StatusTitle = "PC ready";
-            StatusMessage = "Essential capabilities detected locally.";
-            RecommendationStatus = "Choose a usage profile to build recommendations.";
-        }
-        else
-        {
-            StatusTitle = "Unsupported platform";
-            StatusMessage = "The current AgenStart MVP supports Windows 10 and 11.";
-        }
-
-        AnalysisDiagnostic = snapshot.Diagnostics.Count == 0
-            ? "No personal files or account information are inspected."
-            : $"Analysis completed with {snapshot.Diagnostics.Count.ToString(CultureInfo.InvariantCulture)} diagnostic note(s). No personal files were inspected.";
-    }
-
-    private static string FormatArchitecture(MachineArchitecture architecture) => architecture switch
-    {
-        MachineArchitecture.X64 => "x64 architecture",
-        MachineArchitecture.X86 => "x86 architecture",
-        MachineArchitecture.Arm64 => "ARM64 architecture",
-        _ => "Unknown architecture"
-    };
-
-    private static string FormatBytes(ulong? bytes)
-    {
-        if (bytes is null)
-        {
-            return "Unknown";
-        }
-
-        return FormatBytes((double)bytes.Value);
-    }
-
-    private static string FormatBytes(long? bytes)
-    {
-        if (bytes is null || bytes < 0)
-        {
-            return "Unknown";
-        }
-
-        return FormatBytes((double)bytes.Value);
-    }
-
-    private static string FormatBytes(double bytes)
-    {
-        const double gib = 1024d * 1024d * 1024d;
-        return $"{Math.Round(bytes / gib):0} GB";
-    }
-
-    private static string BuildInitials(string name)
-    {
-        var words = name
-            .Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
-            .Take(2)
-            .ToArray();
-
-        return words.Length switch
-        {
-            0 => "•",
-            1 => words[0][..1].ToUpperInvariant(),
-            _ => string.Concat(words.Select(word => char.ToUpperInvariant(word[0])))
-        };
+        Installation.Reset();
+        Report.Reset();
     }
 
     private bool SetField<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)
@@ -920,11 +396,6 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged, IDisposable
         }
 
         _disposed = true;
-        if (IsInstalling)
-        {
-            _installationSession?.Cancel();
-        }
-
-        DisposeInstallationSession();
+        Installation.Dispose();
     }
 }

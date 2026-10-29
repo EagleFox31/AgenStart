@@ -1,0 +1,54 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:AgenStart.Desktop.ViewModels"
+             x:Class="AgenStart.Desktop.Views.RecommendationsView"
+             x:DataType="vm:MainWindowViewModel">
+  <StackPanel>
+    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="34">
+      <StackPanel>
+        <TextBlock Classes="eyebrow" Text="RECOMMENDATIONS" Margin="0,0,0,20" />
+        <TextBlock Classes="pageTitle" Text="Recommended for this PC" />
+        <TextBlock Classes="subtitle" Text="{Binding RecommendationStatus}" Margin="0,12,0,0" TextWrapping="Wrap" />
+      </StackPanel>
+      <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10" VerticalAlignment="Bottom" Margin="0,0,0,3">
+        <Border MinWidth="112" Background="#EEF3F1" BorderBrush="#D9DEDC" BorderThickness="1" CornerRadius="10" Padding="14,10"><StackPanel Spacing="2"><TextBlock Text="{Binding RecommendationCount}" Foreground="{StaticResource AgenTealBrush}" FontSize="20" FontWeight="SemiBold" TextAlignment="Center" /><TextBlock Text="recommendations" Foreground="{StaticResource AgenMutedBrush}" FontSize="12" TextAlignment="Center" /></StackPanel></Border>
+        <Border MinWidth="100" Background="#EEF3F1" BorderBrush="#D9DEDC" BorderThickness="1" CornerRadius="10" Padding="14,10"><StackPanel Spacing="2"><TextBlock Text="{Binding SelectedCount}" Foreground="{StaticResource AgenTealBrush}" FontSize="20" FontWeight="SemiBold" TextAlignment="Center" /><TextBlock Text="selected" Foreground="{StaticResource AgenMutedBrush}" FontSize="12" TextAlignment="Center" /></StackPanel></Border>
+        <Border MinWidth="126" Background="#EEF3F1" BorderBrush="#D9DEDC" BorderThickness="1" CornerRadius="10" Padding="14,10"><StackPanel Spacing="2"><TextBlock Text="{Binding AlreadyInstalledCount}" Foreground="{StaticResource AgenTealBrush}" FontSize="20" FontWeight="SemiBold" TextAlignment="Center" /><TextBlock Text="already installed" Foreground="{StaticResource AgenMutedBrush}" FontSize="12" TextAlignment="Center" /></StackPanel></Border>
+      </StackPanel>
+    </Grid>
+    <Border Height="1" Background="{StaticResource AgenDividerBrush}" Margin="0,28,0,16" />
+    <ItemsControl ItemsSource="{Binding Recommendations}">
+      <ItemsControl.ItemTemplate>
+        <DataTemplate x:DataType="vm:RecommendationRowViewModel">
+          <Border Background="#FBFAF6" BorderBrush="{StaticResource AgenDividerBrush}" BorderThickness="1" CornerRadius="10" Padding="16,14" Margin="0,0,0,10">
+            <Grid ColumnDefinitions="22,42,*,190,56" ColumnSpacing="12">
+              <TextBlock Text="{Binding OrderLabel}" FontSize="11" FontWeight="SemiBold" Foreground="{StaticResource AgenMutedBrush}" HorizontalAlignment="Left" VerticalAlignment="Center" />
+              <Border Grid.Column="1" Width="40" Height="40" CornerRadius="10" Background="#EEF3F1" VerticalAlignment="Center" HorizontalAlignment="Right">
+                <Grid>
+                  <Image Source="{Binding IconSource}" IsVisible="{Binding HasLogo}" Width="26" Height="26" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                  <TextBlock Text="{Binding Initials}" IsVisible="{Binding ShowInitials}" Foreground="{StaticResource AgenTealBrush}" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                </Grid>
+              </Border>
+              <StackPanel Grid.Column="2" VerticalAlignment="Center" Spacing="4" Margin="6,0,0,0">
+                <TextBlock Text="{Binding Name}" FontSize="16" FontWeight="SemiBold" />
+                <TextBlock Text="{Binding Reason}" Foreground="{StaticResource AgenMutedBrush}" FontSize="13" TextTrimming="CharacterEllipsis" />
+              </StackPanel>
+              <Border Grid.Column="3" Background="{Binding StatusBackgroundBrush}" CornerRadius="14" Padding="10,5" HorizontalAlignment="Left" VerticalAlignment="Center" ToolTip.Tip="{Binding StatusDetail}">
+                <StackPanel Orientation="Horizontal" Spacing="6">
+                  <TextBlock Text="{Binding StatusIcon}" Foreground="{Binding StatusBrush}" FontSize="13" FontWeight="SemiBold" VerticalAlignment="Center" />
+                  <TextBlock Text="{Binding Status}" Foreground="{Binding StatusBrush}" FontSize="13" FontWeight="SemiBold" VerticalAlignment="Center" />
+                </StackPanel>
+              </Border>
+              <CheckBox Grid.Column="4" IsChecked="{Binding IsSelected, Mode=TwoWay}" IsEnabled="{Binding CanSelect}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+            </Grid>
+          </Border>
+        </DataTemplate>
+      </ItemsControl.ItemTemplate>
+    </ItemsControl>
+    <StackPanel Orientation="Horizontal" Spacing="12" Margin="0,14,0,0">
+      <Button Classes="primary" Content="Confirm" IsEnabled="{Binding CanReview}" Click="ReviewButton_OnClick" />
+      <Button Classes="secondary" Content="Select essentials only" Click="SelectEssentialsButton_OnClick" />
+    </StackPanel>
+    <Border BorderBrush="{StaticResource AgenDividerBrush}" BorderThickness="0,1,0,0" Margin="0,18,0,0" Padding="0,18,0,0"><StackPanel Orientation="Horizontal" Spacing="9"><TextBlock Text="▱" Foreground="{StaticResource AgenTealBrush}" FontSize="18" /><TextBlock Text="Nothing will be installed until you approve the final setup." Foreground="{StaticResource AgenMutedBrush}" FontSize="13" VerticalAlignment="Center" /></StackPanel></Border>
+  </StackPanel>
+</UserControl>
