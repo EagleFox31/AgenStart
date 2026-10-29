@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.5.0](https://github.com/EagleFox31/AgenStart/compare/v0.4.1...v0.5.0) (2026-10-29)
+
+
+### Features
+
+* **catalogue:** add profile registry and expand curated apps ([8c0829c](https://github.com/EagleFox31/AgenStart/commit/8c0829c7e4bfbfaef4f4582f30b45af997cf3080))
+* **site:** generate landing profiles and flow chips from the registry ([1e26894](https://github.com/EagleFox31/AgenStart/commit/1e2689427ef4ae83eac3d597c8e62944511d49f1))
+
+
+### Bug Fixes
+
+* **desktop:** stop usage profile step overlapping other steps ([c12c3dc](https://github.com/EagleFox31/AgenStart/commit/c12c3dc34b2f5b954cc816d2e424f1289c2695f4))
+* **projects:** pin broker-authorized AppFactory runtime ([86e24ac](https://github.com/EagleFox31/AgenStart/commit/86e24acc395c434bbbb99b31b05f770193e2f87b))
+* **projects:** use broker auth name supported by pinned runtime ([94c612a](https://github.com/EagleFox31/AgenStart/commit/94c612a1f0fc895ed7195b7934fa06b2c59f4ed9))
+* **windows:** report Windows 11 for builds &gt;= 22000 ([ceac935](https://github.com/EagleFox31/AgenStart/commit/ceac9357022950e81a24ff18e938db0ef3e1204f))
+
 ## [0.4.1](https://github.com/EagleFox31/AgenStart/compare/v0.4.1...v0.4.1) (2026-09-22)
 
 
