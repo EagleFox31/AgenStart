@@ -62,19 +62,19 @@
     <Grid Grid.Column="1" Background="{StaticResource AgenSurfaceBrush}">
       <ScrollViewer x:Name="MainScrollViewer" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
         <Grid Margin="72,62,72,54">
-          <views:OverviewView x:Name="OverviewControl" IsVisible="{Binding IsOverview}" />
+          <Panel IsVisible="{Binding IsOverview}"><views:OverviewView x:Name="OverviewControl" DataContext="{Binding Overview}" /></Panel>
 
-          <views:YourPcView x:Name="YourPcControl" IsVisible="{Binding IsYourPc}" MaxWidth="1120" HorizontalAlignment="Left" />
+          <Panel IsVisible="{Binding IsYourPc}"><views:YourPcView x:Name="YourPcControl" DataContext="{Binding Overview}" MaxWidth="1120" HorizontalAlignment="Left" /></Panel>
 
           <views:UsageProfilesView x:Name="UsageProfilesControl" IsVisible="{Binding IsUsageProfile}" MaxWidth="1120" HorizontalAlignment="Left" />
 
-          <views:RecommendationsView x:Name="RecommendationsControl" IsVisible="{Binding IsRecommendations}" MaxWidth="1160" HorizontalAlignment="Left" />
+          <Panel IsVisible="{Binding IsRecommendations}"><views:RecommendationsView x:Name="RecommendationsControl" DataContext="{Binding RecommendationsStep}" MaxWidth="1160" HorizontalAlignment="Left" /></Panel>
 
-          <views:ReviewView x:Name="ReviewControl" IsVisible="{Binding IsReview}" MaxWidth="1160" HorizontalAlignment="Left" />
+          <Panel IsVisible="{Binding IsReview}"><views:ReviewView x:Name="ReviewControl" DataContext="{Binding Review}" MaxWidth="1160" HorizontalAlignment="Left" /></Panel>
 
-          <views:InstallationView x:Name="InstallationControl" IsVisible="{Binding IsInstallationStep}" MaxWidth="1160" HorizontalAlignment="Left" />
+          <Panel IsVisible="{Binding IsInstallationStep}"><views:InstallationView x:Name="InstallationControl" DataContext="{Binding Installation}" MaxWidth="1160" HorizontalAlignment="Left" /></Panel>
 
-          <views:ReportView x:Name="ReportControl" IsVisible="{Binding IsReport}" MaxWidth="1160" HorizontalAlignment="Left" />
+          <Panel IsVisible="{Binding IsReport}"><views:ReportView x:Name="ReportControl" DataContext="{Binding Report}" MaxWidth="1160" HorizontalAlignment="Left" /></Panel>
         </Grid>
       </ScrollViewer>
 
@@ -94,11 +94,11 @@
                      Foreground="{StaticResource AgenTextBrush}"
                      VerticalAlignment="Center" />
           <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
-            <TextBlock Text="{Binding RecommendationCount, StringFormat='{}{0} apps'}"
+            <TextBlock Text="{Binding RecommendationsStep.RecommendationCount, StringFormat='{}{0} apps'}"
                        Foreground="{StaticResource AgenMutedBrush}"
                        FontSize="12"
                        VerticalAlignment="Center" />
-            <TextBlock Text="{Binding SelectedCount, StringFormat='{}{0} selected'}"
+            <TextBlock Text="{Binding RecommendationsStep.SelectedCount, StringFormat='{}{0} selected'}"
                        Foreground="{StaticResource AgenTealBrush}"
                        FontSize="12"
                        FontWeight="SemiBold"

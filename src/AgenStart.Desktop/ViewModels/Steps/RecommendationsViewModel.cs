@@ -33,6 +33,7 @@ public sealed class RecommendationsViewModel : StepViewModelBase
         _recommendationEngine = recommendationEngine;
         _catalogueLoader = catalogueLoader;
         _session = session;
+        _session.IsInstallingChanged += (_, _) => OnPropertyChanged(nameof(CanReview));
 
         Recommendations.CollectionChanged += (_, _) =>
         {
@@ -49,7 +50,13 @@ public sealed class RecommendationsViewModel : StepViewModelBase
     public bool HasRecommendations
     {
         get => _hasRecommendations;
-        set => SetField(ref _hasRecommendations, value);
+        set
+        {
+            if (SetField(ref _hasRecommendations, value))
+            {
+                OnPropertyChanged(nameof(CanReview));
+            }
+        }
     }
 
     public bool IsBusy
@@ -67,7 +74,8 @@ public sealed class RecommendationsViewModel : StepViewModelBase
     public int RecommendationCount => Recommendations.Count;
     public int SelectedCount => Recommendations.Count(row => row.IsSelected);
     public int AlreadyInstalledCount => Recommendations.Count(row => row.Disposition == RecommendationDisposition.AlreadyInstalled);
-    public int OptionalCount => Recommendations.Count(row => row.Level == RecommendationLevel.Optional && row.Disposition == RecommendationDisposition.Recommended);
+    public bool CanReview => HasRecommendations && SelectedCount > 0 && !_session.IsInstalling;
+    public int OptionalCount =>Recommendations.Count(row => row.Level == RecommendationLevel.Optional && row.Disposition == RecommendationDisposition.Recommended);
 
     public async Task BuildAsync(
         UserProfile profile,
@@ -166,6 +174,7 @@ public sealed class RecommendationsViewModel : StepViewModelBase
         OnPropertyChanged(nameof(SelectedCount));
         OnPropertyChanged(nameof(AlreadyInstalledCount));
         OnPropertyChanged(nameof(OptionalCount));
+        OnPropertyChanged(nameof(CanReview));
     }
 
     private void RecommendationRow_OnPropertyChanged(object? sender, PropertyChangedEventArgs e)

@@ -66,3 +66,40 @@ sous-VM pour retirer les passe-plats de `MainWindowViewModel`.
   possible plus tard dans un helper si réutilisé.
 - Commits / PR **sans attribution** (règle globale).
 - Git identity locale : `EagleFox31 / lawrynnjennifer@gmail.com`.
+
+## 2026-11-05 15:48 — Passe 9 : sous-vues liées directement aux VM d'étape
+
+Branche `refactor/desktop-bind-step-viewmodels` (depuis `main` à dda5ae1).
+
+## Fait
+- Les 6 vues d'étape ont un `x:DataType` sur leur VM d'étape (`steps:OverviewViewModel` pour
+  Overview et YourPc, puis Recommendations, Review, Installation, Report).
+- `MainWindow.axaml` : chaque vue est emballée dans un `<Panel IsVisible="{Binding IsX}">` et
+  reçoit `DataContext="{Binding <SousVM>}"`. Le Panel évite le piège LL-005 : un `IsVisible` sur
+  l'élément qui porte le nouveau DataContext serait résolu contre le sous-VM.
+- Les règles transverses vont dans les sous-VM, via `ISessionState.IsInstallingChanged` :
+  `RecommendationsViewModel.CanReview` et `ReviewViewModel.CanStartInstallation`.
+  `ReviewViewModel` prend maintenant `ISessionState` dans son constructeur.
+- `InstallationViewModel.HasReport` reflète `ReportViewModel.HasReport` (synchronisé par MWVM),
+  pour le bouton « View report » sans dépendance Installation → Report.
+- `MainWindowViewModel` : suppression de tous les passe-plats (propriétés et méthodes triviales),
+  de `RelayChildPropertyChanged` et du `IsBusy` composite. Il reste la navigation, les sous-VM
+  et l'orchestration transverse (`SelectProfile`, `BuildRecommendationsAsync`, `PrepareReview`,
+  `RemoveFromReview`, `StartInstallationAsync`, rapport en fin d'installation).
+- `MainWindow.axaml.cs` lit `_viewModel.<SousVM>.X` et abonne `ViewModel_OnPropertyChanged`
+  aux sous-VM Review, Installation, Report et RecommendationsStep (les noms de propriétés
+  gérés ne se recouvrent pas).
+
+## Vérification
+- `dotnet build src/AgenStart.Desktop/AgenStart.Desktop.csproj` : 0 erreur, 0 avertissement.
+  Les bindings compilés sont actifs par défaut (`AvaloniaUseCompiledBindingsByDefault`) sans
+  aucune exception, donc chaque binding des vues est vérifié contre son VM d'étape.
+- **Pas fait** : passage visuel de chaque étape avec capture (prévention LL-005). Le pilotage
+  automatique par UI Automation a été refusé dans cette session. À faire à la main : Overview →
+  Analyse → Your PC → Usage profile → Build → Recommendations → Confirm (vérifier qu'une
+  seule étape est visible à la fois et que les boutons Confirm et Start installation
+  s'activent correctement).
+
+## Reste à faire
+1. Vérification visuelle ci-dessus, puis fusionner la PR.
+2. Composition DI dans `App.axaml.cs` (inchangé).

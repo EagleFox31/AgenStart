@@ -10,6 +10,7 @@ namespace AgenStart.Desktop.ViewModels.Steps;
 public sealed class InstallationViewModel : StepViewModelBase, IDisposable
 {
     private readonly ISessionState _session;
+    private bool _hasReport;
     private readonly IUiDispatcher _dispatcher;
     private readonly IInstalledSoftwareInventoryProvider _softwareInventory;
     private readonly SoftwareStateResolver _softwareStateResolver;
@@ -71,6 +72,16 @@ public sealed class InstallationViewModel : StepViewModelBase, IDisposable
     public void SetIsInstalling(bool value) => IsInstalling = value;
     public void SetStatus(string value) => InstallationStatus = value;
     public void SetCurrentName(string value) => CurrentInstallationName = value;
+
+    // Mirrors ReportViewModel.HasReport so the step view can offer "View report"
+    // without this view model depending on the report step.
+    public bool HasReport
+    {
+        get => _hasReport;
+        private set => SetField(ref _hasReport, value);
+    }
+
+    public void SetHasReport(bool value) => HasReport = value;
 
     public void Reset()
     {

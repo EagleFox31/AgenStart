@@ -3,7 +3,8 @@
              xmlns:vm="using:AgenStart.Desktop.ViewModels"
              xmlns:views="using:AgenStart.Desktop.Views"
              x:Class="AgenStart.Desktop.Views.ReviewView"
-             x:DataType="vm:MainWindowViewModel">
+             xmlns:steps="using:AgenStart.Desktop.ViewModels.Steps"
+             x:DataType="steps:ReviewViewModel">
   <StackPanel>
     <Grid ColumnDefinitions="*,Auto" ColumnSpacing="32">
       <StackPanel>
