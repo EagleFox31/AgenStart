@@ -65,3 +65,12 @@ Entry format: context, symptom, root cause, fix, prevention, generalized lesson.
 - **Fix:** scope the self-context to the control's root element (`RootGrid.DataContext = this`).
 - **Prevention:** never assign `DataContext` on a UserControl itself; assign it on an inner root. Check every step at startup with a window capture after any view extraction.
 - **Generalized lesson:** a control's own `DataContext` belongs to its parent; a view that needs a private context sets it one level down.
+
+## LL-006 — Pushed without running the CI formatting gate
+
+- **Context:** passe 9 (PR #117) was verified locally with `dotnet build` and the test suite before push.
+- **Symptom:** CI `build` failed on `Verify formatting` (`WHITESPACE` in `RecommendationsViewModel.cs`, `=>Recommendations`).
+- **Root cause:** the local check list stopped at build + tests; `desktop-ui-build.yml` also runs `dotnet format --verify-no-changes`, which neither of them covers.
+- **Fix:** inserted the missing space; `dotnet format ... --verify-no-changes` exits 0.
+- **Prevention:** before any push touching `src/AgenStart.Desktop`, run the same command as CI: `dotnet format src/AgenStart.Desktop/AgenStart.Desktop.csproj --verify-no-changes`.
+- **Generalized lesson:** local verification must replay every CI gate for the touched surface, not only build and tests.

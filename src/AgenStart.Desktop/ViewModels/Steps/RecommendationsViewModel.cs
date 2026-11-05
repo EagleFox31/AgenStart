@@ -75,7 +75,7 @@ public sealed class RecommendationsViewModel : StepViewModelBase
     public int SelectedCount => Recommendations.Count(row => row.IsSelected);
     public int AlreadyInstalledCount => Recommendations.Count(row => row.Disposition == RecommendationDisposition.AlreadyInstalled);
     public bool CanReview => HasRecommendations && SelectedCount > 0 && !_session.IsInstalling;
-    public int OptionalCount =>Recommendations.Count(row => row.Level == RecommendationLevel.Optional && row.Disposition == RecommendationDisposition.Recommended);
+    public int OptionalCount => Recommendations.Count(row => row.Level == RecommendationLevel.Optional && row.Disposition == RecommendationDisposition.Recommended);
 
     public async Task BuildAsync(
         UserProfile profile,
