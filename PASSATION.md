@@ -103,3 +103,11 @@ Branche `refactor/desktop-bind-step-viewmodels` (depuis `main` à dda5ae1).
 ## Reste à faire
 1. Vérification visuelle ci-dessus, puis fusionner la PR.
 2. Composition DI dans `App.axaml.cs` (inchangé).
+
+## 2026-11-05 16:06 — PR #117 : correctif CI + passe de fumée + refonte thème décidée
+
+- **CI #117** : l'étape `Verify formatting` échouait (espace manquante, `RecommendationsViewModel.cs`). Corrigé dans 98c1f09, avec la leçon LL-006 (lancer `dotnet format ... --verify-no-changes` avant chaque push). La CI repasse.
+- **Passe de fumée** : script UIA hors dépôt (scratchpad de session, `smoke.ps1`), lancé par l'utilisateur dans son terminal, parce que le mode auto bloque son exécution par l'agent. Il ne clique jamais sur « Start installation ». Premier essai : Overview seul visible, puis plantage `E_UNEXPECTED` (élément UIA périmé), corrigé par une nouvelle recherche des éléments. Second essai en cours.
+- **Décision (utilisateur)** : après la fusion de #117, refonte du thème d'AgenStart dans le style de `claude-account-manager` (jetons Apple). Clair uniquement, sans sombre. Trois thèmes au choix : Apple, Google (Material 3) et AgenStart (actuel).
+  - Plan : jetons dans des `ThemeDictionaries` ; 184 `StaticResource` (12 vues) passent en `DynamicResource` ; sélecteur dans Settings (aujourd'hui désactivé) ; préférence enregistrée localement.
+- **Prochaine étape** : résultat de la passe de fumée → CI verte → fusion de #117 par l'utilisateur → branche depuis `main` pour le thème.
