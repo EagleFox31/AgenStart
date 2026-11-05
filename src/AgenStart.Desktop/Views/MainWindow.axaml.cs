@@ -43,6 +43,7 @@ public sealed partial class MainWindow : Window
         _viewModel = new MainWindowViewModel();
 
         InitializeComponent();
+        FitToPrimaryScreen();
         DataContext = _viewModel;
 
         YourPcButton.IsEnabled = false;
@@ -93,6 +94,21 @@ public sealed partial class MainWindow : Window
         {
             _viewModel.ShowStep(step);
         }
+    }
+
+    // The design size (1600x1000) is larger than many laptop work areas; without a
+    // clamp, CenterScreen still lets the window spill onto a neighbouring monitor.
+    private void FitToPrimaryScreen()
+    {
+        if (Screens.Primary is not { } screen)
+        {
+            return;
+        }
+
+        const double margin = 0.92;
+        var area = screen.WorkingArea.Size.ToSize(screen.Scaling);
+        Width = Math.Max(MinWidth, Math.Min(Width, area.Width * margin));
+        Height = Math.Max(MinHeight, Math.Min(Height, area.Height * margin));
     }
 
     private async void OnOpened(object? sender, EventArgs e)

@@ -11,7 +11,8 @@
         Width="1600"
         Height="1000"
         MinWidth="1100"
-        MinHeight="720">
+        MinHeight="720"
+        WindowStartupLocation="CenterScreen">
   <Grid ColumnDefinitions="280,*">
     <Border Grid.Column="0" Background="{StaticResource AgenNavBrush}">
       <Grid RowDefinitions="Auto,*,Auto" Margin="0,30,0,24">
