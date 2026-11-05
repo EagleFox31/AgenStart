@@ -46,6 +46,15 @@ public sealed class ReviewViewModel : StepViewModelBase
     public int ReviewAlreadyInstalledCount => ReviewItems.Count(row => row.AlreadyInstalled);
     public int ReviewTotalCount => ReviewItems.Count;
 
+    protected override void OnLanguageChanged()
+    {
+        base.OnLanguageChanged();
+        foreach (var row in ReviewItems)
+        {
+            row.RefreshText();
+        }
+    }
+
     public bool CanStartInstallation =>
         HasReview && ReviewInstallCount > 0 && AgreementsAccepted && !_session.IsInstalling;
 

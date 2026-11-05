@@ -1,6 +1,11 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
   <!-- English: always merged by App.axaml and the fallback for every other language. Every key exists here. -->
+  <x:String x:Key="Common.NotAnalysed">Not analysed</x:String>
+  <x:String x:Key="Common.Unknown">Unknown</x:String>
+
+  <x:String x:Key="Export.DialogTitle">Export AgenStart setup</x:String>
+
   <x:String x:Key="History.ApplicationSummary.One">{0} application processed</x:String>
   <x:String x:Key="History.ApplicationSummary.Other">{0} applications processed</x:String>
   <x:String x:Key="History.Applications">Applications</x:String>
@@ -29,6 +34,27 @@
   <x:String x:Key="History.Sessions">Sessions</x:String>
   <x:String x:Key="History.SetupHistory">Setup history</x:String>
 
+  <x:String x:Key="Import.AlreadySatisfied.One">Imported setup already satisfied: {0} application is installed on this PC.</x:String>
+  <x:String x:Key="Import.AlreadySatisfied.Other">Imported setup already satisfied: all {0} applications are installed on this PC.</x:String>
+  <x:String x:Key="Import.AnalysisFailed">AgenStart could not analyse this PC, so the imported setup was not applied.</x:String>
+  <x:String x:Key="Import.CannotApply">{0} cannot be safely applied on this PC: {1}.</x:String>
+  <x:String x:Key="Import.CheckingPc">Checking this PC locally before comparing the imported setup…</x:String>
+  <x:String x:Key="Import.CompareFailed">AgenStart could not compare the imported setup with the current catalogue and inventory.</x:String>
+  <x:String x:Key="Import.Comparing">Comparing the imported setup with this PC…</x:String>
+  <x:String x:Key="Import.DialogTitle">Import AgenStart setup</x:String>
+  <x:String x:Key="Import.Imported.One">Imported {0} application. Review the exact changes before installation.</x:String>
+  <x:String x:Key="Import.Imported.Other">Imported {0} applications. Review the exact changes before installation.</x:String>
+  <x:String x:Key="Import.Invalid">This setup file is invalid.</x:String>
+  <x:String x:Key="Import.NoChanges">The imported setup produced no installable changes after comparison.</x:String>
+  <x:String x:Key="Import.NoMapping">{0} has no trusted Windows package mapping in the current catalogue.</x:String>
+  <x:String x:Key="Import.NoPermission">AgenStart does not have permission to read the selected setup file.</x:String>
+  <x:String x:Key="Import.NotAvailableForProfile">{0} is not available for the imported {1} profile in this catalogue.</x:String>
+  <x:String x:Key="Import.ReadFailed">AgenStart could not read the selected setup file.</x:String>
+  <x:String x:Key="Import.TooLarge">This setup file is larger than AgenStart's 256 KB safety limit.</x:String>
+  <x:String x:Key="Import.Unavailable">File import is not available on this platform.</x:String>
+  <x:String x:Key="Import.UnknownApplication">'{0}' is not present in the current trusted AgenStart catalogue.</x:String>
+  <x:String x:Key="Import.UnsupportedProfile">Profile '{0}' is not supported by this AgenStart build.</x:String>
+
   <x:String x:Key="Install.CancelInstallation">Cancel installation</x:String>
   <x:String x:Key="Install.Completed">completed</x:String>
   <x:String x:Key="Install.CurrentTask">Current task</x:String>
@@ -40,10 +66,52 @@
   <x:String x:Key="Install.SettingUpYourPC">Setting up your PC</x:String>
   <x:String x:Key="Install.ViewReport">View report</x:String>
 
+  <x:String x:Key="Installation.Current.Complete">Queue complete</x:String>
+  <x:String x:Key="Installation.Current.Preparing">Preparing installation queue</x:String>
+  <x:String x:Key="Installation.Current.Waiting">Waiting to start</x:String>
+  <x:String x:Key="Installation.Item.AlreadyInstalled">Already installed</x:String>
+  <x:String x:Key="Installation.Item.Cancelled">Cancelled</x:String>
+  <x:String x:Key="Installation.Item.DownloadProgress">{0} / {1}</x:String>
+  <x:String x:Key="Installation.Item.Downloaded">{0} downloaded</x:String>
+  <x:String x:Key="Installation.Item.Downloading">Downloading</x:String>
+  <x:String x:Key="Installation.Item.DownloadingTrusted">Downloading through trusted provider</x:String>
+  <x:String x:Key="Installation.Item.Failed">Failed</x:String>
+  <x:String x:Key="Installation.Item.Installing">Installing</x:String>
+  <x:String x:Key="Installation.Item.Ready">Ready</x:String>
+  <x:String x:Key="Installation.Item.Resolving">Resolving</x:String>
+  <x:String x:Key="Installation.Item.Skipped">Skipped</x:String>
+  <x:String x:Key="Installation.Item.Verified">Verified</x:String>
+  <x:String x:Key="Installation.Item.VerifiedRestart">Verified · restart required</x:String>
+  <x:String x:Key="Installation.Item.Verifying">Verifying</x:String>
+  <x:String x:Key="Installation.Item.Waiting">Waiting</x:String>
+  <x:String x:Key="Installation.Status.CancellationRequested">Cancellation requested. Waiting for the provider operation to stop safely.</x:String>
+  <x:String x:Key="Installation.Status.Cancelled">Installation cancelled.</x:String>
+  <x:String x:Key="Installation.Status.CancelledReview">Installation cancelled. Review the final state below.</x:String>
+  <x:String x:Key="Installation.Status.Cancelling">Cancelling safely after the current provider operation…</x:String>
+  <x:String x:Key="Installation.Status.CompletedIssues">Installation completed with issues. Failed items can be retried when available.</x:String>
+  <x:String x:Key="Installation.Status.CompletedSuccess">Installation completed successfully.</x:String>
+  <x:String x:Key="Installation.Status.Installing">AgenStart is installing only the applications you approved.</x:String>
+  <x:String x:Key="Installation.Status.NoMapping">{0} has no trusted Windows package mapping and cannot be installed.</x:String>
+  <x:String x:Key="Installation.Status.QueueCancelled">Installation queue cancelled.</x:String>
+  <x:String x:Key="Installation.Status.QueueCompleted">Installation queue completed.</x:String>
+  <x:String x:Key="Installation.Status.Ready">Ready to install the approved setup.</x:String>
+  <x:String x:Key="Installation.Status.Retrying">Retrying {0}.</x:String>
+  <x:String x:Key="Installation.Status.Started">Installation started. Packages are resolved through trusted provider identities.</x:String>
+
   <x:String x:Key="Overview.AReadOnlyScanOf">A read-only scan of the hardware and package tools.</x:String>
   <x:String x:Key="Overview.AgenStartInspectsThisMachineLocally">AgenStart inspects this machine locally — Windows, CPU, memory, graphics, storage and WinGet — before recommending anything. Your personal files are never read.</x:String>
   <x:String x:Key="Overview.AnalyseThisPC">Analyse this PC</x:String>
+  <x:String x:Key="Overview.Architecture.Arm64">ARM64 architecture</x:String>
+  <x:String x:Key="Overview.Architecture.Unknown">Unknown architecture</x:String>
+  <x:String x:Key="Overview.Architecture.X64">x64 architecture</x:String>
+  <x:String x:Key="Overview.Architecture.X86">x86 architecture</x:String>
   <x:String x:Key="Overview.ConfirmAndInstall">Confirm and install</x:String>
+  <x:String x:Key="Overview.CpuDetected">CPU detected</x:String>
+  <x:String x:Key="Overview.Diagnostic.Notes.One">Analysis completed with {0} diagnostic note. No personal files were inspected.</x:String>
+  <x:String x:Key="Overview.Diagnostic.Notes.Other">Analysis completed with {0} diagnostic notes. No personal files were inspected.</x:String>
+  <x:String x:Key="Overview.Diagnostic.Privacy">No personal files or account information are inspected.</x:String>
+  <x:String x:Key="Overview.Diagnostic.Retry">Try the analysis again. No machine changes were made.</x:String>
+  <x:String x:Key="Overview.FreeSpace">{0} free</x:String>
   <x:String x:Key="Overview.HowItWorks">How it works</x:String>
   <x:String x:Key="Overview.ImportASetup">Import a setup</x:String>
   <x:String x:Key="Overview.KeepTheEssentialsAddThe">Keep the essentials, add the gems you want.</x:String>
@@ -53,8 +121,53 @@
   <x:String x:Key="Overview.Overview">Overview</x:String>
   <x:String x:Key="Overview.PickOneOrMoreUsage">Pick one or more usage profiles.</x:String>
   <x:String x:Key="Overview.ReviewTheRecommendations">Review the recommendations</x:String>
+  <x:String x:Key="Overview.Status.Analysing.Message">Reading essential system capabilities locally…</x:String>
+  <x:String x:Key="Overview.Status.Analysing.Title">Analysing this PC</x:String>
+  <x:String x:Key="Overview.Status.Cancelled.Message">No changes were made to this PC.</x:String>
+  <x:String x:Key="Overview.Status.Cancelled.Title">Analysis cancelled</x:String>
+  <x:String x:Key="Overview.Status.Failed.Message">AgenStart could not complete the local machine analysis.</x:String>
+  <x:String x:Key="Overview.Status.Failed.Title">Analysis unavailable</x:String>
+  <x:String x:Key="Overview.Status.PcReady.Message">Essential capabilities detected locally.</x:String>
+  <x:String x:Key="Overview.Status.PcReady.Title">PC ready</x:String>
+  <x:String x:Key="Overview.Status.Ready.Message">AgenStart can inspect the essential capabilities of this PC locally.</x:String>
+  <x:String x:Key="Overview.Status.Ready.Title">Ready for analysis</x:String>
+  <x:String x:Key="Overview.Status.Unsupported.Message">The current AgenStart MVP supports Windows 10 and 11.</x:String>
+  <x:String x:Key="Overview.Status.Unsupported.Title">Unsupported platform</x:String>
+  <x:String x:Key="Overview.SystemDriveSize">{0} system drive</x:String>
   <x:String x:Key="Overview.TellUsHowYouUse">Tell us how you use it</x:String>
+  <x:String x:Key="Overview.UnsupportedPlatform">Unsupported platform</x:String>
+  <x:String x:Key="Overview.WinGetAvailable">Available</x:String>
   <x:String x:Key="Overview.YouStayInControlOf">You stay in control of what gets installed.</x:String>
+
+  <x:String x:Key="Recommendations.Badge.Attention">Attention</x:String>
+  <x:String x:Key="Recommendations.Badge.Gem">Gem</x:String>
+  <x:String x:Key="Recommendations.Badge.Installed">Installed</x:String>
+  <x:String x:Key="Recommendations.Badge.NeedsReview">Needs review</x:String>
+  <x:String x:Key="Recommendations.Badge.Recommended">Recommended</x:String>
+  <x:String x:Key="Recommendations.Detail.CompatibilityUnknown">AgenStart could not confirm compatibility for this PC.</x:String>
+  <x:String x:Key="Recommendations.Detail.Conflict">This app conflicts with another recommendation or selection.</x:String>
+  <x:String x:Key="Recommendations.Detail.Incompatible">This app is not compatible with this PC.</x:String>
+  <x:String x:Key="Recommendations.Detail.InventoryUnknown">Installed-app inventory is incomplete, so this status may need review.</x:String>
+  <x:String x:Key="Recommendations.Detail.Unavailable">No trusted install source is currently available for this app.</x:String>
+  <x:String x:Key="Recommendations.Progress.ApplyingRules">Applying compatibility and profile rules…</x:String>
+  <x:String x:Key="Recommendations.Progress.Failed">AgenStart could not build recommendations.</x:String>
+  <x:String x:Key="Recommendations.Progress.Finalizing">Finalizing recommendation list…</x:String>
+  <x:String x:Key="Recommendations.Progress.LoadingCatalogue">Loading trusted software catalogue…</x:String>
+  <x:String x:Key="Recommendations.Progress.ReadingApps">Reading installed applications…</x:String>
+  <x:String x:Key="Recommendations.Progress.Ready">Recommendations ready</x:String>
+  <x:String x:Key="Recommendations.Progress.Scanning">Scanning…</x:String>
+  <x:String x:Key="Recommendations.Progress.Starting">Starting recommendation analysis…</x:String>
+  <x:String x:Key="Recommendations.Progress.Stopped">Stopped</x:String>
+  <x:String x:Key="Recommendations.Status.BasedOn">Based on your {0} profile, machine capabilities and software already installed.</x:String>
+  <x:String x:Key="Recommendations.Status.Building">Checking installed software and building recommendations…</x:String>
+  <x:String x:Key="Recommendations.Status.Cancelled">Recommendation analysis cancelled.</x:String>
+  <x:String x:Key="Recommendations.Status.ChooseProfile">Choose a usage profile to build recommendations.</x:String>
+  <x:String x:Key="Recommendations.Status.Failed">AgenStart could not build recommendations from the local catalogue and inventory.</x:String>
+  <x:String x:Key="Recommendations.Status.ProfileChanged">Profile changed. Build recommendations when you're ready.</x:String>
+  <x:String x:Key="Recommendations.Summary.Apps.One">{0} app</x:String>
+  <x:String x:Key="Recommendations.Summary.Apps.Other">{0} apps</x:String>
+  <x:String x:Key="Recommendations.Summary.Selected.One">{0} selected</x:String>
+  <x:String x:Key="Recommendations.Summary.Selected.Other">{0} selected</x:String>
 
   <x:String x:Key="Recs.AlreadyInstalled">already installed</x:String>
   <x:String x:Key="Recs.CardView">Card view</x:String>
@@ -76,6 +189,18 @@
   <x:String x:Key="Report.Installed">installed</x:String>
   <x:String x:Key="Report.OneOrMoreInstalledApplications">One or more installed applications require Windows to restart before all features become available.</x:String>
   <x:String x:Key="Report.RestartRecommended">Restart recommended</x:String>
+  <x:String x:Key="Report.Result.AlreadyInstalled">Already installed</x:String>
+  <x:String x:Key="Report.Result.Cancelled">Cancelled</x:String>
+  <x:String x:Key="Report.Result.Failed">Failed</x:String>
+  <x:String x:Key="Report.Result.Installed">Installed</x:String>
+  <x:String x:Key="Report.Result.Skipped">Skipped</x:String>
+  <x:String x:Key="Report.Status.Cancelled">The approved setup was cancelled before every item completed.</x:String>
+  <x:String x:Key="Report.Status.Finished">AgenStart finished the approved setup.</x:String>
+  <x:String x:Key="Report.Status.Issues">AgenStart finished the approved setup with issues.</x:String>
+  <x:String x:Key="Report.Status.None">No installation report yet.</x:String>
+  <x:String x:Key="Report.Title.Cancelled">Setup cancelled</x:String>
+  <x:String x:Key="Report.Title.Issues">Setup finished with issues</x:String>
+  <x:String x:Key="Report.Title.Ready">Your PC is ready</x:String>
 
   <x:String x:Key="Review.AgenStartWillInstallOnlyThe">AgenStart will install only the applications shown above.</x:String>
   <x:String x:Key="Review.AllowWinGetToAcceptRequired">Allow WinGet to accept required package and source agreements for this approved setup.</x:String>
@@ -87,6 +212,8 @@
   <x:String x:Key="Review.OnlyTheApplicationsListedAbove">Only the applications listed above are eligible for installation.</x:String>
   <x:String x:Key="Review.Remove">Remove</x:String>
   <x:String x:Key="Review.StartInstallation">Start installation</x:String>
+  <x:String x:Key="Review.Status.AlreadyInstalled">Already installed</x:String>
+  <x:String x:Key="Review.Status.WillInstall">Will install</x:String>
   <x:String x:Key="Review.ToInstall">to install</x:String>
 
   <x:String x:Key="Settings.About">About</x:String>
@@ -127,6 +254,8 @@
   <x:String x:Key="Settings.ThinkSharpBuildWhatMatters">Think sharp. Build what matters.</x:String>
   <x:String x:Key="Settings.ThisRemovesSetupHistoryAnd">This removes setup history and resets local preferences. Installed applications are not touched.</x:String>
 
+  <x:String x:Key="Setup.DisplayName">{0} setup</x:String>
+
   <x:String x:Key="Shell.ByAgenStudio">by AgenStudio</x:String>
   <x:String x:Key="Shell.Confirm">Confirm</x:String>
   <x:String x:Key="Shell.General">General</x:String>
@@ -140,6 +269,11 @@
   <x:String x:Key="Shell.Setup">Setup</x:String>
   <x:String x:Key="Shell.UsageProfile">Usage profile</x:String>
   <x:String x:Key="Shell.YourPC">Your PC</x:String>
+
+  <x:String x:Key="Units.Bytes">{0} B</x:String>
+  <x:String x:Key="Units.Gigabytes">{0:0.#} GB</x:String>
+  <x:String x:Key="Units.Kilobytes">{0:0.0} KB</x:String>
+  <x:String x:Key="Units.Megabytes">{0:0.0} MB</x:String>
 
   <x:String x:Key="Usage.AgenStartCombinesTheseProfilesDeduplicates">AgenStart combines these profiles, deduplicates apps and keeps gems optional by default.</x:String>
   <x:String x:Key="Usage.Back">Back</x:String>

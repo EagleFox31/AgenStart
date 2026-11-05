@@ -349,7 +349,7 @@ public sealed partial class MainWindow : Window
         await SaveSetupProfileAsync(
             ToProfileId(_viewModel.UsageProfile.SelectedProfile),
             applications,
-            $"{_viewModel.UsageProfile.SelectedProfileName} setup");
+            Ui.Format("Setup.DisplayName", _viewModel.UsageProfile.SelectedProfileName));
     }
 
     private void InstallUtilityViews()
@@ -409,11 +409,11 @@ public sealed partial class MainWindow : Window
         }
         catch (IOException)
         {
-            SetImportStatus("AgenStart could not read the selected setup file.");
+            SetImportStatus(Ui["Import.ReadFailed"]);
         }
         catch (UnauthorizedAccessException)
         {
-            SetImportStatus("AgenStart does not have permission to read the selected setup file.");
+            SetImportStatus(Ui["Import.NoPermission"]);
         }
     }
 
@@ -421,13 +421,13 @@ public sealed partial class MainWindow : Window
     {
         if (!StorageProvider.CanOpen)
         {
-            SetImportStatus("File import is not available on this platform.");
+            SetImportStatus(Ui["Import.Unavailable"]);
             return;
         }
 
         var files = await StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
         {
-            Title = "Import AgenStart setup",
+            Title = Ui["Import.DialogTitle"],
             AllowMultiple = false,
             FileTypeFilter = [SetupProfileFileType]
         });
@@ -440,7 +440,7 @@ public sealed partial class MainWindow : Window
         await using var stream = await file.OpenReadAsync();
         if (stream.CanSeek && stream.Length > SetupProfileSerializer.MaxDocumentBytes)
         {
-            SetImportStatus("This setup file is larger than AgenStart's 256 KB safety limit.");
+            SetImportStatus(Ui["Import.TooLarge"]);
             return;
         }
 
@@ -449,14 +449,15 @@ public sealed partial class MainWindow : Window
         var readResult = _setupProfileSerializer.Deserialize(json);
         if (!readResult.IsValid || readResult.Profile is null)
         {
-            SetImportStatus(readResult.Errors.FirstOrDefault()?.Message ?? "This setup file is invalid.");
+            // Validation messages come from the setup-profile reader and stay in English.
+            SetImportStatus(readResult.Errors.FirstOrDefault()?.Message ?? Ui["Import.Invalid"]);
             return;
         }
 
         var profileDocument = readResult.Profile;
         if (!TryParseProfileId(profileDocument.ProfileId, out var profile))
         {
-            SetImportStatus($"Profile '{profileDocument.ProfileId}' is not supported by this AgenStart build.");
+            SetImportStatus(Ui.Format("Import.UnsupportedProfile", profileDocument.ProfileId));
             return;
         }
 
@@ -466,17 +467,17 @@ public sealed partial class MainWindow : Window
             .FirstOrDefault(application => !catalogueById.ContainsKey(application.ApplicationId));
         if (unknownApplication is not null)
         {
-            SetImportStatus($"'{unknownApplication.ApplicationId}' is not present in the current trusted AgenStart catalogue.");
+            SetImportStatus(Ui.Format("Import.UnknownApplication", unknownApplication.ApplicationId));
             return;
         }
 
         if (!_viewModel.Overview.HasSnapshot)
         {
-            SetImportStatus("Checking this PC locally before comparing the imported setup…");
+            SetImportStatus(Ui["Import.CheckingPc"]);
             await _viewModel.Overview.AnalyzeAsync(_lifetimeCancellation.Token);
             if (!_viewModel.Overview.HasSnapshot)
             {
-                SetImportStatus("AgenStart could not analyse this PC, so the imported setup was not applied.");
+                SetImportStatus(Ui["Import.AnalysisFailed"]);
                 return;
             }
 
@@ -484,11 +485,11 @@ public sealed partial class MainWindow : Window
         }
 
         _viewModel.SelectProfile(profile);
-        SetImportStatus("Comparing the imported setup with this PC…");
+        SetImportStatus(Ui["Import.Comparing"]);
         await _viewModel.BuildRecommendationsAsync(_lifetimeCancellation.Token);
         if (!_viewModel.RecommendationsStep.HasRecommendations)
         {
-            SetImportStatus("AgenStart could not compare the imported setup with the current catalogue and inventory.");
+            SetImportStatus(Ui["Import.CompareFailed"]);
             return;
         }
 
@@ -498,20 +499,20 @@ public sealed partial class MainWindow : Window
         {
             if (!generatedRows.TryGetValue(desiredApplication.ApplicationId, out var row))
             {
-                SetImportStatus($"{catalogueById[desiredApplication.ApplicationId].Name} is not available for the imported {profileDocument.ProfileId} profile in this catalogue.");
+                SetImportStatus(Ui.Format("Import.NotAvailableForProfile", catalogueById[desiredApplication.ApplicationId].Name, profileDocument.ProfileId));
                 return;
             }
 
             if (row.Disposition is not (RecommendationDisposition.Recommended or RecommendationDisposition.AlreadyInstalled))
             {
-                SetImportStatus($"{row.Name} cannot be safely applied on this PC: {row.Status}.");
+                SetImportStatus(Ui.Format("Import.CannotApply", row.Name, row.Status));
                 return;
             }
 
             if (row.Disposition == RecommendationDisposition.Recommended &&
                 catalogueById[row.ApplicationId].WindowsPackage is null)
             {
-                SetImportStatus($"{row.Name} has no trusted Windows package mapping in the current catalogue.");
+                SetImportStatus(Ui.Format("Import.NoMapping", row.Name));
                 return;
             }
 
@@ -540,17 +541,17 @@ public sealed partial class MainWindow : Window
         RecommendationsButton.IsEnabled = true;
         if (_viewModel.RecommendationsStep.SelectedCount == 0)
         {
-            SetImportStatus($"Imported setup already satisfied: all {profileDocument.Applications.Count} application(s) are installed on this PC.");
+            SetImportStatus(Ui.Plural("Import.AlreadySatisfied", profileDocument.Applications.Count));
             return;
         }
 
         if (!_viewModel.PrepareReview())
         {
-            SetImportStatus("The imported setup produced no installable changes after comparison.");
+            SetImportStatus(Ui["Import.NoChanges"]);
             return;
         }
 
-        SetImportStatus($"Imported {profileDocument.Applications.Count} application(s). Review the exact changes before installation.");
+        SetImportStatus(Ui.Plural("Import.Imported", profileDocument.Applications.Count));
         ReviewButton.IsEnabled = true;
         _viewModel.ShowStep(AppStep.Review);
     }
@@ -569,7 +570,7 @@ public sealed partial class MainWindow : Window
         await SaveSetupProfileAsync(
             ToProfileId(profile),
             applications,
-            $"{selected.Profile} setup");
+            Ui.Format("Setup.DisplayName", selected.Profile));
     }
 
     private async Task SaveSetupProfileAsync(
@@ -602,7 +603,7 @@ public sealed partial class MainWindow : Window
 
         var file = await StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
         {
-            Title = "Export AgenStart setup",
+            Title = Ui["Export.DialogTitle"],
             SuggestedFileName = $"AgenStart-{profileId}-{DateTime.Now:yyyyMMdd}.agenstart.json",
             DefaultExtension = "json",
             FileTypeChoices = [SetupProfileFileType],
@@ -657,6 +658,8 @@ public sealed partial class MainWindow : Window
     }
 
     private static string ToProfileId(UserProfile profile) => profile.ToString().ToLowerInvariant();
+
+    private static ILocalizer Ui => AvaloniaLocalizationService.Shared;
 
     private void SetImportStatus(string message) => OverviewControl.SetImportStatus(message);
 

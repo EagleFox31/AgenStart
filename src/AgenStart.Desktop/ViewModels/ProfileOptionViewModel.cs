@@ -1,10 +1,10 @@
-using System.ComponentModel;
 using AgenStart.Core.Catalogue;
 using AgenStart.Core.Profiles;
+using AgenStart.Desktop.Services;
 
 namespace AgenStart.Desktop.ViewModels;
 
-public sealed class ProfileOptionViewModel : INotifyPropertyChanged
+public sealed class ProfileOptionViewModel : LocalizedRow
 {
     private bool _isSelected;
 
@@ -14,11 +14,7 @@ public sealed class ProfileOptionViewModel : INotifyPropertyChanged
         Profile = profile;
         Flag = flag;
         Id = profile.Id.Value;
-        Label = profile.Label.En;
-        Description = profile.Description?.En ?? string.Empty;
     }
-
-    public event PropertyChangedEventHandler? PropertyChanged;
 
     public ProfileDefinition Profile { get; }
 
@@ -26,9 +22,9 @@ public sealed class ProfileOptionViewModel : INotifyPropertyChanged
 
     public string Id { get; }
 
-    public string Label { get; }
+    public string Label => Profile.Label.Get(Text.Language);
 
-    public string Description { get; }
+    public string Description => Profile.Description?.Get(Text.Language) ?? string.Empty;
 
     public bool IsSelected
     {
@@ -41,7 +37,7 @@ public sealed class ProfileOptionViewModel : INotifyPropertyChanged
             }
 
             _isSelected = value;
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsSelected)));
+            OnPropertyChanged(nameof(IsSelected));
         }
     }
 }

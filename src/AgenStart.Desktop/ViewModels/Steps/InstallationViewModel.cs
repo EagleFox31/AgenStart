@@ -18,14 +18,16 @@ public sealed class InstallationViewModel : StepViewModelBase, IDisposable
     private InstallationOrchestrator? _installationOrchestrator;
     private InstallationSession? _installationSession;
     private bool _isInstalling;
-    private string _installationStatus = "Ready to install the approved setup.";
-    private string _currentInstallationName = "Waiting to start";
+    private UiText _installationStatus = UiText.Key("Installation.Status.Ready");
+    private UiText _currentInstallationName = UiText.Key("Installation.Current.Waiting");
 
     public InstallationViewModel(
         ISessionState session,
         IUiDispatcher dispatcher,
         IInstalledSoftwareInventoryProvider softwareInventory,
-        SoftwareStateResolver softwareStateResolver)
+        SoftwareStateResolver softwareStateResolver,
+        ILocalizer? text = null)
+        : base(text)
     {
         _session = session;
         _dispatcher = dispatcher;
@@ -52,17 +54,9 @@ public sealed class InstallationViewModel : StepViewModelBase, IDisposable
         }
     }
 
-    public string InstallationStatus
-    {
-        get => _installationStatus;
-        private set => SetField(ref _installationStatus, value);
-    }
+    public string InstallationStatus => _installationStatus.Resolve(Text);
 
-    public string CurrentInstallationName
-    {
-        get => _currentInstallationName;
-        private set => SetField(ref _currentInstallationName, value);
-    }
+    public string CurrentInstallationName => _currentInstallationName.Resolve(Text);
 
     public int InstallationCompletedCount => InstallationItems.Count(row => row.State == InstallationQueueItemState.Succeeded);
     public int InstallationFailedCount => InstallationItems.Count(row => row.State == InstallationQueueItemState.Failed);
@@ -70,8 +64,8 @@ public sealed class InstallationViewModel : StepViewModelBase, IDisposable
     public int InstallationTotalCount => InstallationItems.Count;
 
     public void SetIsInstalling(bool value) => IsInstalling = value;
-    public void SetStatus(string value) => InstallationStatus = value;
-    public void SetCurrentName(string value) => CurrentInstallationName = value;
+    public void SetStatus(UiText value) => SetText(ref _installationStatus, value, nameof(InstallationStatus));
+    public void SetCurrentName(UiText value) => SetText(ref _currentInstallationName, value, nameof(CurrentInstallationName));
 
     // Mirrors ReportViewModel.HasReport so the step view can offer "View report"
     // without this view model depending on the report step.
@@ -92,8 +86,8 @@ public sealed class InstallationViewModel : StepViewModelBase, IDisposable
 
         DisposeSession();
         InstallationItems.Clear();
-        InstallationStatus = "Ready to install the approved setup.";
-        CurrentInstallationName = "Waiting to start";
+        SetStatus(UiText.Key("Installation.Status.Ready"));
+        SetCurrentName(UiText.Key("Installation.Current.Waiting"));
         RaiseSummary();
     }
 
@@ -134,8 +128,8 @@ public sealed class InstallationViewModel : StepViewModelBase, IDisposable
         }
 
         IsInstalling = true;
-        InstallationStatus = "AgenStart is installing only the applications you approved.";
-        CurrentInstallationName = "Preparing installation queue";
+        SetStatus(UiText.Key("Installation.Status.Installing"));
+        SetCurrentName(UiText.Key("Installation.Current.Preparing"));
         RaiseSummary();
 
         try
@@ -148,7 +142,7 @@ public sealed class InstallationViewModel : StepViewModelBase, IDisposable
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
         {
-            InstallationStatus = "Installation cancelled.";
+            SetStatus(UiText.Key("Installation.Status.Cancelled"));
             if (_installationSession is not null)
             {
                 ApplyReport(_installationSession.CreateReport());
@@ -169,7 +163,7 @@ public sealed class InstallationViewModel : StepViewModelBase, IDisposable
             return;
         }
 
-        InstallationStatus = "Cancelling safely after the current provider operation…";
+        SetStatus(UiText.Key("Installation.Status.Cancelling"));
         _installationSession?.Cancel();
     }
 
@@ -188,8 +182,8 @@ public sealed class InstallationViewModel : StepViewModelBase, IDisposable
         }
 
         IsInstalling = true;
-        InstallationStatus = $"Retrying {row.Name}.";
-        CurrentInstallationName = row.Name;
+        SetStatus(UiText.Key("Installation.Status.Retrying", row.Name));
+        SetCurrentName(UiText.Raw(row.Name));
 
         try
         {
@@ -214,6 +208,15 @@ public sealed class InstallationViewModel : StepViewModelBase, IDisposable
         OnPropertyChanged(nameof(InstallationTotalCount));
     }
 
+    protected override void OnLanguageChanged()
+    {
+        base.OnLanguageChanged();
+        foreach (var row in InstallationItems)
+        {
+            row.RefreshText();
+        }
+    }
+
     public void Dispose()
     {
         if (IsInstalling)
@@ -236,12 +239,12 @@ public sealed class InstallationViewModel : StepViewModelBase, IDisposable
         _session.SetLastReport(report);
         Completed?.Invoke(this, report);
 
-        InstallationStatus = report.State == InstallationSessionState.Cancelled
-            ? "Installation cancelled. Review the final state below."
+        SetStatus(UiText.Key(report.State == InstallationSessionState.Cancelled
+            ? "Installation.Status.CancelledReview"
             : report.FailedCount > 0
-                ? "Installation completed with issues. Failed items can be retried when available."
-                : "Installation completed successfully.";
-        CurrentInstallationName = "Queue complete";
+                ? "Installation.Status.CompletedIssues"
+                : "Installation.Status.CompletedSuccess"));
+        SetCurrentName(UiText.Key("Installation.Current.Complete"));
         RaiseSummary();
     }
 
@@ -259,18 +262,19 @@ public sealed class InstallationViewModel : StepViewModelBase, IDisposable
             row?.Apply(progress.Item);
             if (progress.Item.State == InstallationQueueItemState.Running)
             {
-                CurrentInstallationName = row?.Name ?? progress.Item.ApplicationId;
+                SetCurrentName(UiText.Raw(row?.Name ?? progress.Item.ApplicationId));
             }
         }
 
-        InstallationStatus = progress.Code switch
+        // Known session codes are translated; other progress messages come from the engine as-is.
+        SetStatus(progress.Code switch
         {
-            "session.started" => "Installation started. Packages are resolved through trusted provider identities.",
-            "session.completed" => "Installation queue completed.",
-            "session.cancelled" => "Installation queue cancelled.",
-            "session.cancellation-requested" => "Cancellation requested. Waiting for the provider operation to stop safely.",
-            _ => progress.Message
-        };
+            "session.started" => UiText.Key("Installation.Status.Started"),
+            "session.completed" => UiText.Key("Installation.Status.QueueCompleted"),
+            "session.cancelled" => UiText.Key("Installation.Status.QueueCancelled"),
+            "session.cancellation-requested" => UiText.Key("Installation.Status.CancellationRequested"),
+            _ => UiText.Raw(progress.Message)
+        });
         RaiseSummary();
     }
 

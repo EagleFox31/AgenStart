@@ -123,11 +123,11 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged, IDisposable
         }
 
         ClearRecommendations();
-        RecommendationsStep.RecommendationStatus = "Profile changed. Build recommendations when you're ready.";
+        RecommendationsStep.SetStatus(UiText.Key("Recommendations.Status.ProfileChanged"));
     }
 
     public Task BuildRecommendationsAsync(CancellationToken cancellationToken = default) =>
-        RecommendationsStep.BuildAsync(UsageProfile.SelectedProfile, UsageProfile.SelectedProfileName, cancellationToken);
+        RecommendationsStep.BuildAsync(UsageProfile.SelectedProfile, UsageProfile.SelectedProfileNameText, cancellationToken);
 
     public bool PrepareReview()
     {
@@ -191,7 +191,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged, IDisposable
         {
             if (!catalogueById.TryGetValue(row.ApplicationId, out var application) || application.WindowsPackage is null)
             {
-                Installation.SetStatus($"{row.Name} has no trusted Windows package mapping and cannot be installed.");
+                Installation.SetStatus(UiText.Key("Installation.Status.NoMapping", row.Name));
                 return false;
             }
 

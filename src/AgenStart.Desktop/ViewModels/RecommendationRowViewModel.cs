@@ -1,12 +1,12 @@
-using System.ComponentModel;
 using Avalonia.Media;
 using AgenStart.Core.Catalogue;
 using AgenStart.Desktop.Icons;
+using AgenStart.Desktop.Services;
 using AgenStart.Recommendations;
 
 namespace AgenStart.Desktop.ViewModels;
 
-public sealed class RecommendationRowViewModel : INotifyPropertyChanged
+public sealed class RecommendationRowViewModel : LocalizedRow
 {
     // Keep badge hues intentionally far apart so users can scan the list without
     // having to read every label: blue = recommendation, green = installed,
@@ -23,6 +23,8 @@ public sealed class RecommendationRowViewModel : INotifyPropertyChanged
     private static readonly IBrush SoftReviewBrush = new SolidColorBrush(Color.Parse("#FFF4D6"));
     private static readonly IBrush TransparentBrush = new SolidColorBrush(Colors.Transparent);
 
+    private readonly string? _statusKey;
+    private readonly string? _statusDetailKey;
     private bool _isSelected;
     private string _orderLabel = string.Empty;
 
@@ -47,15 +49,13 @@ public sealed class RecommendationRowViewModel : INotifyPropertyChanged
         Disposition = decision.Disposition;
         CanSelect = decision.Disposition == RecommendationDisposition.Recommended;
         _isSelected = CanSelect && decision.SelectedByDefault;
-        Status = BuildStatus(decision);
+        _statusKey = BuildStatusKey(decision);
         StatusIcon = BuildStatusIcon(decision);
-        StatusDetail = BuildStatusDetail(decision);
+        _statusDetailKey = BuildStatusDetailKey(decision);
         (StatusBrush, StatusBackgroundBrush) = BuildStatusBrushes(decision);
         Initials = BuildInitials(decision.ApplicationName);
         IconSource = AppIconService.Shared.Resolve(decision.ApplicationId);
     }
-
-    public event PropertyChangedEventHandler? PropertyChanged;
 
     public string ApplicationId { get; }
     public string Name { get; }
@@ -69,9 +69,9 @@ public sealed class RecommendationRowViewModel : INotifyPropertyChanged
     public RecommendationLevel Level { get; }
     public RecommendationDisposition Disposition { get; }
     public bool CanSelect { get; }
-    public string Status { get; }
+    public string Status => _statusKey is null ? string.Empty : Text[_statusKey];
     public string StatusIcon { get; }
-    public string? StatusDetail { get; }
+    public string? StatusDetail => _statusDetailKey is null ? null : Text[_statusDetailKey];
     public IBrush StatusBrush { get; }
     public IBrush StatusBackgroundBrush { get; }
 
@@ -86,7 +86,7 @@ public sealed class RecommendationRowViewModel : INotifyPropertyChanged
             }
 
             _orderLabel = value;
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(OrderLabel)));
+            OnPropertyChanged(nameof(OrderLabel));
         }
     }
 
@@ -101,36 +101,34 @@ public sealed class RecommendationRowViewModel : INotifyPropertyChanged
             }
 
             _isSelected = value;
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsSelected)));
+            OnPropertyChanged(nameof(IsSelected));
         }
     }
 
-    private static string BuildStatus(RecommendationDecision decision)
+    private static string? BuildStatusKey(RecommendationDecision decision)
     {
         if (decision.Disposition == RecommendationDisposition.AlreadyInstalled)
         {
-            return "Installed";
+            return "Recommendations.Badge.Installed";
         }
 
         if (IsUnverifiedState(decision.Disposition))
         {
-            return "Needs review";
+            return "Recommendations.Badge.NeedsReview";
         }
 
         if (IsAttentionState(decision.Disposition))
         {
-            return "Attention";
+            return "Recommendations.Badge.Attention";
         }
 
         return decision.Level switch
         {
-            RecommendationLevel.Recommended => "Recommended",
-            RecommendationLevel.Gem => "Gem",
+            RecommendationLevel.Recommended => "Recommendations.Badge.Recommended",
+            RecommendationLevel.Gem => "Recommendations.Badge.Gem",
             // Essential is communicated by ranking + default selection.
             // Optional is intentionally unbadged to keep the list quiet.
-            RecommendationLevel.Essential => string.Empty,
-            RecommendationLevel.Optional => string.Empty,
-            _ => string.Empty
+            _ => null
         };
     }
 
@@ -154,13 +152,13 @@ public sealed class RecommendationRowViewModel : INotifyPropertyChanged
         };
     }
 
-    private static string? BuildStatusDetail(RecommendationDecision decision) => decision.Disposition switch
+    private static string? BuildStatusDetailKey(RecommendationDecision decision) => decision.Disposition switch
     {
-        RecommendationDisposition.Incompatible => "This app is not compatible with this PC.",
-        RecommendationDisposition.CompatibilityUnknown => "AgenStart could not confirm compatibility for this PC.",
-        RecommendationDisposition.InventoryUnknown => "Installed-app inventory is incomplete, so this status may need review.",
-        RecommendationDisposition.Conflict => "This app conflicts with another recommendation or selection.",
-        RecommendationDisposition.Unavailable => "No trusted install source is currently available for this app.",
+        RecommendationDisposition.Incompatible => "Recommendations.Detail.Incompatible",
+        RecommendationDisposition.CompatibilityUnknown => "Recommendations.Detail.CompatibilityUnknown",
+        RecommendationDisposition.InventoryUnknown => "Recommendations.Detail.InventoryUnknown",
+        RecommendationDisposition.Conflict => "Recommendations.Detail.Conflict",
+        RecommendationDisposition.Unavailable => "Recommendations.Detail.Unavailable",
         _ => null
     };
 

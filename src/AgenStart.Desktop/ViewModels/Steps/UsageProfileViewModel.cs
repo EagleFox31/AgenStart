@@ -1,10 +1,19 @@
 using AgenStart.Core.Catalogue;
+using AgenStart.Core.Profiles;
+using AgenStart.Desktop.Services;
 
 namespace AgenStart.Desktop.ViewModels.Steps;
 
 public sealed class UsageProfileViewModel : StepViewModelBase
 {
+    private readonly ProfileRegistry _profiles;
     private UserProfile _selectedProfile = UserProfile.Development;
+
+    public UsageProfileViewModel(ProfileRegistry? profiles = null, ILocalizer? text = null)
+        : base(text)
+    {
+        _profiles = profiles ?? ProfileRegistry.Default;
+    }
 
     public UserProfile SelectedProfile
     {
@@ -21,17 +30,31 @@ public sealed class UsageProfileViewModel : StepViewModelBase
         }
     }
 
-    public string SelectedProfileName => SelectedProfile.ToString();
+    /// <summary>Profile labels come from the profile registry (en/fr), not from the UI dictionaries.</summary>
+    public string SelectedProfileName => SelectedProfileNameText.Resolve(Text);
 
-    public string SelectedProfileDescription => SelectedProfile switch
+    /// <summary>The selected profile names, re-resolved in the current language each time they are read.</summary>
+    public UiText SelectedProfileNameText
     {
-        UserProfile.Personal => "Everyday apps, browsing, communication and media.",
-        UserProfile.Development => "Code, databases, terminals and developer tools.",
-        UserProfile.Business => "Office, communication, productivity and collaboration.",
-        UserProfile.Creation => "Design, media, content and creative workflows.",
-        UserProfile.Training => "Learning, course tools and guided study setups.",
-        _ => string.Empty
-    };
+        get
+        {
+            var selected = _profiles.Expand(SelectedProfile);
+            return UiText.Dynamic(text => selected.Count == 0
+                ? SelectedProfile.ToString()
+                : string.Join(" + ", selected.Select(profile => profile.Label.Get(text.Language))));
+        }
+    }
+
+    public string SelectedProfileDescription
+    {
+        get
+        {
+            var selected = _profiles.Expand(SelectedProfile);
+            return selected.Count == 1
+                ? selected[0].Description?.Get(Text.Language) ?? string.Empty
+                : string.Empty;
+        }
+    }
 
     public bool TrySelect(UserProfile profile)
     {

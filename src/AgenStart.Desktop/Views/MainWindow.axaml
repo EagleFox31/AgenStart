@@ -77,11 +77,11 @@
                      Foreground="{DynamicResource AgenTextBrush}"
                      VerticalAlignment="Center" />
           <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
-            <TextBlock Text="{Binding RecommendationsStep.RecommendationCount, StringFormat='{}{0} apps'}"
+            <TextBlock Text="{Binding RecommendationsStep.RecommendationCountText}"
                        Foreground="{DynamicResource AgenMutedBrush}"
                        FontSize="12.5"
                        VerticalAlignment="Center" />
-            <TextBlock Text="{Binding RecommendationsStep.SelectedCount, StringFormat='{}{0} selected'}"
+            <TextBlock Text="{Binding RecommendationsStep.SelectedCountText}"
                        Foreground="{DynamicResource AgenAccentBrush}"
                        FontSize="12.5"
                        FontWeight="SemiBold"
