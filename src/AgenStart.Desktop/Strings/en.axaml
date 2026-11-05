@@ -98,6 +98,28 @@
   <x:String x:Key="Installation.Status.Retrying">Retrying {0}.</x:String>
   <x:String x:Key="Installation.Status.Started">Installation started. Packages are resolved through trusted provider identities.</x:String>
 
+  <x:String x:Key="Onboarding.Back">Back</x:String>
+  <x:String x:Key="Onboarding.BackToUsage">Change my uses</x:String>
+  <x:String x:Key="Onboarding.BuildFailed.Detail">Try again, or change your uses.</x:String>
+  <x:String x:Key="Onboarding.BuildFailed.Title">Recommendations could not be prepared</x:String>
+  <x:String x:Key="Onboarding.Building.Title">Preparing your recommendations</x:String>
+  <x:String x:Key="Onboarding.Continue">Continue</x:String>
+  <x:String x:Key="Onboarding.GoHome">Go to Home</x:String>
+  <x:String x:Key="Onboarding.Language.Subtitle">You can change it later in Settings.</x:String>
+  <x:String x:Key="Onboarding.Language.Title">Choose your language</x:String>
+  <x:String x:Key="Onboarding.Retry">Retry</x:String>
+  <x:String x:Key="Onboarding.ScanFailed.Detail">AgenStart could not read this PC. Try again, or go to Home and start the analysis later.</x:String>
+  <x:String x:Key="Onboarding.ScanFailed.Title">The analysis did not finish</x:String>
+  <x:String x:Key="Onboarding.Scanning.Detail">Reading the hardware, Windows version and installed applications…</x:String>
+  <x:String x:Key="Onboarding.Scanning.Title">Analysing your PC</x:String>
+  <x:String x:Key="Onboarding.Splash.Tagline">Set up this PC, step by step.</x:String>
+  <x:String x:Key="Onboarding.Step">Step</x:String>
+  <x:String x:Key="Onboarding.Usage.Analyse">Analyse my PC</x:String>
+  <x:String x:Key="Onboarding.Usage.ScanNote">Next, AgenStart reads what is installed on this PC. Nothing is installed or changed.</x:String>
+  <x:String x:Key="Onboarding.Usage.Subtitle">Select one or more uses. AgenStart combines them into one setup.</x:String>
+  <x:String x:Key="Onboarding.Usage.Title">How will you use this PC?</x:String>
+  <x:String x:Key="Onboarding.Working.ReadOnly">Read-only: nothing is installed until you confirm.</x:String>
+
   <x:String x:Key="Overview.AReadOnlyScanOf">A read-only scan of the hardware and package tools.</x:String>
   <x:String x:Key="Overview.AgenStartInspectsThisMachineLocally">AgenStart inspects this machine locally — Windows, CPU, memory, graphics, storage and WinGet — before recommending anything. Your personal files are never read.</x:String>
   <x:String x:Key="Overview.AnalyseThisPC">Analyse this PC</x:String>

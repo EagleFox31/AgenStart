@@ -98,6 +98,28 @@
   <x:String x:Key="Installation.Status.Retrying">Nouvelle tentative pour {0}.</x:String>
   <x:String x:Key="Installation.Status.Started">Installation démarrée. Les paquets sont résolus via des identités de fournisseur de confiance.</x:String>
 
+  <x:String x:Key="Onboarding.Back">Retour</x:String>
+  <x:String x:Key="Onboarding.BackToUsage">Modifier mes usages</x:String>
+  <x:String x:Key="Onboarding.BuildFailed.Detail">Réessayez, ou modifiez vos usages.</x:String>
+  <x:String x:Key="Onboarding.BuildFailed.Title">Les recommandations n'ont pas pu être préparées</x:String>
+  <x:String x:Key="Onboarding.Building.Title">Préparation de vos recommandations</x:String>
+  <x:String x:Key="Onboarding.Continue">Continuer</x:String>
+  <x:String x:Key="Onboarding.GoHome">Aller à l'accueil</x:String>
+  <x:String x:Key="Onboarding.Language.Subtitle">Vous pourrez la changer plus tard dans les Paramètres.</x:String>
+  <x:String x:Key="Onboarding.Language.Title">Choisissez votre langue</x:String>
+  <x:String x:Key="Onboarding.Retry">Réessayer</x:String>
+  <x:String x:Key="Onboarding.ScanFailed.Detail">AgenStart n'a pas pu lire ce PC. Réessayez, ou allez à l'accueil et relancez l'analyse plus tard.</x:String>
+  <x:String x:Key="Onboarding.ScanFailed.Title">L'analyse n'a pas abouti</x:String>
+  <x:String x:Key="Onboarding.Scanning.Detail">Lecture du matériel, de la version de Windows et des applications installées…</x:String>
+  <x:String x:Key="Onboarding.Scanning.Title">Analyse de votre PC</x:String>
+  <x:String x:Key="Onboarding.Splash.Tagline">Préparez ce PC, étape par étape.</x:String>
+  <x:String x:Key="Onboarding.Step">Étape</x:String>
+  <x:String x:Key="Onboarding.Usage.Analyse">Analyser mon PC</x:String>
+  <x:String x:Key="Onboarding.Usage.ScanNote">AgenStart va ensuite lire ce qui est installé sur ce PC. Rien n'est installé ni modifié.</x:String>
+  <x:String x:Key="Onboarding.Usage.Subtitle">Sélectionnez un ou plusieurs usages. AgenStart les combine en une seule configuration.</x:String>
+  <x:String x:Key="Onboarding.Usage.Title">Comment allez-vous utiliser ce PC ?</x:String>
+  <x:String x:Key="Onboarding.Working.ReadOnly">Lecture seule : rien n'est installé avant votre confirmation.</x:String>
+
   <x:String x:Key="Overview.AReadOnlyScanOf">Une analyse en lecture seule du matériel et des outils de paquets.</x:String>
   <x:String x:Key="Overview.AgenStartInspectsThisMachineLocally">AgenStart examine cette machine localement — Windows, processeur, mémoire, carte graphique, stockage et WinGet — avant de recommander quoi que ce soit. Vos fichiers personnels ne sont jamais lus.</x:String>
   <x:String x:Key="Overview.AnalyseThisPC">Analyser ce PC</x:String>

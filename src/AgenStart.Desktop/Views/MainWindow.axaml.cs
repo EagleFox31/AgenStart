@@ -13,6 +13,7 @@ using AgenStart.Core.Recommendations;
 using AgenStart.Desktop.LocalData;
 using AgenStart.Desktop.Services;
 using AgenStart.Desktop.ViewModels;
+using AgenStart.Desktop.ViewModels.Onboarding;
 using AgenStart.Desktop.ViewModels.Steps;
 using AgenStart.Recommendations;
 
@@ -28,6 +29,8 @@ public sealed partial class MainWindow : Window
     private readonly CancellationTokenSource _lifetimeCancellation = new();
     private readonly MainWindowViewModel _viewModel;
     private readonly LocalExperienceViewModel _localExperience;
+    private readonly OnboardingViewModel _onboarding;
+    private bool _firstRun;
     private readonly SetupProfileSerializer _setupProfileSerializer = new();
     private readonly SoftwareCatalogueLoader _catalogueLoader = new();
     private Guid? _currentHistoryEntryId;
@@ -46,11 +49,17 @@ public sealed partial class MainWindow : Window
             localization: AvaloniaLocalizationService.Shared,
             initialSettings: initialSettings);
         _viewModel = new MainWindowViewModel();
+        _onboarding = new OnboardingViewModel(_localExperience, new ShellOnboardingActions(_viewModel))
+        {
+            Lifetime = _lifetimeCancellation.Token
+        };
 
         InitializeComponent();
         FitToPrimaryScreen();
         DataContext = _viewModel;
 
+        OnboardingControl.DataContext = _onboarding;
+        _onboarding.Completed += Onboarding_OnCompleted;
         HistoryControl.DataContext = _localExperience;
         SettingsControl.DataContext = _localExperience;
         HistoryControl.ExportSetupRequested += HistoryView_OnExportSetupRequested;
@@ -110,10 +119,37 @@ public sealed partial class MainWindow : Window
         try
         {
             await _localExperience.InitializeAsync(_lifetimeCancellation.Token);
-            if (_localExperience.AnalyzeOnStartup && !_viewModel.Overview.HasSnapshot)
-            {
-                await _viewModel.Overview.AnalyzeAsync(_lifetimeCancellation.Token);
-            }
+            _firstRun = !_localExperience.OnboardingCompleted;
+            await _onboarding.StartAsync(_firstRun);
+        }
+        catch (OperationCanceledException) when (_lifetimeCancellation.IsCancellationRequested)
+        {
+        }
+    }
+
+    private async void Onboarding_OnCompleted(object? sender, OnboardingOutcome outcome)
+    {
+        OnboardingControl.IsVisible = false;
+        ShellRoot.IsVisible = true;
+        UsageProfilesControl.SetSelection(_viewModel.UsageProfile.SelectedProfile);
+
+        if (outcome == OnboardingOutcome.Recommendations)
+        {
+            _viewModel.ShowStep(AppStep.Recommendations);
+            UpdateRecommendationStickyHeader();
+            return;
+        }
+
+        _viewModel.ShowStep(AppStep.Overview);
+        // A first run only ends on Home after a failed scan: do not scan again behind the user's back.
+        if (_firstRun || !_localExperience.AnalyzeOnStartup || _viewModel.Overview.HasSnapshot)
+        {
+            return;
+        }
+
+        try
+        {
+            await _viewModel.Overview.AnalyzeAsync(_lifetimeCancellation.Token);
         }
         catch (OperationCanceledException) when (_lifetimeCancellation.IsCancellationRequested)
         {
@@ -157,6 +193,7 @@ public sealed partial class MainWindow : Window
         _multiProfileProgressSubscription = RecommendationPipelineDiagnostics.Subscribe(stage =>
             Dispatcher.UIThread.Post(() =>
             {
+                _onboarding.UpdateBuildProgress(stage);
                 if (_viewModel.RecommendationsStep.IsBusy && UsageProfilesControl.IsVisible)
                 {
                     UsageProfilesControl.UpdateRecommendationProgress(stage);
@@ -599,6 +636,7 @@ public sealed partial class MainWindow : Window
         _viewModel.Report.PropertyChanged -= ViewModel_OnPropertyChanged;
         _viewModel.RecommendationsStep.PropertyChanged -= ViewModel_OnPropertyChanged;
         HistoryControl.ExportSetupRequested -= HistoryView_OnExportSetupRequested;
+        _onboarding.Completed -= Onboarding_OnCompleted;
         OverviewControl.AnalyzeRequested -= OverviewView_OnAnalyzeRequested;
         OverviewControl.ImportSetupRequested -= OverviewView_OnImportSetupRequested;
         ReportControl.FinishRequested -= ReportView_OnFinishRequested;

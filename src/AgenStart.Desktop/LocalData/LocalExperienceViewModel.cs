@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using AgenStart.Desktop.Services;
+using AgenStart.Desktop.ViewModels.Onboarding;
 
 namespace AgenStart.Desktop.LocalData;
 
@@ -46,7 +47,7 @@ public sealed record LanguageOption(string Code, string NativeName)
     public override string ToString() => NativeName;
 }
 
-public sealed class LocalExperienceViewModel : INotifyPropertyChanged
+public sealed class LocalExperienceViewModel : INotifyPropertyChanged, IOnboardingSettings
 {
     private readonly LocalExperienceStore _store;
     private readonly IThemeService? _themes;
