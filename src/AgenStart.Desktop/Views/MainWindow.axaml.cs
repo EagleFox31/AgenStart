@@ -344,10 +344,9 @@ public sealed partial class MainWindow : Window
 
     private void InstallUtilityViews()
     {
-        if (OverviewControl.Parent is not Grid pageHost)
-        {
-            return;
-        }
+        // Resolve the host by name: step views are wrapped in panels, so walking up
+        // from a step view no longer reaches the page grid.
+        var pageHost = PageHost;
 
         _historyView = new HistoryView
         {

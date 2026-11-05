@@ -62,7 +62,7 @@
 
     <Grid Grid.Column="1" Background="{DynamicResource AgenSurfaceBrush}">
       <ScrollViewer x:Name="MainScrollViewer" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-        <Grid Margin="72,62,72,54">
+        <Grid x:Name="PageHost" Margin="72,62,72,54">
           <Panel IsVisible="{Binding IsOverview}"><views:OverviewView x:Name="OverviewControl" DataContext="{Binding Overview}" /></Panel>
 
           <Panel IsVisible="{Binding IsYourPc}"><views:YourPcView x:Name="YourPcControl" DataContext="{Binding Overview}" MaxWidth="1120" HorizontalAlignment="Left" /></Panel>
