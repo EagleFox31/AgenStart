@@ -14,11 +14,11 @@
         MinHeight="720"
         WindowStartupLocation="CenterScreen">
   <Grid ColumnDefinitions="280,*">
-    <Border Grid.Column="0" Background="{StaticResource AgenNavBrush}">
+    <Border Grid.Column="0" Background="{DynamicResource AgenNavBrush}">
       <Grid RowDefinitions="Auto,*,Auto" Margin="0,30,0,24">
         <StackPanel Margin="30,0,20,28">
-          <TextBlock Text="AgenStart" Foreground="White" FontSize="29" FontWeight="SemiBold" />
-          <TextBlock Text="BY AGENSTUDIO" Foreground="{StaticResource AgenAccentBrush}" FontSize="11" FontWeight="SemiBold" LetterSpacing="2.4" Margin="0,5,0,0" />
+          <TextBlock Text="AgenStart" Foreground="{DynamicResource AgenBrandTextBrush}" FontSize="29" FontWeight="SemiBold" />
+          <TextBlock Text="BY AGENSTUDIO" Foreground="{DynamicResource AgenBrandSubtitleBrush}" FontSize="11" FontWeight="SemiBold" LetterSpacing="2.4" Margin="0,5,0,0" />
         </StackPanel>
 
         <StackPanel Grid.Row="1" Spacing="1">
@@ -53,14 +53,14 @@
         </StackPanel>
 
         <StackPanel Grid.Row="2" Spacing="1">
-          <Border Height="1" Background="#35505A" Margin="20,0,20,14" />
+          <Border Height="1" Background="{DynamicResource AgenNavDividerBrush}" Margin="20,0,20,14" />
           <Button Classes="nav" AutomationProperties.Name="History" IsEnabled="False"><StackPanel Orientation="Horizontal" Spacing="0"><TextBlock Classes="navIcon" Text="↶" /><TextBlock Classes="navLabel" Text="History" /></StackPanel></Button>
           <Button Classes="nav" AutomationProperties.Name="Settings" IsEnabled="False"><StackPanel Orientation="Horizontal" Spacing="0"><TextBlock Classes="navIcon" Text="⚙" /><TextBlock Classes="navLabel" Text="Settings" /></StackPanel></Button>
         </StackPanel>
       </Grid>
     </Border>
 
-    <Grid Grid.Column="1" Background="{StaticResource AgenSurfaceBrush}">
+    <Grid Grid.Column="1" Background="{DynamicResource AgenSurfaceBrush}">
       <ScrollViewer x:Name="MainScrollViewer" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
         <Grid Margin="72,62,72,54">
           <Panel IsVisible="{Binding IsOverview}"><views:OverviewView x:Name="OverviewControl" DataContext="{Binding Overview}" /></Panel>
@@ -81,8 +81,8 @@
 
       <Border x:Name="RecommendationStickyHeader"
               IsVisible="False"
-              Background="{StaticResource AgenRecommendationStickyBrush}"
-              BorderBrush="{StaticResource AgenDividerBrush}"
+              Background="{DynamicResource AgenRecommendationStickyBrush}"
+              BorderBrush="{DynamicResource AgenDividerBrush}"
               BorderThickness="0,0,0,1"
               Padding="0,13"
               Margin="72,0,72,0"
@@ -92,15 +92,15 @@
           <TextBlock Text="Recommended for this PC"
                      FontSize="20"
                      FontWeight="SemiBold"
-                     Foreground="{StaticResource AgenTextBrush}"
+                     Foreground="{DynamicResource AgenTextBrush}"
                      VerticalAlignment="Center" />
           <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
             <TextBlock Text="{Binding RecommendationsStep.RecommendationCount, StringFormat='{}{0} apps'}"
-                       Foreground="{StaticResource AgenMutedBrush}"
+                       Foreground="{DynamicResource AgenMutedBrush}"
                        FontSize="12"
                        VerticalAlignment="Center" />
             <TextBlock Text="{Binding RecommendationsStep.SelectedCount, StringFormat='{}{0} selected'}"
-                       Foreground="{StaticResource AgenTealBrush}"
+                       Foreground="{DynamicResource AgenTealBrush}"
                        FontSize="12"
                        FontWeight="SemiBold"
                        VerticalAlignment="Center" />

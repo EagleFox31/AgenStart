@@ -78,7 +78,8 @@ public sealed partial class UsageProfilesView : UserControl
                 SetRecommendationProgress(25, "Loading trusted software catalogue…");
                 break;
             case RecommendationPipelineStage.ReadingInstalledApplications:
-                SetRecommendationProgress(50, "Reading installed applications…");
+                // The inventory scan has no measurable progress: show activity, not a fake percentage.
+                SetRecommendationProgress(50, "Reading installed applications…", indeterminate: true);
                 break;
             case RecommendationPipelineStage.EvaluatingRecommendationRules:
                 SetRecommendationProgress(75, "Applying compatibility and profile rules…");
@@ -99,6 +100,7 @@ public sealed partial class UsageProfilesView : UserControl
     public void FailRecommendationBuild(string? message)
     {
         RecommendationProgressHost.IsVisible = true;
+        RecommendationProgressBar.IsIndeterminate = false;
         RecommendationProgressBar.Value = 0;
         RecommendationProgressPercent.Text = "Stopped";
         RecommendationProgressLabel.Text = string.IsNullOrWhiteSpace(message)
@@ -166,12 +168,13 @@ public sealed partial class UsageProfilesView : UserControl
             Options.Where(option => option.IsSelected).Select(option => option.Label));
     }
 
-    private void SetRecommendationProgress(double value, string label)
+    private void SetRecommendationProgress(double value, string label, bool indeterminate = false)
     {
         var bounded = Math.Clamp(value, 0, 100);
         RecommendationProgressHost.IsVisible = true;
+        RecommendationProgressBar.IsIndeterminate = indeterminate;
         RecommendationProgressBar.Value = bounded;
-        RecommendationProgressPercent.Text = $"{bounded:0}%";
+        RecommendationProgressPercent.Text = indeterminate ? "Scanning…" : $"{bounded:0}%";
         RecommendationProgressLabel.Text = label;
     }
 }

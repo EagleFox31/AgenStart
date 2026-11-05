@@ -13,6 +13,7 @@ using AgenStart.Catalogue;
 using AgenStart.Core.Catalogue;
 using AgenStart.Core.Recommendations;
 using AgenStart.Desktop.LocalData;
+using AgenStart.Desktop.Services;
 using AgenStart.Desktop.ViewModels;
 using AgenStart.Desktop.ViewModels.Steps;
 using AgenStart.Recommendations;
@@ -28,7 +29,7 @@ public sealed partial class MainWindow : Window
 
     private readonly CancellationTokenSource _lifetimeCancellation = new();
     private readonly MainWindowViewModel _viewModel;
-    private readonly LocalExperienceViewModel _localExperience = new();
+    private readonly LocalExperienceViewModel _localExperience = new(themes: AvaloniaThemeService.Shared);
     private readonly SetupProfileSerializer _setupProfileSerializer = new();
     private readonly SoftwareCatalogueLoader _catalogueLoader = new();
     private HistoryView? _historyView;

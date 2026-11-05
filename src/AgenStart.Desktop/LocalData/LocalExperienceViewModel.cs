@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using AgenStart.Desktop.Services;
 
 namespace AgenStart.Desktop.LocalData;
 
@@ -36,15 +37,18 @@ public sealed class SetupHistoryRowViewModel
 public sealed class LocalExperienceViewModel : INotifyPropertyChanged
 {
     private readonly LocalExperienceStore _store;
+    private readonly IThemeService? _themes;
+    private string _theme = AppThemes.Default;
     private SetupHistoryRowViewModel? _selectedHistory;
     private bool _analyzeOnStartup = true;
     private bool _clearConfirmationVisible;
     private string _storageStatus = "Stored only on this device.";
     private bool _initialized;
 
-    public LocalExperienceViewModel(LocalExperienceStore? store = null)
+    public LocalExperienceViewModel(LocalExperienceStore? store = null, IThemeService? themes = null)
     {
         _store = store ?? new LocalExperienceStore();
+        _themes = themes;
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;
@@ -77,6 +81,23 @@ public sealed class LocalExperienceViewModel : INotifyPropertyChanged
         }
     }
 
+    public IReadOnlyList<string> ThemeOptions => AppThemes.All;
+
+    public string Theme
+    {
+        get => _theme;
+        set
+        {
+            if (!SetField(ref _theme, AppThemes.Normalize(value)))
+            {
+                return;
+            }
+
+            _themes?.Apply(_theme);
+            _ = SaveSettingsSafeAsync();
+        }
+    }
+
     public bool ClearConfirmationVisible
     {
         get => _clearConfirmationVisible;
@@ -104,6 +125,7 @@ public sealed class LocalExperienceViewModel : INotifyPropertyChanged
         var settings = await _store.LoadSettingsAsync(cancellationToken).ConfigureAwait(true);
         _analyzeOnStartup = settings.AnalyzeOnStartup;
         OnPropertyChanged(nameof(AnalyzeOnStartup));
+        SetThemeWithoutSaving(settings.Theme);
         await ReloadHistoryAsync(cancellationToken).ConfigureAwait(true);
         _initialized = true;
     }
@@ -162,6 +184,7 @@ public sealed class LocalExperienceViewModel : INotifyPropertyChanged
         SelectedHistory = null;
         _analyzeOnStartup = true;
         OnPropertyChanged(nameof(AnalyzeOnStartup));
+        SetThemeWithoutSaving(AppThemes.Default);
         OnPropertyChanged(nameof(HasHistory));
         ClearConfirmationVisible = false;
         StorageStatus = "Local AgenStart history and preferences were cleared.";
@@ -183,11 +206,18 @@ public sealed class LocalExperienceViewModel : INotifyPropertyChanged
         OnPropertyChanged(nameof(HasHistory));
     }
 
+    private void SetThemeWithoutSaving(string? theme)
+    {
+        _theme = AppThemes.Normalize(theme);
+        _themes?.Apply(_theme);
+        OnPropertyChanged(nameof(Theme));
+    }
+
     private async Task SaveSettingsSafeAsync()
     {
         try
         {
-            await _store.SaveSettingsAsync(new DesktopSettings(AnalyzeOnStartup)).ConfigureAwait(false);
+            await _store.SaveSettingsAsync(new DesktopSettings(AnalyzeOnStartup, Theme)).ConfigureAwait(false);
             StorageStatus = "Preferences saved locally.";
         }
         catch (IOException)

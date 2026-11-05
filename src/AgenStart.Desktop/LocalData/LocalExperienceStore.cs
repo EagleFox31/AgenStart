@@ -1,9 +1,11 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using AgenStart.Desktop.Services;
 
 namespace AgenStart.Desktop.LocalData;
 
-public sealed record DesktopSettings(bool AnalyzeOnStartup = true);
+// Theme was added after AnalyzeOnStartup: older settings files without it load the default palette.
+public sealed record DesktopSettings(bool AnalyzeOnStartup = true, string Theme = AppThemes.Default);
 
 public sealed record SetupHistoryApplication(
     string ApplicationId,

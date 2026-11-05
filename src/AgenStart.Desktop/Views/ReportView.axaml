@@ -9,41 +9,41 @@
     <TextBlock Classes="eyebrow" Text="REPORT" Margin="0,0,0,20" />
     <TextBlock Classes="pageTitle" Text="{Binding ReportTitle}" />
     <TextBlock Classes="subtitle" Text="{Binding ReportStatus}" Margin="0,12,0,0" TextWrapping="Wrap" />
-    <Border Height="1" Background="{StaticResource AgenDividerBrush}" Margin="0,28,0,24" />
+    <Border Height="1" Background="{DynamicResource AgenDividerBrush}" Margin="0,28,0,24" />
     <Grid ColumnDefinitions="90,*,*,*,*" ColumnSpacing="18">
-      <Border Width="64" Height="64" CornerRadius="32" BorderBrush="{StaticResource AgenTealBrush}" BorderThickness="2" IsVisible="{Binding !ReportFailedCount}">
-        <TextBlock Text="✓" Foreground="{StaticResource AgenTealBrush}" FontSize="30" HorizontalAlignment="Center" VerticalAlignment="Center" />
+      <Border Width="64" Height="64" CornerRadius="32" BorderBrush="{DynamicResource AgenTealBrush}" BorderThickness="2" IsVisible="{Binding !ReportFailedCount}">
+        <TextBlock Text="✓" Foreground="{DynamicResource AgenTealBrush}" FontSize="30" HorizontalAlignment="Center" VerticalAlignment="Center" />
       </Border>
-      <Border Width="64" Height="64" CornerRadius="32" BorderBrush="{StaticResource AgenWarningBrush}" BorderThickness="2" IsVisible="{Binding !!ReportFailedCount}">
-        <TextBlock Text="!" Foreground="{StaticResource AgenWarningBrush}" FontSize="30" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" />
+      <Border Width="64" Height="64" CornerRadius="32" BorderBrush="{DynamicResource AgenWarningBrush}" BorderThickness="2" IsVisible="{Binding !!ReportFailedCount}">
+        <TextBlock Text="!" Foreground="{DynamicResource AgenWarningBrush}" FontSize="30" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" />
       </Border>
       <StackPanel Grid.Column="1">
-        <TextBlock Text="{Binding ReportProcessedCount}" Foreground="{StaticResource AgenTealBrush}" FontSize="22" FontWeight="SemiBold" />
-        <TextBlock Text="applications processed" Foreground="{StaticResource AgenMutedBrush}" />
+        <TextBlock Text="{Binding ReportProcessedCount}" Foreground="{DynamicResource AgenTealBrush}" FontSize="22" FontWeight="SemiBold" />
+        <TextBlock Text="applications processed" Foreground="{DynamicResource AgenMutedBrush}" />
       </StackPanel>
       <StackPanel Grid.Column="2">
-        <TextBlock Text="{Binding ReportInstalledCount}" Foreground="{StaticResource AgenTealBrush}" FontSize="22" FontWeight="SemiBold" />
-        <TextBlock Text="installed" Foreground="{StaticResource AgenMutedBrush}" />
+        <TextBlock Text="{Binding ReportInstalledCount}" Foreground="{DynamicResource AgenTealBrush}" FontSize="22" FontWeight="SemiBold" />
+        <TextBlock Text="installed" Foreground="{DynamicResource AgenMutedBrush}" />
       </StackPanel>
       <StackPanel Grid.Column="3">
-        <TextBlock Text="{Binding ReportAlreadyInstalledCount}" Foreground="{StaticResource AgenTealBrush}" FontSize="22" FontWeight="SemiBold" />
-        <TextBlock Text="already installed" Foreground="{StaticResource AgenMutedBrush}" />
+        <TextBlock Text="{Binding ReportAlreadyInstalledCount}" Foreground="{DynamicResource AgenTealBrush}" FontSize="22" FontWeight="SemiBold" />
+        <TextBlock Text="already installed" Foreground="{DynamicResource AgenMutedBrush}" />
       </StackPanel>
       <StackPanel Grid.Column="4">
         <TextBlock Classes="failedMetric" Classes.hasFailures="{Binding !!ReportFailedCount}" Text="{Binding ReportFailedCount}" FontSize="22" FontWeight="SemiBold" />
-        <TextBlock Text="failed" Foreground="{StaticResource AgenMutedBrush}" />
+        <TextBlock Text="failed" Foreground="{DynamicResource AgenMutedBrush}" />
       </StackPanel>
     </Grid>
     <TextBlock Text="Installation results" FontSize="20" FontWeight="SemiBold" Margin="0,32,0,10" />
     <ItemsControl ItemsSource="{Binding ReportItems}">
       <ItemsControl.ItemTemplate>
         <DataTemplate x:DataType="vm:ReportRowViewModel">
-          <Border BorderBrush="{StaticResource AgenDividerBrush}" BorderThickness="0,0,0,1" Padding="10,13">
+          <Border BorderBrush="{DynamicResource AgenDividerBrush}" BorderThickness="0,0,0,1" Padding="10,13">
             <Grid ColumnDefinitions="54,*,190,160" ColumnSpacing="14">
               <views:AppRowLogoView Width="36" Height="36" />
               <TextBlock Grid.Column="1" Text="{Binding Name}" FontSize="16" FontWeight="SemiBold" VerticalAlignment="Center" />
               <TextBlock Grid.Column="2" Text="{Binding Result}" VerticalAlignment="Center" />
-              <TextBlock Grid.Column="3" Text="{Binding InstalledVersion}" Foreground="{StaticResource AgenMutedBrush}" VerticalAlignment="Center" />
+              <TextBlock Grid.Column="3" Text="{Binding InstalledVersion}" Foreground="{DynamicResource AgenMutedBrush}" VerticalAlignment="Center" />
             </Grid>
           </Border>
         </DataTemplate>
@@ -52,7 +52,7 @@
     <Border Classes="notice" IsVisible="{Binding ReportRequiresReboot}" Margin="0,20,0,0">
       <StackPanel>
         <TextBlock Text="Restart recommended" FontWeight="SemiBold" />
-        <TextBlock Text="One or more installed applications require Windows to restart before all features become available." Foreground="{StaticResource AgenMutedBrush}" FontSize="13" Margin="0,4,0,0" />
+        <TextBlock Text="One or more installed applications require Windows to restart before all features become available." Foreground="{DynamicResource AgenMutedBrush}" FontSize="13" Margin="0,4,0,0" />
       </StackPanel>
     </Border>
     <Grid ColumnDefinitions="*,Auto" Margin="0,22,0,0">
@@ -61,7 +61,7 @@
         <Button x:Name="ExportSetupButton" Classes="secondary" Content="Export this setup" IsEnabled="False" Click="ExportSetupButton_OnClick" />
       </StackPanel>
       <StackPanel Grid.Column="1">
-        <TextBlock Text="Completed at" Foreground="{StaticResource AgenMutedBrush}" FontSize="12" />
+        <TextBlock Text="Completed at" Foreground="{DynamicResource AgenMutedBrush}" FontSize="12" />
         <TextBlock Text="{Binding ReportCompletedAt}" FontWeight="SemiBold" />
       </StackPanel>
     </Grid>

@@ -1,137 +1,75 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-  <Styles.Resources>
-    <Color x:Key="AgenNavColor">#0A1D29</Color>
-    <Color x:Key="AgenSurfaceColor">#F7F5EF</Color>
-    <Color x:Key="AgenTextColor">#10242B</Color>
-    <Color x:Key="AgenMutedColor">#69747A</Color>
-    <Color x:Key="AgenTealColor">#176D64</Color>
-    <Color x:Key="AgenAccentColor">#45CFC1</Color>
-    <Color x:Key="AgenDividerColor">#D9DEDC</Color>
-    <Color x:Key="AgenSuccessColor">#2F7D5B</Color>
-    <Color x:Key="AgenWarningColor">#9A6700</Color>
-    <Color x:Key="AgenDangerColor">#A84E3E</Color>
-    <Color x:Key="AgenSoftTealColor">#E7F1EE</Color>
-    <Color x:Key="AgenSoftSuccessColor">#E7F3EC</Color>
-    <Color x:Key="AgenSoftWarningColor">#F7EEDB</Color>
-    <Color x:Key="AgenSoftDangerColor">#F8E8E4</Color>
-    <Color x:Key="AgenNavHoverColor">#1A3F4B</Color>
-    <Color x:Key="AgenNavActiveColor">#17414A</Color>
-
-    <!-- Semantic badge palette used by the YourPc data rows. Kept separate from
-         the headline semantic colours so the compact badge contrast works. -->
-    <Color x:Key="AgenBadgeSuccessColor">#2F7D5B</Color>
-    <Color x:Key="AgenBadgeSuccessBorderColor">#B9D8C5</Color>
-    <Color x:Key="AgenBadgeWarningColor">#9A6700</Color>
-    <Color x:Key="AgenBadgeSoftWarningColor">#FFF4D6</Color>
-    <Color x:Key="AgenBadgeWarningBorderColor">#E5C66B</Color>
-    <Color x:Key="AgenBadgeDangerColor">#B42318</Color>
-    <Color x:Key="AgenBadgeSoftDangerColor">#FDECEA</Color>
-    <Color x:Key="AgenBadgeDangerBorderColor">#F1B5AE</Color>
-
-    <!-- Profile selection cards (Usage profile step). -->
-    <Color x:Key="AgenProfileHoverColor">#EEF3F1</Color>
-    <Color x:Key="AgenProfileHoverBorderColor">#9EBAB4</Color>
-    <Color x:Key="AgenRecommendationStickyColor">#F7F5EF</Color>
-
-    <SolidColorBrush x:Key="AgenNavBrush" Color="{StaticResource AgenNavColor}" />
-    <SolidColorBrush x:Key="AgenSurfaceBrush" Color="{StaticResource AgenSurfaceColor}" />
-    <SolidColorBrush x:Key="AgenTextBrush" Color="{StaticResource AgenTextColor}" />
-    <SolidColorBrush x:Key="AgenMutedBrush" Color="{StaticResource AgenMutedColor}" />
-    <SolidColorBrush x:Key="AgenTealBrush" Color="{StaticResource AgenTealColor}" />
-    <SolidColorBrush x:Key="AgenAccentBrush" Color="{StaticResource AgenAccentColor}" />
-    <SolidColorBrush x:Key="AgenDividerBrush" Color="{StaticResource AgenDividerColor}" />
-    <SolidColorBrush x:Key="AgenSuccessBrush" Color="{StaticResource AgenSuccessColor}" />
-    <SolidColorBrush x:Key="AgenWarningBrush" Color="{StaticResource AgenWarningColor}" />
-    <SolidColorBrush x:Key="AgenDangerBrush" Color="{StaticResource AgenDangerColor}" />
-    <SolidColorBrush x:Key="AgenSoftTealBrush" Color="{StaticResource AgenSoftTealColor}" />
-    <SolidColorBrush x:Key="AgenSoftSuccessBrush" Color="{StaticResource AgenSoftSuccessColor}" />
-    <SolidColorBrush x:Key="AgenSoftWarningBrush" Color="{StaticResource AgenSoftWarningColor}" />
-    <SolidColorBrush x:Key="AgenSoftDangerBrush" Color="{StaticResource AgenSoftDangerColor}" />
-    <SolidColorBrush x:Key="AgenNavHoverBrush" Color="{StaticResource AgenNavHoverColor}" />
-    <SolidColorBrush x:Key="AgenNavActiveBrush" Color="{StaticResource AgenNavActiveColor}" />
-
-    <SolidColorBrush x:Key="AgenBadgeSuccessBrush" Color="{StaticResource AgenBadgeSuccessColor}" />
-    <SolidColorBrush x:Key="AgenBadgeSuccessBorderBrush" Color="{StaticResource AgenBadgeSuccessBorderColor}" />
-    <SolidColorBrush x:Key="AgenBadgeWarningBrush" Color="{StaticResource AgenBadgeWarningColor}" />
-    <SolidColorBrush x:Key="AgenBadgeSoftWarningBrush" Color="{StaticResource AgenBadgeSoftWarningColor}" />
-    <SolidColorBrush x:Key="AgenBadgeWarningBorderBrush" Color="{StaticResource AgenBadgeWarningBorderColor}" />
-    <SolidColorBrush x:Key="AgenBadgeDangerBrush" Color="{StaticResource AgenBadgeDangerColor}" />
-    <SolidColorBrush x:Key="AgenBadgeSoftDangerBrush" Color="{StaticResource AgenBadgeSoftDangerColor}" />
-    <SolidColorBrush x:Key="AgenBadgeDangerBorderBrush" Color="{StaticResource AgenBadgeDangerBorderColor}" />
-
-    <SolidColorBrush x:Key="AgenProfileHoverBrush" Color="{StaticResource AgenProfileHoverColor}" />
-    <SolidColorBrush x:Key="AgenProfileHoverBorderBrush" Color="{StaticResource AgenProfileHoverBorderColor}" />
-    <SolidColorBrush x:Key="AgenRecommendationStickyBrush" Color="{StaticResource AgenRecommendationStickyColor}" />
-  </Styles.Resources>
+  <!-- Colours, fonts and radii come from the active palette in Styles/Palettes/,
+       swapped at runtime by ThemeService; always reference them with DynamicResource. -->
 
   <Style Selector="Window">
-    <Setter Property="Background" Value="{StaticResource AgenSurfaceBrush}" />
-    <Setter Property="FontFamily" Value="Segoe UI" />
-    <Setter Property="Foreground" Value="{StaticResource AgenTextBrush}" />
+    <Setter Property="Background" Value="{DynamicResource AgenSurfaceBrush}" />
+    <Setter Property="FontFamily" Value="{DynamicResource AgenFontFamily}" />
+    <Setter Property="Foreground" Value="{DynamicResource AgenTextBrush}" />
   </Style>
 
   <Style Selector="Border.navStripe">
     <Setter Property="Width" Value="3" />
     <Setter Property="Height" Value="42" />
-    <Setter Property="Background" Value="{StaticResource AgenAccentBrush}" />
+    <Setter Property="Background" Value="{DynamicResource AgenNavStripeBrush}" />
     <Setter Property="HorizontalAlignment" Value="Left" />
     <Setter Property="CornerRadius" Value="0,3,3,0" />
   </Style>
 
   <Style Selector="Button.nav">
     <Setter Property="Height" Value="52" />
-    <Setter Property="Margin" Value="0" />
-    <Setter Property="Padding" Value="30,0" />
+    <Setter Property="Margin" Value="{DynamicResource AgenNavItemMargin}" />
+    <Setter Property="Padding" Value="{DynamicResource AgenNavItemPadding}" />
     <Setter Property="HorizontalAlignment" Value="Stretch" />
     <Setter Property="HorizontalContentAlignment" Value="Left" />
     <Setter Property="VerticalContentAlignment" Value="Center" />
     <Setter Property="Background" Value="Transparent" />
-    <Setter Property="Foreground" Value="#DDE6EA" />
+    <Setter Property="Foreground" Value="{DynamicResource AgenNavTextBrush}" />
     <Setter Property="BorderThickness" Value="0" />
-    <Setter Property="CornerRadius" Value="0" />
+    <Setter Property="CornerRadius" Value="{DynamicResource AgenNavItemRadius}" />
     <Setter Property="FontSize" Value="16" />
   </Style>
 
   <Style Selector="Button.nav:pointerover">
-    <Setter Property="Background" Value="{StaticResource AgenNavHoverBrush}" />
-    <Setter Property="Foreground" Value="#F6FBFC" />
+    <Setter Property="Background" Value="{DynamicResource AgenNavHoverBrush}" />
+    <Setter Property="Foreground" Value="{DynamicResource AgenNavTextHoverBrush}" />
   </Style>
 
   <Style Selector="Button.nav:pointerover /template/ ContentPresenter">
-    <Setter Property="Background" Value="{StaticResource AgenNavHoverBrush}" />
-    <Setter Property="Foreground" Value="#F6FBFC" />
+    <Setter Property="Background" Value="{DynamicResource AgenNavHoverBrush}" />
+    <Setter Property="Foreground" Value="{DynamicResource AgenNavTextHoverBrush}" />
   </Style>
 
   <Style Selector="Button.nav.active">
-    <Setter Property="Background" Value="{StaticResource AgenNavActiveBrush}" />
-    <Setter Property="Foreground" Value="White" />
+    <Setter Property="Background" Value="{DynamicResource AgenNavActiveBrush}" />
+    <Setter Property="Foreground" Value="{DynamicResource AgenNavTextActiveBrush}" />
   </Style>
 
   <Style Selector="Button.nav.active /template/ ContentPresenter">
-    <Setter Property="Background" Value="{StaticResource AgenNavActiveBrush}" />
-    <Setter Property="Foreground" Value="White" />
+    <Setter Property="Background" Value="{DynamicResource AgenNavActiveBrush}" />
+    <Setter Property="Foreground" Value="{DynamicResource AgenNavTextActiveBrush}" />
   </Style>
 
   <Style Selector="Button.nav:disabled">
     <Setter Property="Opacity" Value="0.42" />
-    <Setter Property="Foreground" Value="#9AABB1" />
+    <Setter Property="Foreground" Value="{DynamicResource AgenNavTextDisabledBrush}" />
     <Setter Property="Background" Value="Transparent" />
   </Style>
 
   <Style Selector="Button.nav:disabled /template/ ContentPresenter">
     <Setter Property="Background" Value="Transparent" />
     <Setter Property="BorderBrush" Value="Transparent" />
-    <Setter Property="Foreground" Value="#9AABB1" />
+    <Setter Property="Foreground" Value="{DynamicResource AgenNavTextDisabledBrush}" />
   </Style>
 
   <Style Selector="Button.nav:disabled:pointerover">
-    <Setter Property="Foreground" Value="#9AABB1" />
+    <Setter Property="Foreground" Value="{DynamicResource AgenNavTextDisabledBrush}" />
     <Setter Property="Background" Value="Transparent" />
   </Style>
 
   <Style Selector="Button.nav:disabled:pointerover /template/ ContentPresenter">
-    <Setter Property="Foreground" Value="#9AABB1" />
+    <Setter Property="Foreground" Value="{DynamicResource AgenNavTextDisabledBrush}" />
     <Setter Property="Background" Value="Transparent" />
   </Style>
 
@@ -141,10 +79,10 @@
     <Setter Property="Padding" Value="24,0" />
     <Setter Property="HorizontalContentAlignment" Value="Center" />
     <Setter Property="VerticalContentAlignment" Value="Center" />
-    <Setter Property="Background" Value="{StaticResource AgenTealBrush}" />
-    <Setter Property="Foreground" Value="White" />
+    <Setter Property="Background" Value="{DynamicResource AgenTealBrush}" />
+    <Setter Property="Foreground" Value="{DynamicResource AgenOnAccentBrush}" />
     <Setter Property="BorderThickness" Value="0" />
-    <Setter Property="CornerRadius" Value="8" />
+    <Setter Property="CornerRadius" Value="{DynamicResource AgenButtonRadius}" />
     <Setter Property="FontSize" Value="16" />
     <Setter Property="FontWeight" Value="SemiBold" />
   </Style>
@@ -155,8 +93,8 @@
   </Style>
 
   <Style Selector="Button.primary:pointerover /template/ ContentPresenter">
-    <Setter Property="Background" Value="#145E57" />
-    <Setter Property="Foreground" Value="White" />
+    <Setter Property="Background" Value="{DynamicResource AgenPrimaryHoverBrush}" />
+    <Setter Property="Foreground" Value="{DynamicResource AgenOnAccentBrush}" />
     <Setter Property="HorizontalContentAlignment" Value="Center" />
     <Setter Property="VerticalContentAlignment" Value="Center" />
   </Style>
@@ -168,10 +106,10 @@
     <Setter Property="HorizontalContentAlignment" Value="Center" />
     <Setter Property="VerticalContentAlignment" Value="Center" />
     <Setter Property="Background" Value="Transparent" />
-    <Setter Property="Foreground" Value="{StaticResource AgenTextBrush}" />
-    <Setter Property="BorderBrush" Value="#AAB2B2" />
+    <Setter Property="Foreground" Value="{DynamicResource AgenTextBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource AgenSecondaryBorderBrush}" />
     <Setter Property="BorderThickness" Value="1" />
-    <Setter Property="CornerRadius" Value="8" />
+    <Setter Property="CornerRadius" Value="{DynamicResource AgenButtonRadius}" />
     <Setter Property="FontSize" Value="16" />
   </Style>
 
@@ -181,13 +119,13 @@
   </Style>
 
   <Style Selector="Button.secondary:pointerover">
-    <Setter Property="Background" Value="#EEF2F0" />
-    <Setter Property="Foreground" Value="{StaticResource AgenTextBrush}" />
+    <Setter Property="Background" Value="{DynamicResource AgenSecondaryHoverBrush}" />
+    <Setter Property="Foreground" Value="{DynamicResource AgenTextBrush}" />
   </Style>
 
   <Style Selector="Button.secondary:pointerover /template/ ContentPresenter">
-    <Setter Property="Background" Value="#EEF2F0" />
-    <Setter Property="Foreground" Value="{StaticResource AgenTextBrush}" />
+    <Setter Property="Background" Value="{DynamicResource AgenSecondaryHoverBrush}" />
+    <Setter Property="Foreground" Value="{DynamicResource AgenTextBrush}" />
     <Setter Property="HorizontalContentAlignment" Value="Center" />
     <Setter Property="VerticalContentAlignment" Value="Center" />
   </Style>
@@ -195,55 +133,55 @@
   <Style Selector="RadioButton.profileCard">
     <Setter Property="Padding" Value="16,12" />
     <Setter Property="Background" Value="Transparent" />
-    <Setter Property="Foreground" Value="{StaticResource AgenTextBrush}" />
-    <Setter Property="BorderBrush" Value="{StaticResource AgenDividerBrush}" />
+    <Setter Property="Foreground" Value="{DynamicResource AgenTextBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource AgenDividerBrush}" />
     <Setter Property="BorderThickness" Value="1" />
-    <Setter Property="CornerRadius" Value="8" />
+    <Setter Property="CornerRadius" Value="{DynamicResource AgenSmallRadius}" />
     <Setter Property="HorizontalContentAlignment" Value="Stretch" />
   </Style>
 
   <Style Selector="RadioButton.profileCard:pointerover">
-    <Setter Property="Background" Value="#EEF3F1" />
-    <Setter Property="Foreground" Value="{StaticResource AgenTextBrush}" />
-    <Setter Property="BorderBrush" Value="#9EBAB4" />
+    <Setter Property="Background" Value="{DynamicResource AgenProfileHoverBrush}" />
+    <Setter Property="Foreground" Value="{DynamicResource AgenTextBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource AgenProfileHoverBorderBrush}" />
   </Style>
 
   <Style Selector="RadioButton.profileCard:checked">
-    <Setter Property="Background" Value="{StaticResource AgenSoftTealBrush}" />
-    <Setter Property="Foreground" Value="{StaticResource AgenTextBrush}" />
-    <Setter Property="BorderBrush" Value="{StaticResource AgenTealBrush}" />
+    <Setter Property="Background" Value="{DynamicResource AgenSoftTealBrush}" />
+    <Setter Property="Foreground" Value="{DynamicResource AgenTextBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource AgenTealBrush}" />
     <Setter Property="BorderThickness" Value="1.5" />
   </Style>
 
   <Style Selector="TextBlock.eyebrow">
-    <Setter Property="Foreground" Value="{StaticResource AgenTealBrush}" />
+    <Setter Property="Foreground" Value="{DynamicResource AgenTealBrush}" />
     <Setter Property="FontWeight" Value="SemiBold" />
     <Setter Property="FontSize" Value="14" />
     <Setter Property="LetterSpacing" Value="2" />
   </Style>
 
   <Style Selector="TextBlock.pageTitle">
-    <Setter Property="Foreground" Value="{StaticResource AgenTextBrush}" />
+    <Setter Property="Foreground" Value="{DynamicResource AgenTextBrush}" />
     <Setter Property="FontSize" Value="48" />
     <Setter Property="FontWeight" Value="SemiBold" />
   </Style>
 
   <Style Selector="TextBlock.subtitle">
-    <Setter Property="Foreground" Value="{StaticResource AgenMutedBrush}" />
+    <Setter Property="Foreground" Value="{DynamicResource AgenMutedBrush}" />
     <Setter Property="FontSize" Value="17" />
     <Setter Property="LineHeight" Value="25" />
   </Style>
 
   <Style Selector="Border.dataRow">
     <Setter Property="Background" Value="Transparent" />
-    <Setter Property="BorderBrush" Value="{StaticResource AgenDividerBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource AgenDividerBrush}" />
     <Setter Property="BorderThickness" Value="0,0,0,1" />
     <Setter Property="Padding" Value="8,13" />
     <Setter Property="ClipToBounds" Value="True" />
   </Style>
 
   <Style Selector="Border.dataRow:pointerover">
-    <Setter Property="Background" Value="{StaticResource AgenProfileHoverBrush}" />
+    <Setter Property="Background" Value="{DynamicResource AgenProfileHoverBrush}" />
   </Style>
 
   <Style Selector="Border.dataRow TextBlock">
@@ -257,7 +195,7 @@
     <Setter Property="TextAlignment" Value="Center" />
     <Setter Property="HorizontalAlignment" Value="Center" />
     <Setter Property="VerticalAlignment" Value="Center" />
-    <Setter Property="Foreground" Value="{StaticResource AgenTextBrush}" />
+    <Setter Property="Foreground" Value="{DynamicResource AgenTextBrush}" />
   </Style>
 
   <Style Selector="Button.nav TextBlock.navIcon">
@@ -280,66 +218,66 @@
 
   <!-- Failure counters turn red only when something actually failed. -->
   <Style Selector="TextBlock.failedMetric.hasFailures">
-    <Setter Property="Foreground" Value="{StaticResource AgenDangerBrush}" />
+    <Setter Property="Foreground" Value="{DynamicResource AgenDangerBrush}" />
   </Style>
 
   <!-- Confirm step: apps to install stand out from those already present. -->
   <Style Selector="TextBlock.planStatus">
-    <Setter Property="Foreground" Value="{StaticResource AgenMutedBrush}" />
+    <Setter Property="Foreground" Value="{DynamicResource AgenMutedBrush}" />
   </Style>
 
   <Style Selector="TextBlock.planStatus.willInstall">
-    <Setter Property="Foreground" Value="{StaticResource AgenTealBrush}" />
+    <Setter Property="Foreground" Value="{DynamicResource AgenTealBrush}" />
     <Setter Property="FontWeight" Value="SemiBold" />
   </Style>
 
   <Style Selector="Border.notice">
-    <Setter Property="Background" Value="{StaticResource AgenBadgeSoftWarningBrush}" />
-    <Setter Property="BorderBrush" Value="{StaticResource AgenBadgeWarningBorderBrush}" />
+    <Setter Property="Background" Value="{DynamicResource AgenBadgeSoftWarningBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource AgenBadgeWarningBorderBrush}" />
     <Setter Property="BorderThickness" Value="1" />
-    <Setter Property="CornerRadius" Value="8" />
+    <Setter Property="CornerRadius" Value="{DynamicResource AgenSmallRadius}" />
     <Setter Property="Padding" Value="16" />
   </Style>
 
   <Style Selector="Border.statusBadge">
     <Setter Property="BorderThickness" Value="1" />
-    <Setter Property="CornerRadius" Value="13" />
+    <Setter Property="CornerRadius" Value="{DynamicResource AgenBadgeRadius}" />
     <Setter Property="Padding" Value="10,5" />
     <Setter Property="HorizontalAlignment" Value="Left" />
     <Setter Property="VerticalAlignment" Value="Center" />
   </Style>
 
   <Style Selector="Border.statusBadge.success">
-    <Setter Property="Background" Value="{StaticResource AgenSoftSuccessBrush}" />
-    <Setter Property="BorderBrush" Value="{StaticResource AgenBadgeSuccessBorderBrush}" />
+    <Setter Property="Background" Value="{DynamicResource AgenSoftSuccessBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource AgenBadgeSuccessBorderBrush}" />
   </Style>
 
   <Style Selector="Border.statusBadge.success TextBlock">
-    <Setter Property="Foreground" Value="{StaticResource AgenBadgeSuccessBrush}" />
+    <Setter Property="Foreground" Value="{DynamicResource AgenBadgeSuccessBrush}" />
     <Setter Property="FontSize" Value="13" />
     <Setter Property="FontWeight" Value="SemiBold" />
     <Setter Property="VerticalAlignment" Value="Center" />
   </Style>
 
   <Style Selector="Border.statusBadge.warning">
-    <Setter Property="Background" Value="{StaticResource AgenBadgeSoftWarningBrush}" />
-    <Setter Property="BorderBrush" Value="{StaticResource AgenBadgeWarningBorderBrush}" />
+    <Setter Property="Background" Value="{DynamicResource AgenBadgeSoftWarningBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource AgenBadgeWarningBorderBrush}" />
   </Style>
 
   <Style Selector="Border.statusBadge.warning TextBlock">
-    <Setter Property="Foreground" Value="{StaticResource AgenBadgeWarningBrush}" />
+    <Setter Property="Foreground" Value="{DynamicResource AgenBadgeWarningBrush}" />
     <Setter Property="FontSize" Value="13" />
     <Setter Property="FontWeight" Value="SemiBold" />
     <Setter Property="VerticalAlignment" Value="Center" />
   </Style>
 
   <Style Selector="Border.statusBadge.danger">
-    <Setter Property="Background" Value="{StaticResource AgenBadgeSoftDangerBrush}" />
-    <Setter Property="BorderBrush" Value="{StaticResource AgenBadgeDangerBorderBrush}" />
+    <Setter Property="Background" Value="{DynamicResource AgenBadgeSoftDangerBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource AgenBadgeDangerBorderBrush}" />
   </Style>
 
   <Style Selector="Border.statusBadge.danger TextBlock">
-    <Setter Property="Foreground" Value="{StaticResource AgenBadgeDangerBrush}" />
+    <Setter Property="Foreground" Value="{DynamicResource AgenBadgeDangerBrush}" />
     <Setter Property="FontSize" Value="13" />
     <Setter Property="FontWeight" Value="SemiBold" />
     <Setter Property="VerticalAlignment" Value="Center" />
