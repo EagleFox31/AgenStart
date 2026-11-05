@@ -93,3 +93,12 @@ Entry format: context, symptom, root cause, fix, prevention, generalized lesson.
 - **Prevention:** after any XAML change, launch the built exe for ~15 s (`timeout 15 ./AgenStart.Desktop.exe`, exit 124 = still running) and read stderr before pushing. Before using a bitmap asset in XAML for the first time, confirm it loads at runtime.
 - **Generalized lesson:** a green build does not prove a UI starts. Resources referenced from XAML fail only at runtime, so the startup check is a gate in its own right.
 - **Update (2026-11-05):** the PNG is not just an unusual encoding: its data stream is corrupt (Pillow also fails with "broken data stream"), and the same broken file exists under `site/assets/generated-brand/favicon.png`. The `.ico` frames decode fine, so `agenstart-app-icon.png` was regenerated from the 64×64 `.ico` frame (RGBA) and the real logo is back in the side bar and About row. Extra prevention: decode a bitmap with an independent tool (e.g. `python -c "from PIL import Image; Image.open(p).load()"`) before committing it.
+
+## LL-009 — A new settings flag would have shown the onboarding to existing users
+
+- **Context:** guided first-run onboarding (PR #118, 38a6181) keyed on `DesktopSettings.OnboardingCompleted`, a `bool` defaulting to `false`.
+- **Symptom (near miss, caught before merge):** `settings.json` files written by released versions have no `onboardingCompleted` field, so they deserialize to `false` and every existing user would have been sent back through the first-run flow. A branch test even asserted that outcome.
+- **Root cause:** a field's default value was read as user intent. "Field absent" (file written before the feature existed) and "explicitly false" (onboarding left midway) were the same value after deserialization.
+- **Fix:** `LocalExperienceStore.LoadSettingsAsync` checks whether the property is present; an existing file without it loads as `OnboardingCompleted = true`. An explicit `false` still restarts the flow.
+- **Prevention:** `DesktopSettingsTests` covers both cases (legacy file → onboarded; explicit `false` → restart). When adding a persisted flag, write a test that loads a settings file from the previous release before writing the feature.
+- **Generalized lesson:** for persisted data, a new field's default must be chosen for the data that already exists, not for a fresh install. Absent and false are different states; keep them apart at load time.

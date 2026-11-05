@@ -18,14 +18,27 @@ public sealed class DesktopSettingsTests : IDisposable
     }
 
     [Fact]
-    public async Task Legacy_settings_without_language_or_onboarding_still_load()
+    public async Task Legacy_settings_load_as_an_existing_user_who_skips_the_onboarding()
     {
         Directory.CreateDirectory(_directory);
         await File.WriteAllTextAsync(SettingsPath, """{ "analyzeOnStartup": false, "theme": "Dark", "unknownFutureField": 3 }""", TestContext.Current.CancellationToken);
 
         var settings = await new LocalExperienceStore(_directory).LoadSettingsAsync(TestContext.Current.CancellationToken);
 
-        Assert.Equal(new DesktopSettings(AnalyzeOnStartup: false, Theme: "Dark", Language: null, OnboardingCompleted: false), settings);
+        // Written before the onboarding existed: this person already uses the app.
+        Assert.Equal(new DesktopSettings(AnalyzeOnStartup: false, Theme: "Dark", Language: null, OnboardingCompleted: true), settings);
+    }
+
+    [Fact]
+    public async Task An_onboarding_left_midway_starts_again()
+    {
+        Directory.CreateDirectory(_directory);
+        await File.WriteAllTextAsync(SettingsPath, """{ "theme": "Dark", "language": "fr", "onboardingCompleted": false }""", TestContext.Current.CancellationToken);
+
+        var settings = await new LocalExperienceStore(_directory).LoadSettingsAsync(TestContext.Current.CancellationToken);
+
+        Assert.False(settings.OnboardingCompleted);
+        Assert.Equal("fr", settings.Language);
     }
 
     [Fact]

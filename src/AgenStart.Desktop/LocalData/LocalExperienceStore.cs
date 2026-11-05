@@ -75,8 +75,13 @@ public sealed class LocalExperienceStore
             }
 
             await using var stream = File.OpenRead(_settingsPath);
-            return await JsonSerializer.DeserializeAsync<DesktopSettings>(stream, _jsonOptions, cancellationToken)
-                .ConfigureAwait(false) ?? new DesktopSettings();
+            using var document = await JsonDocument.ParseAsync(stream, cancellationToken: cancellationToken)
+                .ConfigureAwait(false);
+            var settings = document.Deserialize<DesktopSettings>(_jsonOptions) ?? new DesktopSettings();
+            // Settings written before the onboarding existed belong to someone who already uses the app.
+            return HasProperty(document.RootElement, nameof(DesktopSettings.OnboardingCompleted))
+                ? settings
+                : settings with { OnboardingCompleted = true };
         }
         catch (JsonException)
         {
@@ -87,6 +92,10 @@ public sealed class LocalExperienceStore
             _gate.Release();
         }
     }
+
+    private static bool HasProperty(JsonElement root, string name) =>
+        root.ValueKind == JsonValueKind.Object
+        && root.EnumerateObject().Any(property => string.Equals(property.Name, name, StringComparison.OrdinalIgnoreCase));
 
     public async Task SaveSettingsAsync(DesktopSettings settings, CancellationToken cancellationToken = default)
     {
