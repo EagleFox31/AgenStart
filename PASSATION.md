@@ -130,3 +130,15 @@ Branche `refactor/desktop-bind-step-viewmodels` (depuis `main` à dda5ae1).
 - Contrats conservés : `x:Name`, handlers, bindings, textes de boutons du smoke test, libellés « History » / « Settings » (FindNavigationButton).
 - Preuves : build 0 erreur / 0 avertissement, `dotnet format --verify-no-changes` OK, tests 132/132 (`dotnet test --project <csproj> -c Release` ; sans `--project` sous MTP → 0 test, code 5).
 - Reste : contrôle visuel des 3 thèmes dans l'app (fermer l'instance en cours avant `dotnet run`), PR à revoir, re-vérifier la CI de #117.
+
+## 2026-11-05 17:37 — En attente du test visuel utilisateur
+
+- État : PR #118 (brouillon, `feat/desktop-selectable-themes`, HEAD `a28df7f`) ; #117 CI verte, fusion = décision utilisateur.
+- Verrou : instance AgenStart ouverte bloque `bin\Debug` → la fermer avant `dotnet run`, ou builder avec `-p:OutDir=<scratchpad>`.
+- Prochaine étape : appliquer les retours visuels (Apple / Google / AgenStart), puis sortir #118 du brouillon.
+
+## 2026-11-05 18:10 — Correctif crash au démarrage (logo PNG)
+
+- `dotnet run` sortait sans fenêtre : le PNG `agenstart-app-icon.png` (palette 8 bits) n'est pas décodable par Skia. Remplacé par une pastille vectorielle thémée (MainWindow + Settings). LL-008 consigné.
+- Preuve : exe lancé 15 s sans exception (exit 124), build 0/0, format OK.
+- Prochaine étape : test visuel utilisateur des 3 thèmes, puis sortir #118 du brouillon.
