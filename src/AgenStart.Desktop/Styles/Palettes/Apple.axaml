@@ -114,6 +114,7 @@
   <Color x:Key="AgenRecommendationStickyColor">#F2F5F5F7</Color>
   <SolidColorBrush x:Key="AgenRecommendationStickyBrush" Color="#F2F5F5F7" />
   <Color x:Key="AgenFluentAccentColor">#0071E3</Color>
+  <x:String x:Key="AgenThemeVariant">Light</x:String>
   <FontFamily x:Key="AgenFontFamily">Segoe UI Variable Text, Segoe UI</FontFamily>
   <BoxShadows x:Key="AgenCardShadow">0 1 2 0 #0A000000, 0 8 24 0 #0F000000</BoxShadows>
   <Thickness x:Key="AgenCardBorderThickness">0</Thickness>

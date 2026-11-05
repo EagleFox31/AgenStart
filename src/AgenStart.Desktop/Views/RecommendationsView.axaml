@@ -5,10 +5,22 @@
              xmlns:steps="using:AgenStart.Desktop.ViewModels.Steps"
              x:DataType="steps:RecommendationsViewModel">
   <StackPanel Spacing="24">
-    <StackPanel>
-      <TextBlock Classes="pageTitle" Text="Recommended for this PC" />
-      <TextBlock Classes="subtitle" Text="{Binding RecommendationStatus}" Margin="0,6,0,0" />
-    </StackPanel>
+    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
+      <StackPanel>
+        <TextBlock Classes="pageTitle" Text="Recommended for this PC" />
+        <TextBlock Classes="subtitle" Text="{Binding RecommendationStatus}" Margin="0,6,0,0" />
+      </StackPanel>
+      <Border Grid.Column="1" Classes="segmented" VerticalAlignment="Bottom">
+        <StackPanel Orientation="Horizontal" Spacing="2">
+          <Button Classes="segment" Classes.active="{Binding IsListLayout}" Click="ListLayoutButton_OnClick" ToolTip.Tip="List view" AutomationProperties.Name="List view">
+            <TextBlock Classes="glyph" Text="&#xE8FD;" FontSize="14" Foreground="{Binding $parent[Button].Foreground}" />
+          </Button>
+          <Button Classes="segment" Classes.active="{Binding IsCardLayout}" Click="CardLayoutButton_OnClick" ToolTip.Tip="Card view" AutomationProperties.Name="Card view">
+            <TextBlock Classes="glyph" Text="&#xF0E2;" FontSize="14" Foreground="{Binding $parent[Button].Foreground}" />
+          </Button>
+        </StackPanel>
+      </Border>
+    </Grid>
 
     <Grid ColumnDefinitions="*,*,*" ColumnSpacing="16">
       <Border Classes="tile"><StackPanel><TextBlock Classes="statValue" Text="{Binding RecommendationCount}" /><TextBlock Classes="statLabel" Text="recommendations" /></StackPanel></Border>
@@ -16,7 +28,7 @@
       <Border Grid.Column="2" Classes="tile"><StackPanel><TextBlock Classes="statValue" Text="{Binding AlreadyInstalledCount}" /><TextBlock Classes="statLabel" Text="already installed" /></StackPanel></Border>
     </Grid>
 
-    <Border Classes="group">
+    <Border Classes="group" IsVisible="{Binding IsListLayout}">
       <ItemsControl ItemsSource="{Binding Recommendations}">
         <ItemsControl.ItemTemplate>
           <DataTemplate x:DataType="vm:RecommendationRowViewModel">
@@ -46,6 +58,40 @@
         </ItemsControl.ItemTemplate>
       </ItemsControl>
     </Border>
+
+    <ItemsControl ItemsSource="{Binding Recommendations}" IsVisible="{Binding IsCardLayout}">
+      <ItemsControl.ItemsPanel>
+        <ItemsPanelTemplate>
+          <WrapPanel Orientation="Horizontal" ItemWidth="250" />
+        </ItemsPanelTemplate>
+      </ItemsControl.ItemsPanel>
+      <ItemsControl.ItemTemplate>
+        <DataTemplate x:DataType="vm:RecommendationRowViewModel">
+          <Border Classes="tile" Margin="0,0,14,14" Padding="16,14" MinHeight="168">
+            <Grid RowDefinitions="Auto,Auto,*,Auto" RowSpacing="10">
+              <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
+                <Border Width="44" Height="44" CornerRadius="{DynamicResource AgenSmallRadius}" Background="{DynamicResource AgenLogoTileBrush}">
+                  <Grid>
+                    <Image Source="{Binding IconSource}" IsVisible="{Binding HasLogo}" Width="28" Height="28" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    <TextBlock Text="{Binding Initials}" IsVisible="{Binding ShowInitials}" Foreground="{DynamicResource AgenAccentBrush}" FontSize="15" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                  </Grid>
+                </Border>
+                <TextBlock Grid.Column="1" Text="{Binding OrderLabel}" FontSize="11.5" FontWeight="SemiBold" Foreground="{DynamicResource AgenText3Brush}" VerticalAlignment="Top" />
+                <CheckBox Grid.Column="2" IsChecked="{Binding IsSelected, Mode=TwoWay}" IsEnabled="{Binding CanSelect}" VerticalAlignment="Top" MinWidth="0" />
+              </Grid>
+              <TextBlock Grid.Row="1" Classes="rowTitle" Text="{Binding Name}" TextTrimming="CharacterEllipsis" />
+              <TextBlock Grid.Row="2" Text="{Binding Reason}" Foreground="{DynamicResource AgenMutedBrush}" FontSize="12.5" TextWrapping="Wrap" MaxLines="3" TextTrimming="CharacterEllipsis" />
+              <Border Grid.Row="3" Background="{Binding StatusBackgroundBrush}" CornerRadius="{DynamicResource AgenBadgeRadius}" Padding="9,3" HorizontalAlignment="Left" ToolTip.Tip="{Binding StatusDetail}">
+                <StackPanel Orientation="Horizontal" Spacing="5">
+                  <TextBlock Text="{Binding StatusIcon}" Foreground="{Binding StatusBrush}" FontSize="12" FontWeight="SemiBold" VerticalAlignment="Center" />
+                  <TextBlock Text="{Binding Status}" Foreground="{Binding StatusBrush}" FontSize="12" FontWeight="SemiBold" VerticalAlignment="Center" />
+                </StackPanel>
+              </Border>
+            </Grid>
+          </Border>
+        </DataTemplate>
+      </ItemsControl.ItemTemplate>
+    </ItemsControl>
 
     <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
       <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">

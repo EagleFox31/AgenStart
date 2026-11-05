@@ -19,6 +19,7 @@ public sealed class RecommendationsViewModel : StepViewModelBase
 
     private bool _hasRecommendations;
     private bool _isBusy;
+    private bool _isCardLayout;
     private string _recommendationStatus = "Choose a usage profile to build recommendations.";
 
     public RecommendationsViewModel(
@@ -70,6 +71,21 @@ public sealed class RecommendationsViewModel : StepViewModelBase
         get => _recommendationStatus;
         set => SetField(ref _recommendationStatus, value);
     }
+
+    /// <summary>Presentation only: cards grid when true, compact list otherwise.</summary>
+    public bool IsCardLayout
+    {
+        get => _isCardLayout;
+        set
+        {
+            if (SetField(ref _isCardLayout, value))
+            {
+                OnPropertyChanged(nameof(IsListLayout));
+            }
+        }
+    }
+
+    public bool IsListLayout => !_isCardLayout;
 
     public int RecommendationCount => Recommendations.Count;
     public int SelectedCount => Recommendations.Count(row => row.IsSelected);

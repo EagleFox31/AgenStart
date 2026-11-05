@@ -1,0 +1,132 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <!-- Dark palette: the AgenStart teal on deep neutral surfaces. Every theme defines the same keys. -->
+  <Color x:Key="AgenNavColor">#1A1D1E</Color>
+  <SolidColorBrush x:Key="AgenNavBrush" Color="#1A1D1E" />
+  <Color x:Key="AgenNavHoverColor">#24292A</Color>
+  <SolidColorBrush x:Key="AgenNavHoverBrush" Color="#24292A" />
+  <Color x:Key="AgenNavActiveColor">#1F3A36</Color>
+  <SolidColorBrush x:Key="AgenNavActiveBrush" Color="#1F3A36" />
+  <Color x:Key="AgenNavTextColor">#D9E2E0</Color>
+  <SolidColorBrush x:Key="AgenNavTextBrush" Color="#D9E2E0" />
+  <Color x:Key="AgenNavTextHoverColor">#F0F5F4</Color>
+  <SolidColorBrush x:Key="AgenNavTextHoverBrush" Color="#F0F5F4" />
+  <Color x:Key="AgenNavTextActiveColor">#7FD8CB</Color>
+  <SolidColorBrush x:Key="AgenNavTextActiveBrush" Color="#7FD8CB" />
+  <Color x:Key="AgenNavTextDisabledColor">#5E6B6D</Color>
+  <SolidColorBrush x:Key="AgenNavTextDisabledBrush" Color="#5E6B6D" />
+  <Color x:Key="AgenNavDividerColor">#2C3233</Color>
+  <SolidColorBrush x:Key="AgenNavDividerBrush" Color="#2C3233" />
+  <Color x:Key="AgenNavStripeColor">#00000000</Color>
+  <SolidColorBrush x:Key="AgenNavStripeBrush" Color="#00000000" />
+  <Color x:Key="AgenNavIconColor">#4FC3B4</Color>
+  <SolidColorBrush x:Key="AgenNavIconBrush" Color="#4FC3B4" />
+  <Color x:Key="AgenNavIconActiveColor">#7FD8CB</Color>
+  <SolidColorBrush x:Key="AgenNavIconActiveBrush" Color="#7FD8CB" />
+  <Color x:Key="AgenNavHeadingColor">#7D8B8E</Color>
+  <SolidColorBrush x:Key="AgenNavHeadingBrush" Color="#7D8B8E" />
+  <Color x:Key="AgenSidebarBorderColor">#2A3031</Color>
+  <SolidColorBrush x:Key="AgenSidebarBorderBrush" Color="#2A3031" />
+  <Color x:Key="AgenBrandTextColor">#EEF3F2</Color>
+  <SolidColorBrush x:Key="AgenBrandTextBrush" Color="#EEF3F2" />
+  <Color x:Key="AgenBrandSubtitleColor">#8A9799</Color>
+  <SolidColorBrush x:Key="AgenBrandSubtitleBrush" Color="#8A9799" />
+  <Color x:Key="AgenSurfaceColor">#141718</Color>
+  <SolidColorBrush x:Key="AgenSurfaceBrush" Color="#141718" />
+  <Color x:Key="AgenCardColor">#1E2223</Color>
+  <SolidColorBrush x:Key="AgenCardBrush" Color="#1E2223" />
+  <Color x:Key="AgenCardBorderColor">#2C3334</Color>
+  <SolidColorBrush x:Key="AgenCardBorderBrush" Color="#2C3334" />
+  <Color x:Key="AgenHeroColor">#173430</Color>
+  <SolidColorBrush x:Key="AgenHeroBrush" Color="#173430" />
+  <Color x:Key="AgenHeroTextColor">#8EE0D3</Color>
+  <SolidColorBrush x:Key="AgenHeroTextBrush" Color="#8EE0D3" />
+  <Color x:Key="AgenTileColor">#1E2223</Color>
+  <SolidColorBrush x:Key="AgenTileBrush" Color="#1E2223" />
+  <Color x:Key="AgenLogoTileColor">#2A3031</Color>
+  <SolidColorBrush x:Key="AgenLogoTileBrush" Color="#2A3031" />
+  <Color x:Key="AgenTextColor">#E8EEED</Color>
+  <SolidColorBrush x:Key="AgenTextBrush" Color="#E8EEED" />
+  <Color x:Key="AgenMutedColor">#A3B0B2</Color>
+  <SolidColorBrush x:Key="AgenMutedBrush" Color="#A3B0B2" />
+  <Color x:Key="AgenText3Color">#6F7C7F</Color>
+  <SolidColorBrush x:Key="AgenText3Brush" Color="#6F7C7F" />
+  <Color x:Key="AgenTealColor">#3FB7A8</Color>
+  <SolidColorBrush x:Key="AgenTealBrush" Color="#3FB7A8" />
+  <Color x:Key="AgenAccentColor">#3FB7A8</Color>
+  <SolidColorBrush x:Key="AgenAccentBrush" Color="#3FB7A8" />
+  <Color x:Key="AgenOnAccentColor">#06201D</Color>
+  <SolidColorBrush x:Key="AgenOnAccentBrush" Color="#06201D" />
+  <Color x:Key="AgenPrimaryHoverColor">#52C4B6</Color>
+  <SolidColorBrush x:Key="AgenPrimaryHoverBrush" Color="#52C4B6" />
+  <Color x:Key="AgenPrimaryPressedColor">#2E9E90</Color>
+  <SolidColorBrush x:Key="AgenPrimaryPressedBrush" Color="#2E9E90" />
+  <Color x:Key="AgenSecondaryTextColor">#E8EEED</Color>
+  <SolidColorBrush x:Key="AgenSecondaryTextBrush" Color="#E8EEED" />
+  <Color x:Key="AgenSecondaryBorderColor">#00000000</Color>
+  <SolidColorBrush x:Key="AgenSecondaryBorderBrush" Color="#00000000" />
+  <Color x:Key="AgenSecondaryHoverColor">#394143</Color>
+  <SolidColorBrush x:Key="AgenSecondaryHoverBrush" Color="#394143" />
+  <Color x:Key="AgenFillColor">#2C3335</Color>
+  <SolidColorBrush x:Key="AgenFillBrush" Color="#2C3335" />
+  <Color x:Key="AgenFillHoverColor">#394143</Color>
+  <SolidColorBrush x:Key="AgenFillHoverBrush" Color="#394143" />
+  <Color x:Key="AgenSeparatorColor">#2A3032</Color>
+  <SolidColorBrush x:Key="AgenSeparatorBrush" Color="#2A3032" />
+  <Color x:Key="AgenDividerColor">#2F3638</Color>
+  <SolidColorBrush x:Key="AgenDividerBrush" Color="#2F3638" />
+  <Color x:Key="AgenIconTileColor">#173430</Color>
+  <SolidColorBrush x:Key="AgenIconTileBrush" Color="#173430" />
+  <Color x:Key="AgenSuccessColor">#4CC38A</Color>
+  <SolidColorBrush x:Key="AgenSuccessBrush" Color="#4CC38A" />
+  <Color x:Key="AgenWarningColor">#E3A44B</Color>
+  <SolidColorBrush x:Key="AgenWarningBrush" Color="#E3A44B" />
+  <Color x:Key="AgenDangerColor">#F2777B</Color>
+  <SolidColorBrush x:Key="AgenDangerBrush" Color="#F2777B" />
+  <Color x:Key="AgenSoftTealColor">#173430</Color>
+  <SolidColorBrush x:Key="AgenSoftTealBrush" Color="#173430" />
+  <Color x:Key="AgenSoftSuccessColor">#16302A</Color>
+  <SolidColorBrush x:Key="AgenSoftSuccessBrush" Color="#16302A" />
+  <Color x:Key="AgenSoftWarningColor">#3A2D17</Color>
+  <SolidColorBrush x:Key="AgenSoftWarningBrush" Color="#3A2D17" />
+  <Color x:Key="AgenSoftDangerColor">#3B1F21</Color>
+  <SolidColorBrush x:Key="AgenSoftDangerBrush" Color="#3B1F21" />
+  <Color x:Key="AgenBadgeSuccessColor">#6FD3A2</Color>
+  <SolidColorBrush x:Key="AgenBadgeSuccessBrush" Color="#6FD3A2" />
+  <Color x:Key="AgenBadgeSuccessBorderColor">#00000000</Color>
+  <SolidColorBrush x:Key="AgenBadgeSuccessBorderBrush" Color="#00000000" />
+  <Color x:Key="AgenBadgeWarningColor">#F0B866</Color>
+  <SolidColorBrush x:Key="AgenBadgeWarningBrush" Color="#F0B866" />
+  <Color x:Key="AgenBadgeSoftWarningColor">#3A2D17</Color>
+  <SolidColorBrush x:Key="AgenBadgeSoftWarningBrush" Color="#3A2D17" />
+  <Color x:Key="AgenBadgeWarningBorderColor">#00000000</Color>
+  <SolidColorBrush x:Key="AgenBadgeWarningBorderBrush" Color="#00000000" />
+  <Color x:Key="AgenBadgeDangerColor">#F58C90</Color>
+  <SolidColorBrush x:Key="AgenBadgeDangerBrush" Color="#F58C90" />
+  <Color x:Key="AgenBadgeSoftDangerColor">#3B1F21</Color>
+  <SolidColorBrush x:Key="AgenBadgeSoftDangerBrush" Color="#3B1F21" />
+  <Color x:Key="AgenBadgeDangerBorderColor">#00000000</Color>
+  <SolidColorBrush x:Key="AgenBadgeDangerBorderBrush" Color="#00000000" />
+  <Color x:Key="AgenProfileHoverColor">#242A2B</Color>
+  <SolidColorBrush x:Key="AgenProfileHoverBrush" Color="#242A2B" />
+  <Color x:Key="AgenProfileHoverBorderColor">#4A5658</Color>
+  <SolidColorBrush x:Key="AgenProfileHoverBorderBrush" Color="#4A5658" />
+  <Color x:Key="AgenRecommendationStickyColor">#F2141718</Color>
+  <SolidColorBrush x:Key="AgenRecommendationStickyBrush" Color="#F2141718" />
+  <Color x:Key="AgenFluentAccentColor">#3FB7A8</Color>
+  <x:String x:Key="AgenThemeVariant">Dark</x:String>
+  <FontFamily x:Key="AgenFontFamily">Segoe UI Variable Text, Segoe UI</FontFamily>
+  <BoxShadows x:Key="AgenCardShadow">0 1 2 0 #33000000, 0 8 24 0 #40000000</BoxShadows>
+  <Thickness x:Key="AgenCardBorderThickness">1</Thickness>
+  <CornerRadius x:Key="AgenSmallRadius">8</CornerRadius>
+  <CornerRadius x:Key="AgenCardRadius">12</CornerRadius>
+  <CornerRadius x:Key="AgenButtonRadius">8</CornerRadius>
+  <CornerRadius x:Key="AgenBadgeRadius">10</CornerRadius>
+  <CornerRadius x:Key="AgenNavItemRadius">8</CornerRadius>
+  <CornerRadius x:Key="AgenGroupRadius">12</CornerRadius>
+  <CornerRadius x:Key="AgenHeroRadius">14</CornerRadius>
+  <CornerRadius x:Key="AgenTileRadius">12</CornerRadius>
+  <Thickness x:Key="AgenNavItemMargin">0,1</Thickness>
+  <Thickness x:Key="AgenNavItemPadding">10,0</Thickness>
+  <x:Double x:Key="AgenNavItemHeight">32</x:Double>
+</ResourceDictionary>

@@ -6,6 +6,7 @@
     <FluentTheme>
       <FluentTheme.Palettes>
         <ColorPaletteResources x:Key="Light" Accent="#176D64" />
+        <ColorPaletteResources x:Key="Dark" Accent="#3FB7A8" />
       </FluentTheme.Palettes>
     </FluentTheme>
     <StyleInclude Source="avares://AgenStart.Desktop/Styles/AgenStartTheme.axaml" />

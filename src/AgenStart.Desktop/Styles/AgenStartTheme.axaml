@@ -321,6 +321,41 @@
     <Setter Property="Opacity" Value="0.45" />
   </Style>
 
+  <!-- ───── Segmented control ───── -->
+
+  <Style Selector="Border.segmented">
+    <Setter Property="Background" Value="{DynamicResource AgenFillBrush}" />
+    <Setter Property="CornerRadius" Value="{DynamicResource AgenButtonRadius}" />
+    <Setter Property="Padding" Value="2" />
+  </Style>
+
+  <Style Selector="Button.segment">
+    <Setter Property="Height" Value="28" />
+    <Setter Property="MinWidth" Value="36" />
+    <Setter Property="Padding" Value="10,0" />
+    <Setter Property="BorderThickness" Value="0" />
+    <Setter Property="CornerRadius" Value="{DynamicResource AgenButtonRadius}" />
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="Foreground" Value="{DynamicResource AgenMutedBrush}" />
+    <Setter Property="HorizontalContentAlignment" Value="Center" />
+    <Setter Property="VerticalContentAlignment" Value="Center" />
+  </Style>
+
+  <Style Selector="Button.segment:pointerover /template/ ContentPresenter, Button.segment:pressed /template/ ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource AgenFillHoverBrush}" />
+    <Setter Property="Foreground" Value="{DynamicResource AgenTextBrush}" />
+  </Style>
+
+  <Style Selector="Button.segment.active">
+    <Setter Property="Background" Value="{DynamicResource AgenCardBrush}" />
+    <Setter Property="Foreground" Value="{DynamicResource AgenAccentBrush}" />
+  </Style>
+
+  <Style Selector="Button.segment.active:pointerover /template/ ContentPresenter, Button.segment.active:pressed /template/ ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource AgenCardBrush}" />
+    <Setter Property="Foreground" Value="{DynamicResource AgenAccentBrush}" />
+  </Style>
+
   <!-- ───── Inputs ───── -->
 
   <Style Selector="RadioButton.profileCard">

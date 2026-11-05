@@ -10,7 +10,7 @@ public static class AppThemes
 {
     public const string Default = "AgenStart";
 
-    public static IReadOnlyList<string> All { get; } = ["AgenStart", "Apple", "Google"];
+    public static IReadOnlyList<string> All { get; } = ["AgenStart", "Apple", "Google", "Dark"];
 
     /// <summary>Maps any stored value to a known palette, falling back to <see cref="Default"/>.</summary>
     public static string Normalize(string? theme) =>
@@ -61,15 +61,27 @@ public sealed class AvaloniaThemeService : IThemeService
         _active = include;
         Current = name;
 
-        if (include.TryGetResource("AgenFluentAccentColor", ThemeVariant.Light, out var value) && value is Color accent)
+        // Each palette declares its own variant, so Fluent controls (inputs, scrollbars,
+        // menus) follow the palette without any per-theme branching here.
+        var variant = ReadVariant(include);
+        app.RequestedThemeVariant = variant;
+
+        if (include.TryGetResource("AgenFluentAccentColor", variant, out var value) && value is Color accent)
         {
             foreach (var fluent in app.Styles.OfType<FluentTheme>())
             {
-                if (fluent.Palettes.TryGetValue(ThemeVariant.Light, out var palette))
+                if (fluent.Palettes.TryGetValue(variant, out var palette))
                 {
                     palette.Accent = accent;
                 }
             }
         }
     }
+
+    private static ThemeVariant ReadVariant(ResourceInclude include) =>
+        include.TryGetResource("AgenThemeVariant", ThemeVariant.Default, out var value)
+        && value is string text
+        && string.Equals(text.Trim(), "Dark", StringComparison.OrdinalIgnoreCase)
+            ? ThemeVariant.Dark
+            : ThemeVariant.Light;
 }
