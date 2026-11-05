@@ -163,3 +163,19 @@ Branche `refactor/desktop-bind-step-viewmodels` (depuis `main` à dda5ae1).
 - Demande en cours : onboarding guidé (loader → langue FR/EN → usage → scan → recommandations) et
   onglets en haut à la place de la barre latérale. Plan demandé à l'agent architecte ; implémentation
   ensuite par phases (chaque phase build + exe 15 s + tests + format).
+
+## 2026-11-05 19:28 — Onglets en haut + onboarding guidé (PR #118)
+
+- P3 (`f12cef8`) : barre latérale remplacée par des onglets en haut (`FlowTabs` + `UtilityTabs`
+  dans `MainWindowViewModel`, verrouillage par `NavigationGate`, onglet courant toujours actif).
+  Corrige au passage Historique/Paramètres restés grisés en FR (recherche par libellé anglais).
+- P4 (`38a6181`) : `ViewModels/Onboarding/OnboardingViewModel.cs` (machine à états Splash → Langue →
+  Usages → Scan → Recommandations), `ShellOnboardingActions` (scan/build via le shell),
+  `Views/Onboarding/OnboardingView.axaml` en surcouche de `ShellRoot`. Fin d'onboarding enregistrée
+  une seule fois (recos prêtes, ou « Aller à l'accueil » après un scan raté) ; quitter avant → reprise
+  à la langue. Utilisateur connu : splash 600 ms puis accueil + `AnalyzeOnStartup` inchangé.
+- Vérifs : build Release des 5 projets de tests, 201 tests OK (Desktop 69), `dotnet format` propre,
+  lancement exe 12 s en premier run (FR) et utilisateur connu (dark/EN) sans crash, settings intacts.
+- Non vérifié visuellement : rendu de l'onboarding et largeur des onglets FR à 1040 px → à tester
+  par le PO. Raisons catalogue/moteur restent en anglais (par conception).
+- Chaînes : 21 clés `Onboarding.*` via `p4.py` + `genstrings.py` (scratchpad, non versionnés).
