@@ -111,3 +111,15 @@ Branche `refactor/desktop-bind-step-viewmodels` (depuis `main` à dda5ae1).
 - **Décision (utilisateur)** : après la fusion de #117, refonte du thème d'AgenStart dans le style de `claude-account-manager` (jetons Apple). Clair uniquement, sans sombre. Trois thèmes au choix : Apple, Google (Material 3) et AgenStart (actuel).
   - Plan : jetons dans des `ThemeDictionaries` ; 184 `StaticResource` (12 vues) passent en `DynamicResource` ; sélecteur dans Settings (aujourd'hui désactivé) ; préférence enregistrée localement.
 - **Prochaine étape** : résultat de la passe de fumée → CI verte → fusion de #117 par l'utilisateur → branche depuis `main` pour le thème.
+
+## 2026-11-05 17:08 — Refonte graphique : thèmes clairs au choix (branche empilée)
+- **Branche** : `feat/desktop-selectable-themes` (a56fda0, poussée), empilée sur `refactor/desktop-bind-step-viewmodels` (PR #117, CI verte, pas encore fusionnée). Aucune PR ouverte pour les thèmes.
+- **Fait** :
+  - 3 palettes claires dans `src/AgenStart.Desktop/Styles/Palettes/` (AgenStart, Apple, Google), avec les mêmes clés partout : couleurs, `AgenFontFamily`, rayons, marges de navigation.
+  - `Services/ThemeService.cs` (`AppThemes`, `AvaloniaThemeService`) change le dictionnaire fusionné à chaud et règle l'accent Fluent.
+  - Les vues passent toutes en `DynamicResource` ; plus aucune couleur codée en dur.
+  - Choix du thème dans Settings (ComboBox), enregistré dans `DesktopSettings.Theme`, qui reste compatible avec les anciens fichiers. `App.Initialize` applique le thème enregistré avant l'ouverture de la fenêtre.
+  - Barre de progression indéterminée + « Scanning… » pendant l'inventaire.
+- **Vérifié** : build 0 erreur 0 avertissement, `dotnet format --verify-no-changes` OK.
+- **Non vérifié** : le rendu visuel. Les captures automatiques ont été refusées par le classifieur. L'utilisateur teste les 3 thèmes à la main.
+- **Prochaine étape** : retours visuels → retouches → PR (base #117, ou `main` après fusion) avec la section « RAIDER review », sans mention d'IA.
