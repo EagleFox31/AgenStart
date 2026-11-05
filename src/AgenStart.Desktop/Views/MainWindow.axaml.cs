@@ -14,6 +14,7 @@ using AgenStart.Core.Catalogue;
 using AgenStart.Core.Recommendations;
 using AgenStart.Desktop.LocalData;
 using AgenStart.Desktop.ViewModels;
+using AgenStart.Desktop.ViewModels.Steps;
 using AgenStart.Recommendations;
 
 namespace AgenStart.Desktop.Views;
@@ -42,6 +43,7 @@ public sealed partial class MainWindow : Window
         _viewModel = new MainWindowViewModel();
 
         InitializeComponent();
+        FitToPrimaryScreen();
         DataContext = _viewModel;
 
         YourPcButton.IsEnabled = false;
@@ -77,6 +79,11 @@ public sealed partial class MainWindow : Window
         MainScrollViewer.ScrollChanged += (_, _) => UpdateRecommendationStickyHeader();
 
         _viewModel.PropertyChanged += ViewModel_OnPropertyChanged;
+        // Step state is observed on the step view models; the handled property names do not collide.
+        _viewModel.Review.PropertyChanged += ViewModel_OnPropertyChanged;
+        _viewModel.Installation.PropertyChanged += ViewModel_OnPropertyChanged;
+        _viewModel.Report.PropertyChanged += ViewModel_OnPropertyChanged;
+        _viewModel.RecommendationsStep.PropertyChanged += ViewModel_OnPropertyChanged;
         Opened += OnOpened;
         Closed += OnClosed;
     }
@@ -89,6 +96,21 @@ public sealed partial class MainWindow : Window
         }
     }
 
+    // The design size (1600x1000) is larger than many laptop work areas; without a
+    // clamp, CenterScreen still lets the window spill onto a neighbouring monitor.
+    private void FitToPrimaryScreen()
+    {
+        if (Screens.Primary is not { } screen)
+        {
+            return;
+        }
+
+        const double margin = 0.92;
+        var area = screen.WorkingArea.Size.ToSize(screen.Scaling);
+        Width = Math.Max(MinWidth, Math.Min(Width, area.Width * margin));
+        Height = Math.Max(MinHeight, Math.Min(Height, area.Height * margin));
+    }
+
     private async void OnOpened(object? sender, EventArgs e)
     {
         InstallMultiProfileExperience();
@@ -96,10 +118,10 @@ public sealed partial class MainWindow : Window
         try
         {
             await _localExperience.InitializeAsync(_lifetimeCancellation.Token);
-            if (_localExperience.AnalyzeOnStartup && !_viewModel.HasSnapshot)
+            if (_localExperience.AnalyzeOnStartup && !_viewModel.Overview.HasSnapshot)
             {
-                await _viewModel.AnalyzeAsync(_lifetimeCancellation.Token);
-                if (_viewModel.HasSnapshot)
+                await _viewModel.Overview.AnalyzeAsync(_lifetimeCancellation.Token);
+                if (_viewModel.Overview.HasSnapshot)
                 {
                     EnablePostAnalysisNavigation();
                 }
@@ -112,7 +134,7 @@ public sealed partial class MainWindow : Window
 
     private void InstallMultiProfileExperience()
     {
-        UsageProfilesControl.SetSelection(_viewModel.SelectedProfile);
+        UsageProfilesControl.SetSelection(_viewModel.UsageProfile.SelectedProfile);
 
         UsageProfilesControl.SelectionChanged += profiles =>
         {
@@ -131,7 +153,7 @@ public sealed partial class MainWindow : Window
             _viewModel.SelectProfile(UsageProfilesControl.SelectedProfiles);
 
             await _viewModel.BuildRecommendationsAsync(_lifetimeCancellation.Token);
-            if (_viewModel.HasRecommendations)
+            if (_viewModel.RecommendationsStep.HasRecommendations)
             {
                 UsageProfilesControl.CompleteRecommendationBuild();
                 RecommendationsButton.IsEnabled = true;
@@ -140,7 +162,7 @@ public sealed partial class MainWindow : Window
             }
             else
             {
-                UsageProfilesControl.FailRecommendationBuild(_viewModel.RecommendationStatus);
+                UsageProfilesControl.FailRecommendationBuild(_viewModel.RecommendationsStep.RecommendationStatus);
             }
         };
 
@@ -149,7 +171,7 @@ public sealed partial class MainWindow : Window
         _multiProfileProgressSubscription = RecommendationPipelineDiagnostics.Subscribe(stage =>
             Dispatcher.UIThread.Post(() =>
             {
-                if (_viewModel.IsBusy && UsageProfilesControl.IsVisible)
+                if (_viewModel.RecommendationsStep.IsBusy && UsageProfilesControl.IsVisible)
                 {
                     UsageProfilesControl.UpdateRecommendationProgress(stage);
                 }
@@ -158,8 +180,8 @@ public sealed partial class MainWindow : Window
 
     private async void OverviewView_OnAnalyzeRequested(object? sender, EventArgs e)
     {
-        await _viewModel.AnalyzeAsync(_lifetimeCancellation.Token);
-        if (_viewModel.HasSnapshot)
+        await _viewModel.Overview.AnalyzeAsync(_lifetimeCancellation.Token);
+        if (_viewModel.Overview.HasSnapshot)
         {
             EnablePostAnalysisNavigation();
             _viewModel.ShowStep(AppStep.YourPc);
@@ -168,8 +190,8 @@ public sealed partial class MainWindow : Window
 
     private async void YourPcView_OnRefreshRequested(object? sender, EventArgs e)
     {
-        await _viewModel.AnalyzeAsync(_lifetimeCancellation.Token);
-        if (_viewModel.HasSnapshot)
+        await _viewModel.Overview.AnalyzeAsync(_lifetimeCancellation.Token);
+        if (_viewModel.Overview.HasSnapshot)
         {
             EnablePostAnalysisNavigation();
         }
@@ -186,7 +208,7 @@ public sealed partial class MainWindow : Window
         _viewModel.ShowStep(AppStep.UsageProfile);
 
     private void RecommendationsView_OnSelectEssentialsRequested(object? sender, EventArgs e) =>
-        _viewModel.SelectEssentialsOnly();
+        _viewModel.RecommendationsStep.SelectEssentialsOnly();
 
     private void RecommendationsView_OnReviewRequested(object? sender, EventArgs e)
     {
@@ -200,7 +222,7 @@ public sealed partial class MainWindow : Window
     {
         RecommendationStickyHeader.IsVisible =
             RecommendationsControl.IsVisible &&
-            _viewModel.HasRecommendations &&
+            _viewModel.RecommendationsStep.HasRecommendations &&
             MainScrollViewer.Offset.Y >= 118;
     }
 
@@ -210,7 +232,7 @@ public sealed partial class MainWindow : Window
     private void ReviewView_OnRemoveRequested(object? sender, ReviewRowViewModel row)
     {
         _viewModel.RemoveFromReview(row.ApplicationId);
-        if (!_viewModel.HasReview)
+        if (!_viewModel.Review.HasReview)
         {
             _viewModel.ShowStep(AppStep.Recommendations);
         }
@@ -218,7 +240,7 @@ public sealed partial class MainWindow : Window
 
     private async void ReviewView_OnStartInstallationRequested(object? sender, EventArgs e)
     {
-        if (!_viewModel.CanStartInstallation)
+        if (!_viewModel.Review.CanStartInstallation)
         {
             return;
         }
@@ -228,11 +250,11 @@ public sealed partial class MainWindow : Window
         _viewModel.ShowStep(AppStep.Installation);
         await _viewModel.StartInstallationAsync(_lifetimeCancellation.Token);
 
-        if (_viewModel.HasReport)
+        if (_viewModel.Report.HasReport)
         {
             await PersistCurrentReportAsync();
             ReportButton.IsEnabled = true;
-            if (_viewModel.InstallationFailedCount == 0)
+            if (_viewModel.Installation.InstallationFailedCount == 0)
             {
                 _viewModel.ShowStep(AppStep.Report);
             }
@@ -240,20 +262,20 @@ public sealed partial class MainWindow : Window
     }
 
     private void InstallationView_OnCancelRequested(object? sender, EventArgs e) =>
-        _viewModel.CancelInstallation();
+        _viewModel.Installation.Cancel();
 
     private void InstallationView_OnViewReportRequested(object? sender, EventArgs e) =>
         _viewModel.ShowStep(AppStep.Report);
 
     private async void InstallationView_OnRetryRequested(object? sender, InstallationRowViewModel row)
     {
-        await _viewModel.RetryInstallationAsync(row.ApplicationId, _lifetimeCancellation.Token);
-        if (_viewModel.HasReport)
+        await _viewModel.Installation.RetryAsync(row.ApplicationId, _lifetimeCancellation.Token);
+        if (_viewModel.Report.HasReport)
         {
             _currentHistoryEntryId ??= Guid.NewGuid();
             await PersistCurrentReportAsync();
             ReportButton.IsEnabled = true;
-            if (_viewModel.InstallationFailedCount == 0)
+            if (_viewModel.Installation.InstallationFailedCount == 0)
             {
                 _viewModel.ShowStep(AppStep.Report);
             }
@@ -262,31 +284,31 @@ public sealed partial class MainWindow : Window
 
     private async Task PersistCurrentReportAsync()
     {
-        if (!_viewModel.HasReport || _currentHistoryEntryId is null)
+        if (!_viewModel.Report.HasReport || _currentHistoryEntryId is null)
         {
             return;
         }
 
-        var applications = _viewModel.ReportItems.Select(row => new SetupHistoryApplication(
+        var applications = _viewModel.Report.ReportItems.Select(row => new SetupHistoryApplication(
             row.ApplicationId,
             row.Name,
             row.Result,
             row.InstalledVersion));
-        var skippedCount = _viewModel.InstallationItems.Count(row => row.State == InstallationQueueItemState.Skipped);
-        var cancelledCount = _viewModel.InstallationItems.Count(row => row.State == InstallationQueueItemState.Cancelled);
+        var skippedCount = _viewModel.Installation.InstallationItems.Count(row => row.State == InstallationQueueItemState.Skipped);
+        var cancelledCount = _viewModel.Installation.InstallationItems.Count(row => row.State == InstallationQueueItemState.Cancelled);
 
         try
         {
             await _localExperience.RecordSessionAsync(
                 _currentHistoryEntryId.Value,
-                _viewModel.SelectedProfileName,
-                _viewModel.ReportProcessedCount,
-                _viewModel.ReportInstalledCount,
-                _viewModel.ReportAlreadyInstalledCount,
-                _viewModel.ReportFailedCount,
+                _viewModel.UsageProfile.SelectedProfileName,
+                _viewModel.Report.ReportProcessedCount,
+                _viewModel.Report.ReportInstalledCount,
+                _viewModel.Report.ReportAlreadyInstalledCount,
+                _viewModel.Report.ReportFailedCount,
                 skippedCount,
                 cancelledCount,
-                _viewModel.ReportRequiresReboot,
+                _viewModel.Report.ReportRequiresReboot,
                 applications,
                 _lifetimeCancellation.Token);
         }
@@ -306,25 +328,24 @@ public sealed partial class MainWindow : Window
 
     private async void ReportView_OnExportSetupRequested(object? sender, EventArgs e)
     {
-        if (!_viewModel.HasReport || _viewModel.ReviewItems.Count == 0)
+        if (!_viewModel.Report.HasReport || _viewModel.Review.ReviewItems.Count == 0)
         {
             return;
         }
 
-        var applications = _viewModel.ReviewItems.Select(row =>
+        var applications = _viewModel.Review.ReviewItems.Select(row =>
             new SetupProfileApplication(row.ApplicationId, row.Reason));
         await SaveSetupProfileAsync(
-            ToProfileId(_viewModel.SelectedProfile),
+            ToProfileId(_viewModel.UsageProfile.SelectedProfile),
             applications,
-            $"{_viewModel.SelectedProfileName} setup");
+            $"{_viewModel.UsageProfile.SelectedProfileName} setup");
     }
 
     private void InstallUtilityViews()
     {
-        if (OverviewControl.Parent is not Grid pageHost)
-        {
-            return;
-        }
+        // Resolve the host by name: step views are wrapped in panels, so walking up
+        // from a step view no longer reaches the page grid.
+        var pageHost = PageHost;
 
         _historyView = new HistoryView
         {
@@ -438,11 +459,11 @@ public sealed partial class MainWindow : Window
             return;
         }
 
-        if (!_viewModel.HasSnapshot)
+        if (!_viewModel.Overview.HasSnapshot)
         {
             SetImportStatus("Checking this PC locally before comparing the imported setup…");
-            await _viewModel.AnalyzeAsync(_lifetimeCancellation.Token);
-            if (!_viewModel.HasSnapshot)
+            await _viewModel.Overview.AnalyzeAsync(_lifetimeCancellation.Token);
+            if (!_viewModel.Overview.HasSnapshot)
             {
                 SetImportStatus("AgenStart could not analyse this PC, so the imported setup was not applied.");
                 return;
@@ -454,13 +475,13 @@ public sealed partial class MainWindow : Window
         _viewModel.SelectProfile(profile);
         SetImportStatus("Comparing the imported setup with this PC…");
         await _viewModel.BuildRecommendationsAsync(_lifetimeCancellation.Token);
-        if (!_viewModel.HasRecommendations)
+        if (!_viewModel.RecommendationsStep.HasRecommendations)
         {
             SetImportStatus("AgenStart could not compare the imported setup with the current catalogue and inventory.");
             return;
         }
 
-        var generatedRows = _viewModel.Recommendations.ToDictionary(row => row.ApplicationId, StringComparer.OrdinalIgnoreCase);
+        var generatedRows = _viewModel.RecommendationsStep.Recommendations.ToDictionary(row => row.ApplicationId, StringComparer.OrdinalIgnoreCase);
         var desiredRows = new List<RecommendationRowViewModel>(profileDocument.Applications.Count);
         foreach (var desiredApplication in profileDocument.Applications)
         {
@@ -489,11 +510,11 @@ public sealed partial class MainWindow : Window
         var desiredIds = profileDocument.Applications
             .Select(application => application.ApplicationId)
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
-        foreach (var row in _viewModel.Recommendations
+        foreach (var row in _viewModel.RecommendationsStep.Recommendations
                      .Where(row => !desiredIds.Contains(row.ApplicationId))
                      .ToArray())
         {
-            _viewModel.Recommendations.Remove(row);
+            _viewModel.RecommendationsStep.Recommendations.Remove(row);
         }
 
         foreach (var row in desiredRows.Where(row => row.CanSelect))
@@ -506,7 +527,7 @@ public sealed partial class MainWindow : Window
         }
 
         RecommendationsButton.IsEnabled = true;
-        if (_viewModel.SelectedCount == 0)
+        if (_viewModel.RecommendationsStep.SelectedCount == 0)
         {
             SetImportStatus($"Imported setup already satisfied: all {profileDocument.Applications.Count} application(s) are installed on this PC.");
             return;
@@ -630,23 +651,23 @@ public sealed partial class MainWindow : Window
 
     private void ViewModel_OnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (e.PropertyName == nameof(MainWindowViewModel.HasReview))
+        if (e.PropertyName == nameof(ReviewViewModel.HasReview))
         {
-            ReviewButton.IsEnabled = _viewModel.HasReview;
+            ReviewButton.IsEnabled = _viewModel.Review.HasReview;
         }
 
-        if (e.PropertyName is nameof(MainWindowViewModel.InstallationTotalCount) or nameof(MainWindowViewModel.IsInstalling))
+        if (e.PropertyName is nameof(InstallationViewModel.InstallationTotalCount) or nameof(InstallationViewModel.IsInstalling))
         {
-            InstallationButton.IsEnabled = _viewModel.InstallationTotalCount > 0 || _viewModel.IsInstalling || _viewModel.HasReport;
+            InstallationButton.IsEnabled = _viewModel.Installation.InstallationTotalCount > 0 || _viewModel.Installation.IsInstalling || _viewModel.Report.HasReport;
         }
 
-        if (e.PropertyName == nameof(MainWindowViewModel.HasReport))
+        if (e.PropertyName == nameof(ReportViewModel.HasReport))
         {
-            ReportButton.IsEnabled = _viewModel.HasReport;
-            ReportControl.SetExportEnabled(_viewModel.HasReport && StorageProvider.CanSave);
+            ReportButton.IsEnabled = _viewModel.Report.HasReport;
+            ReportControl.SetExportEnabled(_viewModel.Report.HasReport && StorageProvider.CanSave);
         }
 
-        if (e.PropertyName is nameof(MainWindowViewModel.HasRecommendations)
+        if (e.PropertyName is nameof(RecommendationsViewModel.HasRecommendations)
             or nameof(MainWindowViewModel.CurrentStep))
         {
             UpdateRecommendationStickyHeader();
@@ -694,6 +715,10 @@ public sealed partial class MainWindow : Window
     private void OnClosed(object? sender, EventArgs e)
     {
         _viewModel.PropertyChanged -= ViewModel_OnPropertyChanged;
+        _viewModel.Review.PropertyChanged -= ViewModel_OnPropertyChanged;
+        _viewModel.Installation.PropertyChanged -= ViewModel_OnPropertyChanged;
+        _viewModel.Report.PropertyChanged -= ViewModel_OnPropertyChanged;
+        _viewModel.RecommendationsStep.PropertyChanged -= ViewModel_OnPropertyChanged;
         if (_historyView is not null)
         {
             _historyView.ExportSetupRequested -= HistoryView_OnExportSetupRequested;

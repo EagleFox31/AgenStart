@@ -2,7 +2,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:AgenStart.Desktop.ViewModels"
              x:Class="AgenStart.Desktop.Views.YourPcView"
-             x:DataType="vm:MainWindowViewModel">
+             xmlns:steps="using:AgenStart.Desktop.ViewModels.Steps"
+             x:DataType="steps:OverviewViewModel">
   <StackPanel>
     <TextBlock Classes="eyebrow" Text="YOUR PC" Margin="0,0,0,22" />
     <TextBlock Classes="pageTitle" Text="Your PC" />

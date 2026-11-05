@@ -3,7 +3,8 @@
              xmlns:vm="using:AgenStart.Desktop.ViewModels"
              xmlns:views="using:AgenStart.Desktop.Views"
              x:Class="AgenStart.Desktop.Views.InstallationView"
-             x:DataType="vm:MainWindowViewModel">
+             xmlns:steps="using:AgenStart.Desktop.ViewModels.Steps"
+             x:DataType="steps:InstallationViewModel">
   <StackPanel>
     <TextBlock Classes="eyebrow" Text="INSTALLATION" Margin="0,0,0,20" />
     <TextBlock Classes="pageTitle" Text="Setting up your PC" />

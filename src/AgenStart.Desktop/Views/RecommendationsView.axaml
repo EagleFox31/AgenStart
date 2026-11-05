@@ -2,7 +2,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:AgenStart.Desktop.ViewModels"
              x:Class="AgenStart.Desktop.Views.RecommendationsView"
-             x:DataType="vm:MainWindowViewModel">
+             xmlns:steps="using:AgenStart.Desktop.ViewModels.Steps"
+             x:DataType="steps:RecommendationsViewModel">
   <StackPanel>
     <Grid ColumnDefinitions="*,Auto" ColumnSpacing="34">
       <StackPanel>

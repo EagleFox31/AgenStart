@@ -2,7 +2,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:AgenStart.Desktop.ViewModels"
              x:Class="AgenStart.Desktop.Views.OverviewView"
-             x:DataType="vm:MainWindowViewModel">
+             xmlns:steps="using:AgenStart.Desktop.ViewModels.Steps"
+             x:DataType="steps:OverviewViewModel">
   <Grid ColumnDefinitions="1.05*,0.95*" ColumnSpacing="64" MaxWidth="1180" HorizontalAlignment="Left">
     <StackPanel Grid.Column="0" VerticalAlignment="Center">
       <TextBlock Classes="eyebrow" Text="OVERVIEW" Margin="0,0,0,28" />
