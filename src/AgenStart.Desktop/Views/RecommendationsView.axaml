@@ -59,15 +59,16 @@
       </ItemsControl>
     </Border>
 
-    <ItemsControl ItemsSource="{Binding Recommendations}" IsVisible="{Binding IsCardLayout}">
+    <!-- Same 3 columns as the summary tiles; -8 outer margin cancels the cards' 8 px gutter so edges line up. -->
+    <ItemsControl ItemsSource="{Binding Recommendations}" IsVisible="{Binding IsCardLayout}" Margin="-8">
       <ItemsControl.ItemsPanel>
         <ItemsPanelTemplate>
-          <WrapPanel Orientation="Horizontal" ItemWidth="250" />
+          <UniformGrid Columns="3" />
         </ItemsPanelTemplate>
       </ItemsControl.ItemsPanel>
       <ItemsControl.ItemTemplate>
         <DataTemplate x:DataType="vm:RecommendationRowViewModel">
-          <Border Classes="tile" Margin="0,0,14,14" Padding="16,14" MinHeight="168">
+          <Border Classes="tile" Margin="8" Padding="16,14" MinHeight="168">
             <Grid RowDefinitions="Auto,Auto,*,Auto" RowSpacing="10">
               <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
                 <Border Width="44" Height="44" CornerRadius="{DynamicResource AgenSmallRadius}" Background="{DynamicResource AgenLogoTileBrush}">
