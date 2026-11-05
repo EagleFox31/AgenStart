@@ -74,3 +74,12 @@ Entry format: context, symptom, root cause, fix, prevention, generalized lesson.
 - **Fix:** inserted the missing space; `dotnet format ... --verify-no-changes` exits 0.
 - **Prevention:** before any push touching `src/AgenStart.Desktop`, run the same command as CI: `dotnet format src/AgenStart.Desktop/AgenStart.Desktop.csproj --verify-no-changes`.
 - **Generalized lesson:** local verification must replay every CI gate for the touched surface, not only build and tests.
+
+## LL-007 — Wrapping views in panels silently disabled History and Settings
+
+- **Context:** passe 9 (PR #117, f489980) wrapped each step view in a `Panel` so it could bind directly to its step view model.
+- **Symptom:** History and Settings stayed disabled in the side bar. Nothing was logged and the build stayed green.
+- **Root cause:** `InstallUtilityViews` found the page grid through `OverviewControl.Parent is Grid`. After the wrap, the parent became a `Panel`, so the method returned early without saying anything. Code that walks the visual tree depends on the layout, and the compiler cannot check that dependency.
+- **Fix:** the page grid is now named (`x:Name="PageHost"`) and resolved by name (8fd6608).
+- **Prevention:** after any change to `MainWindow` layout, click every side-bar item, including History and Settings, as part of the manual smoke pass. Resolve hosts by `x:Name`, never through `.Parent` chains.
+- **Generalized lesson:** a guard that returns early in silence turns a layout change into a hidden feature loss. Resolve dependencies by name, and make a missing dependency fail loudly.
