@@ -6,8 +6,8 @@
              x:DataType="views:UsageProfilesView">
   <Grid x:Name="RootGrid" RowDefinitions="Auto,*" ColumnDefinitions="*,260" ColumnSpacing="20" RowSpacing="24">
     <StackPanel Grid.ColumnSpan="2">
-      <TextBlock Classes="pageTitle" Text="How do you use this PC?" />
-      <TextBlock Classes="subtitle" Text="Select one or more uses. AgenStart merges them, removes duplicates, and only preselects the strongest matches." Margin="0,6,0,0" />
+      <TextBlock Classes="pageTitle" Text="{DynamicResource Usage.HowDoYouUseThis}" />
+      <TextBlock Classes="subtitle" Text="{DynamicResource Usage.SelectOneOrMoreUses}" Margin="0,6,0,0" />
     </StackPanel>
 
     <StackPanel Grid.Row="1" Grid.Column="0" Spacing="16">
@@ -31,7 +31,7 @@
       <Border x:Name="RecommendationProgressHost" Classes="tile" IsVisible="False" Padding="16,14">
         <StackPanel Spacing="10">
           <Grid ColumnDefinitions="*,Auto" ColumnSpacing="14">
-            <TextBlock x:Name="RecommendationProgressLabel" Text="Starting recommendation analysis…" Foreground="{DynamicResource AgenMutedBrush}" FontSize="13" />
+            <TextBlock x:Name="RecommendationProgressLabel" Text="{DynamicResource Usage.StartingRecommendationAnalysis}" Foreground="{DynamicResource AgenMutedBrush}" FontSize="13" />
             <TextBlock x:Name="RecommendationProgressPercent" Grid.Column="1" Text="10%" Foreground="{DynamicResource AgenAccentBrush}" FontSize="13" FontWeight="SemiBold" />
           </Grid>
           <ProgressBar x:Name="RecommendationProgressBar" Minimum="0" Maximum="100" Value="10" IsIndeterminate="False" />
@@ -39,16 +39,16 @@
       </Border>
 
       <StackPanel Orientation="Horizontal" Spacing="8">
-        <Button x:Name="BuildButton" Classes="primary large" Content="Build my recommendations" Click="BuildButton_OnClick" />
-        <Button x:Name="BackButton" Classes="secondary large" Content="Back" Click="BackButton_OnClick" />
+        <Button x:Name="BuildButton" Classes="primary large" Content="{DynamicResource Usage.BuildMyRecommendations}" Click="BuildButton_OnClick" />
+        <Button x:Name="BackButton" Classes="secondary large" Content="{DynamicResource Usage.Back}" Click="BackButton_OnClick" />
       </StackPanel>
     </StackPanel>
 
     <Border Grid.Row="1" Grid.Column="1" Classes="hero" Padding="20,20" VerticalAlignment="Top">
       <StackPanel Spacing="6">
-        <TextBlock Classes="eyebrow" Text="Selected uses" />
+        <TextBlock Classes="eyebrow" Text="{DynamicResource Usage.SelectedUses}" />
         <TextBlock x:Name="SelectedProfilesText" FontSize="18" FontWeight="SemiBold" TextWrapping="Wrap" />
-        <TextBlock Classes="hint" Text="AgenStart combines these profiles, deduplicates apps and keeps gems optional by default." Margin="0,6,0,0" />
+        <TextBlock Classes="hint" Text="{DynamicResource Usage.AgenStartCombinesTheseProfilesDeduplicates}" Margin="0,6,0,0" />
       </StackPanel>
     </Border>
   </Grid>

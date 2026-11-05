@@ -7,12 +7,12 @@
   <StackPanel Spacing="24">
     <Border Classes="hero">
       <StackPanel>
-        <TextBlock Classes="eyebrow" Text="Overview" />
-        <TextBlock Classes="pageTitle" Text="Let's prepare this PC." Margin="0,6,0,0" />
-        <TextBlock Classes="subtitle" Text="AgenStart inspects this machine locally — Windows, CPU, memory, graphics, storage and WinGet — before recommending anything. Your personal files are never read." MaxWidth="600" HorizontalAlignment="Left" Margin="0,8,0,0" />
+        <TextBlock Classes="eyebrow" Text="{DynamicResource Overview.Overview}" />
+        <TextBlock Classes="pageTitle" Text="{DynamicResource Overview.LetSPrepareThisPC}" Margin="0,6,0,0" />
+        <TextBlock Classes="subtitle" Text="{DynamicResource Overview.AgenStartInspectsThisMachineLocally}" MaxWidth="600" HorizontalAlignment="Left" Margin="0,8,0,0" />
         <StackPanel Orientation="Horizontal" Spacing="10" Margin="0,22,0,0">
-          <Button Classes="primary large" Click="AnalyzeButton_OnClick" Content="Analyse this PC" />
-          <Button x:Name="ImportSetupButton" Classes="secondary large" Content="Import a setup" Click="ImportSetupButton_OnClick" />
+          <Button Classes="primary large" Click="AnalyzeButton_OnClick" Content="{DynamicResource Overview.AnalyseThisPC}" />
+          <Button x:Name="ImportSetupButton" Classes="secondary large" Content="{DynamicResource Overview.ImportASetup}" Click="ImportSetupButton_OnClick" />
         </StackPanel>
         <ProgressBar IsIndeterminate="True" IsVisible="{Binding IsBusy}" MaxWidth="360" HorizontalAlignment="Left" Margin="0,18,0,0" />
         <TextBlock x:Name="ImportStatusText" Classes="hint" IsVisible="False" Margin="0,12,0,0" />
@@ -33,21 +33,21 @@
         <Grid ColumnDefinitions="Auto,*" ColumnSpacing="14">
           <Border Classes="iconTile" Width="44" Height="44" CornerRadius="22" VerticalAlignment="Top"><TextBlock Classes="glyph" Text="&#xE72E;" FontSize="17" /></Border>
           <StackPanel Grid.Column="1">
-            <TextBlock Text="Machine analysis stays on this device." FontSize="15" FontWeight="SemiBold" TextWrapping="Wrap" />
-            <TextBlock Text="You stay in control of what gets installed." Classes="rowHint" />
+            <TextBlock Text="{DynamicResource Overview.MachineAnalysisStaysOnThis}" FontSize="15" FontWeight="SemiBold" TextWrapping="Wrap" />
+            <TextBlock Text="{DynamicResource Overview.YouStayInControlOf}" Classes="rowHint" />
           </StackPanel>
         </Grid>
       </Border>
     </Grid>
 
     <StackPanel>
-      <TextBlock Classes="sectionHeader" Text="How it works" />
+      <TextBlock Classes="sectionHeader" Text="{DynamicResource Overview.HowItWorks}" />
       <Border Classes="group">
         <StackPanel>
-          <Border Classes="row"><Grid ColumnDefinitions="Auto,*" ColumnSpacing="14"><Border Classes="iconTile"><TextBlock Classes="glyph" Text="&#xE977;" /></Border><StackPanel Grid.Column="1" VerticalAlignment="Center"><TextBlock Classes="rowTitle" Text="Analyse this PC" /><TextBlock Classes="rowHint" Text="A read-only scan of the hardware and package tools." /></StackPanel></Grid></Border>
-          <Border Classes="row"><Grid ColumnDefinitions="Auto,*" ColumnSpacing="14"><Border Classes="iconTile"><TextBlock Classes="glyph" Text="&#xE77B;" /></Border><StackPanel Grid.Column="1" VerticalAlignment="Center"><TextBlock Classes="rowTitle" Text="Tell us how you use it" /><TextBlock Classes="rowHint" Text="Pick one or more usage profiles." /></StackPanel></Grid></Border>
-          <Border Classes="row"><Grid ColumnDefinitions="Auto,*" ColumnSpacing="14"><Border Classes="iconTile"><TextBlock Classes="glyph" Text="&#xE734;" /></Border><StackPanel Grid.Column="1" VerticalAlignment="Center"><TextBlock Classes="rowTitle" Text="Review the recommendations" /><TextBlock Classes="rowHint" Text="Keep the essentials, add the gems you want." /></StackPanel></Grid></Border>
-          <Border Classes="row"><Grid ColumnDefinitions="Auto,*" ColumnSpacing="14"><Border Classes="iconTile"><TextBlock Classes="glyph" Text="&#xE930;" /></Border><StackPanel Grid.Column="1" VerticalAlignment="Center"><TextBlock Classes="rowTitle" Text="Confirm and install" /><TextBlock Classes="rowHint" Text="Nothing is installed until you approve the final plan." /></StackPanel></Grid></Border>
+          <Border Classes="row"><Grid ColumnDefinitions="Auto,*" ColumnSpacing="14"><Border Classes="iconTile"><TextBlock Classes="glyph" Text="&#xE977;" /></Border><StackPanel Grid.Column="1" VerticalAlignment="Center"><TextBlock Classes="rowTitle" Text="{DynamicResource Overview.AnalyseThisPC}" /><TextBlock Classes="rowHint" Text="{DynamicResource Overview.AReadOnlyScanOf}" /></StackPanel></Grid></Border>
+          <Border Classes="row"><Grid ColumnDefinitions="Auto,*" ColumnSpacing="14"><Border Classes="iconTile"><TextBlock Classes="glyph" Text="&#xE77B;" /></Border><StackPanel Grid.Column="1" VerticalAlignment="Center"><TextBlock Classes="rowTitle" Text="{DynamicResource Overview.TellUsHowYouUse}" /><TextBlock Classes="rowHint" Text="{DynamicResource Overview.PickOneOrMoreUsage}" /></StackPanel></Grid></Border>
+          <Border Classes="row"><Grid ColumnDefinitions="Auto,*" ColumnSpacing="14"><Border Classes="iconTile"><TextBlock Classes="glyph" Text="&#xE734;" /></Border><StackPanel Grid.Column="1" VerticalAlignment="Center"><TextBlock Classes="rowTitle" Text="{DynamicResource Overview.ReviewTheRecommendations}" /><TextBlock Classes="rowHint" Text="{DynamicResource Overview.KeepTheEssentialsAddThe}" /></StackPanel></Grid></Border>
+          <Border Classes="row"><Grid ColumnDefinitions="Auto,*" ColumnSpacing="14"><Border Classes="iconTile"><TextBlock Classes="glyph" Text="&#xE930;" /></Border><StackPanel Grid.Column="1" VerticalAlignment="Center"><TextBlock Classes="rowTitle" Text="{DynamicResource Overview.ConfirmAndInstall}" /><TextBlock Classes="rowHint" Text="{DynamicResource Overview.NothingIsInstalledUntilYou}" /></StackPanel></Grid></Border>
         </StackPanel>
       </Border>
     </StackPanel>

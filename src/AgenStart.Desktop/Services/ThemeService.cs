@@ -30,8 +30,7 @@ public interface IThemeService
 /// </summary>
 public sealed class AvaloniaThemeService : IThemeService
 {
-    private static readonly Uri BaseUri = new("avares://AgenStart.Desktop/");
-    private ResourceInclude? _active;
+    private readonly ResourceDictionarySwapper _swapper = new();
 
     public static AvaloniaThemeService Shared { get; } = new();
 
@@ -45,20 +44,7 @@ public sealed class AvaloniaThemeService : IThemeService
             return;
         }
 
-        var include = new ResourceInclude(BaseUri)
-        {
-            Source = new Uri(BaseUri, $"Styles/Palettes/{name}.axaml")
-        };
-
-        // Add before removing so no lookup ever falls through to a missing key.
-        var merged = app.Resources.MergedDictionaries;
-        merged.Add(include);
-        if (_active is not null)
-        {
-            merged.Remove(_active);
-        }
-
-        _active = include;
+        var include = _swapper.Swap(app, $"Styles/Palettes/{name}.axaml")!;
         Current = name;
 
         // Each palette declares its own variant, so Fluent controls (inputs, scrollbars,

@@ -5,20 +5,20 @@
              x:DataType="local:LocalExperienceViewModel">
   <StackPanel Spacing="24">
     <StackPanel>
-      <TextBlock Classes="pageTitle" Text="Settings" />
-      <TextBlock Classes="subtitle" Text="Control how AgenStart behaves on this device." Margin="0,6,0,0" />
+      <TextBlock Classes="pageTitle" Text="{DynamicResource Settings.Settings}" />
+      <TextBlock Classes="subtitle" Text="{DynamicResource Settings.ControlHowAgenStartBehavesOn}" Margin="0,6,0,0" />
     </StackPanel>
 
     <StackPanel>
-      <TextBlock Classes="sectionHeader" Text="General" />
+      <TextBlock Classes="sectionHeader" Text="{DynamicResource Settings.General}" />
       <Border Classes="group">
         <StackPanel>
           <Border Classes="row">
             <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="14">
               <Border Classes="iconTile"><TextBlock Classes="glyph" Text="&#xE9D9;" /></Border>
               <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                <TextBlock Classes="rowTitle" Text="Analyse this PC when AgenStart starts" />
-                <TextBlock Classes="rowHint" Text="Runs the same read-only local capability scan used by Your PC." />
+                <TextBlock Classes="rowTitle" Text="{DynamicResource Settings.AnalyseThisPCWhenAgenStart}" />
+                <TextBlock Classes="rowHint" Text="{DynamicResource Settings.RunsTheSameReadOnly}" />
               </StackPanel>
               <CheckBox Grid.Column="2" IsChecked="{Binding AnalyzeOnStartup, Mode=TwoWay}" VerticalAlignment="Center" MinWidth="0" />
             </Grid>
@@ -27,10 +27,20 @@
             <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="14">
               <Border Classes="iconTile"><TextBlock Classes="glyph" Text="&#xE790;" /></Border>
               <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                <TextBlock Classes="rowTitle" Text="Theme" />
-                <TextBlock Classes="rowHint" Text="Choose the look of AgenStart. The change applies immediately and is saved on this device." />
+                <TextBlock Classes="rowTitle" Text="{DynamicResource Settings.Theme}" />
+                <TextBlock Classes="rowHint" Text="{DynamicResource Settings.ChooseTheLookOfAgenStart}" />
               </StackPanel>
-              <ComboBox Grid.Column="2" MinWidth="170" ItemsSource="{Binding ThemeOptions}" SelectedItem="{Binding Theme, Mode=TwoWay}" VerticalAlignment="Center" AutomationProperties.Name="Theme" />
+              <ComboBox Grid.Column="2" MinWidth="170" ItemsSource="{Binding ThemeOptions}" SelectedItem="{Binding Theme, Mode=TwoWay}" VerticalAlignment="Center" AutomationProperties.Name="{DynamicResource Settings.Theme}" />
+            </Grid>
+          </Border>
+          <Border Classes="row">
+            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="14">
+              <Border Classes="iconTile"><TextBlock Classes="glyph" Text="&#xE775;" /></Border>
+              <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                <TextBlock Classes="rowTitle" Text="{DynamicResource Settings.Language}" />
+                <TextBlock Classes="rowHint" Text="{DynamicResource Settings.ChooseTheLanguage}" />
+              </StackPanel>
+              <ComboBox Grid.Column="2" MinWidth="170" ItemsSource="{Binding LanguageOptions}" SelectedItem="{Binding SelectedLanguage, Mode=TwoWay}" VerticalAlignment="Center" AutomationProperties.Name="{DynamicResource Settings.Language}" />
             </Grid>
           </Border>
         </StackPanel>
@@ -38,15 +48,15 @@
     </StackPanel>
 
     <StackPanel>
-      <TextBlock Classes="sectionHeader" Text="Installation" />
+      <TextBlock Classes="sectionHeader" Text="{DynamicResource Settings.Installation}" />
       <Border Classes="group">
         <StackPanel>
           <Border Classes="row">
             <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="14">
               <Border Classes="iconTile"><TextBlock Classes="glyph" Text="&#xE7B8;" /></Border>
               <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                <TextBlock Classes="rowTitle" Text="Package provider" />
-                <TextBlock Classes="rowHint" Text="Exact catalogue package identities are resolved through WinGet." />
+                <TextBlock Classes="rowTitle" Text="{DynamicResource Settings.PackageProvider}" />
+                <TextBlock Classes="rowHint" Text="{DynamicResource Settings.ExactCataloguePackageIdentitiesAre}" />
               </StackPanel>
               <TextBlock Grid.Column="2" Text="WinGet" Foreground="{DynamicResource AgenMutedBrush}" VerticalAlignment="Center" />
             </Grid>
@@ -55,10 +65,10 @@
             <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="14">
               <Border Classes="iconTile"><TextBlock Classes="glyph" Text="&#xE8D7;" /></Border>
               <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                <TextBlock Classes="rowTitle" Text="Package agreements" />
-                <TextBlock Classes="rowHint" Text="AgenStart requires explicit approval on the Review screen before accepting provider agreements." />
+                <TextBlock Classes="rowTitle" Text="{DynamicResource Settings.PackageAgreements}" />
+                <TextBlock Classes="rowHint" Text="{DynamicResource Settings.AgenStartRequiresExplicitApprovalOn}" />
               </StackPanel>
-              <TextBlock Grid.Column="2" Text="Required" Foreground="{DynamicResource AgenMutedBrush}" VerticalAlignment="Center" />
+              <TextBlock Grid.Column="2" Text="{DynamicResource Settings.Required}" Foreground="{DynamicResource AgenMutedBrush}" VerticalAlignment="Center" />
             </Grid>
           </Border>
         </StackPanel>
@@ -66,15 +76,15 @@
     </StackPanel>
 
     <StackPanel>
-      <TextBlock Classes="sectionHeader" Text="Privacy" />
+      <TextBlock Classes="sectionHeader" Text="{DynamicResource Settings.Privacy}" />
       <Border Classes="group">
         <StackPanel>
           <Border Classes="row">
             <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="14">
               <Border Classes="iconTile"><TextBlock Classes="glyph" Text="&#xE9D2;" /></Border>
               <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                <TextBlock Classes="rowTitle" Text="Anonymous product analytics" />
-                <TextBlock Classes="rowHint" Text="Not available yet. No telemetry is sent by this build. Privacy-first telemetry is tracked in #15." />
+                <TextBlock Classes="rowTitle" Text="{DynamicResource Settings.AnonymousProductAnalytics}" />
+                <TextBlock Classes="rowHint" Text="{DynamicResource Settings.NotAvailableYetNoTelemetry}" />
               </StackPanel>
               <CheckBox Grid.Column="2" IsChecked="False" IsEnabled="{Binding TelemetryAvailable}" VerticalAlignment="Center" MinWidth="0" />
             </Grid>
@@ -83,10 +93,10 @@
             <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="14">
               <Border Classes="iconTile"><TextBlock Classes="glyph" Text="&#xE74D;" /></Border>
               <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                <TextBlock Classes="rowTitle" Text="Local AgenStart data" />
-                <TextBlock Classes="rowHint" Text="History and preferences are stored only in AgenStart's local application-data folder." />
+                <TextBlock Classes="rowTitle" Text="{DynamicResource Settings.LocalAgenStartData}" />
+                <TextBlock Classes="rowHint" Text="{DynamicResource Settings.HistoryAndPreferencesAreStored}" />
               </StackPanel>
-              <Button Grid.Column="2" Classes="secondary" Content="Clear local data" Click="ClearLocalDataButton_OnClick" VerticalAlignment="Center" />
+              <Button Grid.Column="2" Classes="secondary" Content="{DynamicResource Settings.ClearLocalData}" Click="ClearLocalDataButton_OnClick" VerticalAlignment="Center" />
             </Grid>
           </Border>
         </StackPanel>
@@ -95,12 +105,12 @@
       <Border Classes="notice" IsVisible="{Binding ClearConfirmationVisible}" Margin="0,12,0,0">
         <Grid ColumnDefinitions="*,Auto" ColumnSpacing="20">
           <StackPanel>
-            <TextBlock Text="Clear local AgenStart data?" FontWeight="SemiBold" />
-            <TextBlock Classes="rowHint" Text="This removes setup history and resets local preferences. Installed applications are not touched." />
+            <TextBlock Text="{DynamicResource Settings.ClearLocalAgenStartData}" FontWeight="SemiBold" />
+            <TextBlock Classes="rowHint" Text="{DynamicResource Settings.ThisRemovesSetupHistoryAnd}" />
           </StackPanel>
           <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
-            <Button Classes="secondary" Content="Cancel" Click="CancelClearButton_OnClick" />
-            <Button Classes="primary" Content="Clear" Click="ConfirmClearButton_OnClick" />
+            <Button Classes="secondary" Content="{DynamicResource Settings.Cancel}" Click="CancelClearButton_OnClick" />
+            <Button Classes="primary" Content="{DynamicResource Settings.Clear}" Click="ConfirmClearButton_OnClick" />
           </StackPanel>
         </Grid>
       </Border>
@@ -108,17 +118,17 @@
     </StackPanel>
 
     <StackPanel>
-      <TextBlock Classes="sectionHeader" Text="Setup profiles" />
+      <TextBlock Classes="sectionHeader" Text="{DynamicResource Settings.SetupProfiles}" />
       <Border Classes="group">
         <StackPanel>
         <Border Classes="row">
           <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="14">
             <Border Classes="iconTile"><TextBlock Classes="glyph" Text="&#xE8B7;" /></Border>
             <StackPanel Grid.Column="1" VerticalAlignment="Center">
-              <TextBlock Classes="rowTitle" Text="Manage exported setups" />
-              <TextBlock Classes="rowHint" Text="Reusable import/export profiles will be enabled by milestone #9." />
+              <TextBlock Classes="rowTitle" Text="{DynamicResource Settings.ManageExportedSetups}" />
+              <TextBlock Classes="rowHint" Text="{DynamicResource Settings.ReusableImportExportProfilesWill}" />
             </StackPanel>
-            <Button Grid.Column="2" Classes="secondary" Content="Manage" IsEnabled="{Binding ExportManagementAvailable}" VerticalAlignment="Center" />
+            <Button Grid.Column="2" Classes="secondary" Content="{DynamicResource Settings.Manage}" IsEnabled="{Binding ExportManagementAvailable}" VerticalAlignment="Center" />
           </Grid>
         </Border>
         </StackPanel>
@@ -126,7 +136,7 @@
     </StackPanel>
 
     <StackPanel>
-      <TextBlock Classes="sectionHeader" Text="About" />
+      <TextBlock Classes="sectionHeader" Text="{DynamicResource Settings.About}" />
       <Border Classes="group">
         <StackPanel>
         <Border Classes="row" Padding="16,14">
@@ -135,9 +145,9 @@
             <StackPanel Grid.Column="1" VerticalAlignment="Center">
               <TextBlock Text="AgenStart" FontSize="16" FontWeight="SemiBold" />
               <TextBlock Classes="rowHint" Text="0.1.0-alpha · BY AGENSTUDIO" />
-              <TextBlock Classes="rowHint" Text="Think sharp. Build what matters." />
+              <TextBlock Classes="rowHint" Text="{DynamicResource Settings.ThinkSharpBuildWhatMatters}" />
             </StackPanel>
-            <Border Grid.Column="2" Classes="statusBadge success" VerticalAlignment="Center"><TextBlock Text="Local-first" /></Border>
+            <Border Grid.Column="2" Classes="statusBadge success" VerticalAlignment="Center"><TextBlock Text="{DynamicResource Settings.LocalFirst}" /></Border>
           </Grid>
         </Border>
         </StackPanel>

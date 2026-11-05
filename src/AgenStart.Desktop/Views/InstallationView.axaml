@@ -7,30 +7,30 @@
              x:DataType="steps:InstallationViewModel">
   <StackPanel Spacing="24">
     <StackPanel>
-      <TextBlock Classes="pageTitle" Text="Setting up your PC" />
+      <TextBlock Classes="pageTitle" Text="{DynamicResource Install.SettingUpYourPC}" />
       <TextBlock Classes="subtitle" Text="{Binding InstallationStatus}" Margin="0,6,0,0" />
     </StackPanel>
 
     <Border Classes="hero" Padding="24,20">
       <StackPanel Spacing="10">
-        <TextBlock Classes="eyebrow" Text="Current task" />
+        <TextBlock Classes="eyebrow" Text="{DynamicResource Install.CurrentTask}" />
         <TextBlock Text="{Binding CurrentInstallationName}" FontSize="20" FontWeight="SemiBold" TextWrapping="Wrap" />
         <ProgressBar IsIndeterminate="True" IsVisible="{Binding IsInstalling}" />
         <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,6,0,0">
-          <Button Classes="secondary" Content="Cancel installation" IsEnabled="{Binding IsInstalling}" Click="CancelButton_OnClick" />
-          <Button Classes="primary" Content="View report" IsVisible="{Binding HasReport}" Click="ViewReportButton_OnClick" />
+          <Button Classes="secondary" Content="{DynamicResource Install.CancelInstallation}" IsEnabled="{Binding IsInstalling}" Click="CancelButton_OnClick" />
+          <Button Classes="primary" Content="{DynamicResource Install.ViewReport}" IsVisible="{Binding HasReport}" Click="ViewReportButton_OnClick" />
         </StackPanel>
       </StackPanel>
     </Border>
 
     <Grid ColumnDefinitions="*,*,*" ColumnSpacing="16">
-      <Border Classes="tile"><StackPanel><TextBlock Classes="statValue" Text="{Binding InstallationCompletedCount}" Foreground="{DynamicResource AgenAccentBrush}" /><TextBlock Classes="statLabel" Text="completed" /></StackPanel></Border>
-      <Border Grid.Column="1" Classes="tile"><StackPanel><TextBlock Classes="statValue" Text="{Binding InstallationRemainingCount}" /><TextBlock Classes="statLabel" Text="remaining" /></StackPanel></Border>
-      <Border Grid.Column="2" Classes="tile"><StackPanel><TextBlock Classes="statValue failedMetric" Classes.hasFailures="{Binding !!InstallationFailedCount}" Text="{Binding InstallationFailedCount}" /><TextBlock Classes="statLabel" Text="failed" /></StackPanel></Border>
+      <Border Classes="tile"><StackPanel><TextBlock Classes="statValue" Text="{Binding InstallationCompletedCount}" Foreground="{DynamicResource AgenAccentBrush}" /><TextBlock Classes="statLabel" Text="{DynamicResource Install.Completed}" /></StackPanel></Border>
+      <Border Grid.Column="1" Classes="tile"><StackPanel><TextBlock Classes="statValue" Text="{Binding InstallationRemainingCount}" /><TextBlock Classes="statLabel" Text="{DynamicResource Install.Remaining}" /></StackPanel></Border>
+      <Border Grid.Column="2" Classes="tile"><StackPanel><TextBlock Classes="statValue failedMetric" Classes.hasFailures="{Binding !!InstallationFailedCount}" Text="{Binding InstallationFailedCount}" /><TextBlock Classes="statLabel" Text="{DynamicResource Install.Failed}" /></StackPanel></Border>
     </Grid>
 
     <StackPanel>
-      <TextBlock Classes="sectionHeader" Text="Installation queue" />
+      <TextBlock Classes="sectionHeader" Text="{DynamicResource Install.InstallationQueue}" />
       <Border Classes="group">
         <ItemsControl ItemsSource="{Binding InstallationItems}">
           <ItemsControl.ItemTemplate>
@@ -43,7 +43,7 @@
                     <TextBlock Text="{Binding Message}" Foreground="{DynamicResource AgenMutedBrush}" FontSize="12.5" TextTrimming="CharacterEllipsis" Margin="0,2,0,0" />
                   </StackPanel>
                   <TextBlock Grid.Column="2" Text="{Binding Status}" Foreground="{DynamicResource AgenMutedBrush}" FontSize="13" VerticalAlignment="Center" />
-                  <Button Grid.Column="3" Classes="plain" Content="Retry" IsVisible="{Binding CanRetry}" Click="RetryButton_OnClick" VerticalAlignment="Center" />
+                  <Button Grid.Column="3" Classes="plain" Content="{DynamicResource Install.Retry}" IsVisible="{Binding CanRetry}" Click="RetryButton_OnClick" VerticalAlignment="Center" />
                 </Grid>
               </Border>
             </DataTemplate>
@@ -54,7 +54,7 @@
 
     <StackPanel Orientation="Horizontal" Spacing="8">
       <TextBlock Classes="glyph" Text="&#xE72E;" FontSize="13" Foreground="{DynamicResource AgenMutedBrush}" />
-      <TextBlock Classes="hint" Text="Packages are resolved through exact trusted provider identities. AgenStart does not execute arbitrary shell commands." VerticalAlignment="Center" />
+      <TextBlock Classes="hint" Text="{DynamicResource Install.PackagesAreResolvedThroughExact}" VerticalAlignment="Center" />
     </StackPanel>
   </StackPanel>
 </UserControl>

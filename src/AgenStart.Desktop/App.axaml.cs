@@ -1,3 +1,4 @@
+using System.Globalization;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
@@ -9,23 +10,29 @@ namespace AgenStart.Desktop;
 
 public sealed partial class App : Avalonia.Application
 {
+    private DesktopSettings _startupSettings = new();
+
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);
-        // Apply the saved palette before the first window is built so it never flashes the default one.
-        AvaloniaThemeService.Shared.Apply(LoadSavedTheme());
+        // Settings are read once, and palette + language applied before the first window is built,
+        // so the window never flashes the default look or the wrong language.
+        _startupSettings = LoadSettings();
+        AvaloniaThemeService.Shared.Apply(_startupSettings.Theme);
+        AvaloniaLocalizationService.Shared.Apply(
+            _startupSettings.Language ?? AppLanguages.FromCulture(CultureInfo.CurrentUICulture));
     }
 
-    private static string LoadSavedTheme()
+    private static DesktopSettings LoadSettings()
     {
         try
         {
             // The store uses ConfigureAwait(false) throughout, so blocking here cannot deadlock.
-            return new LocalExperienceStore().LoadSettingsAsync().GetAwaiter().GetResult().Theme;
+            return new LocalExperienceStore().LoadSettingsAsync().GetAwaiter().GetResult();
         }
         catch (Exception)
         {
-            return AppThemes.Default;
+            return new DesktopSettings();
         }
     }
 
@@ -33,7 +40,7 @@ public sealed partial class App : Avalonia.Application
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            desktop.MainWindow = new MainWindow();
+            desktop.MainWindow = new MainWindow(_startupSettings);
         }
 
         base.OnFrameworkInitializationCompleted();

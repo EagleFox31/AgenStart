@@ -4,8 +4,13 @@ using AgenStart.Desktop.Services;
 
 namespace AgenStart.Desktop.LocalData;
 
-// Theme was added after AnalyzeOnStartup: older settings files without it load the default palette.
-public sealed record DesktopSettings(bool AnalyzeOnStartup = true, string Theme = AppThemes.Default);
+// Fields are only ever appended with defaults, so any older settings.json still loads:
+// Theme came after AnalyzeOnStartup; Language (null = follow the OS) and OnboardingCompleted after Theme.
+public sealed record DesktopSettings(
+    bool AnalyzeOnStartup = true,
+    string Theme = AppThemes.Default,
+    string? Language = null,
+    bool OnboardingCompleted = false);
 
 public sealed record SetupHistoryApplication(
     string ApplicationId,
@@ -42,11 +47,21 @@ public sealed class LocalExperienceStore
 
     public LocalExperienceStore(string? baseDirectory = null)
     {
-        _directoryPath = baseDirectory ?? Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-            "AgenStart");
+        _directoryPath = baseDirectory ?? DefaultDirectory();
         _settingsPath = Path.Combine(_directoryPath, "settings.json");
         _historyPath = Path.Combine(_directoryPath, "history.json");
+    }
+
+    /// <summary>Environment variable that relocates all local data (smoke tests, portable runs).</summary>
+    public const string DataDirectoryVariable = "AGENSTART_DATA_DIR";
+
+    /// <summary>The per-user data folder, unless <see cref="DataDirectoryVariable"/> points elsewhere.</summary>
+    public static string DefaultDirectory()
+    {
+        var overridden = Environment.GetEnvironmentVariable(DataDirectoryVariable);
+        return string.IsNullOrWhiteSpace(overridden)
+            ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "AgenStart")
+            : Path.GetFullPath(overridden.Trim());
     }
 
     public async Task<DesktopSettings> LoadSettingsAsync(CancellationToken cancellationToken = default)

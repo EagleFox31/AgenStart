@@ -7,14 +7,14 @@
              x:DataType="steps:ReviewViewModel">
   <StackPanel Spacing="24">
     <StackPanel>
-      <TextBlock Classes="pageTitle" Text="Confirm your setup" />
-      <TextBlock Classes="subtitle" Text="Nothing will be installed until you approve this plan." Margin="0,6,0,0" />
+      <TextBlock Classes="pageTitle" Text="{DynamicResource Review.ConfirmYourSetup}" />
+      <TextBlock Classes="subtitle" Text="{DynamicResource Review.NothingWillBeInstalledUntil}" Margin="0,6,0,0" />
     </StackPanel>
 
     <Grid ColumnDefinitions="*,*,*" ColumnSpacing="16">
-      <Border Classes="tile"><StackPanel><TextBlock Classes="statValue" Text="{Binding ReviewTotalCount}" /><TextBlock Classes="statLabel" Text="in plan" /></StackPanel></Border>
-      <Border Grid.Column="1" Classes="tile"><StackPanel><TextBlock Classes="statValue" Text="{Binding ReviewAlreadyInstalledCount}" /><TextBlock Classes="statLabel" Text="already installed" /></StackPanel></Border>
-      <Border Grid.Column="2" Classes="tile"><StackPanel><TextBlock Classes="statValue" Text="{Binding ReviewInstallCount}" Foreground="{DynamicResource AgenAccentBrush}" /><TextBlock Classes="statLabel" Text="to install" /></StackPanel></Border>
+      <Border Classes="tile"><StackPanel><TextBlock Classes="statValue" Text="{Binding ReviewTotalCount}" /><TextBlock Classes="statLabel" Text="{DynamicResource Review.InPlan}" /></StackPanel></Border>
+      <Border Grid.Column="1" Classes="tile"><StackPanel><TextBlock Classes="statValue" Text="{Binding ReviewAlreadyInstalledCount}" /><TextBlock Classes="statLabel" Text="{DynamicResource Review.AlreadyInstalled}" /></StackPanel></Border>
+      <Border Grid.Column="2" Classes="tile"><StackPanel><TextBlock Classes="statValue" Text="{Binding ReviewInstallCount}" Foreground="{DynamicResource AgenAccentBrush}" /><TextBlock Classes="statLabel" Text="{DynamicResource Review.ToInstall}" /></StackPanel></Border>
     </Grid>
 
     <Border Classes="group">
@@ -29,7 +29,7 @@
                   <TextBlock Text="{Binding Reason}" Foreground="{DynamicResource AgenMutedBrush}" FontSize="12.5" TextTrimming="CharacterEllipsis" Margin="0,2,0,0" />
                 </StackPanel>
                 <TextBlock Grid.Column="2" Classes="planStatus" Classes.willInstall="{Binding !AlreadyInstalled}" Text="{Binding Status}" VerticalAlignment="Center" />
-                <Button Grid.Column="3" Classes="plain" Content="Remove" IsVisible="{Binding CanRemove}" Click="RemoveButton_OnClick" VerticalAlignment="Center" />
+                <Button Grid.Column="3" Classes="plain" Content="{DynamicResource Review.Remove}" IsVisible="{Binding CanRemove}" Click="RemoveButton_OnClick" VerticalAlignment="Center" />
               </Grid>
             </Border>
           </DataTemplate>
@@ -40,17 +40,17 @@
     <Border Classes="group" Padding="16,14">
       <CheckBox IsChecked="{Binding AgreementsAccepted, Mode=TwoWay}">
         <StackPanel Margin="4,0,0,0">
-          <TextBlock Text="Allow WinGet to accept required package and source agreements for this approved setup." FontWeight="Medium" TextWrapping="Wrap" />
-          <TextBlock Classes="rowHint" Text="Only the applications listed above are eligible for installation." />
+          <TextBlock Text="{DynamicResource Review.AllowWinGetToAcceptRequired}" FontWeight="Medium" TextWrapping="Wrap" />
+          <TextBlock Classes="rowHint" Text="{DynamicResource Review.OnlyTheApplicationsListedAbove}" />
         </StackPanel>
       </CheckBox>
     </Border>
 
     <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
-      <TextBlock Classes="hint" Text="AgenStart will install only the applications shown above." VerticalAlignment="Center" />
+      <TextBlock Classes="hint" Text="{DynamicResource Review.AgenStartWillInstallOnlyThe}" VerticalAlignment="Center" />
       <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
-        <Button Classes="secondary large" Content="Back to recommendations" Click="BackButton_OnClick" />
-        <Button Classes="primary large" Content="Start installation" IsEnabled="{Binding CanStartInstallation}" Click="StartButton_OnClick" />
+        <Button Classes="secondary large" Content="{DynamicResource Review.BackToRecommendations}" Click="BackButton_OnClick" />
+        <Button Classes="primary large" Content="{DynamicResource Review.StartInstallation}" IsEnabled="{Binding CanStartInstallation}" Click="StartButton_OnClick" />
       </StackPanel>
     </Grid>
   </StackPanel>

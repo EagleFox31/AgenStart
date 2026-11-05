@@ -29,7 +29,7 @@ public sealed partial class MainWindow : Window
 
     private readonly CancellationTokenSource _lifetimeCancellation = new();
     private readonly MainWindowViewModel _viewModel;
-    private readonly LocalExperienceViewModel _localExperience = new(themes: AvaloniaThemeService.Shared);
+    private readonly LocalExperienceViewModel _localExperience;
     private readonly SetupProfileSerializer _setupProfileSerializer = new();
     private readonly SoftwareCatalogueLoader _catalogueLoader = new();
     private HistoryView? _historyView;
@@ -40,7 +40,17 @@ public sealed partial class MainWindow : Window
     private IDisposable? _multiProfileProgressSubscription;
 
     public MainWindow()
+        : this(null)
     {
+    }
+
+    /// <param name="initialSettings">Settings App loaded at startup; null reads them from the local store.</param>
+    public MainWindow(DesktopSettings? initialSettings)
+    {
+        _localExperience = new LocalExperienceViewModel(
+            themes: AvaloniaThemeService.Shared,
+            localization: AvaloniaLocalizationService.Shared,
+            initialSettings: initialSettings);
         _viewModel = new MainWindowViewModel();
 
         InitializeComponent();

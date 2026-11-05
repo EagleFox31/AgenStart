@@ -7,15 +7,15 @@
   <StackPanel Spacing="24">
     <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
       <StackPanel>
-        <TextBlock Classes="pageTitle" Text="Recommended for this PC" />
+        <TextBlock Classes="pageTitle" Text="{DynamicResource Recs.RecommendedForThisPC}" />
         <TextBlock Classes="subtitle" Text="{Binding RecommendationStatus}" Margin="0,6,0,0" />
       </StackPanel>
       <Border Grid.Column="1" Classes="segmented" VerticalAlignment="Bottom">
         <StackPanel Orientation="Horizontal" Spacing="2">
-          <Button Classes="segment" Classes.active="{Binding IsListLayout}" Click="ListLayoutButton_OnClick" ToolTip.Tip="List view" AutomationProperties.Name="List view">
+          <Button Classes="segment" Classes.active="{Binding IsListLayout}" Click="ListLayoutButton_OnClick" ToolTip.Tip="{DynamicResource Recs.ListView}" AutomationProperties.Name="{DynamicResource Recs.ListView}">
             <TextBlock Classes="glyph" Text="&#xE8FD;" FontSize="14" Foreground="{Binding $parent[Button].Foreground}" />
           </Button>
-          <Button Classes="segment" Classes.active="{Binding IsCardLayout}" Click="CardLayoutButton_OnClick" ToolTip.Tip="Card view" AutomationProperties.Name="Card view">
+          <Button Classes="segment" Classes.active="{Binding IsCardLayout}" Click="CardLayoutButton_OnClick" ToolTip.Tip="{DynamicResource Recs.CardView}" AutomationProperties.Name="{DynamicResource Recs.CardView}">
             <TextBlock Classes="glyph" Text="&#xF0E2;" FontSize="14" Foreground="{Binding $parent[Button].Foreground}" />
           </Button>
         </StackPanel>
@@ -23,9 +23,9 @@
     </Grid>
 
     <Grid ColumnDefinitions="*,*,*" ColumnSpacing="16">
-      <Border Classes="tile"><StackPanel><TextBlock Classes="statValue" Text="{Binding RecommendationCount}" /><TextBlock Classes="statLabel" Text="recommendations" /></StackPanel></Border>
-      <Border Grid.Column="1" Classes="tile"><StackPanel><TextBlock Classes="statValue" Text="{Binding SelectedCount}" Foreground="{DynamicResource AgenAccentBrush}" /><TextBlock Classes="statLabel" Text="selected" /></StackPanel></Border>
-      <Border Grid.Column="2" Classes="tile"><StackPanel><TextBlock Classes="statValue" Text="{Binding AlreadyInstalledCount}" /><TextBlock Classes="statLabel" Text="already installed" /></StackPanel></Border>
+      <Border Classes="tile"><StackPanel><TextBlock Classes="statValue" Text="{Binding RecommendationCount}" /><TextBlock Classes="statLabel" Text="{DynamicResource Recs.Recommendations}" /></StackPanel></Border>
+      <Border Grid.Column="1" Classes="tile"><StackPanel><TextBlock Classes="statValue" Text="{Binding SelectedCount}" Foreground="{DynamicResource AgenAccentBrush}" /><TextBlock Classes="statLabel" Text="{DynamicResource Recs.Selected}" /></StackPanel></Border>
+      <Border Grid.Column="2" Classes="tile"><StackPanel><TextBlock Classes="statValue" Text="{Binding AlreadyInstalledCount}" /><TextBlock Classes="statLabel" Text="{DynamicResource Recs.AlreadyInstalled}" /></StackPanel></Border>
     </Grid>
 
     <Border Classes="group" IsVisible="{Binding IsListLayout}">
@@ -97,11 +97,11 @@
     <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
       <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
         <TextBlock Classes="glyph" Text="&#xE72E;" FontSize="13" Foreground="{DynamicResource AgenMutedBrush}" />
-        <TextBlock Classes="hint" Text="Nothing will be installed until you approve the final setup." VerticalAlignment="Center" />
+        <TextBlock Classes="hint" Text="{DynamicResource Recs.NothingWillBeInstalledUntil}" VerticalAlignment="Center" />
       </StackPanel>
       <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
-        <Button Classes="secondary large" Content="Select essentials only" Click="SelectEssentialsButton_OnClick" />
-        <Button Classes="primary large" Content="Confirm" IsEnabled="{Binding CanReview}" Click="ReviewButton_OnClick" />
+        <Button Classes="secondary large" Content="{DynamicResource Recs.SelectEssentialsOnly}" Click="SelectEssentialsButton_OnClick" />
+        <Button Classes="primary large" Content="{DynamicResource Recs.Confirm}" IsEnabled="{Binding CanReview}" Click="ReviewButton_OnClick" />
       </StackPanel>
     </Grid>
   </StackPanel>

@@ -20,25 +20,25 @@
           <Border Width="30" Height="30" CornerRadius="8" ClipToBounds="True" VerticalAlignment="Center"><Image Source="avares://AgenStart.Desktop/Assets/agenstart-app-icon.png" Stretch="UniformToFill" RenderOptions.BitmapInterpolationMode="HighQuality" /></Border>
           <StackPanel Grid.Column="1" VerticalAlignment="Center">
             <TextBlock Text="AgenStart" Foreground="{DynamicResource AgenBrandTextBrush}" FontSize="15" FontWeight="SemiBold" />
-            <TextBlock Text="by AgenStudio" Foreground="{DynamicResource AgenBrandSubtitleBrush}" FontSize="11.5" />
+            <TextBlock Text="{DynamicResource Shell.ByAgenStudio}" Foreground="{DynamicResource AgenBrandSubtitleBrush}" FontSize="11.5" />
           </StackPanel>
         </Grid>
 
         <StackPanel Grid.Row="1">
-          <TextBlock Classes="navHeading" Text="Setup" />
-          <Button x:Name="OverviewButton" Classes="nav" AutomationProperties.Name="Overview" Classes.active="{Binding IsOverview}" Tag="Overview" Click="NavButton_OnClick"><StackPanel Orientation="Horizontal"><TextBlock Classes="navIcon" Text="&#xE80F;" /><TextBlock Classes="navLabel" Text="Overview" /></StackPanel></Button>
-          <Button x:Name="YourPcButton" Classes="nav" AutomationProperties.Name="Your PC" Classes.active="{Binding IsYourPc}" Tag="YourPc" Click="NavButton_OnClick"><StackPanel Orientation="Horizontal"><TextBlock Classes="navIcon" Text="&#xE977;" /><TextBlock Classes="navLabel" Text="Your PC" /></StackPanel></Button>
-          <Button x:Name="UsageProfileButton" Classes="nav" AutomationProperties.Name="Usage profile" Classes.active="{Binding IsUsageProfile}" Tag="UsageProfile" Click="NavButton_OnClick"><StackPanel Orientation="Horizontal"><TextBlock Classes="navIcon" Text="&#xE77B;" /><TextBlock Classes="navLabel" Text="Usage profile" /></StackPanel></Button>
-          <Button x:Name="RecommendationsButton" Classes="nav" AutomationProperties.Name="Recommendations" Classes.active="{Binding IsRecommendations}" Tag="Recommendations" Click="NavButton_OnClick"><StackPanel Orientation="Horizontal"><TextBlock Classes="navIcon" Text="&#xE734;" /><TextBlock Classes="navLabel" Text="Recommendations" /></StackPanel></Button>
-          <Button x:Name="ReviewButton" Classes="nav" AutomationProperties.Name="Confirm" Classes.active="{Binding IsReview}" Tag="Review" Click="NavButton_OnClick"><StackPanel Orientation="Horizontal"><TextBlock Classes="navIcon" Text="&#xE930;" /><TextBlock Classes="navLabel" Text="Confirm" /></StackPanel></Button>
-          <Button x:Name="InstallationButton" Classes="nav" AutomationProperties.Name="Installation" Classes.active="{Binding IsInstallationStep}" Tag="Installation" Click="NavButton_OnClick"><StackPanel Orientation="Horizontal"><TextBlock Classes="navIcon" Text="&#xE896;" /><TextBlock Classes="navLabel" Text="Installation" /></StackPanel></Button>
-          <Button x:Name="ReportButton" Classes="nav" AutomationProperties.Name="Report" Classes.active="{Binding IsReport}" Tag="Report" Click="NavButton_OnClick"><StackPanel Orientation="Horizontal"><TextBlock Classes="navIcon" Text="&#xE9F9;" /><TextBlock Classes="navLabel" Text="Report" /></StackPanel></Button>
+          <TextBlock Classes="navHeading" Text="{DynamicResource Shell.Setup}" />
+          <Button x:Name="OverviewButton" Classes="nav" AutomationProperties.Name="{DynamicResource Shell.Overview}" Classes.active="{Binding IsOverview}" Tag="Overview" Click="NavButton_OnClick"><StackPanel Orientation="Horizontal"><TextBlock Classes="navIcon" Text="&#xE80F;" /><TextBlock Classes="navLabel" Text="{DynamicResource Shell.Overview}" /></StackPanel></Button>
+          <Button x:Name="YourPcButton" Classes="nav" AutomationProperties.Name="{DynamicResource Shell.YourPC}" Classes.active="{Binding IsYourPc}" Tag="YourPc" Click="NavButton_OnClick"><StackPanel Orientation="Horizontal"><TextBlock Classes="navIcon" Text="&#xE977;" /><TextBlock Classes="navLabel" Text="{DynamicResource Shell.YourPC}" /></StackPanel></Button>
+          <Button x:Name="UsageProfileButton" Classes="nav" AutomationProperties.Name="{DynamicResource Shell.UsageProfile}" Classes.active="{Binding IsUsageProfile}" Tag="UsageProfile" Click="NavButton_OnClick"><StackPanel Orientation="Horizontal"><TextBlock Classes="navIcon" Text="&#xE77B;" /><TextBlock Classes="navLabel" Text="{DynamicResource Shell.UsageProfile}" /></StackPanel></Button>
+          <Button x:Name="RecommendationsButton" Classes="nav" AutomationProperties.Name="{DynamicResource Shell.Recommendations}" Classes.active="{Binding IsRecommendations}" Tag="Recommendations" Click="NavButton_OnClick"><StackPanel Orientation="Horizontal"><TextBlock Classes="navIcon" Text="&#xE734;" /><TextBlock Classes="navLabel" Text="{DynamicResource Shell.Recommendations}" /></StackPanel></Button>
+          <Button x:Name="ReviewButton" Classes="nav" AutomationProperties.Name="{DynamicResource Shell.Confirm}" Classes.active="{Binding IsReview}" Tag="Review" Click="NavButton_OnClick"><StackPanel Orientation="Horizontal"><TextBlock Classes="navIcon" Text="&#xE930;" /><TextBlock Classes="navLabel" Text="{DynamicResource Shell.Confirm}" /></StackPanel></Button>
+          <Button x:Name="InstallationButton" Classes="nav" AutomationProperties.Name="{DynamicResource Shell.Installation}" Classes.active="{Binding IsInstallationStep}" Tag="Installation" Click="NavButton_OnClick"><StackPanel Orientation="Horizontal"><TextBlock Classes="navIcon" Text="&#xE896;" /><TextBlock Classes="navLabel" Text="{DynamicResource Shell.Installation}" /></StackPanel></Button>
+          <Button x:Name="ReportButton" Classes="nav" AutomationProperties.Name="{DynamicResource Shell.Report}" Classes.active="{Binding IsReport}" Tag="Report" Click="NavButton_OnClick"><StackPanel Orientation="Horizontal"><TextBlock Classes="navIcon" Text="&#xE9F9;" /><TextBlock Classes="navLabel" Text="{DynamicResource Shell.Report}" /></StackPanel></Button>
         </StackPanel>
 
         <StackPanel Grid.Row="2">
-          <TextBlock Classes="navHeading" Text="General" />
-          <Button Classes="nav" AutomationProperties.Name="History" IsEnabled="False"><StackPanel Orientation="Horizontal"><TextBlock Classes="navIcon" Text="&#xE81C;" /><TextBlock Classes="navLabel" Text="History" /></StackPanel></Button>
-          <Button Classes="nav" AutomationProperties.Name="Settings" IsEnabled="False"><StackPanel Orientation="Horizontal"><TextBlock Classes="navIcon" Text="&#xE713;" /><TextBlock Classes="navLabel" Text="Settings" /></StackPanel></Button>
+          <TextBlock Classes="navHeading" Text="{DynamicResource Shell.General}" />
+          <Button Classes="nav" AutomationProperties.Name="{DynamicResource Shell.History}" IsEnabled="False"><StackPanel Orientation="Horizontal"><TextBlock Classes="navIcon" Text="&#xE81C;" /><TextBlock Classes="navLabel" Text="{DynamicResource Shell.History}" /></StackPanel></Button>
+          <Button Classes="nav" AutomationProperties.Name="{DynamicResource Shell.Settings}" IsEnabled="False"><StackPanel Orientation="Horizontal"><TextBlock Classes="navIcon" Text="&#xE713;" /><TextBlock Classes="navLabel" Text="{DynamicResource Shell.Settings}" /></StackPanel></Button>
         </StackPanel>
       </Grid>
     </Border>
@@ -71,7 +71,7 @@
               VerticalAlignment="Top"
               HorizontalAlignment="Stretch">
         <Grid MaxWidth="920" ColumnDefinitions="*,Auto" ColumnSpacing="24">
-          <TextBlock Text="Recommended for this PC"
+          <TextBlock Text="{DynamicResource Shell.RecommendedForThisPC}"
                      FontSize="15"
                      FontWeight="SemiBold"
                      Foreground="{DynamicResource AgenTextBrush}"
