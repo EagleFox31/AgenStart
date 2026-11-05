@@ -13,37 +13,46 @@
         MinWidth="1040"
         MinHeight="680"
         WindowStartupLocation="CenterScreen">
-  <Grid ColumnDefinitions="240,*">
-    <Border Grid.Column="0" Classes="sidebar">
-      <Grid RowDefinitions="Auto,*,Auto" Margin="10,18,10,14">
-        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10" Margin="8,0,8,4">
-          <Border Width="30" Height="30" CornerRadius="8" ClipToBounds="True" VerticalAlignment="Center"><Image Source="avares://AgenStart.Desktop/Assets/agenstart-app-icon.png" Stretch="UniformToFill" RenderOptions.BitmapInterpolationMode="HighQuality" /></Border>
-          <StackPanel Grid.Column="1" VerticalAlignment="Center">
-            <TextBlock Text="AgenStart" Foreground="{DynamicResource AgenBrandTextBrush}" FontSize="15" FontWeight="SemiBold" />
-            <TextBlock Text="{DynamicResource Shell.ByAgenStudio}" Foreground="{DynamicResource AgenBrandSubtitleBrush}" FontSize="11.5" />
-          </StackPanel>
-        </Grid>
-
-        <StackPanel Grid.Row="1">
-          <TextBlock Classes="navHeading" Text="{DynamicResource Shell.Setup}" />
-          <Button x:Name="OverviewButton" Classes="nav" AutomationProperties.Name="{DynamicResource Shell.Overview}" Classes.active="{Binding IsOverview}" Tag="Overview" Click="NavButton_OnClick"><StackPanel Orientation="Horizontal"><TextBlock Classes="navIcon" Text="&#xE80F;" /><TextBlock Classes="navLabel" Text="{DynamicResource Shell.Overview}" /></StackPanel></Button>
-          <Button x:Name="YourPcButton" Classes="nav" AutomationProperties.Name="{DynamicResource Shell.YourPC}" Classes.active="{Binding IsYourPc}" Tag="YourPc" Click="NavButton_OnClick"><StackPanel Orientation="Horizontal"><TextBlock Classes="navIcon" Text="&#xE977;" /><TextBlock Classes="navLabel" Text="{DynamicResource Shell.YourPC}" /></StackPanel></Button>
-          <Button x:Name="UsageProfileButton" Classes="nav" AutomationProperties.Name="{DynamicResource Shell.UsageProfile}" Classes.active="{Binding IsUsageProfile}" Tag="UsageProfile" Click="NavButton_OnClick"><StackPanel Orientation="Horizontal"><TextBlock Classes="navIcon" Text="&#xE77B;" /><TextBlock Classes="navLabel" Text="{DynamicResource Shell.UsageProfile}" /></StackPanel></Button>
-          <Button x:Name="RecommendationsButton" Classes="nav" AutomationProperties.Name="{DynamicResource Shell.Recommendations}" Classes.active="{Binding IsRecommendations}" Tag="Recommendations" Click="NavButton_OnClick"><StackPanel Orientation="Horizontal"><TextBlock Classes="navIcon" Text="&#xE734;" /><TextBlock Classes="navLabel" Text="{DynamicResource Shell.Recommendations}" /></StackPanel></Button>
-          <Button x:Name="ReviewButton" Classes="nav" AutomationProperties.Name="{DynamicResource Shell.Confirm}" Classes.active="{Binding IsReview}" Tag="Review" Click="NavButton_OnClick"><StackPanel Orientation="Horizontal"><TextBlock Classes="navIcon" Text="&#xE930;" /><TextBlock Classes="navLabel" Text="{DynamicResource Shell.Confirm}" /></StackPanel></Button>
-          <Button x:Name="InstallationButton" Classes="nav" AutomationProperties.Name="{DynamicResource Shell.Installation}" Classes.active="{Binding IsInstallationStep}" Tag="Installation" Click="NavButton_OnClick"><StackPanel Orientation="Horizontal"><TextBlock Classes="navIcon" Text="&#xE896;" /><TextBlock Classes="navLabel" Text="{DynamicResource Shell.Installation}" /></StackPanel></Button>
-          <Button x:Name="ReportButton" Classes="nav" AutomationProperties.Name="{DynamicResource Shell.Report}" Classes.active="{Binding IsReport}" Tag="Report" Click="NavButton_OnClick"><StackPanel Orientation="Horizontal"><TextBlock Classes="navIcon" Text="&#xE9F9;" /><TextBlock Classes="navLabel" Text="{DynamicResource Shell.Report}" /></StackPanel></Button>
+  <Grid RowDefinitions="Auto,*">
+    <Border Grid.Row="0" Classes="tabBar">
+      <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="20" Margin="20,0,16,0">
+        <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+          <Border Width="26" Height="26" CornerRadius="7" ClipToBounds="True" VerticalAlignment="Center"><Image Source="avares://AgenStart.Desktop/Assets/agenstart-app-icon.png" Stretch="UniformToFill" RenderOptions.BitmapInterpolationMode="HighQuality" /></Border>
+          <TextBlock Text="AgenStart" Foreground="{DynamicResource AgenBrandTextBrush}" FontSize="15" FontWeight="SemiBold" VerticalAlignment="Center" ToolTip.Tip="{DynamicResource Shell.ByAgenStudio}" />
         </StackPanel>
 
-        <StackPanel Grid.Row="2">
-          <TextBlock Classes="navHeading" Text="{DynamicResource Shell.General}" />
-          <Button Classes="nav" AutomationProperties.Name="{DynamicResource Shell.History}" IsEnabled="False"><StackPanel Orientation="Horizontal"><TextBlock Classes="navIcon" Text="&#xE81C;" /><TextBlock Classes="navLabel" Text="{DynamicResource Shell.History}" /></StackPanel></Button>
-          <Button Classes="nav" AutomationProperties.Name="{DynamicResource Shell.Settings}" IsEnabled="False"><StackPanel Orientation="Horizontal"><TextBlock Classes="navIcon" Text="&#xE713;" /><TextBlock Classes="navLabel" Text="{DynamicResource Shell.Settings}" /></StackPanel></Button>
-        </StackPanel>
+        <!-- Scrolls only if a long translation ever overflows the minimum window width. -->
+        <ScrollViewer Grid.Column="1" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
+          <ItemsControl ItemsSource="{Binding FlowTabs}" AutomationProperties.Name="{DynamicResource Shell.Setup}">
+            <ItemsControl.ItemsPanel>
+              <ItemsPanelTemplate><StackPanel Orientation="Horizontal" Spacing="2" /></ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="vm:NavigationTabViewModel">
+                <Button Classes="tab" Classes.active="{Binding IsActive}" Command="{Binding SelectCommand}" AutomationProperties.Name="{Binding Label}">
+                  <TextBlock Classes="tabLabel" Text="{Binding Label}" />
+                </Button>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </ScrollViewer>
+
+        <ItemsControl Grid.Column="2" ItemsSource="{Binding UtilityTabs}" AutomationProperties.Name="{DynamicResource Shell.General}">
+          <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate><StackPanel Orientation="Horizontal" Spacing="2" /></ItemsPanelTemplate>
+          </ItemsControl.ItemsPanel>
+          <ItemsControl.ItemTemplate>
+            <DataTemplate x:DataType="vm:NavigationTabViewModel">
+              <Button Classes="tab icon" Classes.active="{Binding IsActive}" Command="{Binding SelectCommand}" AutomationProperties.Name="{Binding Label}" ToolTip.Tip="{Binding Label}">
+                <TextBlock Classes="tabIcon" Text="{Binding Icon}" />
+              </Button>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
       </Grid>
     </Border>
 
-    <Grid Grid.Column="1" Background="{DynamicResource AgenSurfaceBrush}">
+    <Grid Grid.Row="1" Background="{DynamicResource AgenSurfaceBrush}">
       <ScrollViewer x:Name="MainScrollViewer" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
         <Grid x:Name="PageHost" MaxWidth="920" Margin="48,40,48,56" HorizontalAlignment="Stretch">
           <Panel IsVisible="{Binding IsOverview}"><views:OverviewView x:Name="OverviewControl" DataContext="{Binding Overview}" /></Panel>
@@ -59,6 +68,11 @@
           <Panel IsVisible="{Binding IsInstallationStep}"><views:InstallationView x:Name="InstallationControl" DataContext="{Binding Installation}" /></Panel>
 
           <Panel IsVisible="{Binding IsReport}"><views:ReportView x:Name="ReportControl" DataContext="{Binding Report}" /></Panel>
+
+          <!-- DataContext (local experience) is set in code-behind; visibility stays on the wrapping panel. -->
+          <Panel IsVisible="{Binding IsHistory}"><views:HistoryView x:Name="HistoryControl" /></Panel>
+
+          <Panel IsVisible="{Binding IsSettings}"><views:SettingsView x:Name="SettingsControl" /></Panel>
         </Grid>
       </ScrollViewer>
 

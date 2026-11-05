@@ -11,70 +11,70 @@
     <Setter Property="FontSize" Value="14" />
   </Style>
 
-  <!-- ───── Sidebar ───── -->
+  <!-- ───── Tab bar ───── -->
 
-  <Style Selector="Border.sidebar">
+  <Style Selector="Border.tabBar">
     <Setter Property="Background" Value="{DynamicResource AgenNavBrush}" />
     <Setter Property="BorderBrush" Value="{DynamicResource AgenSidebarBorderBrush}" />
-    <Setter Property="BorderThickness" Value="0,0,1,0" />
+    <Setter Property="BorderThickness" Value="0,0,0,1" />
+    <Setter Property="Height" Value="56" />
   </Style>
 
-  <Style Selector="TextBlock.navHeading">
-    <Setter Property="Foreground" Value="{DynamicResource AgenNavHeadingBrush}" />
-    <Setter Property="FontSize" Value="12" />
-    <Setter Property="FontWeight" Value="SemiBold" />
-    <Setter Property="Margin" Value="10,18,10,6" />
-  </Style>
-
-  <Style Selector="Button.nav">
-    <Setter Property="Height" Value="{DynamicResource AgenNavItemHeight}" />
-    <Setter Property="Margin" Value="{DynamicResource AgenNavItemMargin}" />
-    <Setter Property="Padding" Value="{DynamicResource AgenNavItemPadding}" />
-    <Setter Property="HorizontalAlignment" Value="Stretch" />
-    <Setter Property="HorizontalContentAlignment" Value="Left" />
+  <Style Selector="Button.tab">
+    <Setter Property="Height" Value="36" />
+    <Setter Property="Padding" Value="11,0" />
+    <Setter Property="VerticalAlignment" Value="Center" />
     <Setter Property="VerticalContentAlignment" Value="Center" />
     <Setter Property="Background" Value="Transparent" />
     <Setter Property="Foreground" Value="{DynamicResource AgenNavTextBrush}" />
-    <Setter Property="BorderThickness" Value="0" />
+    <Setter Property="BorderBrush" Value="Transparent" />
+    <Setter Property="BorderThickness" Value="0,0,0,2" />
     <Setter Property="CornerRadius" Value="{DynamicResource AgenNavItemRadius}" />
-    <Setter Property="FontSize" Value="14" />
+    <Setter Property="FontSize" Value="13.5" />
   </Style>
 
-  <Style Selector="Button.nav:pointerover /template/ ContentPresenter">
+  <Style Selector="Button.tab.icon">
+    <Setter Property="Width" Value="38" />
+    <Setter Property="Padding" Value="0" />
+    <Setter Property="HorizontalContentAlignment" Value="Center" />
+  </Style>
+
+  <Style Selector="Button.tab:pointerover /template/ ContentPresenter">
     <Setter Property="Background" Value="{DynamicResource AgenNavHoverBrush}" />
     <Setter Property="Foreground" Value="{DynamicResource AgenNavTextHoverBrush}" />
   </Style>
 
-  <Style Selector="Button.nav:pressed /template/ ContentPresenter">
+  <Style Selector="Button.tab:pressed /template/ ContentPresenter">
     <Setter Property="Background" Value="{DynamicResource AgenNavActiveBrush}" />
     <Setter Property="Foreground" Value="{DynamicResource AgenNavTextActiveBrush}" />
   </Style>
 
-  <Style Selector="Button.nav.active /template/ ContentPresenter">
+  <!-- The active tab is marked by colour, weight and an accent underline, not colour alone. -->
+  <Style Selector="Button.tab.active /template/ ContentPresenter">
     <Setter Property="Background" Value="{DynamicResource AgenNavActiveBrush}" />
     <Setter Property="Foreground" Value="{DynamicResource AgenNavTextActiveBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource AgenAccentBrush}" />
   </Style>
 
-  <Style Selector="Button.nav.active TextBlock.navLabel">
+  <Style Selector="Button.tab.active TextBlock.tabLabel">
     <Setter Property="FontWeight" Value="SemiBold" />
   </Style>
 
-  <Style Selector="Button.nav.active TextBlock.navIcon">
+  <Style Selector="Button.tab.active TextBlock.tabIcon">
     <Setter Property="Foreground" Value="{DynamicResource AgenNavIconActiveBrush}" />
   </Style>
 
-  <Style Selector="Button.nav:disabled">
+  <Style Selector="Button.tab:disabled">
     <Setter Property="Opacity" Value="0.45" />
   </Style>
 
-  <Style Selector="Button.nav:disabled /template/ ContentPresenter">
+  <Style Selector="Button.tab:disabled /template/ ContentPresenter">
     <Setter Property="Background" Value="Transparent" />
     <Setter Property="BorderBrush" Value="Transparent" />
     <Setter Property="Foreground" Value="{DynamicResource AgenNavTextDisabledBrush}" />
   </Style>
 
-  <Style Selector="Button.nav TextBlock.navIcon">
-    <Setter Property="Width" Value="20" />
+  <Style Selector="Button.tab TextBlock.tabIcon">
     <Setter Property="FontFamily" Value="Segoe Fluent Icons, Segoe MDL2 Assets" />
     <Setter Property="FontSize" Value="15" />
     <Setter Property="Foreground" Value="{DynamicResource AgenNavIconBrush}" />
@@ -82,8 +82,7 @@
     <Setter Property="VerticalAlignment" Value="Center" />
   </Style>
 
-  <Style Selector="Button.nav TextBlock.navLabel">
-    <Setter Property="Margin" Value="10,0,0,0" />
+  <Style Selector="Button.tab TextBlock.tabLabel">
     <Setter Property="VerticalAlignment" Value="Center" />
   </Style>
 

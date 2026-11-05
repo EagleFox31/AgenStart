@@ -31,6 +31,7 @@ public enum AppStep
 public sealed class MainWindowViewModel : INotifyPropertyChanged, IDisposable
 {
     private readonly ISessionState _session;
+    private readonly ILocalizer _text;
     private bool _disposed;
     private AppStep _currentStep = AppStep.Overview;
 
@@ -41,7 +42,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged, IDisposable
         RecommendationEngine? recommendationEngine = null,
         SoftwareCatalogueLoader? catalogueLoader = null,
         ISessionState? session = null,
-        IUiDispatcher? dispatcher = null)
+        IUiDispatcher? dispatcher = null,
+        ILocalizer? text = null)
     {
         var machine = machineInventory ?? new WindowsMachineInventoryProvider();
         var software = softwareInventory ?? new WindowsInstalledSoftwareInventoryProvider();
@@ -49,6 +51,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged, IDisposable
         var engine = recommendationEngine ?? new RecommendationEngine();
         var loader = catalogueLoader ?? new SoftwareCatalogueLoader();
         _session = session ?? new SessionState();
+        _text = text ?? AvaloniaLocalizationService.Shared;
         var ui = dispatcher ?? AvaloniaUiDispatcher.Shared;
 
         Report = new ReportViewModel();
@@ -72,6 +75,31 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged, IDisposable
         UsageProfile = new UsageProfileViewModel();
 
         Overview = new OverviewViewModel(machine, _session);
+
+        FlowTabs =
+        [
+            Tab(AppStep.Overview, "Shell.Overview", "\uE80F"),
+            Tab(AppStep.YourPc, "Shell.YourPC", "\uE977"),
+            Tab(AppStep.UsageProfile, "Shell.UsageProfile", "\uE77B"),
+            Tab(AppStep.Recommendations, "Shell.Recommendations", "\uE734"),
+            Tab(AppStep.Review, "Shell.Confirm", "\uE930"),
+            Tab(AppStep.Installation, "Shell.Installation", "\uE896"),
+            Tab(AppStep.Report, "Shell.Report", "\uE9F9")
+        ];
+        UtilityTabs =
+        [
+            Tab(AppStep.History, "Shell.History", "\uE81C"),
+            Tab(AppStep.Settings, "Shell.Settings", "\uE713")
+        ];
+
+        // Any change in a step may change what can be opened; refreshing is a no-op when nothing moved.
+        Overview.PropertyChanged += Step_OnPropertyChanged;
+        RecommendationsStep.PropertyChanged += Step_OnPropertyChanged;
+        Review.PropertyChanged += Step_OnPropertyChanged;
+        Installation.PropertyChanged += Step_OnPropertyChanged;
+        Report.PropertyChanged += Step_OnPropertyChanged;
+        _text.LanguageChanged += Text_OnLanguageChanged;
+        RefreshTabs();
     }
 
     public ReportViewModel Report { get; }
@@ -80,6 +108,12 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged, IDisposable
     public RecommendationsViewModel RecommendationsStep { get; }
     public UsageProfileViewModel UsageProfile { get; }
     public OverviewViewModel Overview { get; }
+
+    /// <summary>Setup flow tabs, left to right.</summary>
+    public IReadOnlyList<NavigationTabViewModel> FlowTabs { get; }
+
+    /// <summary>History and Settings, shown on the right of the tab bar.</summary>
+    public IReadOnlyList<NavigationTabViewModel> UtilityTabs { get; }
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -99,6 +133,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged, IDisposable
                 OnPropertyChanged(nameof(IsReport));
                 OnPropertyChanged(nameof(IsHistory));
                 OnPropertyChanged(nameof(IsSettings));
+                RefreshTabs();
             }
         }
     }
@@ -113,7 +148,29 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged, IDisposable
     public bool IsHistory => _currentStep == AppStep.History;
     public bool IsSettings => _currentStep == AppStep.Settings;
 
+    /// <summary>Flow navigation decided by the app (e.g. after a scan); not gated.</summary>
     public void ShowStep(AppStep step) => CurrentStep = step;
+
+    public NavigationState Navigation => new(
+        Overview.HasSnapshot,
+        RecommendationsStep.HasRecommendations,
+        Review.HasReview,
+        Installation.InstallationTotalCount > 0 || Installation.IsInstalling,
+        Report.HasReport);
+
+    public bool CanOpen(AppStep step) => step == CurrentStep || NavigationGate.IsAvailable(step, Navigation);
+
+    /// <summary>Navigation chosen by the user from a tab: a step that cannot be opened yet is a no-op.</summary>
+    public bool SelectTab(AppStep step)
+    {
+        if (!CanOpen(step))
+        {
+            return false;
+        }
+
+        ShowStep(step);
+        return true;
+    }
 
     public void SelectProfile(UserProfile profile)
     {
@@ -212,6 +269,27 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged, IDisposable
         return await Installation.StartAsync(selections, catalogueById, cancellationToken).ConfigureAwait(true);
     }
 
+    private NavigationTabViewModel Tab(AppStep step, string labelKey, string icon) =>
+        new(step, labelKey, icon, _text, selected => SelectTab(selected));
+
+    private void RefreshTabs()
+    {
+        foreach (var tab in FlowTabs.Concat(UtilityTabs))
+        {
+            tab.Update(tab.Step == CurrentStep, CanOpen(tab.Step));
+        }
+    }
+
+    private void Step_OnPropertyChanged(object? sender, PropertyChangedEventArgs e) => RefreshTabs();
+
+    private void Text_OnLanguageChanged(object? sender, EventArgs e)
+    {
+        foreach (var tab in FlowTabs.Concat(UtilityTabs))
+        {
+            tab.RefreshText();
+        }
+    }
+
     private void Installation_OnStarting(object? sender, EventArgs e) => Report.Reset();
 
     private void Installation_OnCompleted(object? sender, InstallationReport report)
@@ -281,6 +359,12 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged, IDisposable
         }
 
         _disposed = true;
+        _text.LanguageChanged -= Text_OnLanguageChanged;
+        Overview.PropertyChanged -= Step_OnPropertyChanged;
+        RecommendationsStep.PropertyChanged -= Step_OnPropertyChanged;
+        Review.PropertyChanged -= Step_OnPropertyChanged;
+        Installation.PropertyChanged -= Step_OnPropertyChanged;
+        Report.PropertyChanged -= Step_OnPropertyChanged;
         Installation.Dispose();
     }
 }

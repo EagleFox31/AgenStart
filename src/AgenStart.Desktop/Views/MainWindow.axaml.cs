@@ -2,8 +2,6 @@ using System.ComponentModel;
 using System.Text;
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Interactivity;
-using Avalonia.LogicalTree;
 using Avalonia.Media;
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;
@@ -32,10 +30,6 @@ public sealed partial class MainWindow : Window
     private readonly LocalExperienceViewModel _localExperience;
     private readonly SetupProfileSerializer _setupProfileSerializer = new();
     private readonly SoftwareCatalogueLoader _catalogueLoader = new();
-    private HistoryView? _historyView;
-    private SettingsView? _settingsView;
-    private Button? _historyButton;
-    private Button? _settingsButton;
     private Guid? _currentHistoryEntryId;
     private IDisposable? _multiProfileProgressSubscription;
 
@@ -57,14 +51,9 @@ public sealed partial class MainWindow : Window
         FitToPrimaryScreen();
         DataContext = _viewModel;
 
-        YourPcButton.IsEnabled = false;
-        UsageProfileButton.IsEnabled = false;
-        RecommendationsButton.IsEnabled = false;
-        ReviewButton.IsEnabled = false;
-        InstallationButton.IsEnabled = false;
-        ReportButton.IsEnabled = false;
-
-        InstallUtilityViews();
+        HistoryControl.DataContext = _localExperience;
+        SettingsControl.DataContext = _localExperience;
+        HistoryControl.ExportSetupRequested += HistoryView_OnExportSetupRequested;
 
         OverviewControl.SetImportSetupEnabled(StorageProvider.CanOpen);
         OverviewControl.AnalyzeRequested += OverviewView_OnAnalyzeRequested;
@@ -99,14 +88,6 @@ public sealed partial class MainWindow : Window
         Closed += OnClosed;
     }
 
-    private void NavButton_OnClick(object? sender, RoutedEventArgs e)
-    {
-        if (sender is Button { Tag: string tag } && Enum.TryParse<AppStep>(tag, ignoreCase: false, out var step))
-        {
-            _viewModel.ShowStep(step);
-        }
-    }
-
     // The design size (1600x1000) is larger than many laptop work areas; without a
     // clamp, CenterScreen still lets the window spill onto a neighbouring monitor.
     private void FitToPrimaryScreen()
@@ -132,10 +113,6 @@ public sealed partial class MainWindow : Window
             if (_localExperience.AnalyzeOnStartup && !_viewModel.Overview.HasSnapshot)
             {
                 await _viewModel.Overview.AnalyzeAsync(_lifetimeCancellation.Token);
-                if (_viewModel.Overview.HasSnapshot)
-                {
-                    EnablePostAnalysisNavigation();
-                }
             }
         }
         catch (OperationCanceledException) when (_lifetimeCancellation.IsCancellationRequested)
@@ -155,7 +132,6 @@ public sealed partial class MainWindow : Window
             }
 
             _viewModel.SelectProfile(profiles);
-            RecommendationsButton.IsEnabled = false;
         };
 
         UsageProfilesControl.BuildRequested += async (_, _) =>
@@ -167,7 +143,6 @@ public sealed partial class MainWindow : Window
             if (_viewModel.RecommendationsStep.HasRecommendations)
             {
                 UsageProfilesControl.CompleteRecommendationBuild();
-                RecommendationsButton.IsEnabled = true;
                 _viewModel.ShowStep(AppStep.Recommendations);
                 UpdateRecommendationStickyHeader();
             }
@@ -194,26 +169,12 @@ public sealed partial class MainWindow : Window
         await _viewModel.Overview.AnalyzeAsync(_lifetimeCancellation.Token);
         if (_viewModel.Overview.HasSnapshot)
         {
-            EnablePostAnalysisNavigation();
             _viewModel.ShowStep(AppStep.YourPc);
         }
     }
 
-    private async void YourPcView_OnRefreshRequested(object? sender, EventArgs e)
-    {
+    private async void YourPcView_OnRefreshRequested(object? sender, EventArgs e) =>
         await _viewModel.Overview.AnalyzeAsync(_lifetimeCancellation.Token);
-        if (_viewModel.Overview.HasSnapshot)
-        {
-            EnablePostAnalysisNavigation();
-        }
-    }
-
-    private void EnablePostAnalysisNavigation()
-    {
-        YourPcButton.IsEnabled = true;
-        UsageProfileButton.IsEnabled = true;
-        RecommendationsButton.IsEnabled = false;
-    }
 
     private void YourPcView_OnContinueToProfileRequested(object? sender, EventArgs e) =>
         _viewModel.ShowStep(AppStep.UsageProfile);
@@ -257,14 +218,12 @@ public sealed partial class MainWindow : Window
         }
 
         _currentHistoryEntryId = Guid.NewGuid();
-        InstallationButton.IsEnabled = true;
         _viewModel.ShowStep(AppStep.Installation);
         await _viewModel.StartInstallationAsync(_lifetimeCancellation.Token);
 
         if (_viewModel.Report.HasReport)
         {
             await PersistCurrentReportAsync();
-            ReportButton.IsEnabled = true;
             if (_viewModel.Installation.InstallationFailedCount == 0)
             {
                 _viewModel.ShowStep(AppStep.Report);
@@ -285,7 +244,6 @@ public sealed partial class MainWindow : Window
         {
             _currentHistoryEntryId ??= Guid.NewGuid();
             await PersistCurrentReportAsync();
-            ReportButton.IsEnabled = true;
             if (_viewModel.Installation.InstallationFailedCount == 0)
             {
                 _viewModel.ShowStep(AppStep.Report);
@@ -351,52 +309,6 @@ public sealed partial class MainWindow : Window
             applications,
             Ui.Format("Setup.DisplayName", _viewModel.UsageProfile.SelectedProfileName));
     }
-
-    private void InstallUtilityViews()
-    {
-        // Resolve the host by name: step views are wrapped in panels, so walking up
-        // from a step view no longer reaches the page grid.
-        var pageHost = PageHost;
-
-        _historyView = new HistoryView
-        {
-            DataContext = _localExperience,
-            IsVisible = false
-        };
-        _historyView.ExportSetupRequested += HistoryView_OnExportSetupRequested;
-        _settingsView = new SettingsView
-        {
-            DataContext = _localExperience,
-            IsVisible = false
-        };
-        pageHost.Children.Add(_historyView);
-        pageHost.Children.Add(_settingsView);
-
-        _historyButton = FindNavigationButton("History");
-        _settingsButton = FindNavigationButton("Settings");
-
-        if (_historyButton is not null)
-        {
-            _historyButton.IsEnabled = true;
-            _historyButton.Click += HistoryButton_OnClick;
-        }
-
-        if (_settingsButton is not null)
-        {
-            _settingsButton.IsEnabled = true;
-            _settingsButton.Click += SettingsButton_OnClick;
-        }
-    }
-
-    private Button? FindNavigationButton(string label) =>
-        this.GetLogicalDescendants()
-            .OfType<Button>()
-            .FirstOrDefault(button => button.GetLogicalDescendants()
-                .OfType<TextBlock>()
-                .Any(text => string.Equals(text.Text, label, StringComparison.Ordinal)));
-
-    private void HistoryButton_OnClick(object? sender, RoutedEventArgs e) => _viewModel.ShowStep(AppStep.History);
-    private void SettingsButton_OnClick(object? sender, RoutedEventArgs e) => _viewModel.ShowStep(AppStep.Settings);
 
     private async void OverviewView_OnImportSetupRequested(object? sender, EventArgs e)
     {
@@ -480,8 +392,6 @@ public sealed partial class MainWindow : Window
                 SetImportStatus(Ui["Import.AnalysisFailed"]);
                 return;
             }
-
-            EnablePostAnalysisNavigation();
         }
 
         _viewModel.SelectProfile(profile);
@@ -538,7 +448,6 @@ public sealed partial class MainWindow : Window
             row.IsSelected = true;
         }
 
-        RecommendationsButton.IsEnabled = true;
         if (_viewModel.RecommendationsStep.SelectedCount == 0)
         {
             SetImportStatus(Ui.Plural("Import.AlreadySatisfied", profileDocument.Applications.Count));
@@ -552,7 +461,6 @@ public sealed partial class MainWindow : Window
         }
 
         SetImportStatus(Ui.Plural("Import.Imported", profileDocument.Applications.Count));
-        ReviewButton.IsEnabled = true;
         _viewModel.ShowStep(AppStep.Review);
     }
 
@@ -665,19 +573,8 @@ public sealed partial class MainWindow : Window
 
     private void ViewModel_OnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (e.PropertyName == nameof(ReviewViewModel.HasReview))
-        {
-            ReviewButton.IsEnabled = _viewModel.Review.HasReview;
-        }
-
-        if (e.PropertyName is nameof(InstallationViewModel.InstallationTotalCount) or nameof(InstallationViewModel.IsInstalling))
-        {
-            InstallationButton.IsEnabled = _viewModel.Installation.InstallationTotalCount > 0 || _viewModel.Installation.IsInstalling || _viewModel.Report.HasReport;
-        }
-
         if (e.PropertyName == nameof(ReportViewModel.HasReport))
         {
-            ReportButton.IsEnabled = _viewModel.Report.HasReport;
             ReportControl.SetExportEnabled(_viewModel.Report.HasReport && StorageProvider.CanSave);
         }
 
@@ -691,38 +588,6 @@ public sealed partial class MainWindow : Window
         {
             // Each step opens at its top, not at the previous step's scroll position.
             MainScrollViewer.Offset = default;
-            if (_historyView is not null)
-            {
-                _historyView.IsVisible = _viewModel.IsHistory;
-            }
-            if (_settingsView is not null)
-            {
-                _settingsView.IsVisible = _viewModel.IsSettings;
-            }
-            if (_historyButton is not null)
-            {
-                SetActiveClass(_historyButton, _viewModel.IsHistory);
-            }
-            if (_settingsButton is not null)
-            {
-                SetActiveClass(_settingsButton, _viewModel.IsSettings);
-            }
-        }
-    }
-
-    private static void SetActiveClass(Button button, bool isActive)
-    {
-        const string activeClass = "active";
-        if (isActive)
-        {
-            if (!button.Classes.Contains(activeClass))
-            {
-                button.Classes.Add(activeClass);
-            }
-        }
-        else
-        {
-            button.Classes.Remove(activeClass);
         }
     }
 
@@ -733,18 +598,7 @@ public sealed partial class MainWindow : Window
         _viewModel.Installation.PropertyChanged -= ViewModel_OnPropertyChanged;
         _viewModel.Report.PropertyChanged -= ViewModel_OnPropertyChanged;
         _viewModel.RecommendationsStep.PropertyChanged -= ViewModel_OnPropertyChanged;
-        if (_historyView is not null)
-        {
-            _historyView.ExportSetupRequested -= HistoryView_OnExportSetupRequested;
-        }
-        if (_historyButton is not null)
-        {
-            _historyButton.Click -= HistoryButton_OnClick;
-        }
-        if (_settingsButton is not null)
-        {
-            _settingsButton.Click -= SettingsButton_OnClick;
-        }
+        HistoryControl.ExportSetupRequested -= HistoryView_OnExportSetupRequested;
         OverviewControl.AnalyzeRequested -= OverviewView_OnAnalyzeRequested;
         OverviewControl.ImportSetupRequested -= OverviewView_OnImportSetupRequested;
         ReportControl.FinishRequested -= ReportView_OnFinishRequested;
