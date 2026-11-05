@@ -3,6 +3,7 @@ using Avalonia.Interactivity;
 using AgenStart.Core.Catalogue;
 using AgenStart.Core.Profiles;
 using AgenStart.Core.Recommendations;
+using AgenStart.Desktop.Services;
 using AgenStart.Desktop.ViewModels;
 
 namespace AgenStart.Desktop.Views;
@@ -27,6 +28,7 @@ public sealed partial class UsageProfilesView : UserControl
         // Scoped to the root grid so the host's IsVisible binding keeps the window view model.
         RootGrid.DataContext = this;
         SetSelection(UserProfile.Development);
+        Ui.LanguageChanged += (_, _) => RefreshOptionText();
     }
 
     public event Action<UserProfile>? SelectionChanged;
@@ -67,31 +69,20 @@ public sealed partial class UsageProfilesView : UserControl
         BuildButton.IsEnabled = false;
         BackButton.IsEnabled = false;
         RecommendationProgressHost.IsVisible = true;
-        SetRecommendationProgress(10, "Starting recommendation analysis…");
+        SetRecommendationProgress(RecommendationProgressMap.Starting);
     }
 
     public void UpdateRecommendationProgress(RecommendationPipelineStage stage)
     {
-        switch (stage)
+        if (RecommendationProgressMap.For(stage) is { } step)
         {
-            case RecommendationPipelineStage.LoadingTrustedCatalogue:
-                SetRecommendationProgress(25, "Loading trusted software catalogue…");
-                break;
-            case RecommendationPipelineStage.ReadingInstalledApplications:
-                SetRecommendationProgress(50, "Reading installed applications…");
-                break;
-            case RecommendationPipelineStage.EvaluatingRecommendationRules:
-                SetRecommendationProgress(75, "Applying compatibility and profile rules…");
-                break;
-            case RecommendationPipelineStage.FinalizingRecommendations:
-                SetRecommendationProgress(90, "Finalizing recommendation list…");
-                break;
+            SetRecommendationProgress(step);
         }
     }
 
     public void CompleteRecommendationBuild()
     {
-        SetRecommendationProgress(100, "Recommendations ready");
+        SetRecommendationProgress(RecommendationProgressMap.Ready);
         BuildButton.IsEnabled = true;
         BackButton.IsEnabled = true;
     }
@@ -99,10 +90,11 @@ public sealed partial class UsageProfilesView : UserControl
     public void FailRecommendationBuild(string? message)
     {
         RecommendationProgressHost.IsVisible = true;
+        RecommendationProgressBar.IsIndeterminate = false;
         RecommendationProgressBar.Value = 0;
-        RecommendationProgressPercent.Text = "Stopped";
+        RecommendationProgressPercent.Text = Ui["Recommendations.Progress.Stopped"];
         RecommendationProgressLabel.Text = string.IsNullOrWhiteSpace(message)
-            ? "AgenStart could not build recommendations."
+            ? Ui["Recommendations.Progress.Failed"]
             : message;
         BuildButton.IsEnabled = true;
         BackButton.IsEnabled = true;
@@ -166,12 +158,27 @@ public sealed partial class UsageProfilesView : UserControl
             Options.Where(option => option.IsSelected).Select(option => option.Label));
     }
 
-    private void SetRecommendationProgress(double value, string label)
+    private static ILocalizer Ui => AvaloniaLocalizationService.Shared;
+
+    private void SetRecommendationProgress(RecommendationProgressStep step)
     {
-        var bounded = Math.Clamp(value, 0, 100);
+        var bounded = Math.Clamp(step.Percent, 0, 100);
         RecommendationProgressHost.IsVisible = true;
+        RecommendationProgressBar.IsIndeterminate = step.Indeterminate;
         RecommendationProgressBar.Value = bounded;
-        RecommendationProgressPercent.Text = $"{bounded:0}%";
-        RecommendationProgressLabel.Text = label;
+        RecommendationProgressPercent.Text = step.Indeterminate
+            ? Ui["Recommendations.Progress.Scanning"]
+            : string.Format(Ui.Culture, "{0:0}%", bounded);
+        RecommendationProgressLabel.Text = Ui[step.LabelKey];
+    }
+
+    private void RefreshOptionText()
+    {
+        foreach (var option in Options)
+        {
+            option.RefreshText();
+        }
+
+        RefreshSummary();
     }
 }

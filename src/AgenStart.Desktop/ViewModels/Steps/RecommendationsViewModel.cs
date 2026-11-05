@@ -19,20 +19,24 @@ public sealed class RecommendationsViewModel : StepViewModelBase
 
     private bool _hasRecommendations;
     private bool _isBusy;
-    private string _recommendationStatus = "Choose a usage profile to build recommendations.";
+    private bool _isCardLayout;
+    private UiText _recommendationStatus = UiText.Key("Recommendations.Status.ChooseProfile");
 
     public RecommendationsViewModel(
         IInstalledSoftwareInventoryProvider softwareInventory,
         SoftwareStateResolver softwareStateResolver,
         RecommendationEngine recommendationEngine,
         SoftwareCatalogueLoader catalogueLoader,
-        ISessionState session)
+        ISessionState session,
+        ILocalizer? text = null)
+        : base(text)
     {
         _softwareInventory = softwareInventory;
         _softwareStateResolver = softwareStateResolver;
         _recommendationEngine = recommendationEngine;
         _catalogueLoader = catalogueLoader;
         _session = session;
+        _session.IsInstallingChanged += (_, _) => OnPropertyChanged(nameof(CanReview));
 
         Recommendations.CollectionChanged += (_, _) =>
         {
@@ -49,7 +53,13 @@ public sealed class RecommendationsViewModel : StepViewModelBase
     public bool HasRecommendations
     {
         get => _hasRecommendations;
-        set => SetField(ref _hasRecommendations, value);
+        set
+        {
+            if (SetField(ref _hasRecommendations, value))
+            {
+                OnPropertyChanged(nameof(CanReview));
+            }
+        }
     }
 
     public bool IsBusy
@@ -58,20 +68,36 @@ public sealed class RecommendationsViewModel : StepViewModelBase
         private set => SetField(ref _isBusy, value);
     }
 
-    public string RecommendationStatus
+    public string RecommendationStatus => _recommendationStatus.Resolve(Text);
+
+    public void SetStatus(UiText value) => SetText(ref _recommendationStatus, value, nameof(RecommendationStatus));
+
+    /// <summary>Presentation only: cards grid when true, compact list otherwise.</summary>
+    public bool IsCardLayout
     {
-        get => _recommendationStatus;
-        set => SetField(ref _recommendationStatus, value);
+        get => _isCardLayout;
+        set
+        {
+            if (SetField(ref _isCardLayout, value))
+            {
+                OnPropertyChanged(nameof(IsListLayout));
+            }
+        }
     }
+
+    public bool IsListLayout => !_isCardLayout;
 
     public int RecommendationCount => Recommendations.Count;
     public int SelectedCount => Recommendations.Count(row => row.IsSelected);
+    public string RecommendationCountText => Text.Plural("Recommendations.Summary.Apps", RecommendationCount);
+    public string SelectedCountText => Text.Plural("Recommendations.Summary.Selected", SelectedCount);
     public int AlreadyInstalledCount => Recommendations.Count(row => row.Disposition == RecommendationDisposition.AlreadyInstalled);
+    public bool CanReview => HasRecommendations && SelectedCount > 0 && !_session.IsInstalling;
     public int OptionalCount => Recommendations.Count(row => row.Level == RecommendationLevel.Optional && row.Disposition == RecommendationDisposition.Recommended);
 
     public async Task BuildAsync(
         UserProfile profile,
-        string profileName,
+        UiText profileName,
         CancellationToken cancellationToken = default)
     {
         if (IsBusy || _session.IsInstalling || _session.Snapshot is null)
@@ -80,7 +106,7 @@ public sealed class RecommendationsViewModel : StepViewModelBase
         }
 
         IsBusy = true;
-        RecommendationStatus = "Checking installed software and building recommendations…";
+        SetStatus(UiText.Key("Recommendations.Status.Building"));
 
         try
         {
@@ -114,19 +140,19 @@ public sealed class RecommendationsViewModel : StepViewModelBase
             }
 
             HasRecommendations = true;
-            RecommendationStatus = $"Based on your {profileName} profile, machine capabilities and software already installed.";
+            SetStatus(UiText.Key("Recommendations.Status.BasedOn", profileName));
             RaiseSummary();
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
         {
-            RecommendationStatus = "Recommendation analysis cancelled.";
+            SetStatus(UiText.Key("Recommendations.Status.Cancelled"));
         }
         catch (Exception)
         {
             ClearRows();
             _session.SetCatalogue(null);
             HasRecommendations = false;
-            RecommendationStatus = "AgenStart could not build recommendations from the local catalogue and inventory.";
+            SetStatus(UiText.Key("Recommendations.Status.Failed"));
         }
         finally
         {
@@ -160,12 +186,24 @@ public sealed class RecommendationsViewModel : StepViewModelBase
         HasRecommendations = false;
     }
 
+    protected override void OnLanguageChanged()
+    {
+        base.OnLanguageChanged();
+        foreach (var row in Recommendations)
+        {
+            row.RefreshText();
+        }
+    }
+
     public void RaiseSummary()
     {
         OnPropertyChanged(nameof(RecommendationCount));
         OnPropertyChanged(nameof(SelectedCount));
+        OnPropertyChanged(nameof(RecommendationCountText));
+        OnPropertyChanged(nameof(SelectedCountText));
         OnPropertyChanged(nameof(AlreadyInstalledCount));
         OnPropertyChanged(nameof(OptionalCount));
+        OnPropertyChanged(nameof(CanReview));
     }
 
     private void RecommendationRow_OnPropertyChanged(object? sender, PropertyChangedEventArgs e)

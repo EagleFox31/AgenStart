@@ -4,108 +4,111 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vm="using:AgenStart.Desktop.ViewModels"
         xmlns:views="using:AgenStart.Desktop.Views"
+        xmlns:onboarding="using:AgenStart.Desktop.Views.Onboarding"
         x:Class="AgenStart.Desktop.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
         mc:Ignorable="d"
         Title="AgenStart"
-        Width="1600"
-        Height="1000"
-        MinWidth="1100"
-        MinHeight="720">
-  <Grid ColumnDefinitions="280,*">
-    <Border Grid.Column="0" Background="{StaticResource AgenNavBrush}">
-      <Grid RowDefinitions="Auto,*,Auto" Margin="0,30,0,24">
-        <StackPanel Margin="30,0,20,28">
-          <TextBlock Text="AgenStart" Foreground="White" FontSize="29" FontWeight="SemiBold" />
-          <TextBlock Text="BY AGENSTUDIO" Foreground="{StaticResource AgenAccentBrush}" FontSize="11" FontWeight="SemiBold" LetterSpacing="2.4" Margin="0,5,0,0" />
-        </StackPanel>
-
-        <StackPanel Grid.Row="1" Spacing="1">
-          <Grid>
-            <Border Classes="navStripe" IsVisible="{Binding IsOverview}" />
-            <Button x:Name="OverviewButton" Classes="nav" AutomationProperties.Name="Overview" Classes.active="{Binding IsOverview}" Tag="Overview" Click="NavButton_OnClick"><StackPanel Orientation="Horizontal" Spacing="0"><TextBlock Classes="navIcon" Text="⌂" /><TextBlock Classes="navLabel" Text="Overview" /></StackPanel></Button>
-          </Grid>
-          <Grid>
-            <Border Classes="navStripe" IsVisible="{Binding IsYourPc}" />
-            <Button x:Name="YourPcButton" Classes="nav" AutomationProperties.Name="Your PC" Classes.active="{Binding IsYourPc}" Tag="YourPc" Click="NavButton_OnClick"><StackPanel Orientation="Horizontal" Spacing="0"><TextBlock Classes="navIcon" Text="▣" /><TextBlock Classes="navLabel" Text="Your PC" /></StackPanel></Button>
-          </Grid>
-          <Grid>
-            <Border Classes="navStripe" IsVisible="{Binding IsUsageProfile}" />
-            <Button x:Name="UsageProfileButton" Classes="nav" AutomationProperties.Name="Usage profile" Classes.active="{Binding IsUsageProfile}" Tag="UsageProfile" Click="NavButton_OnClick"><StackPanel Orientation="Horizontal" Spacing="0"><TextBlock Classes="navIcon" Text="○" /><TextBlock Classes="navLabel" Text="Usage profile" /></StackPanel></Button>
-          </Grid>
-          <Grid>
-            <Border Classes="navStripe" IsVisible="{Binding IsRecommendations}" />
-            <Button x:Name="RecommendationsButton" Classes="nav" AutomationProperties.Name="Recommendations" Classes.active="{Binding IsRecommendations}" Tag="Recommendations" Click="NavButton_OnClick"><StackPanel Orientation="Horizontal" Spacing="0"><TextBlock Classes="navIcon" Text="✦" /><TextBlock Classes="navLabel" Text="Recommendations" /></StackPanel></Button>
-          </Grid>
-          <Grid>
-            <Border Classes="navStripe" IsVisible="{Binding IsReview}" />
-            <Button x:Name="ReviewButton" Classes="nav" AutomationProperties.Name="Confirm" Classes.active="{Binding IsReview}" Tag="Review" Click="NavButton_OnClick"><StackPanel Orientation="Horizontal" Spacing="0"><TextBlock Classes="navIcon" Text="✓" /><TextBlock Classes="navLabel" Text="Confirm" /></StackPanel></Button>
-          </Grid>
-          <Grid>
-            <Border Classes="navStripe" IsVisible="{Binding IsInstallationStep}" />
-            <Button x:Name="InstallationButton" Classes="nav" AutomationProperties.Name="Installation" Classes.active="{Binding IsInstallationStep}" Tag="Installation" Click="NavButton_OnClick"><StackPanel Orientation="Horizontal" Spacing="0"><TextBlock Classes="navIcon" Text="↓" /><TextBlock Classes="navLabel" Text="Installation" /></StackPanel></Button>
-          </Grid>
-          <Grid>
-            <Border Classes="navStripe" IsVisible="{Binding IsReport}" />
-            <Button x:Name="ReportButton" Classes="nav" AutomationProperties.Name="Report" Classes.active="{Binding IsReport}" Tag="Report" Click="NavButton_OnClick"><StackPanel Orientation="Horizontal" Spacing="0"><TextBlock Classes="navIcon" Text="▤" /><TextBlock Classes="navLabel" Text="Report" /></StackPanel></Button>
-          </Grid>
-        </StackPanel>
-
-        <StackPanel Grid.Row="2" Spacing="1">
-          <Border Height="1" Background="#35505A" Margin="20,0,20,14" />
-          <Button Classes="nav" AutomationProperties.Name="History" IsEnabled="False"><StackPanel Orientation="Horizontal" Spacing="0"><TextBlock Classes="navIcon" Text="↶" /><TextBlock Classes="navLabel" Text="History" /></StackPanel></Button>
-          <Button Classes="nav" AutomationProperties.Name="Settings" IsEnabled="False"><StackPanel Orientation="Horizontal" Spacing="0"><TextBlock Classes="navIcon" Text="⚙" /><TextBlock Classes="navLabel" Text="Settings" /></StackPanel></Button>
-        </StackPanel>
-      </Grid>
-    </Border>
-
-    <Grid Grid.Column="1" Background="{StaticResource AgenSurfaceBrush}">
-      <ScrollViewer x:Name="MainScrollViewer" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-        <Grid Margin="72,62,72,54">
-          <views:OverviewView x:Name="OverviewControl" IsVisible="{Binding IsOverview}" />
-
-          <views:YourPcView x:Name="YourPcControl" IsVisible="{Binding IsYourPc}" MaxWidth="1120" HorizontalAlignment="Left" />
-
-          <views:UsageProfilesView x:Name="UsageProfilesControl" IsVisible="{Binding IsUsageProfile}" MaxWidth="1120" HorizontalAlignment="Left" />
-
-          <views:RecommendationsView x:Name="RecommendationsControl" IsVisible="{Binding IsRecommendations}" MaxWidth="1160" HorizontalAlignment="Left" />
-
-          <views:ReviewView x:Name="ReviewControl" IsVisible="{Binding IsReview}" MaxWidth="1160" HorizontalAlignment="Left" />
-
-          <views:InstallationView x:Name="InstallationControl" IsVisible="{Binding IsInstallationStep}" MaxWidth="1160" HorizontalAlignment="Left" />
-
-          <views:ReportView x:Name="ReportControl" IsVisible="{Binding IsReport}" MaxWidth="1160" HorizontalAlignment="Left" />
-        </Grid>
-      </ScrollViewer>
-
-      <Border x:Name="RecommendationStickyHeader"
-              IsVisible="False"
-              Background="{StaticResource AgenRecommendationStickyBrush}"
-              BorderBrush="{StaticResource AgenDividerBrush}"
-              BorderThickness="0,0,0,1"
-              Padding="0,13"
-              Margin="72,0,72,0"
-              VerticalAlignment="Top"
-              HorizontalAlignment="Stretch">
-        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="24">
-          <TextBlock Text="Recommended for this PC"
-                     FontSize="20"
-                     FontWeight="SemiBold"
-                     Foreground="{StaticResource AgenTextBrush}"
-                     VerticalAlignment="Center" />
-          <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
-            <TextBlock Text="{Binding RecommendationCount, StringFormat='{}{0} apps'}"
-                       Foreground="{StaticResource AgenMutedBrush}"
-                       FontSize="12"
-                       VerticalAlignment="Center" />
-            <TextBlock Text="{Binding SelectedCount, StringFormat='{}{0} selected'}"
-                       Foreground="{StaticResource AgenTealBrush}"
-                       FontSize="12"
-                       FontWeight="SemiBold"
-                       VerticalAlignment="Center" />
+        Width="1440"
+        Height="920"
+        MinWidth="1040"
+        MinHeight="680"
+        WindowStartupLocation="CenterScreen">
+  <Panel>
+    <Grid x:Name="ShellRoot" RowDefinitions="Auto,*" IsVisible="False">
+      <Border Grid.Row="0" Classes="tabBar">
+        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="20" Margin="20,0,16,0">
+          <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+            <Border Width="26" Height="26" CornerRadius="7" ClipToBounds="True" VerticalAlignment="Center"><Image Source="avares://AgenStart.Desktop/Assets/agenstart-app-icon.png" Stretch="UniformToFill" RenderOptions.BitmapInterpolationMode="HighQuality" /></Border>
+            <TextBlock Text="AgenStart" Foreground="{DynamicResource AgenBrandTextBrush}" FontSize="15" FontWeight="SemiBold" VerticalAlignment="Center" ToolTip.Tip="{DynamicResource Shell.ByAgenStudio}" />
           </StackPanel>
+
+          <!-- Scrolls only if a long translation ever overflows the minimum window width. -->
+          <ScrollViewer Grid.Column="1" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
+            <ItemsControl ItemsSource="{Binding FlowTabs}" AutomationProperties.Name="{DynamicResource Shell.Setup}">
+              <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate><StackPanel Orientation="Horizontal" Spacing="2" /></ItemsPanelTemplate>
+              </ItemsControl.ItemsPanel>
+              <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="vm:NavigationTabViewModel">
+                  <Button Classes="tab" Classes.active="{Binding IsActive}" Command="{Binding SelectCommand}" AutomationProperties.Name="{Binding Label}">
+                    <TextBlock Classes="tabLabel" Text="{Binding Label}" />
+                  </Button>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+          </ScrollViewer>
+
+          <ItemsControl Grid.Column="2" ItemsSource="{Binding UtilityTabs}" AutomationProperties.Name="{DynamicResource Shell.General}">
+            <ItemsControl.ItemsPanel>
+              <ItemsPanelTemplate><StackPanel Orientation="Horizontal" Spacing="2" /></ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="vm:NavigationTabViewModel">
+                <Button Classes="tab icon" Classes.active="{Binding IsActive}" Command="{Binding SelectCommand}" AutomationProperties.Name="{Binding Label}" ToolTip.Tip="{Binding Label}">
+                  <TextBlock Classes="tabIcon" Text="{Binding Icon}" />
+                </Button>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
         </Grid>
       </Border>
+
+      <Grid Grid.Row="1" Background="{DynamicResource AgenSurfaceBrush}">
+        <ScrollViewer x:Name="MainScrollViewer" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+          <Grid x:Name="PageHost" MaxWidth="920" Margin="48,40,48,56" HorizontalAlignment="Stretch">
+            <Panel IsVisible="{Binding IsOverview}"><views:OverviewView x:Name="OverviewControl" DataContext="{Binding Overview}" /></Panel>
+
+            <Panel IsVisible="{Binding IsYourPc}"><views:YourPcView x:Name="YourPcControl" DataContext="{Binding Overview}" /></Panel>
+
+            <views:UsageProfilesView x:Name="UsageProfilesControl" IsVisible="{Binding IsUsageProfile}" />
+
+            <Panel IsVisible="{Binding IsRecommendations}"><views:RecommendationsView x:Name="RecommendationsControl" DataContext="{Binding RecommendationsStep}" /></Panel>
+
+            <Panel IsVisible="{Binding IsReview}"><views:ReviewView x:Name="ReviewControl" DataContext="{Binding Review}" /></Panel>
+
+            <Panel IsVisible="{Binding IsInstallationStep}"><views:InstallationView x:Name="InstallationControl" DataContext="{Binding Installation}" /></Panel>
+
+            <Panel IsVisible="{Binding IsReport}"><views:ReportView x:Name="ReportControl" DataContext="{Binding Report}" /></Panel>
+
+            <!-- DataContext (local experience) is set in code-behind; visibility stays on the wrapping panel. -->
+            <Panel IsVisible="{Binding IsHistory}"><views:HistoryView x:Name="HistoryControl" /></Panel>
+
+            <Panel IsVisible="{Binding IsSettings}"><views:SettingsView x:Name="SettingsControl" /></Panel>
+          </Grid>
+        </ScrollViewer>
+
+        <Border x:Name="RecommendationStickyHeader"
+                IsVisible="False"
+                Background="{DynamicResource AgenRecommendationStickyBrush}"
+                BorderBrush="{DynamicResource AgenSeparatorBrush}"
+                BorderThickness="0,0,0,1"
+                Padding="48,12"
+                VerticalAlignment="Top"
+                HorizontalAlignment="Stretch">
+          <Grid MaxWidth="920" ColumnDefinitions="*,Auto" ColumnSpacing="24">
+            <TextBlock Text="{DynamicResource Shell.RecommendedForThisPC}"
+                       FontSize="15"
+                       FontWeight="SemiBold"
+                       Foreground="{DynamicResource AgenTextBrush}"
+                       VerticalAlignment="Center" />
+            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
+              <TextBlock Text="{Binding RecommendationsStep.RecommendationCountText}"
+                         Foreground="{DynamicResource AgenMutedBrush}"
+                         FontSize="12.5"
+                         VerticalAlignment="Center" />
+              <TextBlock Text="{Binding RecommendationsStep.SelectedCountText}"
+                         Foreground="{DynamicResource AgenAccentBrush}"
+                         FontSize="12.5"
+                         FontWeight="SemiBold"
+                         VerticalAlignment="Center" />
+            </StackPanel>
+          </Grid>
+        </Border>
+      </Grid>
     </Grid>
-  </Grid>
+
+    <!-- First run and splash; hidden once the shell takes over. -->
+    <onboarding:OnboardingView x:Name="OnboardingControl" />
+  </Panel>
 </Window>

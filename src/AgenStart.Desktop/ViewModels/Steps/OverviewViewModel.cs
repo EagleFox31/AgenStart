@@ -1,4 +1,3 @@
-using System.Globalization;
 using AgenStart.Core.Machine;
 using AgenStart.Desktop.Services;
 
@@ -6,26 +5,31 @@ namespace AgenStart.Desktop.ViewModels.Steps;
 
 public sealed class OverviewViewModel : StepViewModelBase
 {
+    private static readonly UiText NotAnalysed = UiText.Key("Common.NotAnalysed");
+    private static readonly UiText Unknown = UiText.Key("Common.Unknown");
+    private static readonly UiText PrivacyNote = UiText.Key("Overview.Diagnostic.Privacy");
+
     private readonly IMachineInventoryProvider _machineInventory;
     private readonly ISessionState _session;
 
     private MachineSnapshot? _snapshot;
     private bool _hasSnapshot;
     private bool _isBusy;
-    private string _statusTitle = "Ready for analysis";
-    private string _statusMessage = "AgenStart can inspect the essential capabilities of this PC locally.";
-    private string _operatingSystem = "Not analysed";
-    private string _cpu = "Not analysed";
-    private string _memory = "Not analysed";
-    private string _gpu = "Not analysed";
-    private string _systemDrive = "Not analysed";
-    private string _freeSpace = "Not analysed";
-    private string _architecture = "Not analysed";
-    private string _winGet = "Not analysed";
-    private string _winGetVersion = "Not analysed";
-    private string _analysisDiagnostic = "No personal files or account information are inspected.";
+    private UiText _statusTitle = UiText.Key("Overview.Status.Ready.Title");
+    private UiText _statusMessage = UiText.Key("Overview.Status.Ready.Message");
+    private UiText _operatingSystem = NotAnalysed;
+    private UiText _cpu = NotAnalysed;
+    private UiText _memory = NotAnalysed;
+    private UiText _gpu = NotAnalysed;
+    private UiText _systemDrive = NotAnalysed;
+    private UiText _freeSpace = NotAnalysed;
+    private UiText _architecture = NotAnalysed;
+    private UiText _winGet = NotAnalysed;
+    private UiText _winGetVersion = NotAnalysed;
+    private UiText _analysisDiagnostic = PrivacyNote;
 
-    public OverviewViewModel(IMachineInventoryProvider machineInventory, ISessionState session)
+    public OverviewViewModel(IMachineInventoryProvider machineInventory, ISessionState session, ILocalizer? text = null)
+        : base(text)
     {
         _machineInventory = machineInventory;
         _session = session;
@@ -45,77 +49,29 @@ public sealed class OverviewViewModel : StepViewModelBase
         private set => SetField(ref _isBusy, value);
     }
 
-    public string StatusTitle
-    {
-        get => _statusTitle;
-        set => SetField(ref _statusTitle, value);
-    }
+    public string StatusTitle => _statusTitle.Resolve(Text);
 
-    public string StatusMessage
-    {
-        get => _statusMessage;
-        set => SetField(ref _statusMessage, value);
-    }
+    public string StatusMessage => _statusMessage.Resolve(Text);
 
-    public string OperatingSystem
-    {
-        get => _operatingSystem;
-        private set => SetField(ref _operatingSystem, value);
-    }
+    public string OperatingSystem => _operatingSystem.Resolve(Text);
 
-    public string Cpu
-    {
-        get => _cpu;
-        private set => SetField(ref _cpu, value);
-    }
+    public string Cpu => _cpu.Resolve(Text);
 
-    public string Memory
-    {
-        get => _memory;
-        private set => SetField(ref _memory, value);
-    }
+    public string Memory => _memory.Resolve(Text);
 
-    public string Gpu
-    {
-        get => _gpu;
-        private set => SetField(ref _gpu, value);
-    }
+    public string Gpu => _gpu.Resolve(Text);
 
-    public string SystemDrive
-    {
-        get => _systemDrive;
-        private set => SetField(ref _systemDrive, value);
-    }
+    public string SystemDrive => _systemDrive.Resolve(Text);
 
-    public string FreeSpace
-    {
-        get => _freeSpace;
-        private set => SetField(ref _freeSpace, value);
-    }
+    public string FreeSpace => _freeSpace.Resolve(Text);
 
-    public string Architecture
-    {
-        get => _architecture;
-        private set => SetField(ref _architecture, value);
-    }
+    public string Architecture => _architecture.Resolve(Text);
 
-    public string WinGet
-    {
-        get => _winGet;
-        private set => SetField(ref _winGet, value);
-    }
+    public string WinGet => _winGet.Resolve(Text);
 
-    public string WinGetVersion
-    {
-        get => _winGetVersion;
-        private set => SetField(ref _winGetVersion, value);
-    }
+    public string WinGetVersion => _winGetVersion.Resolve(Text);
 
-    public string AnalysisDiagnostic
-    {
-        get => _analysisDiagnostic;
-        set => SetField(ref _analysisDiagnostic, value);
-    }
+    public string AnalysisDiagnostic => _analysisDiagnostic.Resolve(Text);
 
     public async Task AnalyzeAsync(CancellationToken cancellationToken = default)
     {
@@ -125,8 +81,7 @@ public sealed class OverviewViewModel : StepViewModelBase
         }
 
         IsBusy = true;
-        StatusTitle = "Analysing this PC";
-        StatusMessage = "Reading essential system capabilities locally…";
+        SetStatus("Overview.Status.Analysing.Title", "Overview.Status.Analysing.Message");
 
         try
         {
@@ -136,14 +91,12 @@ public sealed class OverviewViewModel : StepViewModelBase
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
         {
-            StatusTitle = "Analysis cancelled";
-            StatusMessage = "No changes were made to this PC.";
+            SetStatus("Overview.Status.Cancelled.Title", "Overview.Status.Cancelled.Message");
         }
         catch (Exception)
         {
-            StatusTitle = "Analysis unavailable";
-            StatusMessage = "AgenStart could not complete the local machine analysis.";
-            AnalysisDiagnostic = "Try the analysis again. No machine changes were made.";
+            SetStatus("Overview.Status.Failed.Title", "Overview.Status.Failed.Message");
+            SetText(ref _analysisDiagnostic, UiText.Key("Overview.Diagnostic.Retry"), nameof(AnalysisDiagnostic));
         }
         finally
         {
@@ -156,73 +109,59 @@ public sealed class OverviewViewModel : StepViewModelBase
         _snapshot = snapshot;
         HasSnapshot = snapshot.Platform.Kind == PlatformKind.Windows;
 
-        OperatingSystem = snapshot.Platform.Edition
-            ?? (snapshot.Platform.Kind == PlatformKind.Windows ? "Windows" : "Unsupported platform");
-        Cpu = snapshot.Cpu.Model ?? "CPU detected";
-        Memory = FormatBytes(snapshot.Memory.TotalPhysicalBytes);
-        Gpu = snapshot.Gpus.FirstOrDefault()?.Name ?? "Unknown";
+        _operatingSystem = snapshot.Platform.Edition is { } edition
+            ? UiText.Raw(edition)
+            : snapshot.Platform.Kind == PlatformKind.Windows ? UiText.Raw("Windows") : UiText.Key("Overview.UnsupportedPlatform");
+        _cpu = snapshot.Cpu.Model is { } model ? UiText.Raw(model) : UiText.Key("Overview.CpuDetected");
+        _memory = FormatBytes(snapshot.Memory.TotalPhysicalBytes);
+        _gpu = snapshot.Gpus.FirstOrDefault()?.Name is { } gpu ? UiText.Raw(gpu) : Unknown;
 
         var systemDrive = snapshot.SystemDrive;
-        SystemDrive = systemDrive is null
-            ? "Unknown"
-            : $"{FormatBytes(systemDrive.TotalBytes)} system drive";
-        FreeSpace = systemDrive is null
-            ? "Unknown"
-            : $"{FormatBytes(systemDrive.AvailableBytes)} free";
+        _systemDrive = systemDrive is null
+            ? Unknown
+            : UiText.Key("Overview.SystemDriveSize", FormatBytes(systemDrive.TotalBytes));
+        _freeSpace = systemDrive is null
+            ? Unknown
+            : UiText.Key("Overview.FreeSpace", FormatBytes(systemDrive.AvailableBytes));
 
-        Architecture = FormatArchitecture(snapshot.Platform.Architecture);
-        WinGet = snapshot.PackageManager.State == CapabilityState.Available
-            ? "Available"
-            : snapshot.PackageManager.State.ToString();
-        WinGetVersion = snapshot.PackageManager.Version?.ToString() ?? "Unknown";
+        _architecture = UiText.Key(snapshot.Platform.Architecture switch
+        {
+            MachineArchitecture.X64 => "Overview.Architecture.X64",
+            MachineArchitecture.X86 => "Overview.Architecture.X86",
+            MachineArchitecture.Arm64 => "Overview.Architecture.Arm64",
+            _ => "Overview.Architecture.Unknown"
+        });
+        _winGet = snapshot.PackageManager.State == CapabilityState.Available
+            ? UiText.Key("Overview.WinGetAvailable")
+            : UiText.Raw(snapshot.PackageManager.State.ToString());
+        _winGetVersion = snapshot.PackageManager.Version?.ToString() is { } version ? UiText.Raw(version) : Unknown;
 
+        _analysisDiagnostic = snapshot.Diagnostics.Count == 0
+            ? PrivacyNote
+            : UiText.Plural("Overview.Diagnostic.Notes", snapshot.Diagnostics.Count);
+
+        // One refresh for every text property, then the status pair.
+        OnPropertyChanged(string.Empty);
         if (snapshot.Platform.Kind == PlatformKind.Windows)
         {
-            StatusTitle = "PC ready";
-            StatusMessage = "Essential capabilities detected locally.";
+            SetStatus("Overview.Status.PcReady.Title", "Overview.Status.PcReady.Message");
         }
         else
         {
-            StatusTitle = "Unsupported platform";
-            StatusMessage = "The current AgenStart MVP supports Windows 10 and 11.";
+            SetStatus("Overview.Status.Unsupported.Title", "Overview.Status.Unsupported.Message");
         }
-
-        AnalysisDiagnostic = snapshot.Diagnostics.Count == 0
-            ? "No personal files or account information are inspected."
-            : $"Analysis completed with {snapshot.Diagnostics.Count.ToString(CultureInfo.InvariantCulture)} diagnostic note(s). No personal files were inspected.";
     }
 
-    private static string FormatArchitecture(MachineArchitecture architecture) => architecture switch
+    private void SetStatus(string titleKey, string messageKey)
     {
-        MachineArchitecture.X64 => "x64 architecture",
-        MachineArchitecture.X86 => "x86 architecture",
-        MachineArchitecture.Arm64 => "ARM64 architecture",
-        _ => "Unknown architecture"
-    };
-
-    private static string FormatBytes(ulong? bytes)
-    {
-        if (bytes is null)
-        {
-            return "Unknown";
-        }
-
-        return FormatBytes((double)bytes.Value);
+        SetText(ref _statusTitle, UiText.Key(titleKey), nameof(StatusTitle));
+        SetText(ref _statusMessage, UiText.Key(messageKey), nameof(StatusMessage));
     }
 
-    private static string FormatBytes(long? bytes)
-    {
-        if (bytes is null || bytes < 0)
-        {
-            return "Unknown";
-        }
+    private static UiText FormatBytes(ulong? bytes) => bytes is null ? Unknown : Gigabytes(bytes.Value);
 
-        return FormatBytes((double)bytes.Value);
-    }
+    private static UiText FormatBytes(long? bytes) => bytes is null or < 0 ? Unknown : Gigabytes(bytes.Value);
 
-    private static string FormatBytes(double bytes)
-    {
-        const double gib = 1024d * 1024d * 1024d;
-        return $"{Math.Round(bytes / gib):0} GB";
-    }
+    private static UiText Gigabytes(double bytes) =>
+        UiText.Key("Units.Gigabytes", Math.Round(bytes / (1024d * 1024d * 1024d)));
 }

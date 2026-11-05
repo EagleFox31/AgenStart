@@ -65,3 +65,40 @@ Entry format: context, symptom, root cause, fix, prevention, generalized lesson.
 - **Fix:** scope the self-context to the control's root element (`RootGrid.DataContext = this`).
 - **Prevention:** never assign `DataContext` on a UserControl itself; assign it on an inner root. Check every step at startup with a window capture after any view extraction.
 - **Generalized lesson:** a control's own `DataContext` belongs to its parent; a view that needs a private context sets it one level down.
+
+## LL-006 — Pushed without running the CI formatting gate
+
+- **Context:** passe 9 (PR #117) was verified locally with `dotnet build` and the test suite before push.
+- **Symptom:** CI `build` failed on `Verify formatting` (`WHITESPACE` in `RecommendationsViewModel.cs`, `=>Recommendations`).
+- **Root cause:** the local check list stopped at build + tests; `desktop-ui-build.yml` also runs `dotnet format --verify-no-changes`, which neither of them covers.
+- **Fix:** inserted the missing space; `dotnet format ... --verify-no-changes` exits 0.
+- **Prevention:** before any push touching `src/AgenStart.Desktop`, run the same command as CI: `dotnet format src/AgenStart.Desktop/AgenStart.Desktop.csproj --verify-no-changes`.
+- **Generalized lesson:** local verification must replay every CI gate for the touched surface, not only build and tests.
+
+## LL-007 — Wrapping views in panels silently disabled History and Settings
+
+- **Context:** passe 9 (PR #117, f489980) wrapped each step view in a `Panel` so it could bind directly to its step view model.
+- **Symptom:** History and Settings stayed disabled in the side bar. Nothing was logged and the build stayed green.
+- **Root cause:** `InstallUtilityViews` found the page grid through `OverviewControl.Parent is Grid`. After the wrap, the parent became a `Panel`, so the method returned early without saying anything. Code that walks the visual tree depends on the layout, and the compiler cannot check that dependency.
+- **Fix:** the page grid is now named (`x:Name="PageHost"`) and resolved by name (8fd6608).
+- **Prevention:** after any change to `MainWindow` layout, click every side-bar item, including History and Settings, as part of the manual smoke pass. Resolve hosts by `x:Name`, never through `.Parent` chains.
+- **Generalized lesson:** a guard that returns early in silence turns a layout change into a hidden feature loss. Resolve dependencies by name, and make a missing dependency fail loudly.
+
+## LL-008 — Redesign crashed at startup on an undecodable brand PNG
+
+- **Context:** the inset grouped redesign (PR #118, 269fa38) put `Assets/agenstart-app-icon.png` in the side bar and the Settings About row.
+- **Symptom:** `dotnet run` returned immediately with no window. Running the exe directly showed `ArgumentException: Unable to load bitmap from provided data` from `MainWindow.axaml` line 20.
+- **Root cause:** that PNG (96×96, 8-bit colormap) had never been loaded at runtime; Skia rejects it. XAML compilation only checks the URI, so build, format and tests stayed green. The pre-push check had no launch step.
+- **Fix:** replaced the bitmap with a vector brand mark using theme brushes (`AgenAccentBrush` / `AgenOnAccentBrush`); the original asset is untouched.
+- **Prevention:** after any XAML change, launch the built exe for ~15 s (`timeout 15 ./AgenStart.Desktop.exe`, exit 124 = still running) and read stderr before pushing. Before using a bitmap asset in XAML for the first time, confirm it loads at runtime.
+- **Generalized lesson:** a green build does not prove a UI starts. Resources referenced from XAML fail only at runtime, so the startup check is a gate in its own right.
+- **Update (2026-11-05):** the PNG is not just an unusual encoding: its data stream is corrupt (Pillow also fails with "broken data stream"), and the same broken file exists under `site/assets/generated-brand/favicon.png`. The `.ico` frames decode fine, so `agenstart-app-icon.png` was regenerated from the 64×64 `.ico` frame (RGBA) and the real logo is back in the side bar and About row. Extra prevention: decode a bitmap with an independent tool (e.g. `python -c "from PIL import Image; Image.open(p).load()"`) before committing it.
+
+## LL-009 — A new settings flag would have shown the onboarding to existing users
+
+- **Context:** guided first-run onboarding (PR #118, 38a6181) keyed on `DesktopSettings.OnboardingCompleted`, a `bool` defaulting to `false`.
+- **Symptom (near miss, caught before merge):** `settings.json` files written by released versions have no `onboardingCompleted` field, so they deserialize to `false` and every existing user would have been sent back through the first-run flow. A branch test even asserted that outcome.
+- **Root cause:** a field's default value was read as user intent. "Field absent" (file written before the feature existed) and "explicitly false" (onboarding left midway) were the same value after deserialization.
+- **Fix:** `LocalExperienceStore.LoadSettingsAsync` checks whether the property is present; an existing file without it loads as `OnboardingCompleted = true`. An explicit `false` still restarts the flow.
+- **Prevention:** `DesktopSettingsTests` covers both cases (legacy file → onboarded; explicit `false` → restart). When adding a persisted flag, write a test that loads a settings file from the previous release before writing the feature.
+- **Generalized lesson:** for persisted data, a new field's default must be chosen for the data that already exists, not for a fresh install. Absent and false are different states; keep them apart at load time.

@@ -1,9 +1,16 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using AgenStart.Desktop.Services;
 
 namespace AgenStart.Desktop.LocalData;
 
-public sealed record DesktopSettings(bool AnalyzeOnStartup = true);
+// Fields are only ever appended with defaults, so any older settings.json still loads:
+// Theme came after AnalyzeOnStartup; Language (null = follow the OS) and OnboardingCompleted after Theme.
+public sealed record DesktopSettings(
+    bool AnalyzeOnStartup = true,
+    string Theme = AppThemes.Default,
+    string? Language = null,
+    bool OnboardingCompleted = false);
 
 public sealed record SetupHistoryApplication(
     string ApplicationId,
@@ -40,11 +47,21 @@ public sealed class LocalExperienceStore
 
     public LocalExperienceStore(string? baseDirectory = null)
     {
-        _directoryPath = baseDirectory ?? Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-            "AgenStart");
+        _directoryPath = baseDirectory ?? DefaultDirectory();
         _settingsPath = Path.Combine(_directoryPath, "settings.json");
         _historyPath = Path.Combine(_directoryPath, "history.json");
+    }
+
+    /// <summary>Environment variable that relocates all local data (smoke tests, portable runs).</summary>
+    public const string DataDirectoryVariable = "AGENSTART_DATA_DIR";
+
+    /// <summary>The per-user data folder, unless <see cref="DataDirectoryVariable"/> points elsewhere.</summary>
+    public static string DefaultDirectory()
+    {
+        var overridden = Environment.GetEnvironmentVariable(DataDirectoryVariable);
+        return string.IsNullOrWhiteSpace(overridden)
+            ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "AgenStart")
+            : Path.GetFullPath(overridden.Trim());
     }
 
     public async Task<DesktopSettings> LoadSettingsAsync(CancellationToken cancellationToken = default)
@@ -58,8 +75,13 @@ public sealed class LocalExperienceStore
             }
 
             await using var stream = File.OpenRead(_settingsPath);
-            return await JsonSerializer.DeserializeAsync<DesktopSettings>(stream, _jsonOptions, cancellationToken)
-                .ConfigureAwait(false) ?? new DesktopSettings();
+            using var document = await JsonDocument.ParseAsync(stream, cancellationToken: cancellationToken)
+                .ConfigureAwait(false);
+            var settings = document.Deserialize<DesktopSettings>(_jsonOptions) ?? new DesktopSettings();
+            // Settings written before the onboarding existed belong to someone who already uses the app.
+            return HasProperty(document.RootElement, nameof(DesktopSettings.OnboardingCompleted))
+                ? settings
+                : settings with { OnboardingCompleted = true };
         }
         catch (JsonException)
         {
@@ -70,6 +92,10 @@ public sealed class LocalExperienceStore
             _gate.Release();
         }
     }
+
+    private static bool HasProperty(JsonElement root, string name) =>
+        root.ValueKind == JsonValueKind.Object
+        && root.EnumerateObject().Any(property => string.Equals(property.Name, name, StringComparison.OrdinalIgnoreCase));
 
     public async Task SaveSettingsAsync(DesktopSettings settings, CancellationToken cancellationToken = default)
     {

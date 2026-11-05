@@ -3,85 +3,84 @@
              xmlns:local="using:AgenStart.Desktop.LocalData"
              x:Class="AgenStart.Desktop.Views.HistoryView"
              x:DataType="local:LocalExperienceViewModel">
-  <Grid MaxWidth="1160" HorizontalAlignment="Left">
+  <StackPanel Spacing="24">
     <StackPanel>
-      <TextBlock Classes="eyebrow" Text="HISTORY" Margin="0,0,0,20" />
-      <TextBlock Classes="pageTitle" Text="Setup history" />
-      <TextBlock Classes="subtitle" Text="Previous AgenStart setup sessions stored locally on this device." Margin="0,12,0,0" />
-      <Border Height="1" Background="{StaticResource AgenDividerBrush}" Margin="0,28,0,24" />
+      <TextBlock Classes="pageTitle" Text="{DynamicResource History.SetupHistory}" />
+      <TextBlock Classes="subtitle" Text="{DynamicResource History.PreviousAgenStartSetupSessionsStored}" Margin="0,6,0,0" />
+    </StackPanel>
 
-      <Grid ColumnDefinitions="1.2*,0.8*" ColumnSpacing="48">
-        <StackPanel Grid.Column="0">
-          <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,10">
-            <TextBlock Text="Sessions" FontSize="20" FontWeight="SemiBold" />
-            <TextBlock Grid.Column="1" Text="Local only" Foreground="{StaticResource AgenMutedBrush}" FontSize="13" VerticalAlignment="Center" />
-          </Grid>
-
-          <ListBox ItemsSource="{Binding HistoryEntries}" SelectedItem="{Binding SelectedHistory, Mode=TwoWay}" Background="Transparent" BorderThickness="0">
-            <ListBox.ItemTemplate>
-              <DataTemplate x:DataType="local:SetupHistoryRowViewModel">
-                <Border BorderBrush="{StaticResource AgenDividerBrush}" BorderThickness="0,0,0,1" Padding="8,14">
-                  <Grid ColumnDefinitions="150,*,170" ColumnSpacing="18">
+    <Grid ColumnDefinitions="*,300" ColumnSpacing="20">
+      <StackPanel>
+        <Grid ColumnDefinitions="*,Auto">
+          <TextBlock Classes="sectionHeader" Text="{DynamicResource History.Sessions}" />
+          <TextBlock Grid.Column="1" Classes="rowCaption" Text="{DynamicResource History.LocalOnly}" VerticalAlignment="Center" Margin="0,0,4,8" />
+        </Grid>
+        <Border Classes="group">
+          <Grid>
+            <ListBox ItemsSource="{Binding HistoryEntries}" SelectedItem="{Binding SelectedHistory, Mode=TwoWay}" Background="Transparent" BorderThickness="0" Padding="0">
+              <ListBox.ItemTemplate>
+                <DataTemplate x:DataType="local:SetupHistoryRowViewModel">
+                  <Grid ColumnDefinitions="*,Auto" ColumnSpacing="14" Margin="2,4">
                     <StackPanel>
-                      <TextBlock Text="{Binding CompletedAt}" FontWeight="SemiBold" />
-                      <TextBlock Text="{Binding Profile}" Foreground="{StaticResource AgenTealBrush}" FontSize="13" Margin="0,4,0,0" />
+                      <TextBlock Classes="rowTitle" Text="{Binding ApplicationSummary}" />
+                      <TextBlock Classes="rowHint" Text="{Binding Outcome}" />
+                      <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,4,0,0">
+                        <TextBlock Text="{Binding CompletedAt}" Foreground="{DynamicResource AgenText3Brush}" FontSize="12" />
+                        <TextBlock Text="{Binding Profile}" Foreground="{DynamicResource AgenAccentBrush}" FontSize="12" FontWeight="Medium" />
+                      </StackPanel>
                     </StackPanel>
-                    <StackPanel Grid.Column="1">
-                      <TextBlock Text="{Binding ApplicationSummary}" FontSize="15" FontWeight="SemiBold" />
-                      <TextBlock Text="{Binding Outcome}" Foreground="{StaticResource AgenMutedBrush}" FontSize="13" Margin="0,4,0,0" />
-                    </StackPanel>
-                    <StackPanel Grid.Column="2" HorizontalAlignment="Right">
-                      <TextBlock Text="{Binding InstalledCount, StringFormat='{}{0} installed'}" TextAlignment="Right" />
-                      <TextBlock Text="{Binding FailedCount, StringFormat='{}{0} failed'}" Foreground="{StaticResource AgenMutedBrush}" FontSize="12" TextAlignment="Right" Margin="0,4,0,0" />
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                      <TextBlock Text="{Binding InstalledSummary}" FontSize="13" TextAlignment="Right" />
+                      <TextBlock Text="{Binding FailedSummary}" Foreground="{DynamicResource AgenMutedBrush}" FontSize="12" TextAlignment="Right" Margin="0,2,0,0" />
                     </StackPanel>
                   </Grid>
-                </Border>
-              </DataTemplate>
-            </ListBox.ItemTemplate>
-          </ListBox>
+                </DataTemplate>
+              </ListBox.ItemTemplate>
+            </ListBox>
 
-          <Border IsVisible="{Binding !HistoryEntries.Count}" BorderBrush="{StaticResource AgenDividerBrush}" BorderThickness="1" CornerRadius="8" Padding="18">
-            <StackPanel Orientation="Horizontal" Spacing="12">
-              <TextBlock Text="↶" Foreground="{StaticResource AgenTealBrush}" FontSize="20" />
-              <StackPanel>
-                <TextBlock Text="No setups yet" FontWeight="SemiBold" />
-                <TextBlock Text="Completed installations will appear here. Summaries stay in AgenStart's local application-data folder." Foreground="{StaticResource AgenMutedBrush}" FontSize="13" TextWrapping="Wrap" Margin="0,4,0,0" />
+            <Border IsVisible="{Binding !HistoryEntries.Count}" Padding="20,28">
+              <StackPanel Spacing="10" HorizontalAlignment="Center">
+                <Border Classes="iconTile" HorizontalAlignment="Center" Width="44" Height="44"><TextBlock Classes="glyph" Text="&#xE81C;" FontSize="20" /></Border>
+                <TextBlock Text="{DynamicResource History.NoSetupsYet}" FontWeight="SemiBold" HorizontalAlignment="Center" />
+                <TextBlock Classes="rowHint" Text="{DynamicResource History.CompletedInstallationsWillAppearHere}" TextAlignment="Center" MaxWidth="380" />
               </StackPanel>
-            </StackPanel>
-          </Border>
-        </StackPanel>
+            </Border>
+          </Grid>
+        </Border>
+      </StackPanel>
 
-        <StackPanel Grid.Column="1" Spacing="14">
-          <TextBlock Text="Session details" FontSize="20" FontWeight="SemiBold" />
-          <Border IsVisible="{Binding SelectedHistory, Converter={x:Static ObjectConverters.IsNull}}" BorderBrush="{StaticResource AgenDividerBrush}" BorderThickness="1" CornerRadius="8" Padding="20">
-            <TextBlock Text="Select a session to see its applications and export it." Foreground="{StaticResource AgenMutedBrush}" FontSize="13" TextWrapping="Wrap" />
-          </Border>
-          <Border IsVisible="{Binding SelectedHistory, Converter={x:Static ObjectConverters.IsNotNull}}" BorderBrush="{StaticResource AgenDividerBrush}" BorderThickness="1" CornerRadius="8" Padding="20">
-            <StackPanel Spacing="12">
-              <TextBlock Text="{Binding SelectedHistory.Profile}" FontSize="24" FontWeight="SemiBold" />
-              <TextBlock Text="{Binding SelectedHistory.CompletedAt}" Foreground="{StaticResource AgenMutedBrush}" />
-              <Border Height="1" Background="{StaticResource AgenDividerBrush}" Margin="0,4" />
-              <Grid ColumnDefinitions="*,*">
-                <StackPanel><TextBlock Text="{Binding SelectedHistory.ProcessedCount}" Foreground="{StaticResource AgenTealBrush}" FontSize="20" FontWeight="SemiBold" /><TextBlock Text="processed" Foreground="{StaticResource AgenMutedBrush}" FontSize="12" /></StackPanel>
-                <StackPanel Grid.Column="1"><TextBlock Text="{Binding SelectedHistory.FailedCount}" FontSize="20" FontWeight="SemiBold" /><TextBlock Text="failed" Foreground="{StaticResource AgenMutedBrush}" FontSize="12" /></StackPanel>
-              </Grid>
-              <TextBlock Text="Applications" FontWeight="SemiBold" Margin="0,8,0,0" />
-              <ItemsControl ItemsSource="{Binding SelectedHistory.Applications}">
-                <ItemsControl.ItemTemplate>
-                  <DataTemplate x:DataType="local:SetupHistoryApplication">
-                    <Grid ColumnDefinitions="*,150" Margin="0,5">
-                      <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis" />
-                      <TextBlock Grid.Column="1" Text="{Binding Result}" Foreground="{StaticResource AgenMutedBrush}" TextAlignment="Right" />
-                    </Grid>
-                  </DataTemplate>
-                </ItemsControl.ItemTemplate>
-              </ItemsControl>
-              <Button Classes="secondary" Content="Export setup" IsEnabled="{Binding CanExportSelectedHistory}" Click="ExportSetupButton_OnClick" Margin="0,10,0,0" />
-              <TextBlock Text="Exports portable AgenStart application IDs only — no machine identifiers or personal data." Foreground="{StaticResource AgenMutedBrush}" FontSize="12" TextWrapping="Wrap" />
+      <StackPanel Grid.Column="1">
+        <TextBlock Classes="sectionHeader" Text="{DynamicResource History.SessionDetails}" />
+        <Border Classes="tile" IsVisible="{Binding SelectedHistory, Converter={x:Static ObjectConverters.IsNull}}">
+          <TextBlock Classes="rowHint" Text="{DynamicResource History.SelectASessionToSee}" Margin="0" />
+        </Border>
+        <Border Classes="tile" IsVisible="{Binding SelectedHistory, Converter={x:Static ObjectConverters.IsNotNull}}">
+          <StackPanel Spacing="12">
+            <StackPanel>
+              <TextBlock Text="{Binding SelectedHistory.Profile}" FontSize="19" FontWeight="SemiBold" TextWrapping="Wrap" />
+              <TextBlock Classes="rowCaption" Text="{Binding SelectedHistory.CompletedAt}" Margin="0,2,0,0" />
             </StackPanel>
-          </Border>
-        </StackPanel>
-      </Grid>
-    </StackPanel>
-  </Grid>
+            <Grid ColumnDefinitions="*,*">
+              <StackPanel><TextBlock Classes="statValue" Text="{Binding SelectedHistory.ProcessedCount}" Foreground="{DynamicResource AgenAccentBrush}" /><TextBlock Classes="statLabel" Text="{DynamicResource History.Processed}" /></StackPanel>
+              <StackPanel Grid.Column="1"><TextBlock Classes="statValue" Text="{Binding SelectedHistory.FailedCount}" /><TextBlock Classes="statLabel" Text="{DynamicResource History.Failed}" /></StackPanel>
+            </Grid>
+            <Border Height="1" Background="{DynamicResource AgenSeparatorBrush}" />
+            <TextBlock Text="{DynamicResource History.Applications}" FontWeight="SemiBold" />
+            <ItemsControl ItemsSource="{Binding SelectedHistory.Applications}">
+              <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="local:SetupHistoryApplication">
+                  <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10" Margin="0,4">
+                    <TextBlock Text="{Binding Name}" FontSize="13" TextTrimming="CharacterEllipsis" />
+                    <TextBlock Grid.Column="1" Text="{Binding Result}" Foreground="{DynamicResource AgenMutedBrush}" FontSize="13" TextAlignment="Right" />
+                  </Grid>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+            <Button Classes="secondary" Content="{DynamicResource History.ExportSetup}" IsEnabled="{Binding CanExportSelectedHistory}" Click="ExportSetupButton_OnClick" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Margin="0,4,0,0" />
+            <TextBlock Classes="hint" Text="{DynamicResource History.ExportsPortableAgenStartApplicationIDs}" />
+          </StackPanel>
+        </Border>
+      </StackPanel>
+    </Grid>
+  </StackPanel>
 </UserControl>
