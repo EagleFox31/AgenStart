@@ -17,7 +17,7 @@
     <Border Grid.Column="0" Classes="sidebar">
       <Grid RowDefinitions="Auto,*,Auto" Margin="10,18,10,14">
         <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10" Margin="8,0,8,4">
-          <Image Source="avares://AgenStart.Desktop/Assets/agenstart-app-icon.png" Width="30" Height="30" VerticalAlignment="Center" />
+          <Border Width="30" Height="30" CornerRadius="8" Background="{DynamicResource AgenAccentBrush}" VerticalAlignment="Center"><TextBlock Text="A" Foreground="{DynamicResource AgenOnAccentBrush}" FontSize="16" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" /></Border>
           <StackPanel Grid.Column="1" VerticalAlignment="Center">
             <TextBlock Text="AgenStart" Foreground="{DynamicResource AgenBrandTextBrush}" FontSize="15" FontWeight="SemiBold" />
             <TextBlock Text="by AgenStudio" Foreground="{DynamicResource AgenBrandSubtitleBrush}" FontSize="11.5" />

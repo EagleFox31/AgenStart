@@ -131,7 +131,7 @@
         <StackPanel>
         <Border Classes="row" Padding="16,14">
           <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="14">
-            <Image Source="avares://AgenStart.Desktop/Assets/agenstart-app-icon.png" Width="40" Height="40" VerticalAlignment="Center" />
+            <Border Width="40" Height="40" CornerRadius="10" Background="{DynamicResource AgenAccentBrush}" VerticalAlignment="Center"><TextBlock Text="A" Foreground="{DynamicResource AgenOnAccentBrush}" FontSize="21" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" /></Border>
             <StackPanel Grid.Column="1" VerticalAlignment="Center">
               <TextBlock Text="AgenStart" FontSize="16" FontWeight="SemiBold" />
               <TextBlock Classes="rowHint" Text="0.1.0-alpha · BY AGENSTUDIO" />

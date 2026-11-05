@@ -83,3 +83,12 @@ Entry format: context, symptom, root cause, fix, prevention, generalized lesson.
 - **Fix:** the page grid is now named (`x:Name="PageHost"`) and resolved by name (8fd6608).
 - **Prevention:** after any change to `MainWindow` layout, click every side-bar item, including History and Settings, as part of the manual smoke pass. Resolve hosts by `x:Name`, never through `.Parent` chains.
 - **Generalized lesson:** a guard that returns early in silence turns a layout change into a hidden feature loss. Resolve dependencies by name, and make a missing dependency fail loudly.
+
+## LL-008 — Redesign crashed at startup on an undecodable brand PNG
+
+- **Context:** the inset grouped redesign (PR #118, 269fa38) put `Assets/agenstart-app-icon.png` in the side bar and the Settings About row.
+- **Symptom:** `dotnet run` returned immediately with no window. Running the exe directly showed `ArgumentException: Unable to load bitmap from provided data` from `MainWindow.axaml` line 20.
+- **Root cause:** that PNG (96×96, 8-bit colormap) had never been loaded at runtime; Skia rejects it. XAML compilation only checks the URI, so build, format and tests stayed green. The pre-push check had no launch step.
+- **Fix:** replaced the bitmap with a vector brand mark using theme brushes (`AgenAccentBrush` / `AgenOnAccentBrush`); the original asset is untouched.
+- **Prevention:** after any XAML change, launch the built exe for ~15 s (`timeout 15 ./AgenStart.Desktop.exe`, exit 124 = still running) and read stderr before pushing. Before using a bitmap asset in XAML for the first time, confirm it loads at runtime.
+- **Generalized lesson:** a green build does not prove a UI starts. Resources referenced from XAML fail only at runtime, so the startup check is a gate in its own right.
