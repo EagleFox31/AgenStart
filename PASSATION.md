@@ -123,3 +123,10 @@ Branche `refactor/desktop-bind-step-viewmodels` (depuis `main` à dda5ae1).
 - **Vérifié** : build 0 erreur 0 avertissement, `dotnet format --verify-no-changes` OK.
 - **Non vérifié** : le rendu visuel. Les captures automatiques ont été refusées par le classifieur. L'utilisateur teste les 3 thèmes à la main.
 - **Prochaine étape** : retours visuels → retouches → PR (base #117, ou `main` après fusion) avec la section « RAIDER review », sans mention d'IA.
+
+## 2026-11-05 17:35 — Refonte graphique complète desktop (inset grouped)
+
+- Branche `feat/desktop-selectable-themes`, commit `269fa38` : sidebar claire, cartes groupées, lignes séparées, tuiles de stats et hero sur toutes les étapes (Overview → Report, History, Settings). Les palettes Apple / Google / AgenStart pilotent aussi rayons, ombres, bordures et métriques de navigation.
+- Contrats conservés : `x:Name`, handlers, bindings, textes de boutons du smoke test, libellés « History » / « Settings » (FindNavigationButton).
+- Preuves : build 0 erreur / 0 avertissement, `dotnet format --verify-no-changes` OK, tests 132/132 (`dotnet test --project <csproj> -c Release` ; sans `--project` sous MTP → 0 test, code 5).
+- Reste : contrôle visuel des 3 thèmes dans l'app (fermer l'instance en cours avant `dotnet run`), PR à revoir, re-vérifier la CI de #117.
