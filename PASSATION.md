@@ -154,3 +154,12 @@ Branche `refactor/desktop-bind-step-viewmodels` (depuis `main` à dda5ae1).
 - Preuves : build 0/0, `dotnet format` OK, tests 132/132, exe lancé 15 s sans exception (thème enregistré).
 - Non vérifié : rendu visuel du Dark et des cartes (à tester par l'utilisateur) ; les pastilles de statut
   (couleurs codées dans `RecommendationRowViewModel`) restent claires en Dark.
+
+## 2026-11-05 18:28 — Logo restauré, cartes alignées ; onboarding + onglets en conception
+
+- Commit 6579fc0 poussé (PR #118) : `agenstart-app-icon.png` régénéré depuis la frame 64 px de l'.ico
+  (l'ancien PNG était corrompu, LL-008 mis à jour) ; vrai logo dans la barre et « À propos » ; cartes
+  Recommendations sur 3 colonnes alignées avec les tuiles. Build 0/0, exe 15 s OK.
+- Demande en cours : onboarding guidé (loader → langue FR/EN → usage → scan → recommandations) et
+  onglets en haut à la place de la barre latérale. Plan demandé à l'agent architecte ; implémentation
+  ensuite par phases (chaque phase build + exe 15 s + tests + format).
