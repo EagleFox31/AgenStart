@@ -142,3 +142,15 @@ Branche `refactor/desktop-bind-step-viewmodels` (depuis `main` à dda5ae1).
 - `dotnet run` sortait sans fenêtre : le PNG `agenstart-app-icon.png` (palette 8 bits) n'est pas décodable par Skia. Remplacé par une pastille vectorielle thémée (MainWindow + Settings). LL-008 consigné.
 - Preuve : exe lancé 15 s sans exception (exit 124), build 0/0, format OK.
 - Prochaine étape : test visuel utilisateur des 3 thèmes, puis sortir #118 du brouillon.
+
+## 2026-11-05 18:22 — Thème Dark + bascule cartes/liste (Recommendations)
+
+- Commit b274176 poussé sur `feat/desktop-selectable-themes` (PR #118, brouillon).
+- Thème **Dark** ajouté (4ᵉ choix dans Paramètres). Chaque palette déclare `AgenThemeVariant` ;
+  `AvaloniaThemeService` règle `RequestedThemeVariant` et l'accent Fluent à partir de cette clé.
+- Générateur de palettes versionné : `python tools/generate-desktop-palettes.py` (sortie par défaut
+  `src/AgenStart.Desktop/Styles/Palettes`, idempotent, 128 clés identiques par palette).
+- Recommendations : bascule Liste / Cartes (`IsCardLayout`, présentation seule, non persistée).
+- Preuves : build 0/0, `dotnet format` OK, tests 132/132, exe lancé 15 s sans exception (thème enregistré).
+- Non vérifié : rendu visuel du Dark et des cartes (à tester par l'utilisateur) ; les pastilles de statut
+  (couleurs codées dans `RecommendationRowViewModel`) restent claires en Dark.
