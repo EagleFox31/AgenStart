@@ -179,3 +179,10 @@ Branche `refactor/desktop-bind-step-viewmodels` (depuis `main` à dda5ae1).
 - Non vérifié visuellement : rendu de l'onboarding et largeur des onglets FR à 1040 px → à tester
   par le PO. Raisons catalogue/moteur restent en anglais (par conception).
 - Chaînes : 21 clés `Onboarding.*` via `p4.py` + `genstrings.py` (scratchpad, non versionnés).
+
+## 2026-11-05 19:33 — Correctif rétroactif onboarding (PR #118)
+
+- Corrige l'entrée précédente : un `settings.json` d'une version publiée (sans `onboardingCompleted`)
+  aurait relancé l'onboarding pour tous les utilisateurs existants. `1644946` : champ absent → déjà
+  onboardé ; `false` explicite → reprise. Consigné en LL-009, couvert par `DesktopSettingsTests`.
+- Vérifs : Desktop.Tests Release 70/70 (total 202), format propre, lancement avec fichier ancien format OK.
