@@ -5,65 +5,62 @@
              x:Class="AgenStart.Desktop.Views.ReportView"
              xmlns:steps="using:AgenStart.Desktop.ViewModels.Steps"
              x:DataType="steps:ReportViewModel">
-  <StackPanel>
-    <TextBlock Classes="eyebrow" Text="REPORT" Margin="0,0,0,20" />
-    <TextBlock Classes="pageTitle" Text="{Binding ReportTitle}" />
-    <TextBlock Classes="subtitle" Text="{Binding ReportStatus}" Margin="0,12,0,0" TextWrapping="Wrap" />
-    <Border Height="1" Background="{DynamicResource AgenDividerBrush}" Margin="0,28,0,24" />
-    <Grid ColumnDefinitions="90,*,*,*,*" ColumnSpacing="18">
-      <Border Width="64" Height="64" CornerRadius="32" BorderBrush="{DynamicResource AgenTealBrush}" BorderThickness="2" IsVisible="{Binding !ReportFailedCount}">
-        <TextBlock Text="✓" Foreground="{DynamicResource AgenTealBrush}" FontSize="30" HorizontalAlignment="Center" VerticalAlignment="Center" />
-      </Border>
-      <Border Width="64" Height="64" CornerRadius="32" BorderBrush="{DynamicResource AgenWarningBrush}" BorderThickness="2" IsVisible="{Binding !!ReportFailedCount}">
-        <TextBlock Text="!" Foreground="{DynamicResource AgenWarningBrush}" FontSize="30" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" />
-      </Border>
-      <StackPanel Grid.Column="1">
-        <TextBlock Text="{Binding ReportProcessedCount}" Foreground="{DynamicResource AgenTealBrush}" FontSize="22" FontWeight="SemiBold" />
-        <TextBlock Text="applications processed" Foreground="{DynamicResource AgenMutedBrush}" />
-      </StackPanel>
-      <StackPanel Grid.Column="2">
-        <TextBlock Text="{Binding ReportInstalledCount}" Foreground="{DynamicResource AgenTealBrush}" FontSize="22" FontWeight="SemiBold" />
-        <TextBlock Text="installed" Foreground="{DynamicResource AgenMutedBrush}" />
-      </StackPanel>
-      <StackPanel Grid.Column="3">
-        <TextBlock Text="{Binding ReportAlreadyInstalledCount}" Foreground="{DynamicResource AgenTealBrush}" FontSize="22" FontWeight="SemiBold" />
-        <TextBlock Text="already installed" Foreground="{DynamicResource AgenMutedBrush}" />
-      </StackPanel>
-      <StackPanel Grid.Column="4">
-        <TextBlock Classes="failedMetric" Classes.hasFailures="{Binding !!ReportFailedCount}" Text="{Binding ReportFailedCount}" FontSize="22" FontWeight="SemiBold" />
-        <TextBlock Text="failed" Foreground="{DynamicResource AgenMutedBrush}" />
-      </StackPanel>
-    </Grid>
-    <TextBlock Text="Installation results" FontSize="20" FontWeight="SemiBold" Margin="0,32,0,10" />
-    <ItemsControl ItemsSource="{Binding ReportItems}">
-      <ItemsControl.ItemTemplate>
-        <DataTemplate x:DataType="vm:ReportRowViewModel">
-          <Border BorderBrush="{DynamicResource AgenDividerBrush}" BorderThickness="0,0,0,1" Padding="10,13">
-            <Grid ColumnDefinitions="54,*,190,160" ColumnSpacing="14">
-              <views:AppRowLogoView Width="36" Height="36" />
-              <TextBlock Grid.Column="1" Text="{Binding Name}" FontSize="16" FontWeight="SemiBold" VerticalAlignment="Center" />
-              <TextBlock Grid.Column="2" Text="{Binding Result}" VerticalAlignment="Center" />
-              <TextBlock Grid.Column="3" Text="{Binding InstalledVersion}" Foreground="{DynamicResource AgenMutedBrush}" VerticalAlignment="Center" />
-            </Grid>
-          </Border>
-        </DataTemplate>
-      </ItemsControl.ItemTemplate>
-    </ItemsControl>
-    <Border Classes="notice" IsVisible="{Binding ReportRequiresReboot}" Margin="0,20,0,0">
-      <StackPanel>
-        <TextBlock Text="Restart recommended" FontWeight="SemiBold" />
-        <TextBlock Text="One or more installed applications require Windows to restart before all features become available." Foreground="{DynamicResource AgenMutedBrush}" FontSize="13" Margin="0,4,0,0" />
-      </StackPanel>
+  <StackPanel Spacing="24">
+    <Border Classes="hero">
+      <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="18">
+        <Border Classes="statusCircle" IsVisible="{Binding !ReportFailedCount}" Background="{DynamicResource AgenCardBrush}"><TextBlock Text="&#xE73E;" /></Border>
+        <Border Classes="statusCircle warning" IsVisible="{Binding !!ReportFailedCount}" Background="{DynamicResource AgenCardBrush}"><TextBlock Text="&#xE7BA;" /></Border>
+        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+          <TextBlock Classes="pageTitle" Text="{Binding ReportTitle}" />
+          <TextBlock Classes="subtitle" Text="{Binding ReportStatus}" Margin="0,6,0,0" />
+        </StackPanel>
+        <StackPanel Grid.Column="2" VerticalAlignment="Top" HorizontalAlignment="Right">
+          <TextBlock Classes="rowCaption" Text="Completed at" TextAlignment="Right" />
+          <TextBlock Text="{Binding ReportCompletedAt}" FontWeight="SemiBold" TextAlignment="Right" />
+        </StackPanel>
+      </Grid>
     </Border>
-    <Grid ColumnDefinitions="*,Auto" Margin="0,22,0,0">
-      <StackPanel Orientation="Horizontal" Spacing="14">
-        <Button Classes="primary" Content="Finish" Click="FinishButton_OnClick" />
-        <Button x:Name="ExportSetupButton" Classes="secondary" Content="Export this setup" IsEnabled="False" Click="ExportSetupButton_OnClick" />
-      </StackPanel>
-      <StackPanel Grid.Column="1">
-        <TextBlock Text="Completed at" Foreground="{DynamicResource AgenMutedBrush}" FontSize="12" />
-        <TextBlock Text="{Binding ReportCompletedAt}" FontWeight="SemiBold" />
-      </StackPanel>
+
+    <Grid ColumnDefinitions="*,*,*,*" ColumnSpacing="16">
+      <Border Classes="tile"><StackPanel><TextBlock Classes="statValue" Text="{Binding ReportProcessedCount}" /><TextBlock Classes="statLabel" Text="applications processed" /></StackPanel></Border>
+      <Border Grid.Column="1" Classes="tile"><StackPanel><TextBlock Classes="statValue" Text="{Binding ReportInstalledCount}" Foreground="{DynamicResource AgenAccentBrush}" /><TextBlock Classes="statLabel" Text="installed" /></StackPanel></Border>
+      <Border Grid.Column="2" Classes="tile"><StackPanel><TextBlock Classes="statValue" Text="{Binding ReportAlreadyInstalledCount}" /><TextBlock Classes="statLabel" Text="already installed" /></StackPanel></Border>
+      <Border Grid.Column="3" Classes="tile"><StackPanel><TextBlock Classes="statValue failedMetric" Classes.hasFailures="{Binding !!ReportFailedCount}" Text="{Binding ReportFailedCount}" /><TextBlock Classes="statLabel" Text="failed" /></StackPanel></Border>
     </Grid>
+
+    <Border Classes="notice" IsVisible="{Binding ReportRequiresReboot}">
+      <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+        <TextBlock Classes="glyph" Text="&#xE777;" Foreground="{DynamicResource AgenBadgeWarningBrush}" VerticalAlignment="Top" Margin="0,2,0,0" />
+        <StackPanel Grid.Column="1">
+          <TextBlock Text="Restart recommended" FontWeight="SemiBold" />
+          <TextBlock Classes="rowHint" Text="One or more installed applications require Windows to restart before all features become available." />
+        </StackPanel>
+      </Grid>
+    </Border>
+
+    <StackPanel>
+      <TextBlock Classes="sectionHeader" Text="Installation results" />
+      <Border Classes="group">
+        <ItemsControl ItemsSource="{Binding ReportItems}">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate x:DataType="vm:ReportRowViewModel">
+              <Border Classes="row" Padding="14,10">
+                <Grid ColumnDefinitions="Auto,*,Auto,140" ColumnSpacing="14">
+                  <views:AppRowLogoView VerticalAlignment="Center" />
+                  <TextBlock Grid.Column="1" Classes="rowTitle" Text="{Binding Name}" VerticalAlignment="Center" />
+                  <TextBlock Grid.Column="2" Text="{Binding Result}" FontSize="13" VerticalAlignment="Center" />
+                  <TextBlock Grid.Column="3" Text="{Binding InstalledVersion}" Foreground="{DynamicResource AgenMutedBrush}" FontSize="13" TextAlignment="Right" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+                </Grid>
+              </Border>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+      </Border>
+    </StackPanel>
+
+    <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
+      <Button x:Name="ExportSetupButton" Classes="secondary large" Content="Export this setup" IsEnabled="False" Click="ExportSetupButton_OnClick" />
+      <Button Classes="primary large" Content="Finish" Click="FinishButton_OnClick" />
+    </StackPanel>
   </StackPanel>
 </UserControl>

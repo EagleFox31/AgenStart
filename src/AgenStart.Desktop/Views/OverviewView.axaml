@@ -4,28 +4,52 @@
              x:Class="AgenStart.Desktop.Views.OverviewView"
              xmlns:steps="using:AgenStart.Desktop.ViewModels.Steps"
              x:DataType="steps:OverviewViewModel">
-  <Grid ColumnDefinitions="1.05*,0.95*" ColumnSpacing="64" MaxWidth="1180" HorizontalAlignment="Left">
-    <StackPanel Grid.Column="0" VerticalAlignment="Center">
-      <TextBlock Classes="eyebrow" Text="OVERVIEW" Margin="0,0,0,28" />
-      <TextBlock Classes="pageTitle" Text="Let's prepare this PC." />
-      <TextBlock Classes="subtitle" Text="AgenStart will inspect this machine locally before recommending anything." TextWrapping="Wrap" Margin="0,20,0,0" MaxWidth="570" HorizontalAlignment="Left" />
-      <Border Height="1" Background="{DynamicResource AgenDividerBrush}" Margin="0,38,0,38" />
-      <TextBlock Text="Start with a local machine analysis" FontSize="20" FontWeight="SemiBold" />
-      <TextBlock Classes="subtitle" Text="We'll detect Windows, CPU, memory, graphics, storage and WinGet without reading your personal files." TextWrapping="Wrap" Margin="0,9,0,26" />
-      <StackPanel Orientation="Horizontal" Spacing="14">
-        <Button Classes="primary" Click="AnalyzeButton_OnClick" Content="Analyse this PC" />
-        <Button x:Name="ImportSetupButton" Classes="secondary" Content="Import a setup" Click="ImportSetupButton_OnClick" />
+  <StackPanel Spacing="24">
+    <Border Classes="hero">
+      <StackPanel>
+        <TextBlock Classes="eyebrow" Text="Overview" />
+        <TextBlock Classes="pageTitle" Text="Let's prepare this PC." Margin="0,6,0,0" />
+        <TextBlock Classes="subtitle" Text="AgenStart inspects this machine locally — Windows, CPU, memory, graphics, storage and WinGet — before recommending anything. Your personal files are never read." MaxWidth="600" HorizontalAlignment="Left" Margin="0,8,0,0" />
+        <StackPanel Orientation="Horizontal" Spacing="10" Margin="0,22,0,0">
+          <Button Classes="primary large" Click="AnalyzeButton_OnClick" Content="Analyse this PC" />
+          <Button x:Name="ImportSetupButton" Classes="secondary large" Content="Import a setup" Click="ImportSetupButton_OnClick" />
+        </StackPanel>
+        <ProgressBar IsIndeterminate="True" IsVisible="{Binding IsBusy}" MaxWidth="360" HorizontalAlignment="Left" Margin="0,18,0,0" />
+        <TextBlock x:Name="ImportStatusText" Classes="hint" IsVisible="False" Margin="0,12,0,0" />
       </StackPanel>
-      <ProgressBar IsIndeterminate="True" IsVisible="{Binding IsBusy}" Height="3" Margin="0,18,80,0" />
-      <TextBlock x:Name="ImportStatusText" Classes="subtitle" IsVisible="False" FontSize="13" Margin="0,10,0,0" />
-      <StackPanel Orientation="Horizontal" Spacing="10" Margin="0,40,0,0"><TextBlock Text="▱" Foreground="{DynamicResource AgenTealBrush}" FontSize="21" /><TextBlock Text="Machine analysis stays on this device." Foreground="{DynamicResource AgenMutedBrush}" FontSize="14" VerticalAlignment="Center" /></StackPanel>
+    </Border>
+
+    <Grid ColumnDefinitions="*,*" ColumnSpacing="16">
+      <Border Classes="tile">
+        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="14">
+          <Border Classes="statusCircle"><TextBlock Text="&#xE73E;" /></Border>
+          <StackPanel Grid.Column="1">
+            <TextBlock Text="{Binding StatusTitle}" FontSize="15" FontWeight="SemiBold" TextWrapping="Wrap" />
+            <TextBlock Text="{Binding StatusMessage}" Classes="rowHint" />
+          </StackPanel>
+        </Grid>
+      </Border>
+      <Border Grid.Column="1" Classes="tile">
+        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="14">
+          <Border Classes="iconTile" Width="44" Height="44" CornerRadius="22" VerticalAlignment="Top"><TextBlock Classes="glyph" Text="&#xE72E;" FontSize="17" /></Border>
+          <StackPanel Grid.Column="1">
+            <TextBlock Text="Machine analysis stays on this device." FontSize="15" FontWeight="SemiBold" TextWrapping="Wrap" />
+            <TextBlock Text="You stay in control of what gets installed." Classes="rowHint" />
+          </StackPanel>
+        </Grid>
+      </Border>
+    </Grid>
+
+    <StackPanel>
+      <TextBlock Classes="sectionHeader" Text="How it works" />
+      <Border Classes="group">
+        <StackPanel>
+          <Border Classes="row"><Grid ColumnDefinitions="Auto,*" ColumnSpacing="14"><Border Classes="iconTile"><TextBlock Classes="glyph" Text="&#xE977;" /></Border><StackPanel Grid.Column="1" VerticalAlignment="Center"><TextBlock Classes="rowTitle" Text="Analyse this PC" /><TextBlock Classes="rowHint" Text="A read-only scan of the hardware and package tools." /></StackPanel></Grid></Border>
+          <Border Classes="row"><Grid ColumnDefinitions="Auto,*" ColumnSpacing="14"><Border Classes="iconTile"><TextBlock Classes="glyph" Text="&#xE77B;" /></Border><StackPanel Grid.Column="1" VerticalAlignment="Center"><TextBlock Classes="rowTitle" Text="Tell us how you use it" /><TextBlock Classes="rowHint" Text="Pick one or more usage profiles." /></StackPanel></Grid></Border>
+          <Border Classes="row"><Grid ColumnDefinitions="Auto,*" ColumnSpacing="14"><Border Classes="iconTile"><TextBlock Classes="glyph" Text="&#xE734;" /></Border><StackPanel Grid.Column="1" VerticalAlignment="Center"><TextBlock Classes="rowTitle" Text="Review the recommendations" /><TextBlock Classes="rowHint" Text="Keep the essentials, add the gems you want." /></StackPanel></Grid></Border>
+          <Border Classes="row"><Grid ColumnDefinitions="Auto,*" ColumnSpacing="14"><Border Classes="iconTile"><TextBlock Classes="glyph" Text="&#xE930;" /></Border><StackPanel Grid.Column="1" VerticalAlignment="Center"><TextBlock Classes="rowTitle" Text="Confirm and install" /><TextBlock Classes="rowHint" Text="Nothing is installed until you approve the final plan." /></StackPanel></Grid></Border>
+        </StackPanel>
+      </Border>
     </StackPanel>
-    <StackPanel Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="390" Spacing="12">
-      <Border Width="74" Height="74" CornerRadius="37" BorderThickness="2" BorderBrush="{DynamicResource AgenTealBrush}" HorizontalAlignment="Center"><TextBlock Text="✓" FontSize="35" Foreground="{DynamicResource AgenTealBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" /></Border>
-      <TextBlock Text="{Binding StatusTitle}" FontSize="26" FontWeight="SemiBold" TextAlignment="Center" Margin="0,9,0,0" />
-      <TextBlock Text="{Binding StatusMessage}" Classes="subtitle" TextAlignment="Center" TextWrapping="Wrap" />
-      <Border Height="1" Background="{DynamicResource AgenDividerBrush}" Margin="0,16,0,12" />
-      <TextBlock Text="You stay in control of what gets installed." Foreground="{DynamicResource AgenMutedBrush}" FontSize="14" TextAlignment="Center" />
-    </StackPanel>
-  </Grid>
+  </StackPanel>
 </UserControl>

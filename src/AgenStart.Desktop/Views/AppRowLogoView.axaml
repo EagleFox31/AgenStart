@@ -3,11 +3,11 @@
              xmlns:vm="using:AgenStart.Desktop.ViewModels"
              x:Class="AgenStart.Desktop.Views.AppRowLogoView"
              x:DataType="vm:IAppRowLogo"
-             Width="38" Height="38">
-  <Grid>
-    <Border IsVisible="{Binding ShowInitials}" CornerRadius="{DynamicResource AgenSmallRadius}" Background="{DynamicResource AgenLogoTileBrush}">
-      <TextBlock Text="{Binding Initials}" Foreground="{DynamicResource AgenTealBrush}" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" />
-    </Border>
-    <Image IsVisible="{Binding HasLogo}" Source="{Binding IconSource}" Stretch="Uniform" Margin="2" />
-  </Grid>
+             Width="32" Height="32">
+  <Border CornerRadius="{DynamicResource AgenSmallRadius}" Background="{DynamicResource AgenLogoTileBrush}">
+    <Grid>
+      <TextBlock IsVisible="{Binding ShowInitials}" Text="{Binding Initials}" Foreground="{DynamicResource AgenAccentBrush}" FontSize="12" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" />
+      <Image IsVisible="{Binding HasLogo}" Source="{Binding IconSource}" Stretch="Uniform" Margin="5" />
+    </Grid>
+  </Border>
 </UserControl>

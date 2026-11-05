@@ -4,33 +4,56 @@
              x:Class="AgenStart.Desktop.Views.YourPcView"
              xmlns:steps="using:AgenStart.Desktop.ViewModels.Steps"
              x:DataType="steps:OverviewViewModel">
-  <StackPanel>
-    <TextBlock Classes="eyebrow" Text="YOUR PC" Margin="0,0,0,22" />
-    <TextBlock Classes="pageTitle" Text="Your PC" />
-    <TextBlock Classes="subtitle" Text="AgenStart detected the essentials locally." Margin="0,13,0,0" />
-    <Border Height="1" Background="{DynamicResource AgenDividerBrush}" Margin="0,30,0,26" />
-    <Grid ColumnDefinitions="1.35*,0.65*" ColumnSpacing="52">
-      <StackPanel Grid.Column="0">
-        <Border Classes="dataRow"><Grid ColumnDefinitions="46,*,150" ColumnSpacing="16"><TextBlock Classes="rowIcon" Text="▣" FontSize="19" /><TextBlock Grid.Column="1" Text="{Binding OperatingSystem}" FontSize="17" /><Border Grid.Column="2" Classes="statusBadge success"><StackPanel Orientation="Horizontal" Spacing="6"><TextBlock Text="✓" /><TextBlock Text="Detected" /></StackPanel></Border></Grid></Border>
-        <Border Classes="dataRow"><Grid ColumnDefinitions="46,*,150" ColumnSpacing="16"><TextBlock Classes="rowIcon" Text="◉" FontSize="19" /><TextBlock Grid.Column="1" Text="{Binding Cpu}" FontSize="17" /><Border Grid.Column="2" Classes="statusBadge success"><StackPanel Orientation="Horizontal" Spacing="6"><TextBlock Text="✓" /><TextBlock Text="Detected" /></StackPanel></Border></Grid></Border>
-        <Border Classes="dataRow"><Grid ColumnDefinitions="46,*,150" ColumnSpacing="16"><TextBlock Classes="rowIcon" Text="▥" FontSize="19" /><TextBlock Grid.Column="1" Text="{Binding Memory}" FontSize="17" /><Border Grid.Column="2" Classes="statusBadge success"><StackPanel Orientation="Horizontal" Spacing="6"><TextBlock Text="✓" /><TextBlock Text="Available" /></StackPanel></Border></Grid></Border>
-        <Border Classes="dataRow"><Grid ColumnDefinitions="46,*,150" ColumnSpacing="16"><TextBlock Classes="rowIcon" Text="◇" FontSize="19" /><TextBlock Grid.Column="1" Text="{Binding Gpu}" FontSize="17" /><Border Grid.Column="2" Classes="statusBadge success"><StackPanel Orientation="Horizontal" Spacing="6"><TextBlock Text="✓" /><TextBlock Text="Detected" /></StackPanel></Border></Grid></Border>
-        <Border Classes="dataRow"><Grid ColumnDefinitions="46,*,150" ColumnSpacing="16"><TextBlock Classes="rowIcon" Text="▰" FontSize="19" /><TextBlock Grid.Column="1" Text="{Binding SystemDrive}" FontSize="17" /><Border Grid.Column="2" Classes="statusBadge success"><StackPanel Orientation="Horizontal" Spacing="6"><TextBlock Text="✓" /><TextBlock Text="Available" /></StackPanel></Border></Grid></Border>
-        <Border Classes="dataRow"><Grid ColumnDefinitions="46,*,150" ColumnSpacing="16"><TextBlock Classes="rowIcon" Text="◌" FontSize="19" /><TextBlock Grid.Column="1" Text="{Binding FreeSpace}" FontSize="17" /><Border Grid.Column="2" Classes="statusBadge success"><StackPanel Orientation="Horizontal" Spacing="6"><TextBlock Text="✓" /><TextBlock Text="Available" /></StackPanel></Border></Grid></Border>
-        <Border Classes="dataRow"><Grid ColumnDefinitions="46,*,150" ColumnSpacing="16"><TextBlock Classes="rowIcon" Text="64" FontSize="13" FontWeight="Bold" /><TextBlock Grid.Column="1" Text="{Binding Architecture}" FontSize="17" /><Border Grid.Column="2" Classes="statusBadge success"><StackPanel Orientation="Horizontal" Spacing="6"><TextBlock Text="✓" /><TextBlock Text="Supported" /></StackPanel></Border></Grid></Border>
-        <Border Classes="dataRow"><Grid ColumnDefinitions="46,*,150" ColumnSpacing="16"><TextBlock Classes="rowIcon" Text="⬡" FontSize="19" /><TextBlock Grid.Column="1" Text="{Binding WinGet, StringFormat='WinGet · {0}'}" FontSize="17" /><Border Grid.Column="2" Classes="statusBadge success"><StackPanel Orientation="Horizontal" Spacing="6"><TextBlock Text="✓" /><TextBlock Text="Available" /></StackPanel></Border></Grid></Border>
-        <Border Classes="dataRow"><Grid ColumnDefinitions="46,*,150" ColumnSpacing="16"><TextBlock Classes="rowIcon" Text="i" FontSize="19" FontWeight="SemiBold" /><TextBlock Grid.Column="1" Text="{Binding WinGetVersion, StringFormat='WinGet version {0}'}" FontSize="17" /><Border Grid.Column="2" Classes="statusBadge success"><StackPanel Orientation="Horizontal" Spacing="6"><TextBlock Text="✓" /><TextBlock Text="Detected" /></StackPanel></Border></Grid></Border>
-        <StackPanel Orientation="Horizontal" Spacing="14" Margin="0,26,0,0">
-          <Button Classes="primary" Content="Choose usage profile" Click="ContinueButton_OnClick" />
-          <Button Classes="secondary" Content="Refresh analysis" Click="RefreshButton_OnClick" />
-        </StackPanel>
+  <StackPanel Spacing="24">
+    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="24">
+      <StackPanel>
+        <TextBlock Classes="pageTitle" Text="Your PC" />
+        <TextBlock Classes="subtitle" Text="AgenStart detected the essentials locally." Margin="0,6,0,0" />
       </StackPanel>
-      <StackPanel Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="310" Spacing="12">
-        <Border Width="74" Height="74" CornerRadius="37" BorderThickness="2" BorderBrush="{DynamicResource AgenTealBrush}" HorizontalAlignment="Center"><TextBlock Text="✓" FontSize="35" Foreground="{DynamicResource AgenTealBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" /></Border>
-        <TextBlock Text="{Binding StatusTitle}" FontSize="25" FontWeight="SemiBold" TextAlignment="Center" Margin="0,8,0,0" />
-        <TextBlock Text="{Binding StatusMessage}" Classes="subtitle" TextWrapping="Wrap" TextAlignment="Center" />
+      <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" VerticalAlignment="Bottom">
+        <Button Classes="secondary" Content="Refresh analysis" Click="RefreshButton_OnClick" />
+        <Button Classes="primary" Content="Choose usage profile" Click="ContinueButton_OnClick" />
       </StackPanel>
     </Grid>
-    <Border BorderBrush="{DynamicResource AgenDividerBrush}" BorderThickness="0,1,0,0" Margin="0,30,0,0" Padding="0,24,0,0"><StackPanel Orientation="Horizontal" Spacing="12"><TextBlock Text="▱" Foreground="{DynamicResource AgenTealBrush}" FontSize="21" /><TextBlock Text="{Binding AnalysisDiagnostic}" Foreground="{DynamicResource AgenMutedBrush}" FontSize="14" VerticalAlignment="Center" /></StackPanel></Border>
+
+    <Border Classes="tile">
+      <Grid ColumnDefinitions="Auto,*" ColumnSpacing="14">
+        <Border Classes="statusCircle"><TextBlock Text="&#xE73E;" /></Border>
+        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+          <TextBlock Text="{Binding StatusTitle}" FontSize="15" FontWeight="SemiBold" TextWrapping="Wrap" />
+          <TextBlock Text="{Binding StatusMessage}" Classes="rowHint" />
+        </StackPanel>
+      </Grid>
+    </Border>
+
+    <StackPanel>
+      <TextBlock Classes="sectionHeader" Text="System" />
+      <Border Classes="group">
+        <StackPanel>
+          <Border Classes="row"><Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="14"><Border Classes="iconTile"><TextBlock Classes="glyph" Text="&#xE7F8;" /></Border><StackPanel Grid.Column="1" VerticalAlignment="Center"><TextBlock Classes="rowCaption" Text="Operating system" /><TextBlock Classes="rowTitle" Text="{Binding OperatingSystem}" /></StackPanel><Border Grid.Column="2" Classes="statusBadge success"><TextBlock Text="Detected" /></Border></Grid></Border>
+          <Border Classes="row"><Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="14"><Border Classes="iconTile"><TextBlock Classes="glyph" Text="&#xE950;" /></Border><StackPanel Grid.Column="1" VerticalAlignment="Center"><TextBlock Classes="rowCaption" Text="Processor" /><TextBlock Classes="rowTitle" Text="{Binding Cpu}" /></StackPanel><Border Grid.Column="2" Classes="statusBadge success"><TextBlock Text="Detected" /></Border></Grid></Border>
+          <Border Classes="row"><Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="14"><Border Classes="iconTile"><TextBlock Classes="glyph" Text="&#xEEA0;" /></Border><StackPanel Grid.Column="1" VerticalAlignment="Center"><TextBlock Classes="rowCaption" Text="Memory" /><TextBlock Classes="rowTitle" Text="{Binding Memory}" /></StackPanel><Border Grid.Column="2" Classes="statusBadge success"><TextBlock Text="Available" /></Border></Grid></Border>
+          <Border Classes="row"><Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="14"><Border Classes="iconTile"><TextBlock Classes="glyph" Text="&#xE7F4;" /></Border><StackPanel Grid.Column="1" VerticalAlignment="Center"><TextBlock Classes="rowCaption" Text="Graphics" /><TextBlock Classes="rowTitle" Text="{Binding Gpu}" /></StackPanel><Border Grid.Column="2" Classes="statusBadge success"><TextBlock Text="Detected" /></Border></Grid></Border>
+          <Border Classes="row"><Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="14"><Border Classes="iconTile"><TextBlock Classes="glyph" Text="&#xEDA2;" /></Border><StackPanel Grid.Column="1" VerticalAlignment="Center"><TextBlock Classes="rowCaption" Text="System drive" /><TextBlock Classes="rowTitle" Text="{Binding SystemDrive}" /></StackPanel><Border Grid.Column="2" Classes="statusBadge success"><TextBlock Text="Available" /></Border></Grid></Border>
+          <Border Classes="row"><Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="14"><Border Classes="iconTile"><TextBlock Classes="glyph" Text="&#xE9F9;" /></Border><StackPanel Grid.Column="1" VerticalAlignment="Center"><TextBlock Classes="rowCaption" Text="Free space" /><TextBlock Classes="rowTitle" Text="{Binding FreeSpace}" /></StackPanel><Border Grid.Column="2" Classes="statusBadge success"><TextBlock Text="Available" /></Border></Grid></Border>
+          <Border Classes="row"><Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="14"><Border Classes="iconTile"><TextBlock Classes="glyph" Text="&#xE964;" /></Border><StackPanel Grid.Column="1" VerticalAlignment="Center"><TextBlock Classes="rowCaption" Text="Architecture" /><TextBlock Classes="rowTitle" Text="{Binding Architecture}" /></StackPanel><Border Grid.Column="2" Classes="statusBadge success"><TextBlock Text="Supported" /></Border></Grid></Border>
+        </StackPanel>
+      </Border>
+    </StackPanel>
+
+    <StackPanel>
+      <TextBlock Classes="sectionHeader" Text="Package manager" />
+      <Border Classes="group">
+        <StackPanel>
+          <Border Classes="row"><Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="14"><Border Classes="iconTile"><TextBlock Classes="glyph" Text="&#xE7B8;" /></Border><StackPanel Grid.Column="1" VerticalAlignment="Center"><TextBlock Classes="rowCaption" Text="WinGet" /><TextBlock Classes="rowTitle" Text="{Binding WinGet, StringFormat='WinGet · {0}'}" /></StackPanel><Border Grid.Column="2" Classes="statusBadge success"><TextBlock Text="Available" /></Border></Grid></Border>
+          <Border Classes="row"><Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="14"><Border Classes="iconTile"><TextBlock Classes="glyph" Text="&#xE946;" /></Border><StackPanel Grid.Column="1" VerticalAlignment="Center"><TextBlock Classes="rowCaption" Text="Version" /><TextBlock Classes="rowTitle" Text="{Binding WinGetVersion, StringFormat='WinGet version {0}'}" /></StackPanel><Border Grid.Column="2" Classes="statusBadge success"><TextBlock Text="Detected" /></Border></Grid></Border>
+        </StackPanel>
+      </Border>
+    </StackPanel>
+
+    <StackPanel Orientation="Horizontal" Spacing="8">
+      <TextBlock Classes="glyph" Text="&#xE72E;" FontSize="13" Foreground="{DynamicResource AgenMutedBrush}" />
+      <TextBlock Classes="hint" Text="{Binding AnalysisDiagnostic}" VerticalAlignment="Center" />
+    </StackPanel>
   </StackPanel>
 </UserControl>
