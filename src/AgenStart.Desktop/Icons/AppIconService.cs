@@ -43,6 +43,7 @@ public sealed class AppIconService
             ["handbrake"] = "avares://AgenStart.Desktop/Assets/AppLogos/handbrake.svg",
             ["hwinfo"] = "avares://AgenStart.Desktop/Assets/AppLogos/hwinfo.png",
             ["inkscape"] = "avares://AgenStart.Desktop/Assets/AppLogos/inkscape.svg",
+            ["jdownloader"] = "avares://AgenStart.Desktop/Assets/AppLogos/jdownloader.svg",
             ["kdenlive"] = "avares://AgenStart.Desktop/Assets/AppLogos/kdenlive.svg",
             ["kodi"] = "avares://AgenStart.Desktop/Assets/AppLogos/kodi.svg",
             ["krita"] = "avares://AgenStart.Desktop/Assets/AppLogos/krita.svg",
