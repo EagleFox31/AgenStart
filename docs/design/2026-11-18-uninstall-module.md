@@ -496,13 +496,28 @@ dans la PR.
    règles livrées avec l'application.
 5. Steam et Epic : URI du launcher, ou exclusion ?
 
-### ADR à rédiger
+### ADR
 
-1. Modèle d'élévation : exécutable séparé, revalidation, portée machine uniquement.
-2. Sémantique de suppression : corbeille, `reg export`, politique de suppression définitive.
-3. Schéma des règles et principe « la configuration ne peut que durcir le plancher codé ».
-4. Format du journal et correspondance des énumérations persistées (LL-003).
-5. *(si P6 passe par `PackageManager`)* Passage au TFM `net10.0-windows10.0.19041`.
+Proposés (statut *Proposed*) :
+
+1. [ADR-0004](../adr/0004-uninstall-execution-and-elevation.md) — modèle d'exécution et
+   d'élévation.
+   - Les chaînes de désinstallation lues dans le registre sont **analysées, jamais passées à un
+     shell**.
+   - Elles sont refusées hors des racines autorisées, ce qui préserve ADR-0002 §3-§4.
+   - L'exécutable élevé est ponctuel, revalide chaque élément et n'accepte que la portée machine.
+2. [ADR-0005](../adr/0005-uninstall-deletion-semantics.md) — sémantique de suppression.
+   - Corbeille avec vérification préalable du quota.
+   - `reg export` avant toute suppression de registre.
+   - Suppression définitive seulement après un second accord.
+3. [ADR-0006](../adr/0006-uninstall-rules-and-safety-floor.md) — schéma des règles ; la
+   configuration ne peut que durcir le plancher codé en dur.
+4. [ADR-0007](../adr/0007-uninstall-journal-format.md) — format du journal JSONL et
+   correspondance des énumérations persistées (LL-003).
+
+À rédiger seulement si le cas se présente :
+
+5. *(si P6 passe par `PackageManager`)* passage au TFM `net10.0-windows10.0.19041`.
 6. *(si du code BCU est porté)* NOTICE Apache-2.0.
 
 ## 9. Revue RAIDER
