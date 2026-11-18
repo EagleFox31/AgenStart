@@ -304,3 +304,22 @@ Branche `refactor/desktop-bind-step-viewmodels` (depuis `main` à dda5ae1).
 - **Leçons** : LL-014 (récidive LL-012, remplacements à zéro correspondance) et LL-015 (suite non relancée entre commits, pipe qui masque un code de sortie).
 - **Branche à part** : `claude/sweet-mclean-1db86e` (commit `844b81a`, non poussé) affiche la progression des téléchargements et installations ; indépendante de P3.
 - **Prochaine étape (P4)** : exécuter la campagne sur machine jetable et corriger ; renseigner `WinGetPackageId` ; supprimer la composition dupliquée du harnais ; rafraîchir la liste après désinstallation ; restes utilisateur vers la corbeille.
+
+## 2026-11-18 13:13 — Progression visible pendant le téléchargement et l'installation
+
+- **Fait** (branche `claude/sweet-mclean-1db86e`) :
+  - `WinGetProcessRunner` : surcharge optionnelle `onOutputLine` (méthode par défaut d'interface, appels existants inchangés), stdout découpé sur `\r` et `\n` (`WinGetOutputLines.PumpAsync`).
+  - `WinGetProgressParser` (pur) : octets B/KB/MB/GB (et Ko/Mo/Go), pourcentages, ANSI retirés ; `WinGetProgressThrottle` 250 ms, ignore un recul dans le même transfert.
+  - `WinGetProvider.PrepareAsync` relaie la progression via `IProgress<PackagePreparationProgress>`.
+  - Desktop : barre déterminée si la taille est connue, sinon indéterminée ; temps écoulé par phase ; en-tête « Téléchargement de X » / « Installation de X (installeur silencieux) » ; « Prêt — en attente de X » (`InstallationQueueStatus`, pur et testé).
+  - Ordre d'installation inchangé et documenté dans `InstallationOrchestrator` (téléchargements en parallèle, installeurs un par un dans l'ordre de la file).
+- **Preuves** : tests Application 34, Catalogue 26, Desktop 123, Platform.Windows 112, Recommendations 24, Uninstall 330, tous verts ; `dotnet format --verify-no-changes` OK ; smoke 15 s avec `AGENSTART_DATA_DIR` temporaire, stderr vide, arrêt par PID.
+- **Limites** : progression en pourcentage seul → barre indéterminée (les contrats Application ne portent pas de fraction). Non vérifié : que winget émette ses lignes `\r` quand stdout est redirigé ; sinon temps écoulé et barre indéterminée montrent quand même l'activité.
+- **Prochaine étape** : vérifier en réel sur un poste jetable qu'un téléchargement winget affiche des octets.
+
+## 2026-11-18 13:53 — PR #123 fusionnée (P3 désinstallation officielle)
+
+- **État** : `main` = `7bf30c2` (merge de #123), CI verte (11 checks). Worktree P3 supprimé.
+- **Branche à part** : `claude/sweet-mclean-1db86e` (`844b81a`, non poussée, worktree `.claude/worktrees/sweet-mclean-1db86e`) : progression visible des téléchargements/installations ; à relire, pousser et ouvrir en PR.
+- **Branches restantes** : `feat/desktop-selectable-themes`, `feat/uninstall-inventory`, `feat/uninstall-plan`, `feat/uninstall-official` ; suppression laissée au propriétaire. Dossier `C:\tmp\agenstart-uninstall-p2` à supprimer une fois l'appli fermée.
+- **Prochaine étape (P4)** : exécuter la campagne sur machine jetable, renseigner `WinGetPackageId`, rafraîchir la liste après désinstallation, restes utilisateur vers la corbeille.

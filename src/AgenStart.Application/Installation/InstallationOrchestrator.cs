@@ -137,6 +137,10 @@ public sealed class InstallationOrchestrator
                     token);
             }
 
+            // Intentional order: downloads run ahead in parallel (bounded by the gate above), but
+            // installers run one at a time in queue order. Two installers at once would contend
+            // for the Windows Installer mutex, and a predictable order keeps the report readable.
+            // A package that is ready early therefore waits for every earlier package to finish.
             foreach (var item in candidates)
             {
                 if (token.IsCancellationRequested)

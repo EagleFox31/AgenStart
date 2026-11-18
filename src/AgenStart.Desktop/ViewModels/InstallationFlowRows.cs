@@ -52,12 +52,16 @@ public sealed class InstallationRowViewModel : LocalizedRow, IAppRowLogo
     private bool _requiresReboot;
     private long? _bytesDownloaded;
     private long? _bytesRequired;
+    private string? _waitingFor;
+    private DateTimeOffset? _phaseStartedAt;
+    private UiText _elapsed = UiText.Empty;
 
-    public InstallationRowViewModel(string applicationId, string name, string initials)
+    public InstallationRowViewModel(string applicationId, string name, string initials, bool silent = false)
     {
         ApplicationId = applicationId;
         Name = name;
         Initials = initials;
+        IsSilent = silent;
         IconSource = AppIconService.Shared.Resolve(applicationId);
         HasLogo = IconSource is not null;
         ShowInitials = !HasLogo;
@@ -66,6 +70,7 @@ public sealed class InstallationRowViewModel : LocalizedRow, IAppRowLogo
     public string ApplicationId { get; }
     public string Name { get; }
     public string Initials { get; }
+    public bool IsSilent { get; }
     public IImage? IconSource { get; }
     public bool HasLogo { get; }
     public bool ShowInitials { get; }
@@ -82,7 +87,9 @@ public sealed class InstallationRowViewModel : LocalizedRow, IAppRowLogo
         private set => SetField(ref _activity, value);
     }
 
-    public string Status => _status.Resolve(Text);
+    public string Status => _waitingFor is null
+        ? _status.Resolve(Text)
+        : Text.Format("Installation.Item.ReadyWaitingFor", _waitingFor);
 
     public string? Message
     {
@@ -130,8 +137,55 @@ public sealed class InstallationRowViewModel : LocalizedRow, IAppRowLogo
         ? FormatDownloadDetail(BytesDownloaded, BytesRequired).Resolve(Text)
         : string.Empty;
 
-    public void Apply(InstallationItemSnapshot snapshot)
+    /// <summary>The row is in a phase that still moves; a ready row only shows its elapsed wait.</summary>
+    public bool IsActive => InstallationQueueStatus.IsActive(State, Activity);
+
+    public bool ShowProgress => IsActive && Activity != InstallationItemActivity.Ready;
+
+    public bool HasKnownSize => IsDownloading &&
+        InstallationQueueStatus.DownloadPercent(BytesDownloaded, BytesRequired) is not null;
+
+    public bool IsProgressIndeterminate => !HasKnownSize;
+
+    /// <summary>0 to 100 while the download size is known; the bar is indeterminate otherwise.</summary>
+    public double ProgressPercent => HasKnownSize
+        ? InstallationQueueStatus.DownloadPercent(BytesDownloaded, BytesRequired) ?? 0
+        : 0;
+
+    /// <summary>Time spent in the current phase, empty once the row is finished.</summary>
+    public string Elapsed => IsActive ? _elapsed.Resolve(Text) : string.Empty;
+
+    public InstallationQueueEntry ToQueueEntry() => new(Name, State, Activity, IsSilent);
+
+    /// <summary>Names the earlier package this ready row waits for, or clears it.</summary>
+    public void SetWaitingFor(string? name)
     {
+        if (string.Equals(_waitingFor, name, StringComparison.Ordinal))
+        {
+            return;
+        }
+
+        _waitingFor = name;
+        OnPropertyChanged(nameof(Status));
+    }
+
+    public void Tick(DateTimeOffset now)
+    {
+        _elapsed = _phaseStartedAt is { } startedAt
+            ? InstallationQueueStatus.FormatElapsed(now - startedAt)
+            : UiText.Empty;
+        OnPropertyChanged(nameof(Elapsed));
+    }
+
+    public void Apply(InstallationItemSnapshot snapshot) => Apply(snapshot, DateTimeOffset.UtcNow);
+
+    public void Apply(InstallationItemSnapshot snapshot, DateTimeOffset now)
+    {
+        if (snapshot.Activity != Activity || snapshot.State != State || _phaseStartedAt is null)
+        {
+            _phaseStartedAt = now;
+        }
+
         State = snapshot.State;
         Activity = snapshot.Activity;
         BytesDownloaded = snapshot.BytesDownloaded;
@@ -148,6 +202,12 @@ public sealed class InstallationRowViewModel : LocalizedRow, IAppRowLogo
         OnPropertyChanged(nameof(IsInstalling));
         OnPropertyChanged(nameof(HasFailure));
         OnPropertyChanged(nameof(DownloadDetail));
+        OnPropertyChanged(nameof(IsActive));
+        OnPropertyChanged(nameof(ShowProgress));
+        OnPropertyChanged(nameof(HasKnownSize));
+        OnPropertyChanged(nameof(IsProgressIndeterminate));
+        OnPropertyChanged(nameof(ProgressPercent));
+        Tick(now);
     }
 
     private static UiText ResolveStatus(InstallationItemSnapshot snapshot)
