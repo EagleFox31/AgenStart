@@ -186,3 +186,10 @@ Branche `refactor/desktop-bind-step-viewmodels` (depuis `main` à dda5ae1).
   aurait relancé l'onboarding pour tous les utilisateurs existants. `1644946` : champ absent → déjà
   onboardé ; `false` explicite → reprise. Consigné en LL-009, couvert par `DesktopSettingsTests`.
 - Vérifs : Desktop.Tests Release 70/70 (total 202), format propre, lancement avec fichier ancien format OK.
+
+## 2026-11-18 08:27 — Idée module de désinstallation (issue #119)
+
+- **État** : branche `feat/desktop-selectable-themes`, PR #118 (thèmes, onglets en haut, onboarding guidé) poussée, en attente du test visuel et de la décision de fusion du propriétaire. Dernier commit `0a92963`.
+- **Test en cours** : app lancée avec `AGENSTART_DATA_DIR=C:\tmp\agenstart-firstrun-1105` (dossier vide → onboarding). Commande PowerShell (pas bash) : `$env:AGENSTART_DATA_DIR = '...'; dotnet run --project src\AgenStart.Desktop\AgenStart.Desktop.csproj -c Release`.
+- **Nouveau** : issue #119 « module de désinstallation propre » (inventaire registre/Appx, désinstallation silencieuse winget/Inno/NSIS/MSI, restes en config déclarative, plan avant action, données utilisateur protégées par défaut, idempotent). Non validée pour implémentation ; maquette montrée : onglet « Désinstaller », liste à gauche, plan en 3 sections à droite.
+- **Prochaine étape** : retour visuel du propriétaire sur #118 ; pour #119, document de conception puis version lecture seule avant toute suppression.
