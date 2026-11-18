@@ -5,12 +5,16 @@ on:
     paths:
       - "src/AgenStart.Uninstall/**"
       - "tests/AgenStart.Uninstall.Tests/**"
+      - "docs/product/uninstall-rules.json"
+      - "docs/product/uninstall-rules.schema.json"
       - ".github/workflows/uninstall-tests.yml"
       - "global.json"
   pull_request:
     paths:
       - "src/AgenStart.Uninstall/**"
       - "tests/AgenStart.Uninstall.Tests/**"
+      - "docs/product/uninstall-rules.json"
+      - "docs/product/uninstall-rules.schema.json"
       - ".github/workflows/uninstall-tests.yml"
       - "global.json"
   workflow_dispatch:
