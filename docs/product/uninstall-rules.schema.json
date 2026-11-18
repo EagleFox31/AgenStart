@@ -1,0 +1,97 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:agenstart:uninstall-rules:v1",
+  "title": "AgenStart uninstall leftover rules v1",
+  "description": "Declarative leftover rules (ADR-0006). The safety floor is code in PathSafetyPolicy: this file can add forbidden paths and stop words, never remove one. The loader fails closed on any unknown field, placeholder, kind or data class.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "rulesVersion", "genericRules"],
+  "properties": {
+    "schemaVersion": { "const": "1.0" },
+    "rulesVersion": { "type": "string", "minLength": 1 },
+    "extraForbiddenPaths": { "type": "array", "items": { "$ref": "#/$defs/explicitPath" } },
+    "genericNameStoplist": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+    "volumeThresholds": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["confirmAboveBytes", "confirmAboveFileCount"],
+      "properties": {
+        "confirmAboveBytes": { "type": "integer", "minimum": 1 },
+        "confirmAboveFileCount": { "type": "integer", "minimum": 1, "maximum": 2147483647 }
+      }
+    },
+    "genericRules": { "type": "array", "items": { "$ref": "#/$defs/genericRule" } },
+    "productRules": { "type": "array", "items": { "$ref": "#/$defs/productRule" } }
+  },
+  "$defs": {
+    "ruleId": { "type": "string", "pattern": "^[a-z0-9]+([.-][a-z0-9]+)*$" },
+    "dataClass": { "enum": ["appData", "cache", "configuration", "userData", "shortcut"] },
+    "confidence": { "type": "integer", "minimum": -20, "maximum": 20 },
+    "folderPlaceholder": {
+      "enum": ["{LocalAppData}", "{RoamingAppData}", "{LocalLow}", "{ProgramData}", "{Documents}", "{SavedGames}", "{Desktop}", "{PublicDesktop}", "{StartMenuPrograms}", "{CommonStartMenuPrograms}", "{ProgramFiles}", "{ProgramFilesX86}", "{InstallLocation}"]
+    },
+    "registryPath": { "type": "string", "pattern": "^(HKCU|HKLM)(\\\\[^\\\\{}*?]+)+$" },
+    "explicitPath": {
+      "anyOf": [
+        { "$ref": "#/$defs/registryPath" },
+        {
+          "type": "string",
+          "pattern": "^\\{(LocalAppData|RoamingAppData|LocalLow|ProgramData|Documents|SavedGames|Desktop|PublicDesktop|StartMenuPrograms|CommonStartMenuPrograms|ProgramFiles|ProgramFilesX86|InstallLocation)\\}(\\\\[^\\\\{}/:*?\"<>|]+)*$"
+        }
+      ]
+    },
+    "genericRule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "kind", "roots", "dataClass", "confidence"],
+      "properties": {
+        "id": { "$ref": "#/$defs/ruleId" },
+        "kind": { "enum": ["directory", "file", "shortcut", "registryKey"] },
+        "roots": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "anyOf": [{ "$ref": "#/$defs/folderPlaceholder" }, { "$ref": "#/$defs/registryPath" }] }
+        },
+        "relativePath": {
+          "type": "string",
+          "pattern": "^(\\{Publisher\\}|\\{Product\\}|[^\\\\{}/:*?\"<>|]+)(\\\\(\\{Publisher\\}|\\{Product\\}|[^\\\\{}/:*?\"<>|]+))*$"
+        },
+        "dataClass": { "$ref": "#/$defs/dataClass" },
+        "confidence": { "$ref": "#/$defs/confidence" }
+      }
+    },
+    "productRule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "match", "leftovers"],
+      "properties": {
+        "id": { "$ref": "#/$defs/ruleId" },
+        "match": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["displayName"],
+          "properties": {
+            "publisher": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+            "displayName": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } }
+          }
+        },
+        "leftovers": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["kind", "path", "dataClass"],
+            "properties": {
+              "kind": { "enum": ["directory", "file", "registryKey"] },
+              "path": { "$ref": "#/$defs/explicitPath" },
+              "dataClass": { "$ref": "#/$defs/dataClass" },
+              "confidence": { "$ref": "#/$defs/confidence" }
+            }
+          }
+        },
+        "removeParentIfEmpty": { "type": "array", "items": { "$ref": "#/$defs/explicitPath" } }
+      }
+    }
+  }
+}
