@@ -1,0 +1,26 @@
+<!--
+  Windows Sandbox campaign for the official uninstall (P3). Run stage-uninstall-campaign.ps1 first,
+  then open this file by hand. Everything happens inside the throwaway sandbox, which is wiped when
+  it closes; only C:\agenstart-campaign\results is written back to the host.
+-->
+<Configuration>
+  <Networking>Enable</Networking>
+  <vGPU>Disable</vGPU>
+  <ClipboardRedirection>Disable</ClipboardRedirection>
+  <PrinterRedirection>Disable</PrinterRedirection>
+  <MappedFolders>
+    <MappedFolder>
+      <HostFolder>C:\agenstart-campaign\payload</HostFolder>
+      <SandboxFolder>C:\campaign</SandboxFolder>
+      <ReadOnly>true</ReadOnly>
+    </MappedFolder>
+    <MappedFolder>
+      <HostFolder>C:\agenstart-campaign\results</HostFolder>
+      <SandboxFolder>C:\campaign-results</SandboxFolder>
+      <ReadOnly>false</ReadOnly>
+    </MappedFolder>
+  </MappedFolders>
+  <LogonCommand>
+    <Command>powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "$env:AGENSTART_DISPOSABLE_MACHINE='1'; &amp; C:\campaign\run-uninstall-campaign.ps1 -Harness C:\campaign\harness\AgenStart.UninstallCampaign.exe -Manifest C:\campaign\uninstall-campaign.json -Rules C:\campaign\uninstall-rules.json -OutputDirectory C:\campaign-results -BootstrapWinGet"</Command>
+  </LogonCommand>
+</Configuration>

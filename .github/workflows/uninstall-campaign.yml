@@ -1,0 +1,56 @@
+name: Uninstall campaign (disposable runner)
+
+# Really installs, then uninstalls, 7-Zip (MSI), Notepad++ (NSIS), Inno Setup (Inno) and VS Code
+# (user install) on an ephemeral windows-latest runner, through AgenStart's official uninstall
+# session (P3, ADR-0004). Manual only: it never runs on push or pull_request.
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: 'Type "uninstall on a disposable runner" to run the campaign'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: uninstall-campaign
+  cancel-in-progress: false
+
+jobs:
+  campaign:
+    if: ${{ inputs.confirm == 'uninstall on a disposable runner' }}
+    runs-on: windows-latest
+    timeout-minutes: 60
+    env:
+      AGENSTART_DISPOSABLE_MACHINE: "1"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+
+      - name: Build the campaign harness
+        run: dotnet build tools/uninstall-campaign/AgenStart.UninstallCampaign.csproj --configuration Release
+
+      - name: Install, then uninstall through AgenStart
+        shell: pwsh
+        run: >
+          ./tools/sandbox/run-uninstall-campaign.ps1
+          -Harness tools/uninstall-campaign/bin/Release/net10.0/AgenStart.UninstallCampaign.exe
+          -Manifest tools/sandbox/uninstall-campaign.json
+          -Rules docs/product/uninstall-rules.json
+          -OutputDirectory "${{ runner.temp }}/uninstall-campaign"
+
+      - name: Upload the report and journals
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: uninstall-campaign
+          path: ${{ runner.temp }}/uninstall-campaign
+          if-no-files-found: warn

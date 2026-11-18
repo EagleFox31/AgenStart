@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!--
+    Disposable-machine campaign for the official uninstall (P3, ADR-0004). It really uninstalls the
+    programs listed in tools/sandbox/uninstall-campaign.json, so it refuses to run anywhere but inside
+    Windows Sandbox or a GitHub-hosted runner, and only with an explicit opt-in. Not part of any test run.
+  -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <LangVersion>latest</LangVersion>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\AgenStart.Application\AgenStart.Application.csproj" />
+    <ProjectReference Include="..\..\src\AgenStart.Platform.Windows\AgenStart.Platform.Windows.csproj" />
+    <ProjectReference Include="..\..\src\AgenStart.Uninstall\AgenStart.Uninstall.csproj" />
+  </ItemGroup>
+</Project>
