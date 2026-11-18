@@ -5,12 +5,16 @@ using AgenStart.PackageManagement;
 
 namespace AgenStart.Platform.Windows.WinGet;
 
-public sealed partial class WinGetProvider : IPreparablePackageProvider
+public sealed partial class WinGetProvider : IPreparablePackageProvider, IPackageUninstallProvider
 {
     private static readonly TimeSpan AvailabilityTimeout = TimeSpan.FromSeconds(8);
     private static readonly TimeSpan ResolveTimeout = TimeSpan.FromSeconds(45);
     private static readonly TimeSpan DownloadTimeout = TimeSpan.FromMinutes(30);
     private static readonly TimeSpan InstallTimeout = TimeSpan.FromMinutes(30);
+    private static readonly TimeSpan UninstallTimeout = TimeSpan.FromMinutes(30);
+
+    // APPINSTALLER_CLI_ERROR_INSTALL_INSTALL_IN_PROGRESS: retryable, kept out of the shared install map.
+    private const int InstallInProgress = unchecked((int)0x8A150102);
 
     private readonly IWinGetExecutableLocator _locator;
     private readonly IWinGetProcessRunner _runner;
@@ -403,6 +407,56 @@ public sealed partial class WinGetProvider : IPreparablePackageProvider
             cancellationToken).ConfigureAwait(false);
 
         var normalized = WinGetResultNormalizer.Normalize(processResult);
+        return new PackageOperationResult(
+            normalized.Status,
+            request.ApplicationId,
+            request.Package,
+            processResult.ExitCode,
+            normalized.DiagnosticCode,
+            MessageFor(normalized.Status));
+    }
+
+    public async Task<PackageOperationResult> UninstallAsync(
+        PackageUninstallRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+
+        WinGetCommand command;
+        try
+        {
+            command = WinGetCommandBuilder.BuildUninstall(request);
+        }
+        catch (ArgumentException exception)
+        {
+            return new PackageOperationResult(
+                PackageOperationStatus.Failed,
+                request.ApplicationId,
+                request.Package,
+                DiagnosticCode: "winget.invalid-uninstall-request",
+                Message: exception.Message);
+        }
+
+        var executable = _locator.Resolve();
+        if (!executable.Found || string.IsNullOrWhiteSpace(executable.Path))
+        {
+            return new PackageOperationResult(
+                PackageOperationStatus.ProviderUnavailable,
+                request.ApplicationId,
+                request.Package,
+                DiagnosticCode: executable.DiagnosticCode,
+                Message: executable.Message);
+        }
+
+        var processResult = await _runner.RunAsync(
+            executable.Path,
+            command.Arguments,
+            UninstallTimeout,
+            cancellationToken).ConfigureAwait(false);
+
+        var normalized = processResult is { Started: true, Cancelled: false, TimedOut: false, ExitCode: InstallInProgress }
+            ? new NormalizedWinGetResult(PackageOperationStatus.Failed, "winget.install-in-progress")
+            : WinGetResultNormalizer.Normalize(processResult);
         return new PackageOperationResult(
             normalized.Status,
             request.ApplicationId,
