@@ -1,0 +1,269 @@
+{
+  "kind": "agenstart.uninstall-plan",
+  "schemaVersion": "1.0",
+  "planId": "plan:b7b12390392cc8e8c649cc0a9eb185ae",
+  "programId": "registry:f09b7c0e9f2b78dcc06f0b95c2ae35a1",
+  "programName": "Sid Meier's Civilization VII",
+  "stateFingerprint": "4589b56099b5abe752d86052a8d76438",
+  "rulesVersion": "2026.11.0",
+  "executed": false,
+  "official": {
+    "strategy": "installerSilentFlags",
+    "executable": "D:\\Games\\Sid Meier's Civilization VII\\unins000.exe",
+    "arguments": [
+      "/VERYSILENT",
+      "/SUPPRESSMSGBOXES",
+      "/NORESTART"
+    ],
+    "commandPreview": "\"D:\\Games\\Sid Meier's Civilization VII\\unins000.exe\" /VERYSILENT /SUPPRESSMSGBOXES /NORESTART",
+    "silent": true,
+    "requiresElevation": true
+  },
+  "leftovers": [
+    {
+      "itemId": "item:349cab98c29245e7b32af7687d10e892",
+      "ruleId": "firaxis.civilization-vii",
+      "kind": "directory",
+      "target": "C:\\Users\\alex\\AppData\\Local\\Firaxis Games\\Sid Meier's Civilization VII\\Logs",
+      "sizeBytes": 50000,
+      "fileCount": 1,
+      "sizeIsPartial": false,
+      "fingerprint": "7508e994c86f4736425dad963d44d6f7",
+      "confidence": {
+        "score": 12,
+        "level": "high",
+        "reasons": [
+          {
+            "code": "rule",
+            "weight": 8
+          },
+          {
+            "code": "publisher-match",
+            "weight": 4
+          }
+        ]
+      },
+      "dataClass": "cache",
+      "defaultSelected": true,
+      "selected": true,
+      "requiresElevation": false
+    },
+    {
+      "itemId": "item:5fa3e6e65db9723c4ab9387d4d1261b6",
+      "ruleId": "generic.install-location",
+      "kind": "directory",
+      "target": "D:\\Games\\Sid Meier's Civilization VII",
+      "sizeBytes": 9123000000,
+      "fileCount": 3,
+      "sizeIsPartial": false,
+      "fingerprint": "9f85b7e2ab8f0ae98a6d7663ad9b2caf",
+      "confidence": {
+        "score": 9,
+        "level": "high",
+        "reasons": [
+          {
+            "code": "rule",
+            "weight": 0
+          },
+          {
+            "code": "uninstall-key",
+            "weight": 20
+          },
+          {
+            "code": "executables-present",
+            "weight": -4
+          },
+          {
+            "code": "in-use",
+            "weight": -7
+          }
+        ]
+      },
+      "dataClass": "appData",
+      "defaultSelected": true,
+      "selected": true,
+      "requiresElevation": true
+    },
+    {
+      "itemId": "item:7e0dc3ff592cf4ff2e2a42f6ef027f5f",
+      "ruleId": "generic.shortcut-to-install-location",
+      "kind": "shortcut",
+      "target": "C:\\Users\\alex\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Firaxis Games\\Civilization VII.lnk",
+      "sizeBytes": 1000,
+      "fileCount": 1,
+      "sizeIsPartial": false,
+      "fingerprint": "ca6f130f7374087b9dedd9fb43503e2c",
+      "confidence": {
+        "score": 12,
+        "level": "high",
+        "reasons": [
+          {
+            "code": "rule",
+            "weight": 8
+          },
+          {
+            "code": "publisher-match",
+            "weight": 4
+          }
+        ]
+      },
+      "dataClass": "shortcut",
+      "defaultSelected": true,
+      "selected": true,
+      "requiresElevation": false
+    },
+    {
+      "itemId": "item:8dbb3037bdf7941bfc83a5082280c66b",
+      "ruleId": "generic.shortcut-to-install-location",
+      "kind": "shortcut",
+      "target": "C:\\Users\\alex\\Desktop\\Civilization VII.lnk",
+      "sizeBytes": 1000,
+      "fileCount": 1,
+      "sizeIsPartial": false,
+      "fingerprint": "40889477b2520f9f1897960505038872",
+      "confidence": {
+        "score": 8,
+        "level": "high",
+        "reasons": [
+          {
+            "code": "rule",
+            "weight": 8
+          }
+        ]
+      },
+      "dataClass": "shortcut",
+      "defaultSelected": true,
+      "selected": true,
+      "requiresElevation": false
+    },
+    {
+      "itemId": "item:b1dbee3b089fbf9b61e413a07fc33be0",
+      "ruleId": "generic.hkcu-publisher-product",
+      "kind": "registryKey",
+      "target": "HKCU\\Software\\Firaxis Games\\Sid Meier's Civilization VII",
+      "sizeBytes": null,
+      "fileCount": null,
+      "sizeIsPartial": false,
+      "fingerprint": "80ec0c647cde9b604f9e91a4e967dd09",
+      "confidence": {
+        "score": 9,
+        "level": "high",
+        "reasons": [
+          {
+            "code": "rule",
+            "weight": 5
+          },
+          {
+            "code": "publisher-match",
+            "weight": 4
+          }
+        ]
+      },
+      "dataClass": "configuration",
+      "defaultSelected": true,
+      "selected": true,
+      "requiresElevation": false
+    }
+  ],
+  "protectedUserData": [
+    {
+      "itemId": "item:bc77ff53aa2a0191ffee19d3c95fb957",
+      "ruleId": "generic.publisher-product",
+      "kind": "directory",
+      "target": "C:\\Users\\alex\\AppData\\Local\\Firaxis Games\\Sid Meier's Civilization VII",
+      "sizeBytes": 304050000,
+      "fileCount": 3,
+      "sizeIsPartial": false,
+      "fingerprint": "9865f7ca0fdb6372c2bfb62227bfc786",
+      "confidence": {
+        "score": 10,
+        "level": "high",
+        "reasons": [
+          {
+            "code": "rule",
+            "weight": 6
+          },
+          {
+            "code": "publisher-match",
+            "weight": 4
+          },
+          {
+            "code": "contains-user-data",
+            "weight": 0
+          }
+        ]
+      },
+      "dataClass": "userData",
+      "defaultSelected": false,
+      "selected": false,
+      "requiresElevation": false
+    },
+    {
+      "itemId": "item:5940fe7908abd931f12648c1cff28800",
+      "ruleId": "firaxis.civilization-vii",
+      "kind": "directory",
+      "target": "C:\\Users\\alex\\AppData\\Local\\Firaxis Games\\Sid Meier's Civilization VII\\Saves",
+      "sizeBytes": 4000000,
+      "fileCount": 1,
+      "sizeIsPartial": false,
+      "fingerprint": "6bf246dc43c0506e294093856a88e39a",
+      "confidence": {
+        "score": 12,
+        "level": "high",
+        "reasons": [
+          {
+            "code": "rule",
+            "weight": 8
+          },
+          {
+            "code": "publisher-match",
+            "weight": 4
+          }
+        ]
+      },
+      "dataClass": "userData",
+      "defaultSelected": false,
+      "selected": false,
+      "requiresElevation": false
+    },
+    {
+      "itemId": "item:25d4201867b3a9490f146f1ec9ede8cc",
+      "ruleId": "firaxis.civilization-vii",
+      "kind": "directory",
+      "target": "C:\\Users\\alex\\Documents\\My Games\\Sid Meier's Civilization VII",
+      "sizeBytes": 2000,
+      "fileCount": 1,
+      "sizeIsPartial": false,
+      "fingerprint": "7e48ac2800ae4c520cb56f1dc0624808",
+      "confidence": {
+        "score": 8,
+        "level": "high",
+        "reasons": [
+          {
+            "code": "rule",
+            "weight": 8
+          }
+        ]
+      },
+      "dataClass": "userData",
+      "defaultSelected": false,
+      "selected": false,
+      "requiresElevation": false
+    }
+  ],
+  "skipped": [],
+  "processes": [
+    {
+      "processId": 4242,
+      "name": "CivilizationVII.exe",
+      "imagePath": "D:\\Games\\Sid Meier's Civilization VII\\Base\\Binaries\\Win64\\CivilizationVII.exe"
+    }
+  ],
+  "selection": {
+    "itemCount": 5,
+    "totalBytes": 9123052000,
+    "fileCount": 6,
+    "exceedsVolumeThresholds": true
+  },
+  "diagnostics": []
+}

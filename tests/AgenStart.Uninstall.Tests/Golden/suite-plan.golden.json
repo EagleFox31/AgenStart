@@ -1,0 +1,180 @@
+{
+  "kind": "agenstart.uninstall-plan",
+  "schemaVersion": "1.0",
+  "planId": "plan:f727c96ffd79d71c50294c5eba0ba7a2",
+  "programId": "registry:18ce4c005d59675f2206c47a20b52c51",
+  "programName": "Acme Paint 2024",
+  "stateFingerprint": "34ceb32f5abea8da5c14f3d4a87ee47b",
+  "rulesVersion": "2026.11.0",
+  "executed": false,
+  "official": {
+    "strategy": "msi",
+    "executable": "C:\\Windows\\System32\\msiexec.exe",
+    "arguments": [
+      "/x",
+      "{0A1B2C3D-0000-4000-8000-00000000AC01}",
+      "/qn",
+      "/norestart"
+    ],
+    "commandPreview": "C:\\Windows\\System32\\msiexec.exe /x {0A1B2C3D-0000-4000-8000-00000000AC01} /qn /norestart",
+    "silent": true,
+    "requiresElevation": true
+  },
+  "leftovers": [
+    {
+      "itemId": "item:c10718a1b0feeb7be41e14d0a2954b00",
+      "ruleId": "generic.publisher-product",
+      "kind": "directory",
+      "target": "C:\\ProgramData\\Acme Software\\Acme Paint",
+      "sizeBytes": 800,
+      "fileCount": 1,
+      "sizeIsPartial": false,
+      "fingerprint": "2ee406a413ab50ddfa150147af183aa8",
+      "confidence": {
+        "score": 6,
+        "level": "medium",
+        "reasons": [
+          {
+            "code": "rule",
+            "weight": 6
+          },
+          {
+            "code": "publisher-match",
+            "weight": 4
+          },
+          {
+            "code": "publisher-shared",
+            "weight": -4
+          }
+        ]
+      },
+      "dataClass": "appData",
+      "defaultSelected": false,
+      "selected": false,
+      "requiresElevation": true
+    },
+    {
+      "itemId": "item:0dc59cc68ddf21e0961c369180ff9969",
+      "ruleId": "generic.install-location",
+      "kind": "directory",
+      "target": "C:\\Programmes\\Acme\\Paint",
+      "sizeBytes": 40000000,
+      "fileCount": 1,
+      "sizeIsPartial": false,
+      "fingerprint": "ffa90a6ee303c79a3afdf0a7def35ec5",
+      "confidence": {
+        "score": 12,
+        "level": "high",
+        "reasons": [
+          {
+            "code": "rule",
+            "weight": 0
+          },
+          {
+            "code": "uninstall-key",
+            "weight": 20
+          },
+          {
+            "code": "executables-present",
+            "weight": -4
+          },
+          {
+            "code": "publisher-shared",
+            "weight": -4
+          }
+        ]
+      },
+      "dataClass": "appData",
+      "defaultSelected": true,
+      "selected": true,
+      "requiresElevation": true
+    },
+    {
+      "itemId": "item:56e26770bf4206e600607de452dee46b",
+      "ruleId": "generic.publisher-product",
+      "kind": "directory",
+      "target": "C:\\Users\\alex\\AppData\\Local\\Acme Software\\Acme Paint",
+      "sizeBytes": 10000,
+      "fileCount": 1,
+      "sizeIsPartial": false,
+      "fingerprint": "820a0047ea7019bb62fa69b3bc34972a",
+      "confidence": {
+        "score": 6,
+        "level": "medium",
+        "reasons": [
+          {
+            "code": "rule",
+            "weight": 6
+          },
+          {
+            "code": "publisher-match",
+            "weight": 4
+          },
+          {
+            "code": "publisher-shared",
+            "weight": -4
+          }
+        ]
+      },
+      "dataClass": "appData",
+      "defaultSelected": false,
+      "selected": false,
+      "requiresElevation": false
+    },
+    {
+      "itemId": "item:cf7aab1a3d91aa083c286c58ee9d28be",
+      "ruleId": "generic.hkcu-publisher-product",
+      "kind": "registryKey",
+      "target": "HKCU\\Software\\Acme Software\\Acme Paint",
+      "sizeBytes": null,
+      "fileCount": null,
+      "sizeIsPartial": false,
+      "fingerprint": "909ecfcc785ea3d744ffe1a237a19fae",
+      "confidence": {
+        "score": 5,
+        "level": "medium",
+        "reasons": [
+          {
+            "code": "rule",
+            "weight": 5
+          },
+          {
+            "code": "publisher-match",
+            "weight": 4
+          },
+          {
+            "code": "publisher-shared",
+            "weight": -4
+          }
+        ]
+      },
+      "dataClass": "configuration",
+      "defaultSelected": false,
+      "selected": false,
+      "requiresElevation": false
+    }
+  ],
+  "protectedUserData": [],
+  "skipped": [
+    {
+      "ruleId": "generic.product-only",
+      "kind": "directory",
+      "target": "C:\\Users\\alex\\AppData\\Roaming\\Acme Paint",
+      "reason": "reparse-point"
+    },
+    {
+      "ruleId": "generic.product-only",
+      "kind": "directory",
+      "target": "C:\\Users\\alex\\AppData\\LocalLow\\Acme Paint",
+      "reason": "shared"
+    }
+  ],
+  "processes": [],
+  "selection": {
+    "itemCount": 1,
+    "totalBytes": 40000000,
+    "fileCount": 1,
+    "exceedsVolumeThresholds": false
+  },
+  "diagnostics": []
+}
