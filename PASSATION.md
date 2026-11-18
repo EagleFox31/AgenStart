@@ -241,3 +241,39 @@ Branche `refactor/desktop-bind-step-viewmodels` (depuis `main` à dda5ae1).
 - **Non fait** : parcours manuel de l'onglet, à faire par le propriétaire. Restent pour la P2 : la corrélation winget et MSIX, le port d'écriture et l'exécution.
 - **Verrous** : aucun. Pour fusionner #121, il faut le test visuel du propriétaire.
 - **Prochaine étape** : test visuel de l'onglet, fusion, puis P2 (plan et exécution, ADR-0004 et 0005).
+
+## 2026-11-18 09:46 — PR #121 fusionnée (P1 désinstallation, inventaire en lecture seule)
+
+- **État** :
+  - #121 fusionnée dans `main` à la demande du propriétaire (merge commit `ead8cea`), après une CI verte : build, tests et Vercel.
+  - Le checkout principal est sur `main`, à jour.
+  - Le worktree `C:\tmp\agenstart-uninstall-p1` est supprimé.
+  - La branche `feat/uninstall-inventory` est conservée ; sa suppression est à faire par le propriétaire.
+  - L'issue #119 reste ouverte pour P2 et la suite.
+- **Non fait** : parcours manuel de l'onglet « Désinstaller » (fusion demandée avant le test visuel).
+- **Verrous** : aucun.
+  - Cette entrée n'est pas commitée ; elle partira avec la prochaine branche (pas de push direct sur `main`).
+  - Les fichiers non suivis du propriétaire sont intacts.
+- **Prochaine étape** : P2.
+  - Plan et exécution de la désinstallation (ADR-0004, ordre winget → msiexec → QuietUninstallString → interactif, aide élevée ponctuelle).
+  - Corrélation winget et liste MSIX.
+  - Journal JSONL (ADR-0007).
+
+## 2026-11-18 11:22 — P2 désinstallation : plan affiché sans action (PR #122, brouillon)
+
+- **État** : la branche `feat/uninstall-plan` (worktree `C:\tmp\agenstart-uninstall-p2`) est poussée en PR brouillon #122. Elle contient :
+  - les règles JSON et leur schéma ;
+  - `PathSafetyPolicy`, `ConfidenceScorer` et `UninstallPlanner` ;
+  - les sondes Windows en lecture seule ;
+  - le plan en 3 sections dans l'onglet ;
+  - l'export JSON ;
+  - LL-012 et LL-013.
+- **Vérification sur l'état commité** :
+  - 617 tests, aucun échec (Desktop 102, Platform.Windows 81, Uninstall 330) ;
+  - format OK ;
+  - test de démarrage de 15 s OK, sans instance laissée ouverte.
+- **Non fait** : parcours manuel de « Préparer le plan ».
+- **Verrous** : la fusion attend l'accord du propriétaire.
+- **Prochaine étape** : P3, la désinstallation officielle derrière un drapeau expérimental.
+  - Stratégies de l'ADR-0004, Restart Manager, `UninstallSession` et journal (ADR-0007).
+  - Tests sur machine jetable (Windows Sandbox ou job `workflow_dispatch`), jamais sur le poste du propriétaire.
