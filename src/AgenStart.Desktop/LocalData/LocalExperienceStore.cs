@@ -10,7 +10,8 @@ public sealed record DesktopSettings(
     bool AnalyzeOnStartup = true,
     string Theme = AppThemes.Default,
     string? Language = null,
-    bool OnboardingCompleted = false);
+    bool OnboardingCompleted = false,
+    bool ExperimentalUninstall = false);
 
 public sealed record SetupHistoryApplication(
     string ApplicationId,

@@ -13,6 +13,9 @@ public static partial class OfficialStrategySelector
     public const string CommandRejected = "uninstall.command-rejected";
     public const string NoCommand = "uninstall.no-command";
 
+    /// <summary>The only winget source correlated so far; a package id is never taken from free text.</summary>
+    public const string WinGetSource = "winget";
+
     private static readonly string[] InnoFlags = ["/VERYSILENT", "/SUPPRESSMSGBOXES", "/NORESTART"];
 
     private static readonly HashSet<string> BlockedHosts = new(StringComparer.OrdinalIgnoreCase)
@@ -34,7 +37,12 @@ public static partial class OfficialStrategySelector
         var machine = program.Scope == ProgramScope.Machine;
         if (!string.IsNullOrWhiteSpace(program.WinGetPackageId))
         {
-            string[] arguments = ["uninstall", "--id", program.WinGetPackageId, "--exact", "--silent", "--disable-interactivity"];
+            // Same argument list as WinGetCommandBuilder.BuildUninstall (pinned by a cross-project test).
+            string[] arguments =
+            [
+                "uninstall", "--id", program.WinGetPackageId, "--exact", "--source", WinGetSource, "--disable-interactivity",
+                "--scope", machine ? "machine" : "user", "--silent", "--accept-source-agreements"
+            ];
             return new OfficialUninstallStep(
                 OfficialStrategy.WinGet, "winget", arguments, UninstallCommandLine.Format("winget", arguments), IsSilent: true, machine);
         }

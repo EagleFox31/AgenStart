@@ -8,6 +8,8 @@ on:
       - "src/AgenStart.Platform.Windows/**"
       - "src/AgenStart.Uninstall/**"
       - "tests/AgenStart.Platform.Windows.Tests/**"
+      - "src/AgenStart.Application/Uninstallation/**"
+      - "tools/uninstall-campaign/**"
       - "docs/architecture/package-provider.md"
       - "docs/architecture/installed-software-inventory.md"
       - ".github/workflows/package-management-tests.yml"
@@ -31,6 +33,10 @@ jobs:
 
       - name: Restore
         run: dotnet restore tests/AgenStart.Platform.Windows.Tests/AgenStart.Platform.Windows.Tests.csproj
+
+      # Compile only: the campaign harness really uninstalls software and is never run here.
+      - name: Build uninstall campaign harness
+        run: dotnet build tools/uninstall-campaign/AgenStart.UninstallCampaign.csproj --configuration Release
 
       - name: Test
         run: dotnet test tests/AgenStart.Platform.Windows.Tests/AgenStart.Platform.Windows.Tests.csproj --configuration Release --no-restore --verbosity normal

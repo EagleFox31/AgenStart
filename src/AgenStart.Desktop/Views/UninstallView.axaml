@@ -3,8 +3,9 @@
              xmlns:steps="using:AgenStart.Desktop.ViewModels.Steps"
              x:Class="AgenStart.Desktop.Views.UninstallView"
              x:DataType="steps:UninstallViewModel">
-  <!-- Read-only in this version: the page lists and explains, it never acts on a program.
-       The plan below is a description; its checkboxes only change the in-memory selection. -->
+  <!-- Read-only by default: the page lists and explains, it never acts on a program. The plan below
+       is a description; its checkboxes only change the in-memory selection. Only when the experimental
+       setting was on at startup does the official uninstall section appear (OfficialUninstall). -->
   <UserControl.Resources>
     <DataTemplate x:Key="PlanItemTemplate" x:DataType="steps:UninstallPlanItemViewModel">
       <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10" Margin="0,4">
@@ -29,7 +30,7 @@
         <TextBlock Classes="pageTitle" Text="{DynamicResource Uninstall.Title}" />
         <TextBlock Classes="subtitle" Text="{DynamicResource Uninstall.Subtitle}" Margin="0,6,0,0" />
       </StackPanel>
-      <Button Grid.Column="1" Classes="secondary" Content="{DynamicResource Uninstall.Refresh}" Command="{Binding RefreshCommand}" VerticalAlignment="Bottom" />
+      <Button Grid.Column="1" Classes="secondary" Content="{DynamicResource Uninstall.Refresh}" Command="{Binding RefreshCommand}" VerticalAlignment="Bottom" IsEnabled="{Binding CanBrowse}" />
     </Grid>
 
     <Border Classes="notice" IsVisible="{Binding HasNotice}">
@@ -40,7 +41,7 @@
     </Border>
 
     <Grid ColumnDefinitions="*,300" ColumnSpacing="20">
-      <StackPanel Spacing="10">
+      <StackPanel Spacing="10" IsEnabled="{Binding CanBrowse}">
         <Grid ColumnDefinitions="*,Auto">
           <TextBlock Classes="sectionHeader" Text="{DynamicResource Uninstall.Programs}" />
           <TextBlock Grid.Column="1" Classes="rowCaption" Text="{Binding HeaderText}" VerticalAlignment="Center" Margin="0,0,4,8" />
@@ -113,7 +114,8 @@
             <StackPanel><TextBlock Classes="rowCaption" Text="{DynamicResource Uninstall.Detail.Installer}" /><TextBlock Text="{Binding SelectedProgram.InstallerKindText}" TextWrapping="Wrap" /></StackPanel>
             <StackPanel><TextBlock Classes="rowCaption" Text="{DynamicResource Uninstall.Detail.Silent}" /><TextBlock Text="{Binding SelectedProgram.SilentUninstallText}" TextWrapping="Wrap" /></StackPanel>
             <Border Height="1" Background="{DynamicResource AgenSeparatorBrush}" />
-            <TextBlock Classes="hint" Text="{DynamicResource Uninstall.LaterNote}" TextWrapping="Wrap" />
+            <TextBlock Classes="hint" Text="{DynamicResource Uninstall.LaterNote}" TextWrapping="Wrap" IsVisible="{Binding !IsOfficialUninstallEnabled}" />
+            <TextBlock Classes="hint" Text="{DynamicResource Uninstall.ExperimentalNote}" TextWrapping="Wrap" IsVisible="{Binding IsOfficialUninstallEnabled}" Foreground="{DynamicResource AgenWarningBrush}" />
           </StackPanel>
         </Border>
       </StackPanel>
@@ -182,7 +184,53 @@
           </ContentControl.ContentTemplate>
         </ContentControl>
 
-        <TextBlock Classes="hint" Text="{DynamicResource Uninstall.Plan.ReadOnlyNote}" TextWrapping="Wrap" />
+        <ContentControl Content="{Binding OfficialUninstall}" IsVisible="{Binding OfficialUninstall, Converter={x:Static ObjectConverters.IsNotNull}}">
+          <ContentControl.ContentTemplate>
+            <DataTemplate x:DataType="steps:OfficialUninstallViewModel">
+              <StackPanel Spacing="12">
+                <Border Height="1" Background="{DynamicResource AgenSeparatorBrush}" />
+
+                <StackPanel Spacing="6" IsVisible="{Binding IsReady}">
+                  <Button Classes="primary" HorizontalAlignment="Left" Content="{DynamicResource Uninstall.Run.Action}" Command="{Binding StartCommand}" IsEnabled="{Binding IsAvailable}" />
+                  <TextBlock Classes="rowHint" Text="{DynamicResource Uninstall.Run.Unavailable}" IsVisible="{Binding !IsAvailable}" TextWrapping="Wrap" Margin="0" />
+                </StackPanel>
+
+                <Border Classes="notice" IsVisible="{Binding IsConfirming}">
+                  <StackPanel Spacing="10">
+                    <TextBlock Text="{Binding ConfirmTitle}" FontSize="17" FontWeight="SemiBold" TextWrapping="Wrap" />
+                    <TextBlock Classes="rowHint" Text="{Binding StrategyText}" TextWrapping="Wrap" Margin="0" />
+                    <TextBlock Classes="rowHint" Text="{Binding ScopeText}" TextWrapping="Wrap" Margin="0" />
+                    <TextBlock Classes="rowHint" Text="{DynamicResource Uninstall.Run.Elevation}" IsVisible="{Binding ShowElevationNote}" TextWrapping="Wrap" Margin="0" />
+                    <StackPanel Spacing="6" IsVisible="{Binding HasRunning}">
+                      <TextBlock Classes="rowHint" Text="{Binding RunningText}" TextWrapping="Wrap" Margin="0" Foreground="{DynamicResource AgenWarningBrush}" />
+                      <CheckBox IsChecked="{Binding CloseAppsConsent, Mode=TwoWay}" Content="{DynamicResource Uninstall.Run.CloseApps}" />
+                    </StackPanel>
+                    <TextBlock Classes="rowHint" Text="{DynamicResource Uninstall.Run.Irreversible}" TextWrapping="Wrap" Margin="0" Foreground="{DynamicResource AgenWarningBrush}" />
+                    <StackPanel Orientation="Horizontal" Spacing="10">
+                      <Button Classes="primary" Content="{DynamicResource Uninstall.Run.Confirm}" Command="{Binding ConfirmCommand}" />
+                      <Button Classes="secondary" Content="{DynamicResource Uninstall.Run.Cancel}" Command="{Binding CancelCommand}" />
+                    </StackPanel>
+                  </StackPanel>
+                </Border>
+
+                <StackPanel Orientation="Horizontal" Spacing="10" IsVisible="{Binding IsRunning}">
+                  <ProgressBar IsIndeterminate="True" Width="120" VerticalAlignment="Center" />
+                  <TextBlock Classes="rowHint" Text="{Binding StageText}" Margin="0" />
+                </StackPanel>
+
+                <StackPanel Spacing="6" IsVisible="{Binding IsFinished}">
+                  <TextBlock Text="{Binding ResultText}" FontWeight="SemiBold" TextWrapping="Wrap" />
+                  <TextBlock Classes="rowHint" Text="{Binding LeftRunningText}" IsVisible="{Binding HasLeftRunning}" TextWrapping="Wrap" Margin="0" />
+                  <TextBlock Classes="rowHint" Text="{DynamicResource Uninstall.Run.LeftoversLater}" IsVisible="{Binding Succeeded}" TextWrapping="Wrap" Margin="0" />
+                  <SelectableTextBlock Classes="rowHint" Text="{Binding JournalText}" IsVisible="{Binding HasJournal}" TextWrapping="Wrap" Margin="0" />
+                </StackPanel>
+              </StackPanel>
+            </DataTemplate>
+          </ContentControl.ContentTemplate>
+        </ContentControl>
+
+        <TextBlock Classes="hint" Text="{DynamicResource Uninstall.Plan.ReadOnlyNote}" TextWrapping="Wrap" IsVisible="{Binding !IsOfficialUninstallEnabled}" />
+        <TextBlock Classes="hint" Text="{DynamicResource Uninstall.Plan.ExperimentalNote}" TextWrapping="Wrap" IsVisible="{Binding IsOfficialUninstallEnabled}" />
       </StackPanel>
     </Border>
   </StackPanel>

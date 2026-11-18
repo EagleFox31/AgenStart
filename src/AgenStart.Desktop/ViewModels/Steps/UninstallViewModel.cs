@@ -16,8 +16,9 @@ public enum UninstallSortOrder
 
 /// <summary>
 /// Read-only list of the programs installed on this PC, with a reviewable uninstall plan for the
-/// selected one. It only depends on read ports and on the user-started plan export: nothing here
-/// can uninstall, delete, launch or change anything on the PC.
+/// selected one. By default it only depends on read ports and on the user-started plan export:
+/// nothing here can uninstall, delete, launch or change anything on the PC. Only when the experimental
+/// setting was on at startup does it also hold the official uninstall runner, used after a confirmation.
 /// </summary>
 public sealed class UninstallViewModel : StepViewModelBase
 {
@@ -25,11 +26,14 @@ public sealed class UninstallViewModel : StepViewModelBase
     private readonly IUiDispatcher _dispatcher;
     private readonly IUninstallPlanSource? _planSource;
     private readonly IUninstallPlanExportTarget? _exportTarget;
+    private readonly IOfficialUninstallRunner? _officialUninstall;
     private readonly RelayCommand _refreshCommand;
     private readonly RelayCommand _preparePlanCommand;
     private readonly RelayCommand _exportPlanCommand;
     private CancellationTokenSource? _planning;
     private UninstallPlanViewModel? _currentPlan;
+    private OfficialUninstallViewModel? _official;
+    private bool _isUninstalling;
     private bool _isPlanning;
     private bool _isExporting;
     private UiText _planNotice = UiText.Empty;
@@ -47,14 +51,16 @@ public sealed class UninstallViewModel : StepViewModelBase
         IUiDispatcher dispatcher,
         ILocalizer? text = null,
         IUninstallPlanSource? planSource = null,
-        IUninstallPlanExportTarget? exportTarget = null)
+        IUninstallPlanExportTarget? exportTarget = null,
+        IOfficialUninstallRunner? officialUninstall = null)
         : base(text)
     {
         _inventory = inventory ?? throw new ArgumentNullException(nameof(inventory));
         _dispatcher = dispatcher ?? throw new ArgumentNullException(nameof(dispatcher));
         _planSource = planSource;
         _exportTarget = exportTarget;
-        _refreshCommand = new RelayCommand(() => _ = RefreshAsync(), () => !IsLoading);
+        _officialUninstall = officialUninstall;
+        _refreshCommand = new RelayCommand(() => _ = RefreshAsync(), () => !IsLoading && !IsUninstalling);
         _preparePlanCommand = new RelayCommand(() => _ = PreparePlanAsync(), () => CanPreparePlan);
         _exportPlanCommand = new RelayCommand(() => _ = ExportPlanAsync(), () => CanExportPlan);
         SortByNameCommand = new RelayCommand(() => SortOrder = UninstallSortOrder.Name);
@@ -116,6 +122,13 @@ public sealed class UninstallViewModel : StepViewModelBase
         get => _selectedProgram;
         set
         {
+            if (IsUninstalling)
+            {
+                // The program being uninstalled stays selected until its session has finished.
+                OnPropertyChanged(nameof(SelectedProgram));
+                return;
+            }
+
             if (SetField(ref _selectedProgram, value))
             {
                 OnPropertyChanged(nameof(HasSelection));
@@ -141,6 +154,34 @@ public sealed class UninstallViewModel : StepViewModelBase
     }
 
     public bool HasPlan => _currentPlan is not null;
+
+    /// <summary>True only when the experimental official uninstall was composed at startup.</summary>
+    public bool IsOfficialUninstallEnabled => _officialUninstall is not null;
+
+    /// <summary>The confirmation, progress and report for the current plan; null when disabled.</summary>
+    public OfficialUninstallViewModel? OfficialUninstall
+    {
+        get => _official;
+        private set => SetField(ref _official, value);
+    }
+
+    /// <summary>While a session runs, the selection, the list and planning are locked.</summary>
+    public bool IsUninstalling
+    {
+        get => _isUninstalling;
+        private set
+        {
+            if (SetField(ref _isUninstalling, value))
+            {
+                OnPropertyChanged(nameof(CanBrowse));
+                OnPropertyChanged(nameof(CanPreparePlan));
+                _preparePlanCommand.RaiseCanExecuteChanged();
+                _refreshCommand.RaiseCanExecuteChanged();
+            }
+        }
+    }
+
+    public bool CanBrowse => !IsUninstalling;
 
     public bool IsPlanning
     {
@@ -168,7 +209,7 @@ public sealed class UninstallViewModel : StepViewModelBase
         }
     }
 
-    public bool CanPreparePlan => _planSource is not null && HasSelection && !IsPlanning;
+    public bool CanPreparePlan => _planSource is not null && HasSelection && !IsPlanning && !IsUninstalling;
 
     public bool CanExportPlan => _exportTarget is not null && HasPlan && !IsExporting;
 
@@ -218,7 +259,7 @@ public sealed class UninstallViewModel : StepViewModelBase
 
     public Task EnsureLoadedAsync() => _load ??= LoadAsync();
 
-    public Task RefreshAsync() => IsLoading && _load is not null ? _load : _load = LoadAsync();
+    public Task RefreshAsync() => (IsLoading || IsUninstalling) && _load is not null ? _load : _load = LoadAsync();
 
     private async Task LoadAsync()
     {
@@ -285,7 +326,7 @@ public sealed class UninstallViewModel : StepViewModelBase
     public async Task PreparePlanAsync()
     {
         var row = _selectedProgram;
-        if (_planSource is null || row is null || IsPlanning)
+        if (_planSource is null || row is null || IsPlanning || IsUninstalling)
         {
             return;
         }
@@ -380,6 +421,9 @@ public sealed class UninstallViewModel : StepViewModelBase
         }
 
         CurrentPlan = plan is null ? null : new UninstallPlanViewModel(plan, Text);
+        OfficialUninstall = CurrentPlan is not null && _officialUninstall is not null && _selectedProgram is { } selected
+            ? new OfficialUninstallViewModel(CurrentPlan, selected.Program, _officialUninstall, _dispatcher, Text, running => IsUninstalling = running)
+            : null;
         SetPlanNotice(CurrentPlan switch
         {
             null => UiText.Key("Uninstall.Plan.Failed"),
@@ -398,6 +442,7 @@ public sealed class UninstallViewModel : StepViewModelBase
         }
 
         CurrentPlan = null;
+        OfficialUninstall = null;
         SetPlanNotice(UiText.Empty);
         OnPropertyChanged(nameof(CanPreparePlan));
         _preparePlanCommand.RaiseCanExecuteChanged();
@@ -443,6 +488,7 @@ public sealed class UninstallViewModel : StepViewModelBase
         }
 
         _currentPlan?.RefreshText();
+        _official?.RefreshText();
         base.OnLanguageChanged();
     }
 }

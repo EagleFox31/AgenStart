@@ -129,6 +129,36 @@ public static partial class WinGetCommandBuilder
         return new WinGetCommand(arguments);
     }
 
+    /// <summary>
+    /// <c>winget uninstall</c> for one exactly identified package (ADR-0004 strategy 1). Source
+    /// agreements are accepted because the source was already trusted when the package was installed.
+    /// </summary>
+    public static WinGetCommand BuildUninstall(PackageUninstallRequest request)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+        ValidateApplicationId(request.ApplicationId);
+        ValidateReference(request.Package);
+
+        var arguments = new List<string>
+        {
+            "uninstall",
+            "--id", request.Package.PackageId,
+            "--exact",
+            "--source", request.Package.Source,
+            "--disable-interactivity"
+        };
+
+        AddScope(arguments, request.Package.ScopePreference, nameof(request));
+
+        if (request.Silent)
+        {
+            arguments.Add("--silent");
+        }
+
+        arguments.Add("--accept-source-agreements");
+        return new WinGetCommand(arguments);
+    }
+
     public static void ValidateReference(ProviderPackageReference package)
     {
         ArgumentNullException.ThrowIfNull(package);

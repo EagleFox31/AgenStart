@@ -1,0 +1,36 @@
+{
+  "targets": [
+    {
+      "name": "7-Zip (MSI, machine)",
+      "winGetId": "7zip.7zip",
+      "scope": "machine",
+      "installerType": "wix",
+      "displayNamePattern": "^7-Zip .*\\(x64 edition\\)$",
+      "expectedStrategies": ["Msi"]
+    },
+    {
+      "name": "Notepad++ (NSIS, machine)",
+      "winGetId": "Notepad++.Notepad++",
+      "scope": "machine",
+      "installerType": "nullsoft",
+      "displayNamePattern": "^Notepad\\+\\+",
+      "expectedStrategies": ["QuietUninstallString", "InstallerSilentFlags"]
+    },
+    {
+      "name": "Inno Setup (Inno, machine)",
+      "winGetId": "JRSoftware.InnoSetup",
+      "scope": "machine",
+      "installerType": "inno",
+      "displayNamePattern": "^Inno Setup version ",
+      "expectedStrategies": ["QuietUninstallString", "InstallerSilentFlags"]
+    },
+    {
+      "name": "VS Code (Inno, user)",
+      "winGetId": "Microsoft.VisualStudioCode",
+      "scope": "user",
+      "installerType": "inno",
+      "displayNamePattern": "^Microsoft Visual Studio Code \\(User\\)$",
+      "expectedStrategies": ["QuietUninstallString", "InstallerSilentFlags"]
+    }
+  ]
+}

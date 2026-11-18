@@ -119,4 +119,69 @@ public sealed class WinGetCommandBuilderTests
         ],
         command.Arguments);
     }
+
+    [Fact]
+    public void BuildUninstall_UsesExactTrustedPackageSilentlyWithSourceAgreement()
+    {
+        var request = new PackageUninstallRequest(
+            "visual-studio-code",
+            new ProviderPackageReference(
+                PackageProviderIds.WinGet,
+                "Microsoft.VisualStudioCode",
+                "winget",
+                PackageScope.User));
+
+        var command = WinGetCommandBuilder.BuildUninstall(request);
+
+        Assert.Equal(
+        [
+            "uninstall",
+            "--id", "Microsoft.VisualStudioCode",
+            "--exact",
+            "--source", "winget",
+            "--disable-interactivity",
+            "--scope", "user",
+            "--silent",
+            "--accept-source-agreements"
+        ],
+        command.Arguments);
+    }
+
+    [Fact]
+    public void BuildUninstall_OmitsScopeWhenUnknownAndNeverAcceptsPackageAgreements()
+    {
+        var request = new PackageUninstallRequest(
+            "7zip",
+            new ProviderPackageReference(PackageProviderIds.WinGet, "7zip.7zip", "winget"));
+
+        var command = WinGetCommandBuilder.BuildUninstall(request);
+
+        Assert.DoesNotContain("--scope", command.Arguments);
+        Assert.DoesNotContain("--accept-package-agreements", command.Arguments);
+        Assert.DoesNotContain("--force", command.Arguments);
+        Assert.Equal("uninstall", command.Arguments[0]);
+    }
+
+    [Theory]
+    [InlineData("Git.Git --override")]
+    [InlineData("Git.Git & calc")]
+    [InlineData("")]
+    public void BuildUninstall_RejectsUnsafePackageIds(string packageId)
+    {
+        var request = new PackageUninstallRequest(
+            "git",
+            new ProviderPackageReference(PackageProviderIds.WinGet, packageId, "winget"));
+
+        Assert.Throws<ArgumentException>(() => WinGetCommandBuilder.BuildUninstall(request));
+    }
+
+    [Fact]
+    public void BuildUninstall_RejectsUntrustedSources()
+    {
+        var request = new PackageUninstallRequest(
+            "git",
+            new ProviderPackageReference(PackageProviderIds.WinGet, "Git.Git", "https://example.invalid/source"));
+
+        Assert.Throws<ArgumentException>(() => WinGetCommandBuilder.BuildUninstall(request));
+    }
 }

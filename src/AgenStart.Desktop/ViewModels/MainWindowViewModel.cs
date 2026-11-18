@@ -50,7 +50,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged, IDisposable
         ILocalizer? text = null,
         IInstalledProgramInventory? programInventory = null,
         IUninstallPlanSource? uninstallPlanSource = null,
-        IUninstallPlanExportTarget? uninstallPlanExportTarget = null)
+        IUninstallPlanExportTarget? uninstallPlanExportTarget = null,
+        IOfficialUninstallRunner? officialUninstall = null)
     {
         var machine = machineInventory ?? new WindowsMachineInventoryProvider();
         var software = softwareInventory ?? new WindowsInstalledSoftwareInventoryProvider();
@@ -83,8 +84,9 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged, IDisposable
 
         Overview = new OverviewViewModel(machine, _session);
 
-        // Read-only: the uninstall page receives read ports and the user-started plan export, nothing
-        // that can uninstall, delete, launch or write to the registry.
+        // Read-only by default: the uninstall page receives read ports and the user-started plan export,
+        // nothing that can uninstall, delete, launch or write to the registry. The official uninstall
+        // runner is only passed in when the experimental setting is on (see MainWindow).
         Uninstall = new UninstallViewModel(
             programInventory ?? new WindowsInstalledProgramInventory(),
             ui,
@@ -93,7 +95,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged, IDisposable
                 WindowsUninstallReadPorts.Create(),
                 PackagedUninstallRules.Load,
                 LocalExperienceStore.DefaultDirectory()),
-            uninstallPlanExportTarget);
+            uninstallPlanExportTarget,
+            officialUninstall);
 
         FlowTabs =
         [
