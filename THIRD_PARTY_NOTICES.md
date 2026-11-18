@@ -48,6 +48,7 @@ The current curated catalogue has packaged identification artwork for every appl
 - `handbrake.svg` — HandBrake — AgenStart identification glyph using the well-known pineapple/cocktail product motif; this local vector is not presented as an official HandBrake brand asset;
 - `hwinfo.png` — HWiNFO / REALiX — mirrored by `eliasemon/Installora/public/images/logos/realix-hwinfo.png`, whose package mapping identifies `REALiX.HWiNFO` with `hwinfo.com`;
 - `inkscape.svg` — Inkscape — `ln-dev7/logos-apps/logos/inkscape.svg`;
+- `jdownloader.svg` — JDownloader / AppWork GmbH — community identification artwork from `icon11-community/Folder11/svg/jdownloader.svg`;
 - `kdenlive.svg` — Kdenlive — `ln-dev7/logos-apps/logos/kdenlive.svg`;
 - `kodi.svg` — Kodi / XBMC Foundation — `ln-dev7/logos-apps/logos/kodi.svg`;
 - `krita.svg` — Krita — `ln-dev7/logos-apps/logos/krita.svg`;

@@ -13,8 +13,8 @@ public sealed class SoftwareCatalogueLoaderTests
         var catalogue = LoadFixture();
 
         Assert.Equal("1.0.0", catalogue.SchemaVersion);
-        Assert.Equal("0.3.0", catalogue.CatalogueVersion);
-        Assert.Equal(62, catalogue.Applications.Count);
+        Assert.Equal("0.4.0", catalogue.CatalogueVersion);
+        Assert.Equal(63, catalogue.Applications.Count);
 
         var git = Assert.Single(catalogue.Applications, application => application.Id == "git");
         Assert.Equal("Git Project", git.Publisher);
@@ -29,6 +29,12 @@ public sealed class SoftwareCatalogueLoaderTests
         Assert.Equal(PackageProviderIds.WinGet, termius.WindowsPackage.ProviderId);
         Assert.Equal("Termius.Termius", termius.WindowsPackage.PackageId);
         Assert.Equal("winget", termius.WindowsPackage.Source);
+
+        var jdownloader = Assert.Single(catalogue.Applications, application => application.Id == "jdownloader");
+        Assert.Equal("AppWork GmbH", jdownloader.Publisher);
+        Assert.Equal("AppWork.JDownloader", jdownloader.WindowsPackage!.PackageId);
+        Assert.Contains(jdownloader.Definition.Recommendations, rule =>
+            rule.Profile == UserProfile.Personal && rule.Level == RecommendationLevel.Gem);
 
         var nodejs = Assert.Single(catalogue.Applications, application => application.Id == "nodejs");
         Assert.Equal("OpenJS.NodeJS.LTS", nodejs.WindowsPackage!.PackageId);

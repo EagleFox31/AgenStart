@@ -323,3 +323,17 @@ Branche `refactor/desktop-bind-step-viewmodels` (depuis `main` à dda5ae1).
 - **Branche à part** : `claude/sweet-mclean-1db86e` (`844b81a`, non poussée, worktree `.claude/worktrees/sweet-mclean-1db86e`) : progression visible des téléchargements/installations ; à relire, pousser et ouvrir en PR.
 - **Branches restantes** : `feat/desktop-selectable-themes`, `feat/uninstall-inventory`, `feat/uninstall-plan`, `feat/uninstall-official` ; suppression laissée au propriétaire. Dossier `C:\tmp\agenstart-uninstall-p2` à supprimer une fois l'appli fermée.
 - **Prochaine étape (P4)** : exécuter la campagne sur machine jetable, renseigner `WinGetPackageId`, rafraîchir la liste après désinstallation, restes utilisateur vers la corbeille.
+
+## 2026-11-18 14:45 — PR #124 fusionnée (progression visible des installations)
+
+- **État** : `main` = `4c8a191` (merge de #124), CI verte. Désinstallation P1-P3 et progression des installations sont dans `main`.
+- **Verrous** : aucun. Cette entrée n'est pas commitée ; elle partira avec la prochaine branche.
+- **À vérifier en réel** : qu'un téléchargement winget affiche des octets dans l'onglet Installation (stdout redirigé).
+- **Ménage laissé au propriétaire** : branches fusionnées (`feat/desktop-selectable-themes`, `feat/uninstall-*`, `feat/install-progress-feedback`, `claude/sweet-mclean-1db86e`), dossier `C:\tmp\agenstart-uninstall-p2`, worktree de la session progression (`.claude/worktrees/sweet-mclean-1db86e`).
+- **Prochaine étape** : P4 désinstallation (campagne sur machine jetable, `WinGetPackageId`, rafraîchissement de la liste, restes vers la corbeille).
+
+## 2026-11-18 18:05 — Nettoyage des branches et JDownloader au catalogue
+
+- Nettoyage : worktree sweet-mclean, dossier C:\tmp\agenstart-uninstall-p2, 6 branches locales et 74 branches distantes fusionnées supprimées. Restent sur origin : main, release-please (PR #109 ouverte) et 4 branches sans PR à trancher (feat/guided-desktop-mvp, feat/installed-software-detection, feat/landing-fr-language-toggle, test/appfactory-oauth-broker).
+- Catalogue 0.4.0 : ajout de JDownloader 2 (AppWork.JDownloader, x64/arm64/x86), personal = gem, entertainment = optional. Pas de logo packagé : la ligne affiche les initiales.
+- Suites : Application 53, Catalogue 26, Desktop 144, Platform.Windows 152, Recommendations 24, Uninstall 359, toutes vertes.

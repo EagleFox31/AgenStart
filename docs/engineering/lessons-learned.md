@@ -156,3 +156,12 @@ Entry format: context, symptom, root cause, fix, prevention, generalized lesson.
 - **Fix:** reran every suite on the final commit; reran the format gate without a pipe.
 - **Prevention:** before each commit run all test executables (they take seconds); never pipe a gate command — capture its exit code (`cmd >log 2>&1 || rc=1`) and print the log tail separately.
 - **Generalized lesson:** cheap gates are run in full, and a gate's exit code must reach the decision unfiltered.
+
+## LL-016 — A catalogue entry passed every unit suite but failed the packaged icon smoke
+
+- **Context:** adding JDownloader 2 to the catalogue (PR #125).
+- **Symptom:** all six test suites were green locally, but the CI `build` job failed at "Validate packaged recommendation icons" (`--icon-smoke` exit 2) because the new application had no packaged logo.
+- **Root cause:** the rule "every catalogue application has packaged artwork" is enforced only by the published app's `--icon-smoke`, which the local gate (test executables) does not run.
+- **Fix:** added `Assets/AppLogos/jdownloader.svg`, its `AppIconService` mapping and its `THIRD_PARTY_NOTICES.md` entry; reproduced the CI step locally (publish win-x64, `--icon-smoke` exit 0).
+- **Prevention:** any change to `docs/product/catalogue.fixtures.json` that adds an application also adds its logo, mapping and notice, and is gated locally by `dotnet publish src/AgenStart.Desktop/AgenStart.Desktop.csproj -c Release -r win-x64 --self-contained true -o <dir>` then `<dir>/AgenStart.Desktop.exe --icon-smoke` (exit 0).
+- **Generalized lesson:** before calling a change verified, list the CI steps its surface triggers and reproduce the ones the unit suites do not cover.
