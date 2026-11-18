@@ -63,7 +63,10 @@ public sealed class OfficialStrategySelectorTests
         var (step, _) = Select(Programs.Create("App", winget: "Vendor.App", msi: "{11111111-2222-3333-4444-555555555555}"));
 
         Assert.Equal(OfficialStrategy.WinGet, step.Strategy);
-        Assert.Equal("winget uninstall --id Vendor.App --exact --silent --disable-interactivity", step.CommandPreview);
+        // P3 aligned the preview with the command that now runs (WinGetCommandBuilder.BuildUninstall).
+        Assert.Equal(
+            "winget uninstall --id Vendor.App --exact --source winget --disable-interactivity --scope machine --silent --accept-source-agreements",
+            step.CommandPreview);
         Assert.True(step.IsSilent);
     }
 
