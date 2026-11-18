@@ -138,3 +138,21 @@ Entry format: context, symptom, root cause, fix, prevention, generalized lesson.
 - **Fix:** root the walk at the page's injected port fields and assert the root count (`Assert.Equal(2, ports.Length)`) so a new port cannot slip past the test unnoticed.
 - **Prevention:** reachability/allowlist tests start from the injected capability fields and pin how many there are.
 - **Generalized lesson:** a security property test must start from the capability boundary, not from a node connected to everything.
+
+## LL-014 — LL-012 recurred twice in one segment, plus a CRLF miss
+
+- **Context:** official uninstall P3 (`feat/uninstall-official`), edits scripted from Git Bash with heredocs, `sed` and Python after LL-012 was recorded.
+- **Symptom (near misses, caught before commit):** a Python heredoc turned `\` into an invalid C# escape; `sed` on a backslash path matched nothing and exited 0; a Python replacement on a CRLF file found 0 matches (its own `assert` caught it); a Python edit script for a CI file had a syntax error.
+- **Root cause:** LL-012's prevention was a guideline, not a check; scripted replacements fail silently when the pattern does not match (quoting, line endings).
+- **Fix:** switched to the editor tools for those edits and rebuilt.
+- **Prevention (stronger, repeated error):** any scripted replacement must assert its match count (`count == expected`, else exit non-zero); multi-line, backslash or CRLF content goes through the editor tools only.
+- **Generalized lesson:** a replacement that can match zero times must be made to fail loudly when it does.
+
+## LL-015 — A guard test went red at intermediate commits; a pipe hid a format failure
+
+- **Context:** P3, seven commits in sequence, each gated by the suites the commit was thought to affect.
+- **Symptom (near miss, fixed before push):** the Platform.Windows suite was not rerun after `fac3063`, so its process-start guard test was red at `fac3063` and `7e3283d` (fixed in `c0364c6` with a pinned allowlist). Separately, a `dotnet format` loop piped to `head` reported success while hiding the exit code.
+- **Root cause:** suites were chosen per commit by intuition, not by dependency; in a pipeline the shell reports the exit code of the last command.
+- **Fix:** reran every suite on the final commit; reran the format gate without a pipe.
+- **Prevention:** before each commit run all test executables (they take seconds); never pipe a gate command — capture its exit code (`cmd >log 2>&1 || rc=1`) and print the log tail separately.
+- **Generalized lesson:** cheap gates are run in full, and a gate's exit code must reach the decision unfiltered.
