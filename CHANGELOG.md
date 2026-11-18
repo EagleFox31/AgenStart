@@ -1,5 +1,53 @@
 # Changelog
 
+## [0.5.0](https://github.com/EagleFox31/AgenStart/compare/v0.4.1...v0.5.0) (2026-11-18)
+
+
+### Features
+
+* **catalogue:** add JDownloader 2 ([63de28c](https://github.com/EagleFox31/AgenStart/commit/63de28c4534f539a78ae6b1217c54633454d94a9))
+* **catalogue:** add JDownloader 2 as a resumable download manager ([5c102e0](https://github.com/EagleFox31/AgenStart/commit/5c102e002a3597f5d4446a63c552054e2cc532a2))
+* **catalogue:** add profile registry and expand curated apps ([8c0829c](https://github.com/EagleFox31/AgenStart/commit/8c0829c7e4bfbfaef4f4582f30b45af997cf3080))
+* **catalogue:** package JDownloader artwork for the icon smoke ([02893a9](https://github.com/EagleFox31/AgenStart/commit/02893a98b9c94bd6a8fc25cc7e707e581e19c874))
+* **desktop:** add a read-only Uninstall tab listing installed programs ([4a9fced](https://github.com/EagleFox31/AgenStart/commit/4a9fced9b5ce9fd85abcac14f09d2392bc175fbc))
+* **desktop:** add dark theme and card/list layout on recommendations ([b274176](https://github.com/EagleFox31/AgenStart/commit/b27417639ba76a2d85cbef460754bccfbaf8a9f8))
+* **desktop:** add experimental official uninstall flow behind an off-by-default setting ([588a54f](https://github.com/EagleFox31/AgenStart/commit/588a54f99ff2f6a7a71cd2f4a9d9d191e4d60f2d))
+* **desktop:** add FR/EN localization, language setting and desktop tests ([12eccbe](https://github.com/EagleFox31/AgenStart/commit/12eccbecad34e259f97f8a11f6056e2986081936))
+* **desktop:** add guided first-run onboarding ([38a6181](https://github.com/EagleFox31/AgenStart/commit/38a6181bc00d8d69d13356ddea57af68d065e178))
+* **desktop:** localize view-model status text and recommendation rows ([d6aecc9](https://github.com/EagleFox31/AgenStart/commit/d6aecc9b8215ccb79577ae820e88fc2c39fc3b82))
+* **desktop:** redesign shell and step views as inset grouped layout ([269fa38](https://github.com/EagleFox31/AgenStart/commit/269fa3817fc29ea466eb902b72f7888f36fd89e6))
+* **desktop:** replace the sidebar with gated top tabs ([f12cef8](https://github.com/EagleFox31/AgenStart/commit/f12cef817ff5a648d84682ad521037c6b2b205dc))
+* **desktop:** selectable AgenStart, Apple and Google light themes ([a56fda0](https://github.com/EagleFox31/AgenStart/commit/a56fda0abb1e7838b7f27a38f3ecb6c11f51a0a5))
+* **desktop:** show a reviewable uninstall plan with a user-started JSON export ([86eee9a](https://github.com/EagleFox31/AgenStart/commit/86eee9ad70600a54c0b9274611054896cc715eaa))
+* **desktop:** themes, redesign, FR/EN, top tabs and guided onboarding ([42b38ca](https://github.com/EagleFox31/AgenStart/commit/42b38caaf8d7d59c07cb3304e86faddc15891d74))
+* **install:** show download progress, phase and wait reason per package ([4c8a191](https://github.com/EagleFox31/AgenStart/commit/4c8a19150a1afe17f2304264ec5922f26774910c))
+* **install:** show download progress, phase and wait reason per package ([844b81a](https://github.com/EagleFox31/AgenStart/commit/844b81a8f03768387c295642652592d9038886f6))
+* **platform-windows:** add read-only probes for the uninstall planner ([8dc3980](https://github.com/EagleFox31/AgenStart/commit/8dc398077e18c2364ea62a7de8dbd72a20a0dd8e))
+* **site:** generate landing profiles and flow chips from the registry ([1e26894](https://github.com/EagleFox31/AgenStart/commit/1e2689427ef4ae83eac3d597c8e62944511d49f1))
+* **uninstall:** add declarative leftover rules and their schema ([26a207a](https://github.com/EagleFox31/AgenStart/commit/26a207a724b380cab95d3d1a255dcad95f606dfd))
+* **uninstall:** add execution ports, exit-code normaliser and ADR-0007 JSONL journal ([fac3063](https://github.com/EagleFox31/AgenStart/commit/fac30631c189b69a0fd5e0ba430bedab0893dc8f))
+* **uninstall:** add journaled official uninstall session ([7e3283d](https://github.com/EagleFox31/AgenStart/commit/7e3283d6248d2adfdcb62e7c3812995b90281662))
+* **uninstall:** add read-only installed-program inventory core ([62b3dce](https://github.com/EagleFox31/AgenStart/commit/62b3dce134626bf839ebbdf2e3c84f9c66b58f31))
+* **uninstall:** add Windows official uninstaller, Restart Manager detection and consent-gated closer ([c0364c6](https://github.com/EagleFox31/AgenStart/commit/c0364c6dd43545c9747c0fd919a00c44581f3a02))
+* **uninstall:** official uninstall behind an experimental setting (P3) ([7bf30c2](https://github.com/EagleFox31/AgenStart/commit/7bf30c2c219ea7bb6c59ec2f1ae9451f8b247b94))
+* **uninstall:** plan official uninstall and leftovers without acting ([564a0cb](https://github.com/EagleFox31/AgenStart/commit/564a0cb9a679c1248bd8fcf54cdc7c8e50fe7876))
+* **uninstall:** read-only installed-program inventory (P1) ([ead8cea](https://github.com/EagleFox31/AgenStart/commit/ead8cea10d260649fd84f481cd20d26fab7c9ab1))
+* **uninstall:** reviewable uninstall plan without actions (P2) ([d2b698f](https://github.com/EagleFox31/AgenStart/commit/d2b698f21ab843c864bf5d2579a5938dbcc1f640))
+* **winget:** add package uninstall contract and exact winget uninstall command ([bef94d4](https://github.com/EagleFox31/AgenStart/commit/bef94d4ce5dc81471d03854c617c98abe85ce371))
+
+
+### Bug Fixes
+
+* **desktop:** keep existing users out of the first-run onboarding ([1644946](https://github.com/EagleFox31/AgenStart/commit/1644946a438785063694c305a575a73286c3f839))
+* **desktop:** open the main window centred within the primary screen ([db99f7c](https://github.com/EagleFox31/AgenStart/commit/db99f7cb7d65b7e2c0b3bb97b2335ca5fbedff73))
+* **desktop:** re-enable History and Settings navigation ([8fd6608](https://github.com/EagleFox31/AgenStart/commit/8fd6608ccd9ea91206ba14f51b28332154cd136f))
+* **desktop:** replace undecodable brand bitmap with vector mark ([4d67b93](https://github.com/EagleFox31/AgenStart/commit/4d67b93d3cd0b7a38fc5c2f03fbf441e2a18ec33))
+* **desktop:** restore brand logo and align recommendation cards ([6579fc0](https://github.com/EagleFox31/AgenStart/commit/6579fc067bcbb13ac3532b8c71dee260c503f168))
+* **desktop:** stop usage profile step overlapping other steps ([c12c3dc](https://github.com/EagleFox31/AgenStart/commit/c12c3dc34b2f5b954cc816d2e424f1289c2695f4))
+* **projects:** pin broker-authorized AppFactory runtime ([86e24ac](https://github.com/EagleFox31/AgenStart/commit/86e24acc395c434bbbb99b31b05f770193e2f87b))
+* **projects:** use broker auth name supported by pinned runtime ([94c612a](https://github.com/EagleFox31/AgenStart/commit/94c612a1f0fc895ed7195b7934fa06b2c59f4ed9))
+* **windows:** report Windows 11 for builds &gt;= 22000 ([ceac935](https://github.com/EagleFox31/AgenStart/commit/ceac9357022950e81a24ff18e938db0ef3e1204f))
+
 ## [0.4.1](https://github.com/EagleFox31/AgenStart/compare/v0.4.1...v0.4.1) (2026-09-22)
 
 
