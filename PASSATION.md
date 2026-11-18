@@ -207,3 +207,9 @@ Branche `refactor/desktop-bind-step-viewmodels` (depuis `main` à dda5ae1).
 - **Point nouveau** : ADR-0004 traite le conflit avec ADR-0002 §3-§4 : les chaînes `UninstallString` du registre sont analysées (`CommandLineToArgvW`), jamais passées à un shell ; hôtes de script refusés ; exécutable hors `InstallLocation` / `Program Files` / `%WINDIR%\Installer` refusé ; MSI réécrit en `msiexec /x {GUID}`.
 - **Verrous** : acceptation des ADR et relecture de #120 par le propriétaire ; P1 attend la fusion de #118.
 - **Prochaine étape** : sur accord, passer les ADR en Accepted puis démarrer P1 (inventaire lecture seule).
+
+## 2026-11-18 08:45 — ADR désinstallation acceptés (PR #120)
+
+- **État** : le propriétaire a accepté ADR-0004 à 0007 ; statut passé à Accepted (commit `71593b5` sur `docs/uninstall-module-design`), PR brouillon #120 mise à jour. Fusion de #120 : décision du propriétaire.
+- **Verrous** : P1 attend la fusion de #118 (onglets, LL-006 à LL-009).
+- **Prochaine étape** : P1, inventaire en lecture seule (extraction `UninstallRegistryReader` sans changer la sortie du collecteur, `IInstalledProgramInventory`, onglet « Désinstaller » + liste), sur une branche partie de `main` après fusion de #118.
