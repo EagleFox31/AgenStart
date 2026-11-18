@@ -217,9 +217,15 @@ public sealed partial class UninstallViewModelTests
             typeof(IUninstallPlanExportTarget)
         };
 
+        // The only execution port is the experimental official uninstall runner: optional, absent
+        // by default, and composed only when the setting was on at startup.
+        var parameters = typeof(UninstallViewModel).GetConstructors().SelectMany(constructor => constructor.GetParameters()).ToArray();
         Assert.All(
-            typeof(UninstallViewModel).GetConstructors().SelectMany(constructor => constructor.GetParameters()),
+            parameters.Where(parameter => parameter.ParameterType != typeof(IOfficialUninstallRunner)),
             parameter => Assert.Contains(parameter.ParameterType, allowed));
+        var runner = Assert.Single(parameters, parameter => parameter.ParameterType == typeof(IOfficialUninstallRunner));
+        Assert.True(runner.IsOptional);
+        Assert.Null(runner.DefaultValue);
     }
 
     [Fact]

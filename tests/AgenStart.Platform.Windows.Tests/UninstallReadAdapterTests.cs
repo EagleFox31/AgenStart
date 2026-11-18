@@ -145,8 +145,28 @@ public sealed class UninstallReadAdapterTests
             .Where(file => !file.Contains($"{Path.DirectorySeparatorChar}obj{Path.DirectorySeparatorChar}", StringComparison.Ordinal))
             .ToList();
 
+        // P3 execution surface: the only files allowed to write or to start or end a process, each one
+        // limited to the matches listed. Adding a file or an API here is a deliberate, reviewed change.
+        var executionSurface = new Dictionary<string, string[]>(StringComparer.Ordinal)
+        {
+            ["UninstallJournal.cs"] = ["Directory.CreateDirectory", "FileMode.Append", "FileAccess.Write"],
+            ["UninstallProcessRunner.cs"] = ["ProcessStartInfo", "ShellExecute", "Process.Start"],
+            ["WindowsProcessCloser.cs"] = [".Kill("]
+        };
+
         Assert.NotEmpty(sources);
-        Assert.All(sources, file => Assert.DoesNotMatch(forbidden, File.ReadAllText(file)));
+        Assert.All(sources, file =>
+        {
+            var found = forbidden.Matches(File.ReadAllText(file)).Select(match => match.Value).Distinct();
+            Assert.Empty(found.Except(executionSurface.GetValueOrDefault(Path.GetFileName(file), [])));
+        });
+        Assert.Equal(
+            executionSurface.Keys.Order(StringComparer.Ordinal),
+            sources.Select(Path.GetFileName).OfType<string>().Where(executionSurface.ContainsKey).Order(StringComparer.Ordinal));
+
+        var runner = File.ReadAllText(sources.Single(file => Path.GetFileName(file) == "UninstallProcessRunner.cs"));
+        Assert.Contains("UseShellExecute = false", runner, StringComparison.Ordinal);
+        Assert.DoesNotContain("UseShellExecute = true", runner, StringComparison.Ordinal);
     }
 
     private static void SkipUnlessWindows() => Assert.SkipUnless(OperatingSystem.IsWindows(), "These adapters read the live Windows machine.");

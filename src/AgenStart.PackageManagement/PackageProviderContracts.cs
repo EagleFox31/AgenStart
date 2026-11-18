@@ -26,6 +26,15 @@ public sealed record PackageInstallRequest(
     bool AcceptPackageAgreements = false,
     bool AcceptSourceAgreements = false);
 
+/// <summary>
+/// Removes a package the provider itself identified (ADR-0004 strategy 1). The reference comes from
+/// the provider's own export correlation, never from free text.
+/// </summary>
+public sealed record PackageUninstallRequest(
+    string ApplicationId,
+    ProviderPackageReference Package,
+    bool Silent = true);
+
 public enum PackagePreparationStatus
 {
     Ready = 0,
@@ -165,5 +174,13 @@ public interface IPreparablePackageProvider : IPackageProvider
 
     Task ReleasePreparationAsync(
         PackagePreparationResult preparation,
+        CancellationToken cancellationToken = default);
+}
+
+/// <summary>A provider that can also run the package's own uninstall.</summary>
+public interface IPackageUninstallProvider : IPackageProvider
+{
+    Task<PackageOperationResult> UninstallAsync(
+        PackageUninstallRequest request,
         CancellationToken cancellationToken = default);
 }

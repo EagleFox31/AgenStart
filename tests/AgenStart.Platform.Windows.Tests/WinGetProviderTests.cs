@@ -77,6 +77,41 @@ public sealed class WinGetProviderTests
         Assert.DoesNotContain("payload.exe", result.Message ?? string.Empty, StringComparison.OrdinalIgnoreCase);
     }
 
+    [Fact]
+    public async Task UninstallAsync_InvalidReferenceNeverStartsProcess()
+    {
+        var runner = new RecordingRunner(new WinGetProcessResult(true, 0, string.Empty, string.Empty));
+        var provider = new WinGetProvider(new FakeLocator(@"C:\winget.exe"), runner);
+
+        var result = await provider.UninstallAsync(
+            new PackageUninstallRequest("git", new ProviderPackageReference(PackageProviderIds.WinGet, "Git.Git --force", "winget")),
+            TestContext.Current.CancellationToken);
+
+        Assert.Equal(PackageOperationStatus.Failed, result.Status);
+        Assert.Equal("winget.invalid-uninstall-request", result.DiagnosticCode);
+        Assert.Empty(runner.Calls);
+    }
+
+    [Theory]
+    [InlineData(0u, PackageOperationStatus.Succeeded, "winget.success")]
+    [InlineData(0x8A150014u, PackageOperationStatus.NotFound, "winget.no-applications-found")]
+    [InlineData(0x8A150102u, PackageOperationStatus.Failed, "winget.install-in-progress")]
+    [InlineData(0x8A15010Cu, PackageOperationStatus.CancelledByUser, "winget.install-cancelled-by-user")]
+    public async Task UninstallAsync_RunsTheBuiltCommandThroughTheInjectedRunner(uint exitCode, PackageOperationStatus status, string? diagnostic)
+    {
+        var runner = new RecordingRunner(new WinGetProcessResult(true, HResult(exitCode), string.Empty, string.Empty));
+        var provider = new WinGetProvider(new FakeLocator(@"C:\winget.exe"), runner);
+        var request = new PackageUninstallRequest("git", new ProviderPackageReference(PackageProviderIds.WinGet, "Git.Git", "winget"));
+
+        var result = await provider.UninstallAsync(request, TestContext.Current.CancellationToken);
+
+        Assert.Equal(status, result.Status);
+        Assert.Equal(diagnostic, result.DiagnosticCode);
+        var call = Assert.Single(runner.Calls);
+        Assert.Equal(@"C:\winget.exe", call.ExecutablePath);
+        Assert.Equal(WinGetCommandBuilder.BuildUninstall(request).Arguments, call.Arguments);
+    }
+
     private static int HResult(uint value) => unchecked((int)value);
 
     private sealed class FakeLocator(string path) : IWinGetExecutableLocator

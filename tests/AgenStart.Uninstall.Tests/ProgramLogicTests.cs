@@ -147,6 +147,7 @@ public sealed class ReadPortContractTests
     [InlineData(typeof(IShortcutResolver), "ResolveTarget")]
     [InlineData(typeof(IProcessInspector), "ListProcesses")]
     [InlineData(typeof(IUninstallPlanSource), "CreatePlanAsync")]
+    [InlineData(typeof(IRunningProcessDetector), "Detect")]
     public void ReadPortsExposeOnlyTheirReadMethod(Type port, params string[] readMethods)
     {
         var methods = port.GetMethods(BindingFlags.Public | BindingFlags.Instance).Select(method => method.Name).Order(StringComparer.Ordinal);
@@ -157,6 +158,8 @@ public sealed class ReadPortContractTests
     [Fact]
     public void UninstallCoreDeclaresNoOtherPort()
     {
+        // P3 deliberately adds three acting ports (official uninstall, process closing, journal) and
+        // one read port (Restart Manager detection). Any other port is a design change.
         var interfaces = typeof(IInstalledProgramInventory).Assembly.GetExportedTypes()
             .Where(type => type.IsInterface)
             .Select(type => type.Name)
@@ -164,8 +167,9 @@ public sealed class ReadPortContractTests
 
         Assert.Equal(
             [
-                "IFileSystemProbe", "IInstalledProgramInventory", "IKnownFolderResolver", "IProcessInspector",
-                "IRegistryProbe", "IShortcutResolver", "IUninstallPlanSource", "IUninstallRegistrySource"
+                "IFileSystemProbe", "IInstalledProgramInventory", "IKnownFolderResolver", "IOfficialUninstaller", "IProcessInspector",
+                "IRegistryProbe", "IRunningProcessCloser", "IRunningProcessDetector", "IShortcutResolver", "IUninstallJournal",
+                "IUninstallPlanSource", "IUninstallRegistrySource"
             ],
             interfaces);
     }

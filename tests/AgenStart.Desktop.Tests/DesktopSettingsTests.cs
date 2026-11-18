@@ -30,6 +30,18 @@ public sealed class DesktopSettingsTests : IDisposable
     }
 
     [Fact]
+    public async Task Settings_written_before_the_experimental_uninstall_keep_it_off()
+    {
+        Directory.CreateDirectory(_directory);
+        await File.WriteAllTextAsync(SettingsPath, """{ "analyzeOnStartup": true, "theme": "Light", "language": "fr", "onboardingCompleted": true }""", TestContext.Current.CancellationToken);
+
+        var settings = await new LocalExperienceStore(_directory).LoadSettingsAsync(TestContext.Current.CancellationToken);
+
+        Assert.False(settings.ExperimentalUninstall);
+        Assert.False(new DesktopSettings().ExperimentalUninstall);
+    }
+
+    [Fact]
     public async Task An_onboarding_left_midway_starts_again()
     {
         Directory.CreateDirectory(_directory);
@@ -56,7 +68,7 @@ public sealed class DesktopSettingsTests : IDisposable
     public async Task Settings_round_trip_every_field()
     {
         var store = new LocalExperienceStore(_directory);
-        var saved = new DesktopSettings(AnalyzeOnStartup: false, Theme: "Dark", Language: "fr", OnboardingCompleted: true);
+        var saved = new DesktopSettings(AnalyzeOnStartup: false, Theme: "Dark", Language: "fr", OnboardingCompleted: true, ExperimentalUninstall: true);
 
         await store.SaveSettingsAsync(saved, TestContext.Current.CancellationToken);
 

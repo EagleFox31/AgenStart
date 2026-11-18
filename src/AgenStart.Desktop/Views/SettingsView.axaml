@@ -76,6 +76,25 @@
     </StackPanel>
 
     <StackPanel>
+      <TextBlock Classes="sectionHeader" Text="{DynamicResource Settings.Experimental}" />
+      <Border Classes="group">
+        <StackPanel>
+          <Border Classes="row">
+            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="14">
+              <Border Classes="iconTile"><TextBlock Classes="glyph" Text="&#xE74D;" /></Border>
+              <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                <TextBlock Classes="rowTitle" Text="{DynamicResource Settings.ExperimentalUninstall}" />
+                <TextBlock Classes="rowHint" Text="{DynamicResource Settings.ExperimentalUninstallHint}" />
+                <TextBlock Classes="rowHint" Text="{DynamicResource Settings.ExperimentalUninstallWarning}" Foreground="{DynamicResource AgenWarningBrush}" />
+              </StackPanel>
+              <CheckBox Grid.Column="2" IsChecked="{Binding ExperimentalUninstall, Mode=TwoWay}" VerticalAlignment="Center" MinWidth="0" AutomationProperties.Name="{DynamicResource Settings.ExperimentalUninstall}" />
+            </Grid>
+          </Border>
+        </StackPanel>
+      </Border>
+    </StackPanel>
+
+    <StackPanel>
       <TextBlock Classes="sectionHeader" Text="{DynamicResource Settings.Privacy}" />
       <Border Classes="group">
         <StackPanel>
