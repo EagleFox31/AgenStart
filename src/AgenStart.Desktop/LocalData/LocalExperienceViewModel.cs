@@ -59,6 +59,7 @@ public sealed class LocalExperienceViewModel : INotifyPropertyChanged, IOnboardi
     private string _theme = AppThemes.Default;
     private SetupHistoryRowViewModel? _selectedHistory;
     private bool _analyzeOnStartup = true;
+    private bool _experimentalUninstall;
     private bool _clearConfirmationVisible;
     private string _storageStatusKey = TextKeys.SettingsStatusStoredOnDevice;
     private bool _initialized;
@@ -111,6 +112,22 @@ public sealed class LocalExperienceViewModel : INotifyPropertyChanged, IOnboardi
             if (SetField(ref _analyzeOnStartup, value))
             {
                 _ = SaveSettingsSafeAsync(_settings with { AnalyzeOnStartup = value });
+            }
+        }
+    }
+
+    /// <summary>
+    /// Experimental: lets the Uninstall tab run the official uninstaller. Off by default; read once at
+    /// startup, so a change applies after a restart.
+    /// </summary>
+    public bool ExperimentalUninstall
+    {
+        get => _experimentalUninstall;
+        set
+        {
+            if (SetField(ref _experimentalUninstall, value))
+            {
+                _ = SaveSettingsSafeAsync(_settings with { ExperimentalUninstall = value });
             }
         }
     }
@@ -177,6 +194,8 @@ public sealed class LocalExperienceViewModel : INotifyPropertyChanged, IOnboardi
         _settings = settings;
         _analyzeOnStartup = settings.AnalyzeOnStartup;
         OnPropertyChanged(nameof(AnalyzeOnStartup));
+        _experimentalUninstall = settings.ExperimentalUninstall;
+        OnPropertyChanged(nameof(ExperimentalUninstall));
         SetThemeWithoutSaving(settings.Theme);
         if (settings.Language is not null)
         {
@@ -253,6 +272,8 @@ public sealed class LocalExperienceViewModel : INotifyPropertyChanged, IOnboardi
         SelectedHistory = null;
         _analyzeOnStartup = true;
         OnPropertyChanged(nameof(AnalyzeOnStartup));
+        _experimentalUninstall = false;
+        OnPropertyChanged(nameof(ExperimentalUninstall));
         SetThemeWithoutSaving(AppThemes.Default);
         OnPropertyChanged(nameof(OnboardingCompleted));
         OnPropertyChanged(nameof(HasHistory));

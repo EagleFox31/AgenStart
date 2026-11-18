@@ -191,15 +191,12 @@ public sealed partial class UninstallViewModelTests
 
         // Start from the machine-facing ports the page holds (the localizer and dispatcher are shared
         // UI services whose events lead back to the whole shell, so they are not machine ports).
-        var ports = typeof(UninstallViewModel)
-            .GetFields(BindingFlags.Instance | BindingFlags.NonPublic)
-            .Where(field => field.FieldType == typeof(IInstalledProgramInventory)
-                || field.FieldType == typeof(IUninstallPlanSource)
-                || field.FieldType == typeof(IUninstallPlanExportTarget))
-            .Select(field => field.GetValue(shell.Uninstall))
-            .OfType<object>()
-            .ToArray();
+        // The official uninstall runner is one of them: with the experimental setting off (the
+        // default), it must not be composed at all, so the page still holds exactly two ports.
+        var ports = MachinePorts(shell.Uninstall);
         Assert.Equal(2, ports.Length);
+        Assert.False(shell.Uninstall.IsOfficialUninstallEnabled);
+        Assert.DoesNotContain(ports, port => port is IOfficialUninstallRunner);
         var reachable = ports.SelectMany(Reachable).ToHashSet();
 
         // Every Windows adapter the page can reach is one of the read-only ones.
@@ -216,7 +213,40 @@ public sealed partial class UninstallViewModelTests
                 .Select(method => $"{type.Name}.{method.Name}"))
             .ToArray();
         Assert.Empty(offending);
+        Assert.DoesNotContain(typeof(AgenStart.Platform.Windows.Uninstall.WindowsOfficialUninstaller), reachable);
+        Assert.DoesNotContain(typeof(AgenStart.Platform.Windows.Uninstall.WindowsProcessCloser), reachable);
+        Assert.DoesNotContain(typeof(AgenStart.Platform.Windows.Uninstall.UninstallProcessRunner), reachable);
     }
+
+    [Fact]
+    public void The_experimental_composition_is_the_only_one_that_reaches_the_official_uninstaller()
+    {
+        // Composed only, never run: nothing here starts a process or touches the PC.
+        var runner = OfficialUninstallRunner.CreateForWindows(new FakeInventory(Complete(Sample)), Path.Combine(Path.GetTempPath(), "agenstart-never-written"));
+        using var shell = new MainWindowViewModel(dispatcher: new ImmediateDispatcher(), text: new TestLocalizer(), officialUninstall: runner);
+
+        var ports = MachinePorts(shell.Uninstall);
+        Assert.Equal(3, ports.Length);
+        Assert.True(shell.Uninstall.IsOfficialUninstallEnabled);
+
+        var reachable = Reachable(Assert.Single(ports.OfType<IOfficialUninstallRunner>()));
+        Assert.Contains(typeof(OfficialUninstallRunner), reachable);
+        var session = runner.GetType().GetFields(BindingFlags.Instance | BindingFlags.NonPublic)
+            .Select(field => field.GetValue(runner)).OfType<Func<AgenStart.Application.Uninstallation.UninstallSession>>().Single()();
+        var execution = Reachable(session);
+        Assert.Contains(typeof(AgenStart.Platform.Windows.Uninstall.WindowsOfficialUninstaller), execution);
+        Assert.Contains(typeof(AgenStart.Platform.Windows.Uninstall.WindowsProcessCloser), execution);
+    }
+
+    private static object[] MachinePorts(UninstallViewModel page) => typeof(UninstallViewModel)
+        .GetFields(BindingFlags.Instance | BindingFlags.NonPublic)
+        .Where(field => field.FieldType == typeof(IInstalledProgramInventory)
+            || field.FieldType == typeof(IUninstallPlanSource)
+            || field.FieldType == typeof(IUninstallPlanExportTarget)
+            || field.FieldType == typeof(IOfficialUninstallRunner))
+        .Select(field => field.GetValue(page))
+        .OfType<object>()
+        .ToArray();
 
     private static readonly HashSet<Type> ReadOnlyPlatformTypes =
     [

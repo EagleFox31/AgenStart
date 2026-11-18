@@ -15,6 +15,7 @@ using AgenStart.Desktop.Services;
 using AgenStart.Desktop.ViewModels;
 using AgenStart.Desktop.ViewModels.Onboarding;
 using AgenStart.Desktop.ViewModels.Steps;
+using AgenStart.Platform.Windows.Uninstall;
 using AgenStart.Recommendations;
 
 namespace AgenStart.Desktop.Views;
@@ -51,7 +52,12 @@ public sealed partial class MainWindow : Window
         _viewModel = new MainWindowViewModel(
             uninstallPlanExportTarget: new StorageProviderUninstallPlanExportTarget(
                 () => StorageProvider,
-                () => Ui["Uninstall.Plan.ExportDialogTitle"]));
+                () => Ui["Uninstall.Plan.ExportDialogTitle"]),
+            // Experimental and off by default: without the setting (as read at startup) the uninstall
+            // page gets no runner and stays read-only.
+            officialUninstall: initialSettings?.ExperimentalUninstall == true
+                ? OfficialUninstallRunner.CreateForWindows(new WindowsInstalledProgramInventory(), LocalExperienceStore.DefaultDirectory())
+                : null);
         _onboarding = new OnboardingViewModel(_localExperience, new ShellOnboardingActions(_viewModel))
         {
             Lifetime = _lifetimeCancellation.Token
