@@ -213,3 +213,9 @@ Branche `refactor/desktop-bind-step-viewmodels` (depuis `main` à dda5ae1).
 - **État** : le propriétaire a accepté ADR-0004 à 0007 ; statut passé à Accepted (commit `71593b5` sur `docs/uninstall-module-design`), PR brouillon #120 mise à jour. Fusion de #120 : décision du propriétaire.
 - **Verrous** : P1 attend la fusion de #118 (onglets, LL-006 à LL-009).
 - **Prochaine étape** : P1, inventaire en lecture seule (extraction `UninstallRegistryReader` sans changer la sortie du collecteur, `IInstalledProgramInventory`, onglet « Désinstaller » + liste), sur une branche partie de `main` après fusion de #118.
+
+## 2026-11-18 08:52 — PR #120 fusionnée (conception désinstallation)
+
+- **État** : #120 fusionnée dans `main` sur demande du propriétaire (merge commit `a4277d0`) : document de conception + ADR-0004 à 0007 (Accepted). Worktree `C:\tmp\agenstart-uninstall-design` et branche `docs/uninstall-module-design` supprimés. Issue #119 reste ouverte (implémentation à venir).
+- **Verrous** : P1 attend la fusion de #118 ; #118 attend le test visuel du propriétaire.
+- **Prochaine étape** : après fusion de #118, P1 (inventaire lecture seule) sur une branche partie de `main`.
