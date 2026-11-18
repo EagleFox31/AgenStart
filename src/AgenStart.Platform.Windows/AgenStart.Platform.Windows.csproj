@@ -11,5 +11,6 @@
     <ProjectReference Include="..\AgenStart.Core\AgenStart.Core.csproj" />
     <ProjectReference Include="..\AgenStart.PackageManagement\AgenStart.PackageManagement.csproj" />
     <ProjectReference Include="..\AgenStart.SoftwareInventory\AgenStart.SoftwareInventory.csproj" />
+    <ProjectReference Include="..\AgenStart.Uninstall\AgenStart.Uninstall.csproj" />
   </ItemGroup>
 </Project>
