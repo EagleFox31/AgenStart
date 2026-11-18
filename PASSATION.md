@@ -277,3 +277,15 @@ Branche `refactor/desktop-bind-step-viewmodels` (depuis `main` à dda5ae1).
 - **Prochaine étape** : P3, la désinstallation officielle derrière un drapeau expérimental.
   - Stratégies de l'ADR-0004, Restart Manager, `UninstallSession` et journal (ADR-0007).
   - Tests sur machine jetable (Windows Sandbox ou job `workflow_dispatch`), jamais sur le poste du propriétaire.
+
+## 2026-11-18 13:13 — Progression visible pendant le téléchargement et l'installation
+
+- **Fait** (branche `claude/sweet-mclean-1db86e`) :
+  - `WinGetProcessRunner` : surcharge optionnelle `onOutputLine` (méthode par défaut d'interface, appels existants inchangés), stdout découpé sur `\r` et `\n` (`WinGetOutputLines.PumpAsync`).
+  - `WinGetProgressParser` (pur) : octets B/KB/MB/GB (et Ko/Mo/Go), pourcentages, ANSI retirés ; `WinGetProgressThrottle` 250 ms, ignore un recul dans le même transfert.
+  - `WinGetProvider.PrepareAsync` relaie la progression via `IProgress<PackagePreparationProgress>`.
+  - Desktop : barre déterminée si la taille est connue, sinon indéterminée ; temps écoulé par phase ; en-tête « Téléchargement de X » / « Installation de X (installeur silencieux) » ; « Prêt — en attente de X » (`InstallationQueueStatus`, pur et testé).
+  - Ordre d'installation inchangé et documenté dans `InstallationOrchestrator` (téléchargements en parallèle, installeurs un par un dans l'ordre de la file).
+- **Preuves** : tests Application 34, Catalogue 26, Desktop 123, Platform.Windows 112, Recommendations 24, Uninstall 330, tous verts ; `dotnet format --verify-no-changes` OK ; smoke 15 s avec `AGENSTART_DATA_DIR` temporaire, stderr vide, arrêt par PID.
+- **Limites** : progression en pourcentage seul → barre indéterminée (les contrats Application ne portent pas de fraction). Non vérifié : que winget émette ses lignes `\r` quand stdout est redirigé ; sinon temps écoulé et barre indéterminée montrent quand même l'activité.
+- **Prochaine étape** : vérifier en réel sur un poste jetable qu'un téléchargement winget affiche des octets.

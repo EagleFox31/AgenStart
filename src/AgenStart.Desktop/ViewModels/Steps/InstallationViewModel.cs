@@ -20,19 +20,23 @@ public sealed class InstallationViewModel : StepViewModelBase, IDisposable
     private bool _isInstalling;
     private UiText _installationStatus = UiText.Key("Installation.Status.Ready");
     private UiText _currentInstallationName = UiText.Key("Installation.Current.Waiting");
+    private readonly TimeProvider _timeProvider;
+    private ITimer? _elapsedTimer;
 
     public InstallationViewModel(
         ISessionState session,
         IUiDispatcher dispatcher,
         IInstalledSoftwareInventoryProvider softwareInventory,
         SoftwareStateResolver softwareStateResolver,
-        ILocalizer? text = null)
+        ILocalizer? text = null,
+        TimeProvider? timeProvider = null)
         : base(text)
     {
         _session = session;
         _dispatcher = dispatcher;
         _softwareInventory = softwareInventory;
         _softwareStateResolver = softwareStateResolver;
+        _timeProvider = timeProvider ?? TimeProvider.System;
 
         InstallationItems.CollectionChanged += (_, _) => RaiseSummary();
     }
@@ -119,11 +123,14 @@ public sealed class InstallationViewModel : StepViewModelBase, IDisposable
         foreach (var item in _installationSession.Items)
         {
             var application = catalogueById[item.ApplicationId];
+            var silent = selections.FirstOrDefault(selection =>
+                string.Equals(selection.ApplicationId, item.ApplicationId, StringComparison.OrdinalIgnoreCase))?.Silent ?? false;
             var row = new InstallationRowViewModel(
                 item.ApplicationId,
                 application.Name,
-                BuildInitials(application.Name));
-            row.Apply(item);
+                BuildInitials(application.Name),
+                silent);
+            row.Apply(item, _timeProvider.GetUtcNow());
             InstallationItems.Add(row);
         }
 
@@ -131,6 +138,7 @@ public sealed class InstallationViewModel : StepViewModelBase, IDisposable
         SetStatus(UiText.Key("Installation.Status.Installing"));
         SetCurrentName(UiText.Key("Installation.Current.Preparing"));
         RaiseSummary();
+        StartElapsedTimer();
 
         try
         {
@@ -151,6 +159,7 @@ public sealed class InstallationViewModel : StepViewModelBase, IDisposable
         }
         finally
         {
+            StopElapsedTimer();
             IsInstalling = false;
             RaiseSummary();
         }
@@ -184,6 +193,7 @@ public sealed class InstallationViewModel : StepViewModelBase, IDisposable
         IsInstalling = true;
         SetStatus(UiText.Key("Installation.Status.Retrying", row.Name));
         SetCurrentName(UiText.Raw(row.Name));
+        StartElapsedTimer();
 
         try
         {
@@ -195,6 +205,7 @@ public sealed class InstallationViewModel : StepViewModelBase, IDisposable
         }
         finally
         {
+            StopElapsedTimer();
             IsInstalling = false;
             RaiseSummary();
         }
@@ -224,17 +235,21 @@ public sealed class InstallationViewModel : StepViewModelBase, IDisposable
             _installationSession?.Cancel();
         }
 
+        StopElapsedTimer();
         DisposeSession();
     }
 
     private void ApplyReport(InstallationReport report)
     {
+        var now = _timeProvider.GetUtcNow();
         foreach (var snapshot in report.Items)
         {
             var row = InstallationItems.FirstOrDefault(item =>
                 string.Equals(item.ApplicationId, snapshot.ApplicationId, StringComparison.OrdinalIgnoreCase));
-            row?.Apply(snapshot);
+            row?.Apply(snapshot, now);
         }
+
+        RefreshQueueContext();
 
         _session.SetLastReport(report);
         Completed?.Invoke(this, report);
@@ -259,11 +274,13 @@ public sealed class InstallationViewModel : StepViewModelBase, IDisposable
         {
             var row = InstallationItems.FirstOrDefault(item =>
                 string.Equals(item.ApplicationId, progress.Item.ApplicationId, StringComparison.OrdinalIgnoreCase));
-            row?.Apply(progress.Item);
-            if (progress.Item.State == InstallationQueueItemState.Running)
+            row?.Apply(progress.Item, _timeProvider.GetUtcNow());
+            if (row is null && progress.Item.State == InstallationQueueItemState.Running)
             {
-                SetCurrentName(UiText.Raw(row?.Name ?? progress.Item.ApplicationId));
+                SetCurrentName(UiText.Raw(progress.Item.ApplicationId));
             }
+
+            RefreshQueueContext();
         }
 
         // Known session codes are translated; other progress messages come from the engine as-is.
@@ -276,6 +293,52 @@ public sealed class InstallationViewModel : StepViewModelBase, IDisposable
             _ => UiText.Raw(progress.Message)
         });
         RaiseSummary();
+    }
+
+    /// <summary>
+    /// Names the package and phase in the header and tells each ready row which earlier package it
+    /// waits for; installs run one at a time in queue order while downloads run ahead.
+    /// </summary>
+    private void RefreshQueueContext()
+    {
+        var entries = InstallationItems.Select(row => row.ToQueueEntry()).ToArray();
+        if (InstallationQueueStatus.Headline(entries) is { } headline)
+        {
+            SetCurrentName(headline);
+        }
+
+        for (var index = 0; index < InstallationItems.Count; index++)
+        {
+            InstallationItems[index].SetWaitingFor(InstallationQueueStatus.WaitingFor(entries, index));
+        }
+    }
+
+    private void StartElapsedTimer()
+    {
+        StopElapsedTimer();
+        _elapsedTimer = _timeProvider.CreateTimer(
+            _ => _dispatcher.Post(TickRows),
+            null,
+            TimeSpan.FromSeconds(1),
+            TimeSpan.FromSeconds(1));
+    }
+
+    private void StopElapsedTimer()
+    {
+        _elapsedTimer?.Dispose();
+        _elapsedTimer = null;
+    }
+
+    private void TickRows()
+    {
+        var now = _timeProvider.GetUtcNow();
+        foreach (var row in InstallationItems)
+        {
+            if (row.IsActive)
+            {
+                row.Tick(now);
+            }
+        }
     }
 
     private void DisposeSession()

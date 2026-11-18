@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using AgenStart.PackageManagement;
@@ -11,6 +12,7 @@ public sealed partial class WinGetProvider : IPreparablePackageProvider
     private static readonly TimeSpan ResolveTimeout = TimeSpan.FromSeconds(45);
     private static readonly TimeSpan DownloadTimeout = TimeSpan.FromMinutes(30);
     private static readonly TimeSpan InstallTimeout = TimeSpan.FromMinutes(30);
+    private static readonly TimeSpan DownloadProgressInterval = TimeSpan.FromMilliseconds(250);
 
     private readonly IWinGetExecutableLocator _locator;
     private readonly IWinGetProcessRunner _runner;
@@ -216,6 +218,7 @@ public sealed partial class WinGetProvider : IPreparablePackageProvider
             executable.Path,
             command.Arguments,
             DownloadTimeout,
+            progress is null ? null : CreateDownloadProgressSink(request.ApplicationId, progress),
             cancellationToken).ConfigureAwait(false);
         var normalized = WinGetResultNormalizer.Normalize(processResult);
 
@@ -272,6 +275,33 @@ public sealed partial class WinGetProvider : IPreparablePackageProvider
             inspection.BytesDownloaded,
             inspection.DiagnosticCode,
             inspection.Message);
+    }
+
+    /// <summary>
+    /// Turns WinGet's redrawn progress lines into throttled preparation progress so the download
+    /// shows real figures instead of a single "0 bytes" report followed by silence.
+    /// </summary>
+    private static Action<string> CreateDownloadProgressSink(
+        string applicationId,
+        IProgress<PackagePreparationProgress> progress)
+    {
+        var throttle = new WinGetProgressThrottle(DownloadProgressInterval);
+        var startedAt = Stopwatch.GetTimestamp();
+
+        return line =>
+        {
+            if (!WinGetProgressParser.TryParse(line, out var sample) ||
+                !throttle.TryAccept(sample, Stopwatch.GetElapsedTime(startedAt)))
+            {
+                return;
+            }
+
+            progress.Report(new PackagePreparationProgress(
+                BytesDownloaded: sample.BytesDownloaded,
+                BytesRequired: sample.BytesRequired,
+                Fraction: sample.Fraction,
+                Message: $"Downloading {applicationId} through WinGet."));
+        };
     }
 
     public async Task<PackageOperationResult> InstallPreparedAsync(

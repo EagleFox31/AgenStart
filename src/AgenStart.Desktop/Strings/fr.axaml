@@ -67,7 +67,12 @@
   <x:String x:Key="Install.ViewReport">Voir le rapport</x:String>
 
   <x:String x:Key="Installation.Current.Complete">File terminée</x:String>
+  <x:String x:Key="Installation.Current.Downloading">Téléchargement de {0}</x:String>
+  <x:String x:Key="Installation.Current.Installing">Installation de {0}</x:String>
+  <x:String x:Key="Installation.Current.InstallingSilent">Installation de {0} (installeur silencieux)</x:String>
   <x:String x:Key="Installation.Current.Preparing">Préparation de la file d'installation</x:String>
+  <x:String x:Key="Installation.Current.Resolving">Recherche de {0}</x:String>
+  <x:String x:Key="Installation.Current.Verifying">Vérification de {0}</x:String>
   <x:String x:Key="Installation.Current.Waiting">En attente de démarrage</x:String>
   <x:String x:Key="Installation.Item.AlreadyInstalled">Déjà installé</x:String>
   <x:String x:Key="Installation.Item.Cancelled">Annulé</x:String>
@@ -78,6 +83,7 @@
   <x:String x:Key="Installation.Item.Failed">Échec</x:String>
   <x:String x:Key="Installation.Item.Installing">Installation</x:String>
   <x:String x:Key="Installation.Item.Ready">Prêt</x:String>
+  <x:String x:Key="Installation.Item.ReadyWaitingFor">Prêt — en attente de {0}</x:String>
   <x:String x:Key="Installation.Item.Resolving">Résolution</x:String>
   <x:String x:Key="Installation.Item.Skipped">Ignoré</x:String>
   <x:String x:Key="Installation.Item.Verified">Vérifié</x:String>
@@ -379,6 +385,8 @@
   <x:String x:Key="Uninstall.Summary.Other">{0} programmes · {1}</x:String>
   <x:String x:Key="Uninstall.Title">Désinstaller</x:String>
   <x:String x:Key="Units.Bytes">{0} o</x:String>
+  <x:String x:Key="Units.DurationMinutes">{0} min {1:00} s</x:String>
+  <x:String x:Key="Units.DurationSeconds">{0} s</x:String>
   <x:String x:Key="Units.Gigabytes">{0:0.#} Go</x:String>
   <x:String x:Key="Units.Kilobytes">{0:0.0} Ko</x:String>
   <x:String x:Key="Units.Megabytes">{0:0.0} Mo</x:String>

@@ -29,6 +29,20 @@ public interface IWinGetProcessRunner
         IReadOnlyList<string> arguments,
         TimeSpan timeout,
         CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Same as <see cref="RunAsync(string, IReadOnlyList{string}, TimeSpan, CancellationToken)"/>, and also
+    /// hands each standard-output line to <paramref name="onOutputLine"/> while the process runs. Lines are
+    /// split on <c>\r</c> as well as <c>\n</c> so redrawn progress lines arrive one by one. The result still
+    /// carries the full output. Runners that cannot stream fall back to the buffered call.
+    /// </summary>
+    Task<WinGetProcessResult> RunAsync(
+        string executablePath,
+        IReadOnlyList<string> arguments,
+        TimeSpan timeout,
+        Action<string>? onOutputLine,
+        CancellationToken cancellationToken = default) =>
+        RunAsync(executablePath, arguments, timeout, cancellationToken);
 }
 
 public sealed class WinGetExecutableLocator : IWinGetExecutableLocator
@@ -85,10 +99,18 @@ public sealed class WinGetExecutableLocator : IWinGetExecutableLocator
 
 public sealed class WinGetProcessRunner : IWinGetProcessRunner
 {
+    public Task<WinGetProcessResult> RunAsync(
+        string executablePath,
+        IReadOnlyList<string> arguments,
+        TimeSpan timeout,
+        CancellationToken cancellationToken = default) =>
+        RunAsync(executablePath, arguments, timeout, onOutputLine: null, cancellationToken);
+
     public async Task<WinGetProcessResult> RunAsync(
         string executablePath,
         IReadOnlyList<string> arguments,
         TimeSpan timeout,
+        Action<string>? onOutputLine,
         CancellationToken cancellationToken = default)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(executablePath);
@@ -137,7 +159,9 @@ public sealed class WinGetProcessRunner : IWinGetProcessRunner
                 StartError: exception.Message);
         }
 
-        var standardOutputTask = process.StandardOutput.ReadToEndAsync(cancellationToken);
+        var standardOutputTask = onOutputLine is null
+            ? process.StandardOutput.ReadToEndAsync(cancellationToken)
+            : WinGetOutputLines.PumpAsync(process.StandardOutput, onOutputLine, cancellationToken);
         var standardErrorTask = process.StandardError.ReadToEndAsync(cancellationToken);
 
         using var timeoutCts = new CancellationTokenSource(timeout);
