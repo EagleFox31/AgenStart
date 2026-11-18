@@ -200,3 +200,10 @@ Branche `refactor/desktop-bind-step-viewmodels` (depuis `main` à dda5ae1).
 - **Décisions clés** : BCU en Learn (méthode de score, pas de code), winget CLI en Adapt (`BuildUninstall`), MSI / Restart Manager / IFileOperation via l'OS ; cœur `AgenStart.Uninstall` pur avec ports de lecture sans écriture ; capacité optionnelle `IPackageUninstallProvider` (contrats existants inchangés) ; règles de restes en JSON avec plancher de sécurité codé ; corbeille par défaut, journal en ajout seulement.
 - **Verrous** : P1 dépend de la fusion de #118 (onglets, LL-006 à LL-009). Cinq questions ouvertes et six ADR listés au §8 du document.
 - **Prochaine étape** : relecture de #120 par le propriétaire ; puis ADR 1-4 et P1 (inventaire lecture seule). #118 toujours en attente du test visuel.
+
+## 2026-11-18 08:41 — ADR du module de désinstallation (PR #120)
+
+- **État** : ADR-0004 à 0007 (statut Proposed) ajoutés sur `docs/uninstall-module-design` (commit `be34513`), liés depuis le §8 du document de conception ; PR brouillon #120 mise à jour (5 fichiers, `docs/` uniquement).
+- **Point nouveau** : ADR-0004 traite le conflit avec ADR-0002 §3-§4 : les chaînes `UninstallString` du registre sont analysées (`CommandLineToArgvW`), jamais passées à un shell ; hôtes de script refusés ; exécutable hors `InstallLocation` / `Program Files` / `%WINDIR%\Installer` refusé ; MSI réécrit en `msiexec /x {GUID}`.
+- **Verrous** : acceptation des ADR et relecture de #120 par le propriétaire ; P1 attend la fusion de #118.
+- **Prochaine étape** : sur accord, passer les ADR en Accepted puis démarrer P1 (inventaire lecture seule).
