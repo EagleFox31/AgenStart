@@ -48,7 +48,10 @@ public sealed partial class MainWindow : Window
             themes: AvaloniaThemeService.Shared,
             localization: AvaloniaLocalizationService.Shared,
             initialSettings: initialSettings);
-        _viewModel = new MainWindowViewModel();
+        _viewModel = new MainWindowViewModel(
+            uninstallPlanExportTarget: new StorageProviderUninstallPlanExportTarget(
+                () => StorageProvider,
+                () => Ui["Uninstall.Plan.ExportDialogTitle"]));
         _onboarding = new OnboardingViewModel(_localExperience, new ShellOnboardingActions(_viewModel))
         {
             Lifetime = _lifetimeCancellation.Token

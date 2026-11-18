@@ -35,5 +35,10 @@
              CopyToOutputDirectory="PreserveNewest" />
     <EmbeddedResource Include="..\..\docs\product\catalogue.fixtures.json"
                       LogicalName="AgenStart.Data.catalogue.json" />
+    <Content Include="..\..\docs\product\uninstall-rules.json"
+             Link="Data\uninstall-rules.json"
+             CopyToOutputDirectory="PreserveNewest" />
+    <EmbeddedResource Include="..\..\docs\product\uninstall-rules.json"
+                      LogicalName="AgenStart.Data.uninstall-rules.json" />
   </ItemGroup>
 </Project>
