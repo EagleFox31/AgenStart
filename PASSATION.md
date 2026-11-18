@@ -219,3 +219,25 @@ Branche `refactor/desktop-bind-step-viewmodels` (depuis `main` à dda5ae1).
 - **État** : #120 fusionnée dans `main` sur demande du propriétaire (merge commit `a4277d0`) : document de conception + ADR-0004 à 0007 (Accepted). Worktree `C:\tmp\agenstart-uninstall-design` et branche `docs/uninstall-module-design` supprimés. Issue #119 reste ouverte (implémentation à venir).
 - **Verrous** : P1 attend la fusion de #118 ; #118 attend le test visuel du propriétaire.
 - **Prochaine étape** : après fusion de #118, P1 (inventaire lecture seule) sur une branche partie de `main`.
+
+## 2026-11-18 08:59 — PR #118 fusionnée (thèmes, onglets, onboarding)
+
+- **État** : #118 fusionnée dans `main` sur demande du propriétaire (merge commit `42b38ca`), après #120 (`a4277d0`). Checkout principal repassé sur `main` à jour. Branche `feat/desktop-selectable-themes` conservée (suppression refusée par le garde-fou, à faire par le propriétaire s'il le souhaite). Entrée non commitée : elle partira avec la prochaine branche de travail (pas de push direct sur `main`).
+- **Verrous** : aucun. Fichiers non suivis du propriétaire laissés intacts.
+- **Prochaine étape** : P1 du module de désinstallation (#119, ADR-0004 à 0007) : inventaire en lecture seule sur une branche partie de `main`.
+
+## 2026-11-18 09:42 — P1 désinstallation : inventaire en lecture seule (PR #121, brouillon)
+
+- **État** : branche `feat/uninstall-inventory` (worktree `C:\tmp\agenstart-uninstall-p1`) poussée, PR brouillon #121. Elle contient :
+  - le cœur `src/AgenStart.Uninstall` ;
+  - `UninstallRegistryReader`, partagé par le collecteur, dont la sortie est restée identique ;
+  - l'onglet « Désinstaller » en lecture seule ;
+  - le workflow `uninstall-tests.yml` ;
+  - LL-010 et LL-011.
+- **Vérification sur l'état commité** :
+  - 269 tests en Release, sur 6 suites, aucun échec ;
+  - format OK sur les projets modifiés ;
+  - test de démarrage de 15 s OK.
+- **Non fait** : parcours manuel de l'onglet, à faire par le propriétaire. Restent pour la P2 : la corrélation winget et MSIX, le port d'écriture et l'exécution.
+- **Verrous** : aucun. Pour fusionner #121, il faut le test visuel du propriétaire.
+- **Prochaine étape** : test visuel de l'onglet, fusion, puis P2 (plan et exécution, ADR-0004 et 0005).
