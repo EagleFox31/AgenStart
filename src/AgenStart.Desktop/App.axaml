@@ -2,10 +2,19 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="AgenStart.Desktop.App"
              RequestedThemeVariant="Light">
+  <Application.Resources>
+    <ResourceDictionary>
+      <ResourceDictionary.MergedDictionaries>
+        <!-- English is always present: language overlays (Strings/fr.axaml) are merged after it. -->
+        <ResourceInclude Source="avares://AgenStart.Desktop/Strings/en.axaml" />
+      </ResourceDictionary.MergedDictionaries>
+    </ResourceDictionary>
+  </Application.Resources>
   <Application.Styles>
     <FluentTheme>
       <FluentTheme.Palettes>
         <ColorPaletteResources x:Key="Light" Accent="#176D64" />
+        <ColorPaletteResources x:Key="Dark" Accent="#3FB7A8" />
       </FluentTheme.Palettes>
     </FluentTheme>
     <StyleInclude Source="avares://AgenStart.Desktop/Styles/AgenStartTheme.axaml" />

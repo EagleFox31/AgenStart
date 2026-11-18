@@ -1,13 +1,13 @@
-using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using AgenStart.Application.Installation;
+using AgenStart.Desktop.Services;
 using AgenStart.Desktop.Icons;
 using AgenStart.PackageManagement;
 using Avalonia.Media;
 
 namespace AgenStart.Desktop.ViewModels;
 
-public sealed class ReviewRowViewModel : IAppRowLogo
+public sealed class ReviewRowViewModel : LocalizedRow, IAppRowLogo
 {
     public ReviewRowViewModel(
         string applicationId,
@@ -38,14 +38,14 @@ public sealed class ReviewRowViewModel : IAppRowLogo
     public bool WillInstall { get; }
     public bool AlreadyInstalled { get; }
     public bool CanRemove => WillInstall;
-    public string Status => AlreadyInstalled ? "Already installed" : "Will install";
+    public string Status => Text[AlreadyInstalled ? "Review.Status.AlreadyInstalled" : "Review.Status.WillInstall"];
 }
 
-public sealed class InstallationRowViewModel : INotifyPropertyChanged, IAppRowLogo
+public sealed class InstallationRowViewModel : LocalizedRow, IAppRowLogo
 {
     private InstallationQueueItemState _state;
     private InstallationItemActivity _activity;
-    private string _status = "Waiting";
+    private UiText _status = UiText.Key("Installation.Item.Waiting");
     private string? _message;
     private bool _canRetry;
     private string? _installedVersion;
@@ -62,8 +62,6 @@ public sealed class InstallationRowViewModel : INotifyPropertyChanged, IAppRowLo
         HasLogo = IconSource is not null;
         ShowInitials = !HasLogo;
     }
-
-    public event PropertyChangedEventHandler? PropertyChanged;
 
     public string ApplicationId { get; }
     public string Name { get; }
@@ -84,11 +82,7 @@ public sealed class InstallationRowViewModel : INotifyPropertyChanged, IAppRowLo
         private set => SetField(ref _activity, value);
     }
 
-    public string Status
-    {
-        get => _status;
-        private set => SetField(ref _status, value);
-    }
+    public string Status => _status.Resolve(Text);
 
     public string? Message
     {
@@ -133,7 +127,7 @@ public sealed class InstallationRowViewModel : INotifyPropertyChanged, IAppRowLo
     public bool HasFailure => State == InstallationQueueItemState.Failed;
 
     public string DownloadDetail => Activity == InstallationItemActivity.Downloading
-        ? FormatDownloadDetail(BytesDownloaded, BytesRequired)
+        ? FormatDownloadDetail(BytesDownloaded, BytesRequired).Resolve(Text)
         : string.Empty;
 
     public void Apply(InstallationItemSnapshot snapshot)
@@ -142,7 +136,8 @@ public sealed class InstallationRowViewModel : INotifyPropertyChanged, IAppRowLo
         Activity = snapshot.Activity;
         BytesDownloaded = snapshot.BytesDownloaded;
         BytesRequired = snapshot.BytesRequired;
-        Status = ResolveStatus(snapshot);
+        _status = ResolveStatus(snapshot);
+        OnPropertyChanged(nameof(Status));
         Message = snapshot.Message;
         CanRetry = snapshot.CanRetry;
         InstalledVersion = snapshot.InstalledVersion;
@@ -155,78 +150,58 @@ public sealed class InstallationRowViewModel : INotifyPropertyChanged, IAppRowLo
         OnPropertyChanged(nameof(DownloadDetail));
     }
 
-    private static string ResolveStatus(InstallationItemSnapshot snapshot)
+    private static UiText ResolveStatus(InstallationItemSnapshot snapshot)
     {
         if (snapshot.State == InstallationQueueItemState.Succeeded &&
             snapshot.LastOperationStatus == PackageOperationStatus.AlreadyInstalled)
         {
-            return "Already installed";
+            return UiText.Key("Installation.Item.AlreadyInstalled");
         }
 
         if (snapshot.State == InstallationQueueItemState.Succeeded)
         {
-            return snapshot.RequiresReboot ? "Verified · restart required" : "Verified";
+            return UiText.Key(snapshot.RequiresReboot ? "Installation.Item.VerifiedRestart" : "Installation.Item.Verified");
         }
 
         if (snapshot.State == InstallationQueueItemState.Failed)
         {
-            return "Failed";
+            return UiText.Key("Installation.Item.Failed");
         }
 
         if (snapshot.State == InstallationQueueItemState.Skipped)
         {
-            return "Skipped";
+            return UiText.Key("Installation.Item.Skipped");
         }
 
         if (snapshot.State == InstallationQueueItemState.Cancelled)
         {
-            return "Cancelled";
+            return UiText.Key("Installation.Item.Cancelled");
         }
 
-        return snapshot.Activity switch
+        return UiText.Key(snapshot.Activity switch
         {
-            InstallationItemActivity.Resolving => "Resolving",
-            InstallationItemActivity.Downloading => "Downloading",
-            InstallationItemActivity.Ready => "Ready",
-            InstallationItemActivity.Installing => "Installing",
-            InstallationItemActivity.Verifying => "Verifying",
-            _ => "Waiting"
-        };
+            InstallationItemActivity.Resolving => "Installation.Item.Resolving",
+            InstallationItemActivity.Downloading => "Installation.Item.Downloading",
+            InstallationItemActivity.Ready => "Installation.Item.Ready",
+            InstallationItemActivity.Installing => "Installation.Item.Installing",
+            InstallationItemActivity.Verifying => "Installation.Item.Verifying",
+            _ => "Installation.Item.Waiting"
+        });
     }
 
-    private static string FormatDownloadDetail(long? downloaded, long? required)
+    private static UiText FormatDownloadDetail(long? downloaded, long? required)
     {
         if (downloaded is null)
         {
-            return "Downloading through trusted provider";
+            return UiText.Key("Installation.Item.DownloadingTrusted");
         }
 
         if (required is > 0)
         {
-            return $"{FormatBytes(downloaded.Value)} / {FormatBytes(required.Value)}";
+            return UiText.Key("Installation.Item.DownloadProgress", UiUnits.Bytes(downloaded.Value), UiUnits.Bytes(required.Value));
         }
 
-        return $"{FormatBytes(downloaded.Value)} downloaded";
-    }
-
-    private static string FormatBytes(long bytes)
-    {
-        if (bytes >= 1024L * 1024 * 1024)
-        {
-            return $"{bytes / (1024d * 1024 * 1024):0.0} GB";
-        }
-
-        if (bytes >= 1024L * 1024)
-        {
-            return $"{bytes / (1024d * 1024):0.0} MB";
-        }
-
-        if (bytes >= 1024)
-        {
-            return $"{bytes / 1024d:0.0} KB";
-        }
-
-        return $"{bytes} B";
+        return UiText.Key("Installation.Item.Downloaded", UiUnits.Bytes(downloaded.Value));
     }
 
     private bool SetField<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)
@@ -240,18 +215,18 @@ public sealed class InstallationRowViewModel : INotifyPropertyChanged, IAppRowLo
         OnPropertyChanged(propertyName);
         return true;
     }
-
-    private void OnPropertyChanged([CallerMemberName] string? propertyName = null) =>
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 }
 
-public sealed class ReportRowViewModel : IAppRowLogo
+public sealed class ReportRowViewModel : LocalizedRow, IAppRowLogo
 {
+    private readonly UiText _result;
+
     public ReportRowViewModel(
         string applicationId,
         string name,
         string initials,
-        string result,
+        UiText result,
+        bool alreadyInstalled,
         string? installedVersion,
         bool requiresReboot)
     {
@@ -261,7 +236,8 @@ public sealed class ReportRowViewModel : IAppRowLogo
         IconSource = AppIconService.Shared.Resolve(applicationId);
         HasLogo = IconSource is not null;
         ShowInitials = !HasLogo;
-        Result = result;
+        _result = result;
+        IsAlreadyInstalled = alreadyInstalled;
         InstalledVersion = installedVersion ?? "—";
         RequiresReboot = requiresReboot;
     }
@@ -272,7 +248,8 @@ public sealed class ReportRowViewModel : IAppRowLogo
     public IImage? IconSource { get; }
     public bool HasLogo { get; }
     public bool ShowInitials { get; }
-    public string Result { get; }
+    public string Result => _result.Resolve(Text);
+    public bool IsAlreadyInstalled { get; }
     public string InstalledVersion { get; }
     public bool RequiresReboot { get; }
 }

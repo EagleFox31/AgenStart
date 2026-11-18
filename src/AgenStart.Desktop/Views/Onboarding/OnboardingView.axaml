@@ -1,0 +1,113 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:AgenStart.Desktop.ViewModels"
+             xmlns:onboarding="using:AgenStart.Desktop.ViewModels.Onboarding"
+             xmlns:local="using:AgenStart.Desktop.LocalData"
+             x:Class="AgenStart.Desktop.Views.Onboarding.OnboardingView"
+             x:DataType="onboarding:OnboardingViewModel"
+             Background="{DynamicResource AgenSurfaceBrush}">
+  <!-- The host sets DataContext to the onboarding view model; the view never sets its own (LL-005). -->
+  <Grid>
+    <!-- Splash -->
+    <StackPanel IsVisible="{Binding IsSplash}" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="18">
+      <Border Width="88" Height="88" CornerRadius="22" ClipToBounds="True" HorizontalAlignment="Center">
+        <Image Source="avares://AgenStart.Desktop/Assets/agenstart-app-icon.png" Stretch="UniformToFill" RenderOptions.BitmapInterpolationMode="HighQuality" />
+      </Border>
+      <TextBlock Text="AgenStart" HorizontalAlignment="Center" FontSize="30" FontWeight="SemiBold" Foreground="{DynamicResource AgenBrandTextBrush}" />
+      <TextBlock Classes="subtitle" Text="{DynamicResource Onboarding.Splash.Tagline}" HorizontalAlignment="Center" TextAlignment="Center" />
+      <ProgressBar IsIndeterminate="True" Width="220" HorizontalAlignment="Center" Margin="0,8,0,0" />
+    </StackPanel>
+
+    <!-- Steps -->
+    <ScrollViewer IsVisible="{Binding !IsSplash}" HorizontalScrollBarVisibility="Disabled">
+      <Grid RowDefinitions="Auto,*" MaxWidth="680" Margin="32,40,32,32">
+        <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Left">
+          <Border Width="30" Height="30" CornerRadius="8" ClipToBounds="True">
+            <Image Source="avares://AgenStart.Desktop/Assets/agenstart-app-icon.png" Stretch="UniformToFill" RenderOptions.BitmapInterpolationMode="HighQuality" />
+          </Border>
+          <TextBlock Text="AgenStart" VerticalAlignment="Center" FontSize="16" FontWeight="SemiBold" Foreground="{DynamicResource AgenBrandTextBrush}" />
+          <TextBlock Classes="hint" VerticalAlignment="Center" Margin="12,0,0,0">
+            <Run Text="{DynamicResource Onboarding.Step}" />
+            <Run Text="{Binding StepNumber}" />
+            <Run Text="/ 4" />
+          </TextBlock>
+        </StackPanel>
+
+        <Panel Grid.Row="1" Margin="0,36,0,0">
+          <!-- 1. Language -->
+          <StackPanel IsVisible="{Binding IsLanguage}" Spacing="20">
+            <StackPanel Spacing="6">
+              <TextBlock Classes="pageTitle" Text="{DynamicResource Onboarding.Language.Title}" />
+              <TextBlock Classes="subtitle" Text="{DynamicResource Onboarding.Language.Subtitle}" TextWrapping="Wrap" />
+            </StackPanel>
+            <ListBox ItemsSource="{Binding LanguageOptions}" SelectedItem="{Binding SelectedLanguage, Mode=TwoWay}" AutomationProperties.Name="{DynamicResource Onboarding.Language.Title}">
+              <ListBox.ItemTemplate>
+                <DataTemplate x:DataType="local:LanguageOption">
+                  <TextBlock Text="{Binding NativeName}" FontSize="15" Margin="4,6" />
+                </DataTemplate>
+              </ListBox.ItemTemplate>
+            </ListBox>
+            <StackPanel Orientation="Horizontal" Spacing="8">
+              <Button Classes="primary large" Content="{DynamicResource Onboarding.Continue}" Command="{Binding ContinueToUsageCommand}" />
+            </StackPanel>
+          </StackPanel>
+
+          <!-- 2. Uses -->
+          <StackPanel IsVisible="{Binding IsUsage}" Spacing="20">
+            <StackPanel Spacing="6">
+              <TextBlock Classes="pageTitle" Text="{DynamicResource Onboarding.Usage.Title}" />
+              <TextBlock Classes="subtitle" Text="{DynamicResource Onboarding.Usage.Subtitle}" TextWrapping="Wrap" />
+            </StackPanel>
+            <Border Classes="group">
+              <ItemsControl ItemsSource="{Binding Options}">
+                <ItemsControl.ItemTemplate>
+                  <DataTemplate x:DataType="vm:ProfileOptionViewModel">
+                    <Border Classes="row" Padding="16,12">
+                      <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}" HorizontalAlignment="Stretch">
+                        <StackPanel Margin="4,0,0,0">
+                          <TextBlock Classes="rowTitle" Text="{Binding Label}" />
+                          <TextBlock Classes="rowHint" Text="{Binding Description}" />
+                        </StackPanel>
+                      </CheckBox>
+                    </Border>
+                  </DataTemplate>
+                </ItemsControl.ItemTemplate>
+              </ItemsControl>
+            </Border>
+            <TextBlock Classes="hint" Text="{DynamicResource Onboarding.Usage.ScanNote}" TextWrapping="Wrap" />
+            <StackPanel Orientation="Horizontal" Spacing="8">
+              <Button Classes="primary large" Content="{DynamicResource Onboarding.Usage.Analyse}" Command="{Binding StartScanCommand}" />
+              <Button Classes="secondary large" Content="{DynamicResource Onboarding.Back}" Command="{Binding BackToLanguageCommand}" />
+            </StackPanel>
+          </StackPanel>
+
+          <!-- 3-4. Scan, then recommendations -->
+          <StackPanel IsVisible="{Binding IsWorking}" Spacing="14">
+            <TextBlock Classes="pageTitle" Text="{Binding ProgressTitle}" />
+            <TextBlock Classes="subtitle" Text="{Binding ProgressLabel}" TextWrapping="Wrap" />
+            <ProgressBar Minimum="0" Maximum="100" Value="{Binding ProgressPercent}" IsIndeterminate="{Binding ProgressIndeterminate}" Margin="0,10,0,0" />
+            <TextBlock Classes="hint" Text="{DynamicResource Onboarding.Working.ReadOnly}" TextWrapping="Wrap" />
+          </StackPanel>
+
+          <StackPanel IsVisible="{Binding IsScanFailed}" Spacing="14">
+            <TextBlock Classes="pageTitle" Text="{DynamicResource Onboarding.ScanFailed.Title}" />
+            <TextBlock Classes="subtitle" Text="{DynamicResource Onboarding.ScanFailed.Detail}" TextWrapping="Wrap" />
+            <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,6,0,0">
+              <Button Classes="primary large" Content="{DynamicResource Onboarding.Retry}" Command="{Binding RetryScanCommand}" />
+              <Button Classes="secondary large" Content="{DynamicResource Onboarding.GoHome}" Command="{Binding GoHomeCommand}" />
+            </StackPanel>
+          </StackPanel>
+
+          <StackPanel IsVisible="{Binding IsBuildFailed}" Spacing="14">
+            <TextBlock Classes="pageTitle" Text="{DynamicResource Onboarding.BuildFailed.Title}" />
+            <TextBlock Classes="subtitle" Text="{DynamicResource Onboarding.BuildFailed.Detail}" TextWrapping="Wrap" />
+            <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,6,0,0">
+              <Button Classes="primary large" Content="{DynamicResource Onboarding.Retry}" Command="{Binding RetryBuildCommand}" />
+              <Button Classes="secondary large" Content="{DynamicResource Onboarding.BackToUsage}" Command="{Binding BackToUsageCommand}" />
+            </StackPanel>
+          </StackPanel>
+        </Panel>
+      </Grid>
+    </ScrollViewer>
+  </Grid>
+</UserControl>

@@ -1,7 +1,7 @@
 using System.Collections.ObjectModel;
-using System.Globalization;
 using AgenStart.Application.Installation;
 using AgenStart.Catalogue;
+using AgenStart.Desktop.Services;
 using AgenStart.PackageManagement;
 
 namespace AgenStart.Desktop.ViewModels.Steps;
@@ -10,8 +10,7 @@ public sealed class ReportViewModel : StepViewModelBase
 {
     private InstallationReport? _report;
     private bool _hasReport;
-    private string _reportStatus = "No installation report yet.";
-    private string _reportCompletedAt = "—";
+    private UiText _reportStatus = UiText.Key("Report.Status.None");
 
     public ObservableCollection<ReportRowViewModel> ReportItems { get; } = [];
 
@@ -21,39 +20,32 @@ public sealed class ReportViewModel : StepViewModelBase
         private set => SetField(ref _hasReport, value);
     }
 
-    public string ReportStatus
-    {
-        get => _reportStatus;
-        private set => SetField(ref _reportStatus, value);
-    }
+    public string ReportStatus => _reportStatus.Resolve(Text);
 
-    public string ReportCompletedAt
-    {
-        get => _reportCompletedAt;
-        private set => SetField(ref _reportCompletedAt, value);
-    }
+    public string ReportCompletedAt =>
+        _report?.CompletedAtUtc?.ToLocalTime().ToString("g", Text.Culture) ?? "—";
 
     public int ReportProcessedCount => ReportItems.Count;
     public int ReportInstalledCount => _report?.Items.Count(item =>
         item.State == InstallationQueueItemState.Succeeded &&
         item.LastOperationStatus != PackageOperationStatus.AlreadyInstalled) ?? 0;
-    public int ReportAlreadyInstalledCount => ReportItems.Count(row => row.Result == "Already installed");
+    public int ReportAlreadyInstalledCount => ReportItems.Count(row => row.IsAlreadyInstalled);
     public int ReportFailedCount => _report?.FailedCount ?? 0;
     public bool ReportRequiresReboot => _report?.Items.Any(item => item.RequiresReboot) == true;
-    public string ReportTitle => _report switch
+    public string ReportTitle => Text[_report switch
     {
-        { State: InstallationSessionState.Cancelled } => "Setup cancelled",
-        { FailedCount: > 0 } => "Setup finished with issues",
-        _ => "Your PC is ready"
-    };
+        { State: InstallationSessionState.Cancelled } => "Report.Title.Cancelled",
+        { FailedCount: > 0 } => "Report.Title.Issues",
+        _ => "Report.Title.Ready"
+    }];
 
     public void Reset()
     {
         _report = null;
         ReportItems.Clear();
         HasReport = false;
-        ReportStatus = "No installation report yet.";
-        ReportCompletedAt = "—";
+        SetText(ref _reportStatus, UiText.Key("Report.Status.None"), nameof(ReportStatus));
+        OnPropertyChanged(nameof(ReportCompletedAt));
         RaiseSummary();
     }
 
@@ -66,12 +58,12 @@ public sealed class ReportViewModel : StepViewModelBase
 
         BuildRows(report, catalogue, alreadyInstalledRecommendations);
         HasReport = true;
-        ReportStatus = report.State == InstallationSessionState.Cancelled
-            ? "The approved setup was cancelled before every item completed."
+        SetText(ref _reportStatus, UiText.Key(report.State == InstallationSessionState.Cancelled
+            ? "Report.Status.Cancelled"
             : report.FailedCount > 0
-                ? "AgenStart finished the approved setup with issues."
-                : "AgenStart finished the approved setup.";
-        ReportCompletedAt = report.CompletedAtUtc?.ToLocalTime().ToString("g", CultureInfo.CurrentCulture) ?? "—";
+                ? "Report.Status.Issues"
+                : "Report.Status.Finished"), nameof(ReportStatus));
+        OnPropertyChanged(nameof(ReportCompletedAt));
         RaiseSummary();
     }
 
@@ -93,14 +85,16 @@ public sealed class ReportViewModel : StepViewModelBase
                 continue;
             }
 
+            var alreadyInstalled = item.State == InstallationQueueItemState.Succeeded
+                && item.LastOperationStatus == PackageOperationStatus.AlreadyInstalled;
             var result = item.State switch
             {
-                InstallationQueueItemState.Succeeded when item.LastOperationStatus == PackageOperationStatus.AlreadyInstalled => "Already installed",
-                InstallationQueueItemState.Succeeded => "Installed",
-                InstallationQueueItemState.Failed => "Failed",
-                InstallationQueueItemState.Skipped => "Skipped",
-                InstallationQueueItemState.Cancelled => "Cancelled",
-                _ => item.State.ToString()
+                _ when alreadyInstalled => UiText.Key("Report.Result.AlreadyInstalled"),
+                InstallationQueueItemState.Succeeded => UiText.Key("Report.Result.Installed"),
+                InstallationQueueItemState.Failed => UiText.Key("Report.Result.Failed"),
+                InstallationQueueItemState.Skipped => UiText.Key("Report.Result.Skipped"),
+                InstallationQueueItemState.Cancelled => UiText.Key("Report.Result.Cancelled"),
+                _ => UiText.Raw(item.State.ToString())
             };
 
             ReportItems.Add(new ReportRowViewModel(
@@ -108,6 +102,7 @@ public sealed class ReportViewModel : StepViewModelBase
                 application.Name,
                 BuildInitials(application.Name),
                 result,
+                alreadyInstalled,
                 item.InstalledVersion,
                 item.RequiresReboot));
             included.Add(item.ApplicationId);
@@ -120,9 +115,19 @@ public sealed class ReportViewModel : StepViewModelBase
                 recommendation.ApplicationId,
                 recommendation.Name,
                 recommendation.Initials,
-                "Already installed",
+                UiText.Key("Report.Result.AlreadyInstalled"),
+                alreadyInstalled: true,
                 null,
                 requiresReboot: false));
+        }
+    }
+
+    protected override void OnLanguageChanged()
+    {
+        base.OnLanguageChanged();
+        foreach (var row in ReportItems)
+        {
+            row.RefreshText();
         }
     }
 

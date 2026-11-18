@@ -2,53 +2,107 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:AgenStart.Desktop.ViewModels"
              x:Class="AgenStart.Desktop.Views.RecommendationsView"
-             x:DataType="vm:MainWindowViewModel">
-  <StackPanel>
-    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="34">
+             xmlns:steps="using:AgenStart.Desktop.ViewModels.Steps"
+             x:DataType="steps:RecommendationsViewModel">
+  <StackPanel Spacing="24">
+    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
       <StackPanel>
-        <TextBlock Classes="eyebrow" Text="RECOMMENDATIONS" Margin="0,0,0,20" />
-        <TextBlock Classes="pageTitle" Text="Recommended for this PC" />
-        <TextBlock Classes="subtitle" Text="{Binding RecommendationStatus}" Margin="0,12,0,0" TextWrapping="Wrap" />
+        <TextBlock Classes="pageTitle" Text="{DynamicResource Recs.RecommendedForThisPC}" />
+        <TextBlock Classes="subtitle" Text="{Binding RecommendationStatus}" Margin="0,6,0,0" />
       </StackPanel>
-      <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10" VerticalAlignment="Bottom" Margin="0,0,0,3">
-        <Border MinWidth="112" Background="#EEF3F1" BorderBrush="#D9DEDC" BorderThickness="1" CornerRadius="10" Padding="14,10"><StackPanel Spacing="2"><TextBlock Text="{Binding RecommendationCount}" Foreground="{StaticResource AgenTealBrush}" FontSize="20" FontWeight="SemiBold" TextAlignment="Center" /><TextBlock Text="recommendations" Foreground="{StaticResource AgenMutedBrush}" FontSize="12" TextAlignment="Center" /></StackPanel></Border>
-        <Border MinWidth="100" Background="#EEF3F1" BorderBrush="#D9DEDC" BorderThickness="1" CornerRadius="10" Padding="14,10"><StackPanel Spacing="2"><TextBlock Text="{Binding SelectedCount}" Foreground="{StaticResource AgenTealBrush}" FontSize="20" FontWeight="SemiBold" TextAlignment="Center" /><TextBlock Text="selected" Foreground="{StaticResource AgenMutedBrush}" FontSize="12" TextAlignment="Center" /></StackPanel></Border>
-        <Border MinWidth="126" Background="#EEF3F1" BorderBrush="#D9DEDC" BorderThickness="1" CornerRadius="10" Padding="14,10"><StackPanel Spacing="2"><TextBlock Text="{Binding AlreadyInstalledCount}" Foreground="{StaticResource AgenTealBrush}" FontSize="20" FontWeight="SemiBold" TextAlignment="Center" /><TextBlock Text="already installed" Foreground="{StaticResource AgenMutedBrush}" FontSize="12" TextAlignment="Center" /></StackPanel></Border>
-      </StackPanel>
+      <Border Grid.Column="1" Classes="segmented" VerticalAlignment="Bottom">
+        <StackPanel Orientation="Horizontal" Spacing="2">
+          <Button Classes="segment" Classes.active="{Binding IsListLayout}" Click="ListLayoutButton_OnClick" ToolTip.Tip="{DynamicResource Recs.ListView}" AutomationProperties.Name="{DynamicResource Recs.ListView}">
+            <TextBlock Classes="glyph" Text="&#xE8FD;" FontSize="14" Foreground="{Binding $parent[Button].Foreground}" />
+          </Button>
+          <Button Classes="segment" Classes.active="{Binding IsCardLayout}" Click="CardLayoutButton_OnClick" ToolTip.Tip="{DynamicResource Recs.CardView}" AutomationProperties.Name="{DynamicResource Recs.CardView}">
+            <TextBlock Classes="glyph" Text="&#xF0E2;" FontSize="14" Foreground="{Binding $parent[Button].Foreground}" />
+          </Button>
+        </StackPanel>
+      </Border>
     </Grid>
-    <Border Height="1" Background="{StaticResource AgenDividerBrush}" Margin="0,28,0,16" />
-    <ItemsControl ItemsSource="{Binding Recommendations}">
+
+    <Grid ColumnDefinitions="*,*,*" ColumnSpacing="16">
+      <Border Classes="tile"><StackPanel><TextBlock Classes="statValue" Text="{Binding RecommendationCount}" /><TextBlock Classes="statLabel" Text="{DynamicResource Recs.Recommendations}" /></StackPanel></Border>
+      <Border Grid.Column="1" Classes="tile"><StackPanel><TextBlock Classes="statValue" Text="{Binding SelectedCount}" Foreground="{DynamicResource AgenAccentBrush}" /><TextBlock Classes="statLabel" Text="{DynamicResource Recs.Selected}" /></StackPanel></Border>
+      <Border Grid.Column="2" Classes="tile"><StackPanel><TextBlock Classes="statValue" Text="{Binding AlreadyInstalledCount}" /><TextBlock Classes="statLabel" Text="{DynamicResource Recs.AlreadyInstalled}" /></StackPanel></Border>
+    </Grid>
+
+    <Border Classes="group" IsVisible="{Binding IsListLayout}">
+      <ItemsControl ItemsSource="{Binding Recommendations}">
+        <ItemsControl.ItemTemplate>
+          <DataTemplate x:DataType="vm:RecommendationRowViewModel">
+            <Border Classes="row" Padding="14,10">
+              <Grid ColumnDefinitions="22,36,*,Auto,44" ColumnSpacing="12">
+                <TextBlock Text="{Binding OrderLabel}" FontSize="11.5" FontWeight="SemiBold" Foreground="{DynamicResource AgenText3Brush}" VerticalAlignment="Center" />
+                <Border Grid.Column="1" Width="36" Height="36" CornerRadius="{DynamicResource AgenSmallRadius}" Background="{DynamicResource AgenLogoTileBrush}" VerticalAlignment="Center">
+                  <Grid>
+                    <Image Source="{Binding IconSource}" IsVisible="{Binding HasLogo}" Width="24" Height="24" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    <TextBlock Text="{Binding Initials}" IsVisible="{Binding ShowInitials}" Foreground="{DynamicResource AgenAccentBrush}" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                  </Grid>
+                </Border>
+                <StackPanel Grid.Column="2" VerticalAlignment="Center" Margin="2,0,0,0">
+                  <TextBlock Classes="rowTitle" Text="{Binding Name}" />
+                  <TextBlock Text="{Binding Reason}" Foreground="{DynamicResource AgenMutedBrush}" FontSize="12.5" TextTrimming="CharacterEllipsis" Margin="0,2,0,0" />
+                </StackPanel>
+                <Border Grid.Column="3" Background="{Binding StatusBackgroundBrush}" CornerRadius="{DynamicResource AgenBadgeRadius}" Padding="9,3" VerticalAlignment="Center" ToolTip.Tip="{Binding StatusDetail}">
+                  <StackPanel Orientation="Horizontal" Spacing="5">
+                    <TextBlock Text="{Binding StatusIcon}" Foreground="{Binding StatusBrush}" FontSize="12" FontWeight="SemiBold" VerticalAlignment="Center" />
+                    <TextBlock Text="{Binding Status}" Foreground="{Binding StatusBrush}" FontSize="12" FontWeight="SemiBold" VerticalAlignment="Center" />
+                  </StackPanel>
+                </Border>
+                <CheckBox Grid.Column="4" IsChecked="{Binding IsSelected, Mode=TwoWay}" IsEnabled="{Binding CanSelect}" HorizontalAlignment="Center" VerticalAlignment="Center" MinWidth="0" />
+              </Grid>
+            </Border>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+    </Border>
+
+    <!-- Same 3 columns as the summary tiles; -8 outer margin cancels the cards' 8 px gutter so edges line up. -->
+    <ItemsControl ItemsSource="{Binding Recommendations}" IsVisible="{Binding IsCardLayout}" Margin="-8">
+      <ItemsControl.ItemsPanel>
+        <ItemsPanelTemplate>
+          <UniformGrid Columns="3" />
+        </ItemsPanelTemplate>
+      </ItemsControl.ItemsPanel>
       <ItemsControl.ItemTemplate>
         <DataTemplate x:DataType="vm:RecommendationRowViewModel">
-          <Border Background="#FBFAF6" BorderBrush="{StaticResource AgenDividerBrush}" BorderThickness="1" CornerRadius="10" Padding="16,14" Margin="0,0,0,10">
-            <Grid ColumnDefinitions="22,42,*,190,56" ColumnSpacing="12">
-              <TextBlock Text="{Binding OrderLabel}" FontSize="11" FontWeight="SemiBold" Foreground="{StaticResource AgenMutedBrush}" HorizontalAlignment="Left" VerticalAlignment="Center" />
-              <Border Grid.Column="1" Width="40" Height="40" CornerRadius="10" Background="#EEF3F1" VerticalAlignment="Center" HorizontalAlignment="Right">
-                <Grid>
-                  <Image Source="{Binding IconSource}" IsVisible="{Binding HasLogo}" Width="26" Height="26" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                  <TextBlock Text="{Binding Initials}" IsVisible="{Binding ShowInitials}" Foreground="{StaticResource AgenTealBrush}" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                </Grid>
-              </Border>
-              <StackPanel Grid.Column="2" VerticalAlignment="Center" Spacing="4" Margin="6,0,0,0">
-                <TextBlock Text="{Binding Name}" FontSize="16" FontWeight="SemiBold" />
-                <TextBlock Text="{Binding Reason}" Foreground="{StaticResource AgenMutedBrush}" FontSize="13" TextTrimming="CharacterEllipsis" />
-              </StackPanel>
-              <Border Grid.Column="3" Background="{Binding StatusBackgroundBrush}" CornerRadius="14" Padding="10,5" HorizontalAlignment="Left" VerticalAlignment="Center" ToolTip.Tip="{Binding StatusDetail}">
-                <StackPanel Orientation="Horizontal" Spacing="6">
-                  <TextBlock Text="{Binding StatusIcon}" Foreground="{Binding StatusBrush}" FontSize="13" FontWeight="SemiBold" VerticalAlignment="Center" />
-                  <TextBlock Text="{Binding Status}" Foreground="{Binding StatusBrush}" FontSize="13" FontWeight="SemiBold" VerticalAlignment="Center" />
+          <Border Classes="tile" Margin="8" Padding="16,14" MinHeight="168">
+            <Grid RowDefinitions="Auto,Auto,*,Auto" RowSpacing="10">
+              <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
+                <Border Width="44" Height="44" CornerRadius="{DynamicResource AgenSmallRadius}" Background="{DynamicResource AgenLogoTileBrush}">
+                  <Grid>
+                    <Image Source="{Binding IconSource}" IsVisible="{Binding HasLogo}" Width="28" Height="28" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    <TextBlock Text="{Binding Initials}" IsVisible="{Binding ShowInitials}" Foreground="{DynamicResource AgenAccentBrush}" FontSize="15" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                  </Grid>
+                </Border>
+                <TextBlock Grid.Column="1" Text="{Binding OrderLabel}" FontSize="11.5" FontWeight="SemiBold" Foreground="{DynamicResource AgenText3Brush}" VerticalAlignment="Top" />
+                <CheckBox Grid.Column="2" IsChecked="{Binding IsSelected, Mode=TwoWay}" IsEnabled="{Binding CanSelect}" VerticalAlignment="Top" MinWidth="0" />
+              </Grid>
+              <TextBlock Grid.Row="1" Classes="rowTitle" Text="{Binding Name}" TextTrimming="CharacterEllipsis" />
+              <TextBlock Grid.Row="2" Text="{Binding Reason}" Foreground="{DynamicResource AgenMutedBrush}" FontSize="12.5" TextWrapping="Wrap" MaxLines="3" TextTrimming="CharacterEllipsis" />
+              <Border Grid.Row="3" Background="{Binding StatusBackgroundBrush}" CornerRadius="{DynamicResource AgenBadgeRadius}" Padding="9,3" HorizontalAlignment="Left" ToolTip.Tip="{Binding StatusDetail}">
+                <StackPanel Orientation="Horizontal" Spacing="5">
+                  <TextBlock Text="{Binding StatusIcon}" Foreground="{Binding StatusBrush}" FontSize="12" FontWeight="SemiBold" VerticalAlignment="Center" />
+                  <TextBlock Text="{Binding Status}" Foreground="{Binding StatusBrush}" FontSize="12" FontWeight="SemiBold" VerticalAlignment="Center" />
                 </StackPanel>
               </Border>
-              <CheckBox Grid.Column="4" IsChecked="{Binding IsSelected, Mode=TwoWay}" IsEnabled="{Binding CanSelect}" HorizontalAlignment="Center" VerticalAlignment="Center" />
             </Grid>
           </Border>
         </DataTemplate>
       </ItemsControl.ItemTemplate>
     </ItemsControl>
-    <StackPanel Orientation="Horizontal" Spacing="12" Margin="0,14,0,0">
-      <Button Classes="primary" Content="Confirm" IsEnabled="{Binding CanReview}" Click="ReviewButton_OnClick" />
-      <Button Classes="secondary" Content="Select essentials only" Click="SelectEssentialsButton_OnClick" />
-    </StackPanel>
-    <Border BorderBrush="{StaticResource AgenDividerBrush}" BorderThickness="0,1,0,0" Margin="0,18,0,0" Padding="0,18,0,0"><StackPanel Orientation="Horizontal" Spacing="9"><TextBlock Text="▱" Foreground="{StaticResource AgenTealBrush}" FontSize="18" /><TextBlock Text="Nothing will be installed until you approve the final setup." Foreground="{StaticResource AgenMutedBrush}" FontSize="13" VerticalAlignment="Center" /></StackPanel></Border>
+
+    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
+      <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+        <TextBlock Classes="glyph" Text="&#xE72E;" FontSize="13" Foreground="{DynamicResource AgenMutedBrush}" />
+        <TextBlock Classes="hint" Text="{DynamicResource Recs.NothingWillBeInstalledUntil}" VerticalAlignment="Center" />
+      </StackPanel>
+      <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
+        <Button Classes="secondary large" Content="{DynamicResource Recs.SelectEssentialsOnly}" Click="SelectEssentialsButton_OnClick" />
+        <Button Classes="primary large" Content="{DynamicResource Recs.Confirm}" IsEnabled="{Binding CanReview}" Click="ReviewButton_OnClick" />
+      </StackPanel>
+    </Grid>
   </StackPanel>
 </UserControl>
