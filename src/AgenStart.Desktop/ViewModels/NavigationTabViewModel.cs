@@ -17,7 +17,7 @@ public static class NavigationGate
     /// <summary>A step can be opened once the data it shows exists; the current step is handled by the caller.</summary>
     public static bool IsAvailable(AppStep step, NavigationState state) => step switch
     {
-        AppStep.Overview or AppStep.History or AppStep.Settings => true,
+        AppStep.Overview or AppStep.History or AppStep.Settings or AppStep.Uninstall => true,
         AppStep.YourPc or AppStep.UsageProfile => state.HasSnapshot,
         AppStep.Recommendations => state.HasRecommendations,
         AppStep.Review => state.HasReview,

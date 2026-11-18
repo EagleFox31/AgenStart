@@ -25,6 +25,7 @@
     <ProjectReference Include="..\AgenStart.Platform.Windows\AgenStart.Platform.Windows.csproj" />
     <ProjectReference Include="..\AgenStart.Recommendations\AgenStart.Recommendations.csproj" />
     <ProjectReference Include="..\AgenStart.SoftwareInventory\AgenStart.SoftwareInventory.csproj" />
+    <ProjectReference Include="..\AgenStart.Uninstall\AgenStart.Uninstall.csproj" />
   </ItemGroup>
 
   <ItemGroup>

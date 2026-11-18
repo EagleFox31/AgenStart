@@ -71,6 +71,8 @@
 
             <Panel IsVisible="{Binding IsReport}"><views:ReportView x:Name="ReportControl" DataContext="{Binding Report}" /></Panel>
 
+            <Panel IsVisible="{Binding IsUninstall}"><views:UninstallView x:Name="UninstallControl" DataContext="{Binding Uninstall}" /></Panel>
+
             <!-- DataContext (local experience) is set in code-behind; visibility stays on the wrapping panel. -->
             <Panel IsVisible="{Binding IsHistory}"><views:HistoryView x:Name="HistoryControl" /></Panel>
 
