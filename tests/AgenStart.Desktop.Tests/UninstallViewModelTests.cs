@@ -5,7 +5,7 @@ using AgenStart.Uninstall;
 
 namespace AgenStart.Desktop.Tests;
 
-public sealed class UninstallViewModelTests
+public sealed partial class UninstallViewModelTests
 {
     private static readonly InstalledProgram[] Sample =
     [
@@ -208,7 +208,14 @@ public sealed class UninstallViewModelTests
     [Fact]
     public void The_page_only_receives_read_ports()
     {
-        var allowed = new[] { typeof(IInstalledProgramInventory), typeof(IUiDispatcher), typeof(ILocalizer) };
+        var allowed = new[]
+        {
+            typeof(IInstalledProgramInventory),
+            typeof(IUiDispatcher),
+            typeof(ILocalizer),
+            typeof(IUninstallPlanSource),
+            typeof(IUninstallPlanExportTarget)
+        };
 
         Assert.All(
             typeof(UninstallViewModel).GetConstructors().SelectMany(constructor => constructor.GetParameters()),

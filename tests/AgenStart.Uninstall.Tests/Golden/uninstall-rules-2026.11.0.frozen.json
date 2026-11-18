@@ -1,0 +1,40 @@
+{
+  "schemaVersion": "1.0",
+  "rulesVersion": "2026.11.0",
+  "extraForbiddenPaths": [
+    "{LocalAppData}\\Steam",
+    "{ProgramFilesX86}\\Steam",
+    "{ProgramFiles}\\Steam",
+    "{ProgramFilesX86}\\Epic Games",
+    "{ProgramFiles}\\Epic Games",
+    "{ProgramData}\\Package Cache"
+  ],
+  "genericNameStoplist": ["common", "shared", "data", "games", "launcher", "update", "cache", "temp", "microsoft", "windows", "program", "programs", "tools", "software", "users"],
+  "volumeThresholds": { "confirmAboveBytes": 2147483648, "confirmAboveFileCount": 5000 },
+  "genericRules": [
+    { "id": "generic.install-location", "kind": "directory",
+      "roots": ["{InstallLocation}"], "dataClass": "appData", "confidence": 0 },
+    { "id": "generic.publisher-product", "kind": "directory",
+      "roots": ["{LocalAppData}", "{RoamingAppData}", "{ProgramData}"],
+      "relativePath": "{Publisher}\\{Product}", "dataClass": "appData", "confidence": 6 },
+    { "id": "generic.product-only", "kind": "directory",
+      "roots": ["{LocalAppData}", "{RoamingAppData}", "{LocalLow}"],
+      "relativePath": "{Product}", "dataClass": "appData", "confidence": 3 },
+    { "id": "generic.hkcu-publisher-product", "kind": "registryKey",
+      "roots": ["HKCU\\Software"], "relativePath": "{Publisher}\\{Product}",
+      "dataClass": "configuration", "confidence": 5 },
+    { "id": "generic.shortcut-to-install-location", "kind": "shortcut",
+      "roots": ["{StartMenuPrograms}", "{CommonStartMenuPrograms}", "{Desktop}", "{PublicDesktop}"],
+      "dataClass": "shortcut", "confidence": 8 }
+  ],
+  "productRules": [
+    { "id": "firaxis.civilization-vii",
+      "match": { "publisher": ["Firaxis Games", "2K"], "displayName": ["Sid Meier's Civilization VII"] },
+      "leftovers": [
+        { "kind": "directory", "path": "{LocalAppData}\\Firaxis Games\\Sid Meier's Civilization VII\\Saves", "dataClass": "userData" },
+        { "kind": "directory", "path": "{LocalAppData}\\Firaxis Games\\Sid Meier's Civilization VII\\Logs", "dataClass": "cache" },
+        { "kind": "directory", "path": "{Documents}\\My Games\\Sid Meier's Civilization VII", "dataClass": "userData" }
+      ],
+      "removeParentIfEmpty": ["{LocalAppData}\\Firaxis Games"] }
+  ]
+}

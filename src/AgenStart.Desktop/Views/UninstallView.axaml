@@ -3,7 +3,26 @@
              xmlns:steps="using:AgenStart.Desktop.ViewModels.Steps"
              x:Class="AgenStart.Desktop.Views.UninstallView"
              x:DataType="steps:UninstallViewModel">
-  <!-- Read-only in this version: the page lists and explains, it never acts on a program. -->
+  <!-- Read-only in this version: the page lists and explains, it never acts on a program.
+       The plan below is a description; its checkboxes only change the in-memory selection. -->
+  <UserControl.Resources>
+    <DataTemplate x:Key="PlanItemTemplate" x:DataType="steps:UninstallPlanItemViewModel">
+      <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10" Margin="0,4">
+        <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}" VerticalAlignment="Top" AutomationProperties.Name="{Binding Target}" />
+        <StackPanel Grid.Column="1" Spacing="4">
+          <TextBlock Text="{Binding Target}" TextWrapping="Wrap" />
+          <StackPanel Orientation="Horizontal" Spacing="6">
+            <Border Classes="statusBadge" Background="{DynamicResource AgenFillBrush}"><TextBlock Text="{Binding KindText}" Foreground="{DynamicResource AgenText3Brush}" /></Border>
+            <Border Classes="statusBadge" Background="{DynamicResource AgenFillBrush}"><TextBlock Text="{Binding ClassText}" Foreground="{DynamicResource AgenText3Brush}" /></Border>
+            <Border Classes="statusBadge" Background="{DynamicResource AgenFillBrush}"><TextBlock Text="{Binding ConfidenceText}" Foreground="{DynamicResource AgenText3Brush}" /></Border>
+            <Border Classes="statusBadge" Background="{DynamicResource AgenFillBrush}" IsVisible="{Binding RequiresElevation}"><TextBlock Text="{DynamicResource Uninstall.Plan.NeedsAdmin}" Foreground="{DynamicResource AgenText3Brush}" /></Border>
+          </StackPanel>
+        </StackPanel>
+        <TextBlock Grid.Column="2" Text="{Binding SizeText}" Foreground="{DynamicResource AgenMutedBrush}" FontSize="13" VerticalAlignment="Top" />
+      </Grid>
+    </DataTemplate>
+  </UserControl.Resources>
+
   <StackPanel Spacing="24">
     <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
       <StackPanel>
@@ -99,5 +118,72 @@
         </Border>
       </StackPanel>
     </Grid>
+
+    <Border Classes="tile" IsVisible="{Binding HasSelection}">
+      <StackPanel Spacing="14">
+        <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="10">
+          <TextBlock Classes="sectionHeader" Text="{DynamicResource Uninstall.Plan.Title}" VerticalAlignment="Center" />
+          <Button Grid.Column="1" Classes="secondary" Content="{DynamicResource Uninstall.Plan.Prepare}" Command="{Binding PreparePlanCommand}" />
+          <Button Grid.Column="2" Classes="secondary" Content="{DynamicResource Uninstall.Plan.Export}" Command="{Binding ExportPlanCommand}" IsVisible="{Binding HasPlan}" />
+        </Grid>
+
+        <StackPanel Orientation="Horizontal" Spacing="10" IsVisible="{Binding IsPlanning}">
+          <ProgressBar IsIndeterminate="True" Width="120" VerticalAlignment="Center" />
+          <TextBlock Classes="rowHint" Text="{DynamicResource Uninstall.Plan.Preparing}" Margin="0" />
+        </StackPanel>
+
+        <TextBlock Classes="rowHint" Text="{Binding PlanNotice}" IsVisible="{Binding HasPlanNotice}" TextWrapping="Wrap" Margin="0" />
+
+        <ContentControl Content="{Binding CurrentPlan}">
+          <ContentControl.ContentTemplate>
+            <DataTemplate x:DataType="steps:UninstallPlanViewModel">
+              <StackPanel Spacing="14">
+                <Border Classes="notice" IsVisible="{Binding HasRunning}">
+                  <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                    <TextBlock Classes="glyph" Text="&#xE7BA;" Foreground="{DynamicResource AgenBadgeWarningBrush}" VerticalAlignment="Top" Margin="0,2,0,0" />
+                    <TextBlock Grid.Column="1" Classes="rowHint" Text="{Binding RunningText}" TextWrapping="Wrap" Margin="0" />
+                  </Grid>
+                </Border>
+
+                <StackPanel Spacing="4">
+                  <TextBlock Classes="rowCaption" Text="{DynamicResource Uninstall.Plan.Official}" />
+                  <TextBlock Text="{Binding StrategyText}" TextWrapping="Wrap" />
+                  <SelectableTextBlock Classes="rowHint" Text="{Binding CommandPreview}" IsVisible="{Binding HasCommandPreview}" TextWrapping="Wrap" Margin="0" />
+                  <TextBlock Classes="rowHint" Text="{DynamicResource Uninstall.Plan.Elevation}" IsVisible="{Binding OfficialRequiresElevation}" Margin="0" />
+                </StackPanel>
+
+                <Border Height="1" Background="{DynamicResource AgenSeparatorBrush}" />
+
+                <StackPanel Spacing="6">
+                  <TextBlock Classes="rowCaption" Text="{DynamicResource Uninstall.Plan.Leftovers}" />
+                  <ItemsControl ItemsSource="{Binding Leftovers}" ItemTemplate="{StaticResource PlanItemTemplate}" IsVisible="{Binding HasLeftovers}" />
+                  <TextBlock Classes="rowHint" Text="{DynamicResource Uninstall.Plan.NoLeftovers}" IsVisible="{Binding !HasLeftovers}" Margin="0" />
+                  <TextBlock Classes="rowHint" Text="{Binding LowConfidenceText}" IsVisible="{Binding HasLowConfidence}" TextWrapping="Wrap" Margin="0" />
+                  <TextBlock Classes="rowHint" Text="{Binding SkippedText}" IsVisible="{Binding HasSkipped}" TextWrapping="Wrap" Margin="0" />
+                </StackPanel>
+
+                <StackPanel Spacing="6" IsVisible="{Binding HasProtected}">
+                  <Border Height="1" Background="{DynamicResource AgenSeparatorBrush}" />
+                  <TextBlock Classes="rowCaption" Text="{DynamicResource Uninstall.Plan.Protected}" />
+                  <TextBlock Classes="rowHint" Text="{DynamicResource Uninstall.Plan.ProtectedHint}" TextWrapping="Wrap" Margin="0" />
+                  <ItemsControl ItemsSource="{Binding ProtectedItems}" ItemTemplate="{StaticResource PlanItemTemplate}" />
+                  <Border Classes="notice" IsVisible="{Binding HasProtectedSelected}">
+                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                      <TextBlock Classes="glyph" Text="&#xE7BA;" Foreground="{DynamicResource AgenBadgeWarningBrush}" VerticalAlignment="Top" Margin="0,2,0,0" />
+                      <TextBlock Grid.Column="1" Classes="rowHint" Text="{DynamicResource Uninstall.Plan.ProtectedWarning}" TextWrapping="Wrap" Margin="0" />
+                    </Grid>
+                  </Border>
+                </StackPanel>
+
+                <Border Height="1" Background="{DynamicResource AgenSeparatorBrush}" />
+                <TextBlock Classes="rowCaption" Text="{Binding SelectionText}" />
+                <TextBlock Classes="rowHint" Text="{DynamicResource Uninstall.Plan.LargeSelection}" IsVisible="{Binding ExceedsVolumeThresholds}" TextWrapping="Wrap" Margin="0" />              </StackPanel>
+            </DataTemplate>
+          </ContentControl.ContentTemplate>
+        </ContentControl>
+
+        <TextBlock Classes="hint" Text="{DynamicResource Uninstall.Plan.ReadOnlyNote}" TextWrapping="Wrap" />
+      </StackPanel>
+    </Border>
   </StackPanel>
 </UserControl>

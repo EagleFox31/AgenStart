@@ -1,0 +1,53 @@
+{
+  "kind": "agenstart.uninstall-plan",
+  "schemaVersion": "1.0",
+  "planId": "plan:545d874d4e33dad3315265418921477c",
+  "programId": "registry:781ff328e8a7f8778d5ffdf1c624725b",
+  "programName": "Launcher",
+  "stateFingerprint": "f2548f0ddc270a8b93111452c72f432c",
+  "rulesVersion": "2026.11.0",
+  "executed": false,
+  "official": {
+    "strategy": "unavailable",
+    "executable": null,
+    "arguments": [],
+    "commandPreview": null,
+    "silent": false,
+    "requiresElevation": false
+  },
+  "leftovers": [],
+  "protectedUserData": [],
+  "skipped": [
+    {
+      "ruleId": "generic.install-location",
+      "kind": "directory",
+      "target": "C:\\Program Files (x86)\\Steam",
+      "reason": "forbidden"
+    }
+  ],
+  "processes": [],
+  "selection": {
+    "itemCount": 0,
+    "totalBytes": 0,
+    "fileCount": 0,
+    "exceedsVolumeThresholds": false
+  },
+  "diagnostics": [
+    {
+      "code": "uninstall.command-rejected",
+      "message": "QuietUninstallString rejected: the program path is not absolute."
+    },
+    {
+      "code": "uninstall.command-rejected",
+      "message": "UninstallString rejected: cmd.exe is a script host or shell."
+    },
+    {
+      "code": "rules.name-too-generic",
+      "message": "Rule generic.publisher-product skipped: the program name or publisher is too generic to match."
+    },
+    {
+      "code": "rules.name-too-generic",
+      "message": "Rule generic.hkcu-publisher-product skipped: the program name or publisher is too generic to match."
+    }
+  ]
+}

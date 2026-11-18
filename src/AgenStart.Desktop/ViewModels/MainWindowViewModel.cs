@@ -5,6 +5,7 @@ using AgenStart.Application.Installation;
 using AgenStart.Catalogue;
 using AgenStart.Core.Catalogue;
 using AgenStart.Core.Machine;
+using AgenStart.Desktop.LocalData;
 using AgenStart.Desktop.Services;
 using AgenStart.Desktop.ViewModels.Steps;
 using AgenStart.PackageManagement;
@@ -47,7 +48,9 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged, IDisposable
         ISessionState? session = null,
         IUiDispatcher? dispatcher = null,
         ILocalizer? text = null,
-        IInstalledProgramInventory? programInventory = null)
+        IInstalledProgramInventory? programInventory = null,
+        IUninstallPlanSource? uninstallPlanSource = null,
+        IUninstallPlanExportTarget? uninstallPlanExportTarget = null)
     {
         var machine = machineInventory ?? new WindowsMachineInventoryProvider();
         var software = softwareInventory ?? new WindowsInstalledSoftwareInventoryProvider();
@@ -80,8 +83,17 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged, IDisposable
 
         Overview = new OverviewViewModel(machine, _session);
 
-        // Read-only: the uninstall page receives the inventory port and nothing that can write.
-        Uninstall = new UninstallViewModel(programInventory ?? new WindowsInstalledProgramInventory(), ui, _text);
+        // Read-only: the uninstall page receives read ports and the user-started plan export, nothing
+        // that can uninstall, delete, launch or write to the registry.
+        Uninstall = new UninstallViewModel(
+            programInventory ?? new WindowsInstalledProgramInventory(),
+            ui,
+            _text,
+            uninstallPlanSource ?? new UninstallPlanService(
+                WindowsUninstallReadPorts.Create(),
+                PackagedUninstallRules.Load,
+                LocalExperienceStore.DefaultDirectory()),
+            uninstallPlanExportTarget);
 
         FlowTabs =
         [

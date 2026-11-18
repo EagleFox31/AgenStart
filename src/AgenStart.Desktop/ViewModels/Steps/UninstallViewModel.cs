@@ -15,14 +15,24 @@ public enum UninstallSortOrder
 }
 
 /// <summary>
-/// Read-only list of the programs installed on this PC. It only depends on the inventory read
-/// port: nothing here can uninstall, delete or write anything.
+/// Read-only list of the programs installed on this PC, with a reviewable uninstall plan for the
+/// selected one. It only depends on read ports and on the user-started plan export: nothing here
+/// can uninstall, delete, launch or change anything on the PC.
 /// </summary>
 public sealed class UninstallViewModel : StepViewModelBase
 {
     private readonly IInstalledProgramInventory _inventory;
     private readonly IUiDispatcher _dispatcher;
+    private readonly IUninstallPlanSource? _planSource;
+    private readonly IUninstallPlanExportTarget? _exportTarget;
     private readonly RelayCommand _refreshCommand;
+    private readonly RelayCommand _preparePlanCommand;
+    private readonly RelayCommand _exportPlanCommand;
+    private CancellationTokenSource? _planning;
+    private UninstallPlanViewModel? _currentPlan;
+    private bool _isPlanning;
+    private bool _isExporting;
+    private UiText _planNotice = UiText.Empty;
     private IReadOnlyList<UninstallProgramRowViewModel> _all = [];
     private string _searchText = string.Empty;
     private UninstallSortOrder _sortOrder = UninstallSortOrder.Name;
@@ -32,12 +42,21 @@ public sealed class UninstallViewModel : StepViewModelBase
     private bool _hasLoaded;
     private UiText _notice = UiText.Empty;
 
-    public UninstallViewModel(IInstalledProgramInventory inventory, IUiDispatcher dispatcher, ILocalizer? text = null)
+    public UninstallViewModel(
+        IInstalledProgramInventory inventory,
+        IUiDispatcher dispatcher,
+        ILocalizer? text = null,
+        IUninstallPlanSource? planSource = null,
+        IUninstallPlanExportTarget? exportTarget = null)
         : base(text)
     {
         _inventory = inventory ?? throw new ArgumentNullException(nameof(inventory));
         _dispatcher = dispatcher ?? throw new ArgumentNullException(nameof(dispatcher));
+        _planSource = planSource;
+        _exportTarget = exportTarget;
         _refreshCommand = new RelayCommand(() => _ = RefreshAsync(), () => !IsLoading);
+        _preparePlanCommand = new RelayCommand(() => _ = PreparePlanAsync(), () => CanPreparePlan);
+        _exportPlanCommand = new RelayCommand(() => _ = ExportPlanAsync(), () => CanExportPlan);
         SortByNameCommand = new RelayCommand(() => SortOrder = UninstallSortOrder.Name);
         SortByPublisherCommand = new RelayCommand(() => SortOrder = UninstallSortOrder.Publisher);
         SortBySizeCommand = new RelayCommand(() => SortOrder = UninstallSortOrder.Size);
@@ -48,6 +67,12 @@ public sealed class UninstallViewModel : StepViewModelBase
     public ObservableCollection<UninstallProgramRowViewModel> Programs { get; } = [];
 
     public ICommand RefreshCommand => _refreshCommand;
+
+    /// <summary>Reads the machine to describe what an uninstall would do. It never acts.</summary>
+    public ICommand PreparePlanCommand => _preparePlanCommand;
+
+    /// <summary>Saves the plan as JSON to a file the user picks: the page's only write.</summary>
+    public ICommand ExportPlanCommand => _exportPlanCommand;
     public ICommand SortByNameCommand { get; }
     public ICommand SortByPublisherCommand { get; }
     public ICommand SortBySizeCommand { get; }
@@ -94,11 +119,62 @@ public sealed class UninstallViewModel : StepViewModelBase
             if (SetField(ref _selectedProgram, value))
             {
                 OnPropertyChanged(nameof(HasSelection));
+                ClearPlan();
             }
         }
     }
 
     public bool HasSelection => _selectedProgram is not null;
+
+    public UninstallPlanViewModel? CurrentPlan
+    {
+        get => _currentPlan;
+        private set
+        {
+            if (SetField(ref _currentPlan, value))
+            {
+                OnPropertyChanged(nameof(HasPlan));
+                OnPropertyChanged(nameof(CanExportPlan));
+                _exportPlanCommand.RaiseCanExecuteChanged();
+            }
+        }
+    }
+
+    public bool HasPlan => _currentPlan is not null;
+
+    public bool IsPlanning
+    {
+        get => _isPlanning;
+        private set
+        {
+            if (SetField(ref _isPlanning, value))
+            {
+                OnPropertyChanged(nameof(CanPreparePlan));
+                _preparePlanCommand.RaiseCanExecuteChanged();
+            }
+        }
+    }
+
+    public bool IsExporting
+    {
+        get => _isExporting;
+        private set
+        {
+            if (SetField(ref _isExporting, value))
+            {
+                OnPropertyChanged(nameof(CanExportPlan));
+                _exportPlanCommand.RaiseCanExecuteChanged();
+            }
+        }
+    }
+
+    public bool CanPreparePlan => _planSource is not null && HasSelection && !IsPlanning;
+
+    public bool CanExportPlan => _exportTarget is not null && HasPlan && !IsExporting;
+
+    public string PlanNotice => _planNotice.Resolve(Text);
+
+    public bool HasPlanNotice => !ReferenceEquals(_planNotice, UiText.Empty);
 
     public bool IsLoading
     {
@@ -206,6 +282,134 @@ public sealed class UninstallViewModel : StepViewModelBase
         OnPropertyChanged(nameof(NoMatchText));
     }
 
+    public async Task PreparePlanAsync()
+    {
+        var row = _selectedProgram;
+        if (_planSource is null || row is null || IsPlanning)
+        {
+            return;
+        }
+
+        var planning = new CancellationTokenSource();
+        _planning = planning;
+        IsPlanning = true;
+        SetPlanNotice(UiText.Empty);
+        var programs = _all.Select(candidate => candidate.Program).ToArray();
+
+        UninstallPlan? plan;
+        try
+        {
+            plan = await _planSource.CreatePlanAsync(row.Program, programs, planning.Token).ConfigureAwait(false);
+        }
+        catch (Exception)
+        {
+            // Planning is best effort: a failure is shown as a message, never as a crash.
+            plan = null;
+        }
+
+        _dispatcher.Post(() => ApplyPlan(planning, row.Program.Id, plan));
+    }
+
+    public async Task ExportPlanAsync()
+    {
+        var plan = _currentPlan;
+        if (_exportTarget is null || plan is null || IsExporting)
+        {
+            return;
+        }
+
+        IsExporting = true;
+        SetPlanNotice(UiText.Empty);
+        UiText notice;
+        try
+        {
+            var saved = await _exportTarget.SaveAsync(ExportFileName(plan.Plan.ProgramName), plan.ToJson(DateTimeOffset.UtcNow));
+            notice = saved ? UiText.Key("Uninstall.Plan.Exported") : UiText.Empty;
+        }
+        catch (Exception)
+        {
+            notice = UiText.Key("Uninstall.Plan.ExportFailed");
+        }
+
+        _dispatcher.Post(() =>
+        {
+            IsExporting = false;
+            SetPlanNotice(notice);
+        });
+    }
+
+    /// <summary>A file name built only from the ASCII letters and digits of the program name.</summary>
+    public static string ExportFileName(string? programName)
+    {
+        var slug = new System.Text.StringBuilder();
+        foreach (var character in (programName ?? string.Empty).ToLowerInvariant())
+        {
+            if (slug.Length >= 48)
+            {
+                break;
+            }
+
+            if (character is (>= 'a' and <= 'z') or (>= '0' and <= '9'))
+            {
+                slug.Append(character);
+            }
+            else if (slug.Length > 0 && slug[^1] != '-')
+            {
+                slug.Append('-');
+            }
+        }
+
+        var name = slug.ToString().Trim('-');
+        return $"agenstart-uninstall-plan-{(name.Length == 0 ? "program" : name)}.json";
+    }
+
+    private void ApplyPlan(CancellationTokenSource planning, string programId, UninstallPlan? plan)
+    {
+        planning.Dispose();
+        if (!ReferenceEquals(_planning, planning))
+        {
+            // The selection changed while planning: ClearPlan already reset the page.
+            return;
+        }
+
+        _planning = null;
+        IsPlanning = false;
+        if (_selectedProgram?.Program.Id != programId)
+        {
+            return;
+        }
+
+        CurrentPlan = plan is null ? null : new UninstallPlanViewModel(plan, Text);
+        SetPlanNotice(CurrentPlan switch
+        {
+            null => UiText.Key("Uninstall.Plan.Failed"),
+            { RulesInvalid: true } => UiText.Key("Uninstall.Plan.RulesInvalid"),
+            _ => UiText.Empty
+        });
+    }
+
+    private void ClearPlan()
+    {
+        if (_planning is { } planning)
+        {
+            _planning = null;
+            planning.Cancel();
+            IsPlanning = false;
+        }
+
+        CurrentPlan = null;
+        SetPlanNotice(UiText.Empty);
+        OnPropertyChanged(nameof(CanPreparePlan));
+        _preparePlanCommand.RaiseCanExecuteChanged();
+    }
+
+    private void SetPlanNotice(UiText notice)
+    {
+        _planNotice = notice;
+        OnPropertyChanged(nameof(PlanNotice));
+        OnPropertyChanged(nameof(HasPlanNotice));
+    }
+
     private static IEnumerable<UninstallProgramRowViewModel> Order(
         IEnumerable<UninstallProgramRowViewModel> rows,
         UninstallSortOrder order)
@@ -238,6 +442,7 @@ public sealed class UninstallViewModel : StepViewModelBase
             row.RefreshText();
         }
 
+        _currentPlan?.RefreshText();
         base.OnLanguageChanged();
     }
 }

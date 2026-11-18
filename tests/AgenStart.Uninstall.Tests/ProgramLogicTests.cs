@@ -141,11 +141,17 @@ public sealed class ReadPortContractTests
     [Theory]
     [InlineData(typeof(IInstalledProgramInventory), "CaptureAsync")]
     [InlineData(typeof(IUninstallRegistrySource), "ReadAll")]
-    public void ReadPortsExposeOnlyTheirReadMethod(Type port, string readMethod)
+    [InlineData(typeof(IKnownFolderResolver), "Resolve")]
+    [InlineData(typeof(IFileSystemProbe), "GetEntry", "ListChildren")]
+    [InlineData(typeof(IRegistryProbe), "GetKey")]
+    [InlineData(typeof(IShortcutResolver), "ResolveTarget")]
+    [InlineData(typeof(IProcessInspector), "ListProcesses")]
+    [InlineData(typeof(IUninstallPlanSource), "CreatePlanAsync")]
+    public void ReadPortsExposeOnlyTheirReadMethod(Type port, params string[] readMethods)
     {
-        var methods = port.GetMethods(BindingFlags.Public | BindingFlags.Instance).Select(method => method.Name);
+        var methods = port.GetMethods(BindingFlags.Public | BindingFlags.Instance).Select(method => method.Name).Order(StringComparer.Ordinal);
 
-        Assert.Equal([readMethod], methods);
+        Assert.Equal(readMethods, methods);
     }
 
     [Fact]
@@ -156,6 +162,11 @@ public sealed class ReadPortContractTests
             .Select(type => type.Name)
             .Order(StringComparer.Ordinal);
 
-        Assert.Equal(["IInstalledProgramInventory", "IUninstallRegistrySource"], interfaces);
+        Assert.Equal(
+            [
+                "IFileSystemProbe", "IInstalledProgramInventory", "IKnownFolderResolver", "IProcessInspector",
+                "IRegistryProbe", "IShortcutResolver", "IUninstallPlanSource", "IUninstallRegistrySource"
+            ],
+            interfaces);
     }
 }
