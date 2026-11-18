@@ -498,7 +498,7 @@ dans la PR.
 
 ### ADR
 
-Proposés (statut *Proposed*) :
+Acceptés le 2026-11-18 :
 
 1. [ADR-0004](../adr/0004-uninstall-execution-and-elevation.md) — modèle d'exécution et
    d'élévation.

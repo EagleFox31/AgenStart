@@ -1,6 +1,6 @@
 # ADR-0005: Uninstall deletion semantics
 
-- Status: Proposed
+- Status: Accepted
 - Date: 2026-11-18
 - Decision owners: AgenStudio / AgenStart
 - Related: #119, ADR-0004, ADR-0006, `docs/design/2026-11-18-uninstall-module.md`

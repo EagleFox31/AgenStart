@@ -1,6 +1,6 @@
 # ADR-0006: Uninstall leftover rules and hard-coded safety floor
 
-- Status: Proposed
+- Status: Accepted
 - Date: 2026-11-18
 - Decision owners: AgenStudio / AgenStart
 - Related: #119, ADR-0002 §8, ADR-0003, ADR-0005, `docs/design/2026-11-18-uninstall-module.md`

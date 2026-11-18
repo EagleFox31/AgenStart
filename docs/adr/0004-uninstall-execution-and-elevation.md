@@ -1,6 +1,6 @@
 # ADR-0004: Uninstall execution and elevation model
 
-- Status: Proposed
+- Status: Accepted
 - Date: 2026-11-18
 - Decision owners: AgenStudio / AgenStart
 - Related: #119, ADR-0002, `docs/design/2026-11-18-uninstall-module.md`

@@ -1,6 +1,6 @@
 # ADR-0007: Uninstall journal format and persisted enum mapping
 
-- Status: Proposed
+- Status: Accepted
 - Date: 2026-11-18
 - Decision owners: AgenStudio / AgenStart
 - Related: #119, ADR-0004, ADR-0005, LL-003, LL-009, `docs/design/2026-11-18-uninstall-module.md`
