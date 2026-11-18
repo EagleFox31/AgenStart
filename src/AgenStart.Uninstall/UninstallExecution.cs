@@ -78,6 +78,11 @@ public static class UninstallExitCodes
     public const string CancelledByUserCode = "uninstall.cancelled-by-user";
     public const string NotInstalledCode = "uninstall.not-installed";
     public const string FailedCode = "uninstall.exit-code";
+    public const string ChangedSinceReviewCode = "uninstall.changed-since-review";
+    public const string ElevationRequiredCode = "uninstall.requires-elevation";
+    public const string StartFailedCode = "uninstall.start-failed";
+    public const string TimedOutCode = "uninstall.timed-out";
+    public const string CancelledCode = "uninstall.cancelled";
 
     public static OfficialUninstallResult Normalize(int exitCode) => exitCode switch
     {
