@@ -120,3 +120,21 @@ Entry format: context, symptom, root cause, fix, prevention, generalized lesson.
 - **Fix:** found the process by its executable path under the worktree, checked its start time matched the smoke run, and stopped that PID only.
 - **Prevention:** after a smoke run, confirm with `Get-Process AgenStart.Desktop | Where-Object Path -like '<worktree>*'` that the count is 0; stop by the Windows PID (`Stop-Process -Id`), never by process name, so the user's own instance is untouched.
 - **Generalized lesson:** on Windows, verify a background process is actually gone by querying the OS, not by trusting the shell's exit status.
+
+## LL-012 — Shell-based edits mangled Windows paths and multi-line code
+
+- **Context:** uninstall plan P2 (`feat/uninstall-plan`), edits made from Git Bash with heredocs, `sed` and inline Python.
+- **Symptom (near miss, caught before commit):** a heredoc running Python failed with "unexpected EOF", and backslashes in Windows paths were silently altered by `sed`/Python/heredoc quoting more than once.
+- **Root cause:** several quoting layers (Bash, heredoc, the interpreter's own escapes) each reinterpret `\`, so the text written differs from the text intended.
+- **Fix:** redid the affected edits with the editor tools and rebuilt; tests caught the remaining divergences.
+- **Prevention:** use the file edit/write tools, not shell pipelines, for multi-line or backslash-heavy edits; keep shell edits to simple, single-line, backslash-free substitutions.
+- **Generalized lesson:** every quoting layer is a translation; when the content contains escape characters, remove layers instead of adding escapes.
+
+## LL-013 — A capability-reachability test rooted too high raised false alarms
+
+- **Context:** P2 test proving the Uninstall page cannot reach any write/execute port.
+- **Symptom (near miss):** rooted at the page view model, the object-graph walk escaped through a shared test localizer's event handlers to the whole shell and flagged unrelated types (e.g. `WinGetProcessRunner`).
+- **Root cause:** event subscriptions and shared services connect every view model to the shell, so "reachable from the page" meant "reachable from the app".
+- **Fix:** root the walk at the page's injected port fields and assert the root count (`Assert.Equal(2, ports.Length)`) so a new port cannot slip past the test unnoticed.
+- **Prevention:** reachability/allowlist tests start from the injected capability fields and pin how many there are.
+- **Generalized lesson:** a security property test must start from the capability boundary, not from a node connected to everything.
