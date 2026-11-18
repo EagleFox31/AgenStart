@@ -193,3 +193,10 @@ Branche `refactor/desktop-bind-step-viewmodels` (depuis `main` à dda5ae1).
 - **Test en cours** : app lancée avec `AGENSTART_DATA_DIR=C:\tmp\agenstart-firstrun-1105` (dossier vide → onboarding). Commande PowerShell (pas bash) : `$env:AGENSTART_DATA_DIR = '...'; dotnet run --project src\AgenStart.Desktop\AgenStart.Desktop.csproj -c Release`.
 - **Nouveau** : issue #119 « module de désinstallation propre » (inventaire registre/Appx, désinstallation silencieuse winget/Inno/NSIS/MSI, restes en config déclarative, plan avant action, données utilisateur protégées par défaut, idempotent). Non validée pour implémentation ; maquette montrée : onglet « Désinstaller », liste à gauche, plan en 3 sections à droite.
 - **Prochaine étape** : retour visuel du propriétaire sur #118 ; pour #119, document de conception puis version lecture seule avant toute suppression.
+
+## 2026-11-18 08:37 — Conception du module de désinstallation (PR #120)
+
+- **État** : document de conception P0 `docs/design/2026-11-18-uninstall-module.md` sur la branche `docs/uninstall-module-design` (partie de `main`, worktree `C:\tmp\agenstart-uninstall-design`), PR brouillon #120, commentée sur l'issue #119. Aucun code produit.
+- **Décisions clés** : BCU en Learn (méthode de score, pas de code), winget CLI en Adapt (`BuildUninstall`), MSI / Restart Manager / IFileOperation via l'OS ; cœur `AgenStart.Uninstall` pur avec ports de lecture sans écriture ; capacité optionnelle `IPackageUninstallProvider` (contrats existants inchangés) ; règles de restes en JSON avec plancher de sécurité codé ; corbeille par défaut, journal en ajout seulement.
+- **Verrous** : P1 dépend de la fusion de #118 (onglets, LL-006 à LL-009). Cinq questions ouvertes et six ADR listés au §8 du document.
+- **Prochaine étape** : relecture de #120 par le propriétaire ; puis ADR 1-4 et P1 (inventaire lecture seule). #118 toujours en attente du test visuel.
