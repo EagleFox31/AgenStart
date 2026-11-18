@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-      "catalogueVersion": "0.3.0",
+      "catalogueVersion": "0.4.0",
   "applications": [
     {
       "id": "7zip",
@@ -249,6 +249,26 @@
       "platformSupport": [{"platform": "windows", "status": "supported", "architectures": ["x64", "arm64"]}],
       "providers": [{"platform": "windows", "type": "winget", "packageId": "LocalSend.LocalSend", "source": "winget", "scopePreference": "any"}],
       "dependencies": [], "conflicts": []
+    },
+    {
+      "id": "jdownloader",
+      "name": "JDownloader 2",
+      "publisher": "AppWork GmbH",
+      "description": "Downloads large files with pause, resume and automatic archive extraction, so a slow or unstable connection does not restart them from zero.",
+      "categories": ["utilities"], "tags": ["download-manager", "resume", "gem"],
+      "lifecycle": {"status": "active"},
+      "recommendations": [
+        {"profile": "personal", "level": "gem", "reasonKey": "personal.resumable-downloads"},
+        {"profile": "entertainment", "level": "optional", "reasonKey": "entertainment.resumable-downloads"}
+      ],
+      "requirements": {
+        "minimum": {"minRamMiB": 1024, "minFreeStorageMiB": 400, "gpuRequired": false, "architectures": ["x64", "arm64", "x86"]},
+        "recommended": {"minRamMiB": 4096, "minFreeStorageMiB": 1000, "gpuRequired": false, "architectures": ["x64", "arm64", "x86"]}
+      },
+      "platformSupport": [{"platform": "windows", "status": "supported", "architectures": ["x64", "arm64", "x86"]}],
+      "providers": [{"platform": "windows", "type": "winget", "packageId": "AppWork.JDownloader", "source": "winget", "scopePreference": "any"}],
+      "dependencies": [], "conflicts": [],
+      "curation": {"homepage": "https://jdownloader.org/", "trust": "official-publisher"}
     },
     {
       "id": "bitwarden",
