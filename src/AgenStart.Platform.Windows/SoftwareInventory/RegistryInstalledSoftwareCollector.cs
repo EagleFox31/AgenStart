@@ -1,13 +1,22 @@
-using System.Runtime.Versioning;
-using System.Security;
+using AgenStart.Platform.Windows.Uninstall;
 using AgenStart.SoftwareInventory;
-using Microsoft.Win32;
+using AgenStart.Uninstall;
 
 namespace AgenStart.Platform.Windows.SoftwareInventory;
 
 public sealed class RegistryInstalledSoftwareCollector : IInstalledSoftwareCollector
 {
-    private const string UninstallPath = @"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall";
+    private readonly IUninstallRegistrySource _registry;
+
+    public RegistryInstalledSoftwareCollector()
+        : this(new UninstallRegistryReader())
+    {
+    }
+
+    public RegistryInstalledSoftwareCollector(IUninstallRegistrySource registry)
+    {
+        _registry = registry ?? throw new ArgumentNullException(nameof(registry));
+    }
 
     public Task<InstalledSoftwareCollectionResult> CollectAsync(
         CancellationToken cancellationToken = default)
@@ -23,27 +32,38 @@ public sealed class RegistryInstalledSoftwareCollector : IInstalledSoftwareColle
                     "Windows uninstall registry inventory is unavailable on this platform.")]));
         }
 
-        return CollectWindowsAsync(cancellationToken);
+        return Task.FromResult(Collect(_registry.ReadAll(cancellationToken)));
     }
 
-    [SupportedOSPlatform("windows")]
-    private static Task<InstalledSoftwareCollectionResult> CollectWindowsAsync(
-        CancellationToken cancellationToken)
+    /// <summary>
+    /// Maps uninstall entries to installed-software records. Only hidden system components and
+    /// unnamed keys are left out; secondary values the reader could not read are ignored here.
+    /// </summary>
+    public static InstalledSoftwareCollectionResult Collect(IReadOnlyList<UninstallRegistryProbeResult> probes)
     {
+        ArgumentNullException.ThrowIfNull(probes);
+
         var records = new HashSet<InstalledSoftwareRecord>();
         var hadErrors = false;
 
-        foreach (var probe in RegistryProbes())
+        foreach (var probe in probes)
         {
-            cancellationToken.ThrowIfCancellationRequested();
+            hadErrors |= probe.HadErrors;
 
-            try
+            foreach (var entry in probe.Entries)
             {
-                ReadProbe(probe, records, cancellationToken, ref hadErrors);
-            }
-            catch (Exception exception) when (IsExpectedRegistryFailure(exception))
-            {
-                hadErrors = true;
+                if (entry.SystemComponent || string.IsNullOrWhiteSpace(entry.DisplayName))
+                {
+                    continue;
+                }
+
+                records.Add(new InstalledSoftwareRecord(
+                    InstalledSoftwareSourceKind.Registry,
+                    SoftwareInventorySourceIds.WindowsRegistry,
+                    entry.DisplayName.Trim(),
+                    entry.Publisher,
+                    entry.DisplayVersion,
+                    ToInventoryScope(entry.Location.Scope)));
             }
         }
 
@@ -57,123 +77,18 @@ public sealed class RegistryInstalledSoftwareCollector : IInstalledSoftwareColle
                 SoftwareInventorySourceIds.WindowsRegistry,
                 InventorySourceState.Complete);
 
-        return Task.FromResult(new InstalledSoftwareCollectionResult(
+        return new InstalledSoftwareCollectionResult(
             records
                 .OrderBy(record => record.DisplayName, StringComparer.OrdinalIgnoreCase)
                 .ThenBy(record => record.Version, StringComparer.OrdinalIgnoreCase)
                 .ToArray(),
-            [status]));
+            [status]);
     }
 
-    [SupportedOSPlatform("windows")]
-    private static IEnumerable<RegistryProbe> RegistryProbes()
+    private static InstalledSoftwareScope ToInventoryScope(ProgramScope scope) => scope switch
     {
-        yield return new RegistryProbe(
-            RegistryHive.LocalMachine,
-            RegistryView.Registry64,
-            InstalledSoftwareScope.Machine);
-
-        yield return new RegistryProbe(
-            RegistryHive.LocalMachine,
-            RegistryView.Registry32,
-            InstalledSoftwareScope.Machine);
-
-        yield return new RegistryProbe(
-            RegistryHive.CurrentUser,
-            RegistryView.Registry64,
-            InstalledSoftwareScope.User);
-
-        yield return new RegistryProbe(
-            RegistryHive.CurrentUser,
-            RegistryView.Registry32,
-            InstalledSoftwareScope.User);
-    }
-
-    [SupportedOSPlatform("windows")]
-    private static void ReadProbe(
-        RegistryProbe probe,
-        ISet<InstalledSoftwareRecord> records,
-        CancellationToken cancellationToken,
-        ref bool hadErrors)
-    {
-        using var baseKey = RegistryKey.OpenBaseKey(probe.Hive, probe.View);
-        using var uninstallKey = baseKey.OpenSubKey(UninstallPath, writable: false);
-        if (uninstallKey is null)
-        {
-            return;
-        }
-
-        string[] subKeyNames;
-        try
-        {
-            subKeyNames = uninstallKey.GetSubKeyNames();
-        }
-        catch (Exception exception) when (IsExpectedRegistryFailure(exception))
-        {
-            hadErrors = true;
-            return;
-        }
-
-        foreach (var subKeyName in subKeyNames)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-
-            try
-            {
-                using var applicationKey = uninstallKey.OpenSubKey(subKeyName, writable: false);
-                if (applicationKey is null || IsHiddenSystemComponent(applicationKey))
-                {
-                    continue;
-                }
-
-                var displayName = ReadString(applicationKey, "DisplayName");
-                if (string.IsNullOrWhiteSpace(displayName))
-                {
-                    continue;
-                }
-
-                records.Add(new InstalledSoftwareRecord(
-                    InstalledSoftwareSourceKind.Registry,
-                    SoftwareInventorySourceIds.WindowsRegistry,
-                    displayName.Trim(),
-                    ReadString(applicationKey, "Publisher"),
-                    ReadString(applicationKey, "DisplayVersion"),
-                    probe.Scope));
-            }
-            catch (Exception exception) when (IsExpectedRegistryFailure(exception))
-            {
-                hadErrors = true;
-            }
-        }
-    }
-
-    [SupportedOSPlatform("windows")]
-    private static bool IsHiddenSystemComponent(RegistryKey key)
-    {
-        var value = key.GetValue("SystemComponent", null, RegistryValueOptions.DoNotExpandEnvironmentNames);
-        return value switch
-        {
-            int integer => integer == 1,
-            long longInteger => longInteger == 1,
-            string text => string.Equals(text.Trim(), "1", StringComparison.Ordinal),
-            _ => false
-        };
-    }
-
-    [SupportedOSPlatform("windows")]
-    private static string? ReadString(RegistryKey key, string valueName)
-    {
-        var value = key.GetValue(valueName, null, RegistryValueOptions.DoNotExpandEnvironmentNames);
-        return value is string text && !string.IsNullOrWhiteSpace(text)
-            ? text.Trim()
-            : null;
-    }
-
-    private static bool IsExpectedRegistryFailure(Exception exception) =>
-        exception is SecurityException or UnauthorizedAccessException or IOException;
-
-    private sealed record RegistryProbe(
-        RegistryHive Hive,
-        RegistryView View,
-        InstalledSoftwareScope Scope);
+        ProgramScope.Machine => InstalledSoftwareScope.Machine,
+        ProgramScope.User => InstalledSoftwareScope.User,
+        _ => throw new ArgumentOutOfRangeException(nameof(scope), scope, "Unknown uninstall scope.")
+    };
 }

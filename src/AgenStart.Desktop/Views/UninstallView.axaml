@@ -1,0 +1,103 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:steps="using:AgenStart.Desktop.ViewModels.Steps"
+             x:Class="AgenStart.Desktop.Views.UninstallView"
+             x:DataType="steps:UninstallViewModel">
+  <!-- Read-only in this version: the page lists and explains, it never acts on a program. -->
+  <StackPanel Spacing="24">
+    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
+      <StackPanel>
+        <TextBlock Classes="pageTitle" Text="{DynamicResource Uninstall.Title}" />
+        <TextBlock Classes="subtitle" Text="{DynamicResource Uninstall.Subtitle}" Margin="0,6,0,0" />
+      </StackPanel>
+      <Button Grid.Column="1" Classes="secondary" Content="{DynamicResource Uninstall.Refresh}" Command="{Binding RefreshCommand}" VerticalAlignment="Bottom" />
+    </Grid>
+
+    <Border Classes="notice" IsVisible="{Binding HasNotice}">
+      <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+        <TextBlock Classes="glyph" Text="&#xE7BA;" Foreground="{DynamicResource AgenBadgeWarningBrush}" VerticalAlignment="Top" Margin="0,2,0,0" />
+        <TextBlock Grid.Column="1" Classes="rowHint" Text="{Binding Notice}" TextWrapping="Wrap" Margin="0" />
+      </Grid>
+    </Border>
+
+    <Grid ColumnDefinitions="*,300" ColumnSpacing="20">
+      <StackPanel Spacing="10">
+        <Grid ColumnDefinitions="*,Auto">
+          <TextBlock Classes="sectionHeader" Text="{DynamicResource Uninstall.Programs}" />
+          <TextBlock Grid.Column="1" Classes="rowCaption" Text="{Binding HeaderText}" VerticalAlignment="Center" Margin="0,0,4,8" />
+        </Grid>
+
+        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+          <TextBox Text="{Binding SearchText, Mode=TwoWay}" PlaceholderText="{DynamicResource Uninstall.Search}" AutomationProperties.Name="{DynamicResource Uninstall.Search}" />
+          <Border Grid.Column="1" Classes="segmented" VerticalAlignment="Center" ToolTip.Tip="{DynamicResource Uninstall.SortBy}">
+            <StackPanel Orientation="Horizontal" Spacing="2">
+              <Button Classes="segment" Classes.active="{Binding IsSortByName}" Command="{Binding SortByNameCommand}" Content="{DynamicResource Uninstall.Sort.Name}" />
+              <Button Classes="segment" Classes.active="{Binding IsSortByPublisher}" Command="{Binding SortByPublisherCommand}" Content="{DynamicResource Uninstall.Sort.Publisher}" />
+              <Button Classes="segment" Classes.active="{Binding IsSortBySize}" Command="{Binding SortBySizeCommand}" Content="{DynamicResource Uninstall.Sort.Size}" />
+              <Button Classes="segment" Classes.active="{Binding IsSortByDate}" Command="{Binding SortByDateCommand}" Content="{DynamicResource Uninstall.Sort.Date}" />
+            </StackPanel>
+          </Border>
+        </Grid>
+
+        <Border Classes="group">
+          <Grid>
+            <ListBox ItemsSource="{Binding Programs}" SelectedItem="{Binding SelectedProgram, Mode=TwoWay}" IsVisible="{Binding ShowList}" MaxHeight="560" Background="Transparent" BorderThickness="0" Padding="0">
+              <ListBox.ItemTemplate>
+                <DataTemplate x:DataType="steps:UninstallProgramRowViewModel">
+                  <Grid ColumnDefinitions="*,Auto" ColumnSpacing="14" Margin="2,4">
+                    <StackPanel>
+                      <TextBlock Classes="rowTitle" Text="{Binding DisplayName}" TextTrimming="CharacterEllipsis" />
+                      <TextBlock Classes="rowHint" Text="{Binding Caption}" TextTrimming="CharacterEllipsis" />
+                      <StackPanel Orientation="Horizontal" Spacing="6" Margin="0,4,0,0">
+                        <Border Classes="statusBadge" Background="{DynamicResource AgenFillBrush}" HorizontalAlignment="Left"><TextBlock Text="{Binding SourceText}" Foreground="{DynamicResource AgenText3Brush}" /></Border>
+                        <Border Classes="statusBadge" Background="{DynamicResource AgenFillBrush}" HorizontalAlignment="Left"><TextBlock Text="{Binding ScopeText}" Foreground="{DynamicResource AgenText3Brush}" /></Border>
+                      </StackPanel>
+                    </StackPanel>
+                    <TextBlock Grid.Column="1" Text="{Binding SizeText}" Foreground="{DynamicResource AgenMutedBrush}" FontSize="13" TextAlignment="Right" VerticalAlignment="Center" />
+                  </Grid>
+                </DataTemplate>
+              </ListBox.ItemTemplate>
+            </ListBox>
+
+            <Border IsVisible="{Binding IsLoading}" Padding="20,28">
+              <StackPanel Spacing="10" HorizontalAlignment="Center">
+                <ProgressBar IsIndeterminate="True" Width="160" />
+                <TextBlock Classes="rowHint" Text="{DynamicResource Uninstall.Loading}" TextAlignment="Center" />
+              </StackPanel>
+            </Border>
+
+            <Border IsVisible="{Binding ShowNoMatch}" Padding="20,28">
+              <StackPanel Spacing="10" HorizontalAlignment="Center">
+                <Border Classes="iconTile" HorizontalAlignment="Center" Width="44" Height="44"><TextBlock Classes="glyph" Text="&#xE74D;" FontSize="20" /></Border>
+                <TextBlock Classes="rowHint" Text="{Binding NoMatchText}" TextAlignment="Center" MaxWidth="380" />
+              </StackPanel>
+            </Border>
+          </Grid>
+        </Border>
+      </StackPanel>
+
+      <StackPanel Grid.Column="1" Spacing="12">
+        <Border Classes="tile" IsVisible="{Binding !HasSelection}">
+          <TextBlock Classes="rowHint" Text="{DynamicResource Uninstall.SelectHint}" Margin="0" />
+        </Border>
+        <Border Classes="tile" IsVisible="{Binding HasSelection}">
+          <StackPanel Spacing="12">
+            <TextBlock Text="{Binding SelectedProgram.DisplayName}" FontSize="19" FontWeight="SemiBold" TextWrapping="Wrap" />
+            <Border Height="1" Background="{DynamicResource AgenSeparatorBrush}" />
+            <StackPanel><TextBlock Classes="rowCaption" Text="{DynamicResource Uninstall.Detail.Publisher}" /><TextBlock Text="{Binding SelectedProgram.Publisher}" TextWrapping="Wrap" /></StackPanel>
+            <StackPanel><TextBlock Classes="rowCaption" Text="{DynamicResource Uninstall.Detail.Version}" /><TextBlock Text="{Binding SelectedProgram.Version}" TextWrapping="Wrap" /></StackPanel>
+            <StackPanel><TextBlock Classes="rowCaption" Text="{DynamicResource Uninstall.Detail.Location}" /><TextBlock Text="{Binding SelectedProgram.InstallLocation}" TextWrapping="Wrap" /></StackPanel>
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+              <StackPanel><TextBlock Classes="rowCaption" Text="{DynamicResource Uninstall.Detail.Size}" /><TextBlock Text="{Binding SelectedProgram.SizeText}" /></StackPanel>
+              <StackPanel Grid.Column="1"><TextBlock Classes="rowCaption" Text="{DynamicResource Uninstall.Detail.InstallDate}" /><TextBlock Text="{Binding SelectedProgram.InstallDateText}" /></StackPanel>
+            </Grid>
+            <StackPanel><TextBlock Classes="rowCaption" Text="{DynamicResource Uninstall.Detail.Installer}" /><TextBlock Text="{Binding SelectedProgram.InstallerKindText}" TextWrapping="Wrap" /></StackPanel>
+            <StackPanel><TextBlock Classes="rowCaption" Text="{DynamicResource Uninstall.Detail.Silent}" /><TextBlock Text="{Binding SelectedProgram.SilentUninstallText}" TextWrapping="Wrap" /></StackPanel>
+            <Border Height="1" Background="{DynamicResource AgenSeparatorBrush}" />
+            <TextBlock Classes="hint" Text="{DynamicResource Uninstall.LaterNote}" TextWrapping="Wrap" />
+          </StackPanel>
+        </Border>
+      </StackPanel>
+    </Grid>
+  </StackPanel>
+</UserControl>

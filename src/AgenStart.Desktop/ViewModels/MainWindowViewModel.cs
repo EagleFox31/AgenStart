@@ -10,8 +10,10 @@ using AgenStart.Desktop.ViewModels.Steps;
 using AgenStart.PackageManagement;
 using AgenStart.Platform.Windows.Inventory;
 using AgenStart.Platform.Windows.SoftwareInventory;
+using AgenStart.Platform.Windows.Uninstall;
 using AgenStart.Recommendations;
 using AgenStart.SoftwareInventory;
+using AgenStart.Uninstall;
 
 namespace AgenStart.Desktop.ViewModels;
 
@@ -25,7 +27,8 @@ public enum AppStep
     Installation,
     Report,
     History,
-    Settings
+    Settings,
+    Uninstall
 }
 
 public sealed class MainWindowViewModel : INotifyPropertyChanged, IDisposable
@@ -43,7 +46,8 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged, IDisposable
         SoftwareCatalogueLoader? catalogueLoader = null,
         ISessionState? session = null,
         IUiDispatcher? dispatcher = null,
-        ILocalizer? text = null)
+        ILocalizer? text = null,
+        IInstalledProgramInventory? programInventory = null)
     {
         var machine = machineInventory ?? new WindowsMachineInventoryProvider();
         var software = softwareInventory ?? new WindowsInstalledSoftwareInventoryProvider();
@@ -76,6 +80,9 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged, IDisposable
 
         Overview = new OverviewViewModel(machine, _session);
 
+        // Read-only: the uninstall page receives the inventory port and nothing that can write.
+        Uninstall = new UninstallViewModel(programInventory ?? new WindowsInstalledProgramInventory(), ui, _text);
+
         FlowTabs =
         [
             Tab(AppStep.Overview, "Shell.Overview", "\uE80F"),
@@ -88,6 +95,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged, IDisposable
         ];
         UtilityTabs =
         [
+            Tab(AppStep.Uninstall, "Shell.Uninstall", "\uE74D"),
             Tab(AppStep.History, "Shell.History", "\uE81C"),
             Tab(AppStep.Settings, "Shell.Settings", "\uE713")
         ];
@@ -108,11 +116,12 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged, IDisposable
     public RecommendationsViewModel RecommendationsStep { get; }
     public UsageProfileViewModel UsageProfile { get; }
     public OverviewViewModel Overview { get; }
+    public UninstallViewModel Uninstall { get; }
 
     /// <summary>Setup flow tabs, left to right.</summary>
     public IReadOnlyList<NavigationTabViewModel> FlowTabs { get; }
 
-    /// <summary>History and Settings, shown on the right of the tab bar.</summary>
+    /// <summary>Uninstall, History and Settings, shown on the right of the tab bar.</summary>
     public IReadOnlyList<NavigationTabViewModel> UtilityTabs { get; }
 
     public event PropertyChangedEventHandler? PropertyChanged;
@@ -133,7 +142,14 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged, IDisposable
                 OnPropertyChanged(nameof(IsReport));
                 OnPropertyChanged(nameof(IsHistory));
                 OnPropertyChanged(nameof(IsSettings));
+                OnPropertyChanged(nameof(IsUninstall));
                 RefreshTabs();
+
+                if (value == AppStep.Uninstall)
+                {
+                    // Read lazily and in the background so opening the app never waits for the registry.
+                    Uninstall.EnsureLoaded();
+                }
             }
         }
     }
@@ -147,6 +163,7 @@ public sealed class MainWindowViewModel : INotifyPropertyChanged, IDisposable
     public bool IsReport => _currentStep == AppStep.Report;
     public bool IsHistory => _currentStep == AppStep.History;
     public bool IsSettings => _currentStep == AppStep.Settings;
+    public bool IsUninstall => _currentStep == AppStep.Uninstall;
 
     /// <summary>Flow navigation decided by the app (e.g. after a scan); not gated.</summary>
     public void ShowStep(AppStep step) => CurrentStep = step;

@@ -102,3 +102,21 @@ Entry format: context, symptom, root cause, fix, prevention, generalized lesson.
 - **Fix:** `LocalExperienceStore.LoadSettingsAsync` checks whether the property is present; an existing file without it loads as `OnboardingCompleted = true`. An explicit `false` still restarts the flow.
 - **Prevention:** `DesktopSettingsTests` covers both cases (legacy file → onboarded; explicit `false` → restart). When adding a persisted flag, write a test that loads a settings file from the previous release before writing the feature.
 - **Generalized lesson:** for persisted data, a new field's default must be chosen for the data that already exists, not for a fresh install. Absent and false are different states; keep them apart at load time.
+
+## LL-010 — A string key ending in `.Other` was read as half of a plural pair
+
+- **Context:** uninstall inventory P1 (`feat/uninstall-inventory`) added an installer-kind label `Uninstall.Installer.Other`.
+- **Symptom (near miss, caught by tests):** the localisation test failed because it treats any key ending in `.Other` as the plural form of a `.One`/`.Other` pair and requires its sibling.
+- **Root cause:** the plural convention is inferred from a key suffix, so an ordinary label using the word "Other" collides with it.
+- **Fix:** renamed the key to `Uninstall.Installer.Generic`.
+- **Prevention:** the existing parity/plural test is the guardrail; do not end a non-plural key with `.One` or `.Other`.
+- **Generalized lesson:** suffix-based conventions reserve those suffixes; check the reserved suffixes before naming a key.
+
+## LL-011 — `kill $!` in Git Bash left the startup-smoke window running
+
+- **Context:** LL-008 startup smoke rerun during the P1 review, launching `AgenStart.Desktop.exe &` from Git Bash and stopping it with `kill $!`.
+- **Symptom (near miss):** the check printed "alive" and `kill` returned, but the Windows process (another PID) was still running from the worktree.
+- **Root cause:** `$!` is the MSYS process id, not the Windows PID; the signal did not reach the native GUI process.
+- **Fix:** found the process by its executable path under the worktree, checked its start time matched the smoke run, and stopped that PID only.
+- **Prevention:** after a smoke run, confirm with `Get-Process AgenStart.Desktop | Where-Object Path -like '<worktree>*'` that the count is 0; stop by the Windows PID (`Stop-Process -Id`), never by process name, so the user's own instance is untouched.
+- **Generalized lesson:** on Windows, verify a background process is actually gone by querying the OS, not by trusting the shell's exit status.

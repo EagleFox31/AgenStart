@@ -6,6 +6,7 @@ on:
       - "src/AgenStart.PackageManagement/**"
       - "src/AgenStart.SoftwareInventory/**"
       - "src/AgenStart.Platform.Windows/**"
+      - "src/AgenStart.Uninstall/**"
       - "tests/AgenStart.Platform.Windows.Tests/**"
       - "docs/architecture/package-provider.md"
       - "docs/architecture/installed-software-inventory.md"

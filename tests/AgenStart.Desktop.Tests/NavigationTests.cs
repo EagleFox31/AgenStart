@@ -11,6 +11,7 @@ public sealed class NavigationTests
     [InlineData(AppStep.Overview)]
     [InlineData(AppStep.History)]
     [InlineData(AppStep.Settings)]
+    [InlineData(AppStep.Uninstall)]
     public void Home_history_and_settings_are_always_available(AppStep step) =>
         Assert.True(NavigationGate.IsAvailable(step, Nothing));
 
@@ -44,7 +45,7 @@ public sealed class NavigationTests
         Assert.Equal(
             [AppStep.Overview, AppStep.YourPc, AppStep.UsageProfile, AppStep.Recommendations, AppStep.Review, AppStep.Installation, AppStep.Report],
             shell.FlowTabs.Select(tab => tab.Step));
-        Assert.Equal([AppStep.History, AppStep.Settings], shell.UtilityTabs.Select(tab => tab.Step));
+        Assert.Equal([AppStep.Uninstall, AppStep.History, AppStep.Settings], shell.UtilityTabs.Select(tab => tab.Step));
         Assert.Equal([AppStep.Overview], shell.FlowTabs.Where(tab => tab.IsEnabled).Select(tab => tab.Step));
         Assert.All(shell.UtilityTabs, tab => Assert.True(tab.IsEnabled));
         Assert.Equal([AppStep.Overview], shell.FlowTabs.Concat(shell.UtilityTabs).Where(tab => tab.IsActive).Select(tab => tab.Step));

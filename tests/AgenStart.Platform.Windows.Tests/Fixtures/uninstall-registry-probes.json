@@ -1,0 +1,47 @@
+{
+  "probes": [
+    {
+      "scope": "Machine",
+      "view": "Registry64",
+      "entries": [
+        { "keyName": "Zeta", "displayName": "zeta Tool", "publisher": "Zeta Inc", "displayVersion": "2.0", "uninstallString": "C:\\Zeta\\uninstall.exe" },
+        { "keyName": "Hidden", "displayName": "Hidden Runtime", "systemComponent": true },
+        { "keyName": "Unnamed" },
+        { "keyName": "{11111111-2222-3333-4444-555555555555}", "displayName": "Runtime (x64)", "publisher": "Contoso", "displayVersion": "1.0", "windowsInstaller": true },
+        { "keyName": "KB500001", "displayName": "Security Update for Runtime", "releaseType": "Security Update", "parentKeyName": "Runtime" },
+        { "keyName": "Alpha", "displayName": "Alpha", "displayVersion": "10.0", "uninstallString": "C:\\Alpha10\\uninstall.exe", "hasUnreadableValues": true }
+      ]
+    },
+    {
+      "scope": "Machine",
+      "view": "Registry32",
+      "entries": [
+        { "keyName": "Alpha", "displayName": "Alpha", "displayVersion": "9.0", "uninstallString": "C:\\Alpha9\\uninstall.exe" },
+        { "keyName": "{11111111-2222-3333-4444-555555555555}", "displayName": "Runtime (x64)", "publisher": "Contoso", "displayVersion": "1.0", "windowsInstaller": true }
+      ]
+    },
+    {
+      "scope": "User",
+      "view": "Registry64",
+      "unreadableKeyCount": 0,
+      "entries": [
+        { "keyName": "Mid", "displayName": "Mid Player", "displayVersion": "3", "uninstallString": "C:\\Users\\Me\\Mid\\uninstall.exe" }
+      ]
+    },
+    {
+      "scope": "User",
+      "view": "Registry32",
+      "entries": [
+        { "keyName": "Mid", "displayName": "Mid Player", "displayVersion": "3", "uninstallString": "C:\\Users\\Me\\Mid\\uninstall.exe" }
+      ]
+    }
+  ],
+  "expectedRecords": [
+    { "displayName": "Alpha", "publisher": null, "version": "10.0", "scope": "Machine" },
+    { "displayName": "Alpha", "publisher": null, "version": "9.0", "scope": "Machine" },
+    { "displayName": "Mid Player", "publisher": null, "version": "3", "scope": "User" },
+    { "displayName": "Runtime (x64)", "publisher": "Contoso", "version": "1.0", "scope": "Machine" },
+    { "displayName": "Security Update for Runtime", "publisher": null, "version": null, "scope": "Machine" },
+    { "displayName": "zeta Tool", "publisher": "Zeta Inc", "version": "2.0", "scope": "Machine" }
+  ]
+}
